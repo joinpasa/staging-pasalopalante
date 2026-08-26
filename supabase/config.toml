@@ -1,0 +1,25 @@
+project_id = "kifjuljtklfayrivzmyq"
+
+[functions]
+  [functions.auth-email-hook]
+    verify_jwt = false
+  [functions.daily-acts]
+    verify_jwt = false
+  [functions.process-email-queue]
+    verify_jwt = true
+  [functions.sign-photo-upload]
+    verify_jwt = false
+  [functions.submit-act]
+    verify_jwt = false
+  [functions.submit-commitment]
+    verify_jwt = false
+  [functions.translate-text]
+    verify_jwt = false
+  [functions.ppl-signup]
+    verify_jwt = false
+  [functions.classify-act]
+    verify_jwt = false
+  [functions.send-push]
+    verify_jwt = false
+
+

@@ -1,0 +1,721 @@
+{
+ "legal": {
+  "terms": "服务条款",
+  "privacy": "隐私政策",
+  "community": "社区准则",
+  "reconsentTitle": "我们已更新政策",
+  "reconsentBody": "请查看并接受更新后的文件以继续使用 Pásalo Pa'lante。",
+  "iAgree": "我同意",
+  "ageTermsLabel": "我已年满13岁，同意{terms}，并已阅读{privacy}。",
+  "reminderOptIn": "通过电子邮件向我发送每日善意提醒。",
+  "ageTermsRequired": "请同意条款和隐私政策以继续。",
+  "anonDisclosure": "提交即表示您同意我们的{terms}、{privacy}和{community}。您确认您已年满13岁。如果您的照片或视频中有人可识别，您已获得他们的许可（如果他们未满18岁，则获得其父母的许可）。",
+  "optionalEmailHelper": "如果您希望以后能够请求更改或删除，请输入您的电子邮件。"
+ },
+ "verticalImageStack": {
+  "hint": "滚动或拖动"
+ },
+ "auth": {
+  "title": "欢迎",
+  "subtitle": "登录以追踪您的善举、连胜和徽章。",
+  "magicTab": "电子邮件链接",
+  "passwordTab": "密码",
+  "magicHeading": "我们将通过电子邮件向您发送登录链接",
+  "magicHint": "无需密码。只需点击收件箱中的链接。",
+  "magicSend": "发送登录链接",
+  "magicSent": "检查您的电子邮件！",
+  "magicSentBody": "我们已向{email}发送了登录链接。点击它以完成登录。",
+  "magicError": "无法发送链接。请重试。",
+  "orPassword": "或使用密码登录",
+  "signInTab": "登录",
+  "signUpTab": "创建账户",
+  "signIn": "登录",
+  "signUp": "创建账户",
+  "email": "电子邮件",
+  "password": "密码",
+  "passwordHint": "至少8个字符。",
+  "displayName": "您的姓名",
+  "backHome": "返回主页",
+  "signUpSuccess": "欢迎！您的账户已准备就绪。",
+  "claimNote": "如果您已使用此电子邮件进行承诺，您的承诺将自动关联。",
+  "newHerePrompt": "Pásalo Pa'lante 新用户？",
+  "newHereCta": "参与进来，创建账户并加入运动。"
+ },
+ "account": {
+  "profileTitle": "您的个人资料",
+  "profileSubtitle": "姓名和国家/地区是隐私信息。只有您的公开姓名会在网站上显示。",
+  "profileFirstName": "名字",
+  "profileLastName": "姓氏",
+  "profileCountry": "国家/地区",
+  "profileCountryPlaceholder": "选择您的国家/地区",
+  "profileCountryEmpty": "未找到国家/地区。",
+  "profilePublicName": "公开姓名",
+  "profileModeInitial": "名字 + 姓氏首字母",
+  "profileModeFull": "全名",
+  "profileModeCustom": "自定义显示名称",
+  "profileCustomPlaceholder": "选择一个显示名称",
+  "profileChecking": "正在检查可用性…",
+  "profileAvailable": "该名称可用。",
+  "profileTaken": "该名称已被占用。",
+  "profileInvalid": "使用2-30个字符：字母、数字、空格、. - ' _",
+  "profileReserved": "该名称不可用。",
+  "profilePreview": "公开显示为",
+  "profileSave": "保存个人资料",
+  "profileSaved": "个人资料已更新。",
+  "profileSaveError": "无法保存您的个人资料。请重试。",
+  "profileCountryPrompt": "添加您的国家/地区以完成您的个人资料。",
+  "greeting": "您好，{name} 👋",
+  "memberSince": "成员加入于",
+  "signOut": "退出",
+  "roleGroupLeader": "小组组长",
+  "roleChampion": "倡导者",
+  "roleAmbassador": "大使",
+  "roleCivic": "公民领袖",
+  "roleVolunteer": "志愿者",
+  "actsHeading": "您已分享 {count} 次善举",
+  "logAnother": "分享另一次善举",
+  "emptyActs": "您还没有分享善举。开始行动吧！",
+  "confirmDeleteAct": "删除此善举？此操作无法撤销。",
+  "deleted": "已删除",
+  "saved": "已保存",
+  "emptyAct": {
+   "performed": "我做了一件善事",
+   "received": "我得到了善意",
+   "witnessed": "我看到了一件善事"
+  },
+  "commitmentHeading": "我的个人承诺",
+  "commitmentBody": "您承诺在 {month} 完成 {count} 次善举。",
+  "eventMonth": "全球善意季 (2026年11月1日 – 2027年1月31日)",
+  "progressLabel": "已记录 {total} 中的 {done} 次",
+  "seasonCountdownEyebrow": "全球善意季倒计时",
+  "seasonCountdownCaption": "以波多黎各时间为准，善意浪潮由此开始。",
+  "emptyCommitment": "承诺完成10亿次善举。",
+  "makePersonalCommitment": "做出个人承诺",
+  "personalCommitmentIntro": "您个人承诺在 {month} 完成多少次善举？",
+  "personalCommitmentNote": "您的个人善举也会计入您小组的总数。",
+  "submitPersonalCommitment": "保存我的承诺",
+  "modify": "修改",
+  "save": "保存",
+  "cancel": "取消",
+  "pastCommitments": "过去的承诺",
+  "groupHeading": "您的善意小组",
+  "groupPledgeHeading": "小组承诺",
+  "leaderRole": "组长",
+  "members": "成员",
+  "acts": "善举",
+  "pledges": "承诺",
+  "yourChapter": "您的分会",
+  "wholeOrg": "整个小组",
+  "inspirationHeading": "灵感",
+  "moreInspiration": "更多灵感",
+  "nextIdea": "下一个想法",
+  "remindersHeading": "提醒",
+  "remindersBody": "想接收每日善意提醒吗？",
+  "byEmail": "通过电子邮件",
+  "byPhone": "通过电话",
+  "turnOff": "关闭",
+  "enterPhone": "输入您的电话号码",
+  "phoneSaved": "电话号码已保存",
+  "smsConsent": "提供您的号码即表示您同意接收短信提醒。可能会收取短信和数据费用。",
+  "frequency": "频率",
+  "freqDaily": "每日",
+  "freqWeekdays": "工作日",
+  "freqWeekly": "每周",
+  "time": "时间",
+  "remindersComingSoon": "提醒发送正在设置中 — 您的偏好已保存。",
+  "streaksHeading": "徽章",
+  "dayStreak": "天连续",
+  "longest": "最长",
+  "totalActs": "总善举数",
+  "invitesHeading": "您的邀请",
+  "invitesJoined": "已加入的人数",
+  "invitesPledges": "他们做出的承诺",
+  "invitesActs": "他们记录的善举",
+  "invitesEmpty": "分享一次善举，您的链接将在这里引发涟漪。",
+  "invitesLinkHint": "您的个人邀请链接",
+  "invitesCopied": "邀请链接已复制",
+  "footerNote": "Pásalo Pa'lante · 由 Te Amo PR 提供支持"
+ },
+ "share": {
+  "sectionEyebrow": "加入浪潮",
+  "sectionHeading": "分享善举",
+  "sectionBody": "每一个善举都意义非凡。告诉我们您所做、所见或所经历的善意时刻——我们会将其添加到全球善意浪潮中。",
+  "sectionCta": "分享善举",
+  "modeQuestion": "善意是如何发生的？",
+  "modePerformed": "我做了一个善举",
+  "modeWitnessed": "我目睹了善举",
+  "modeReceived": "我受到了善意",
+  "detailsHeading": "告诉我们详情",
+  "descriptionLabel": "发生了什么？",
+  "descriptionPlaceholder": "善举的简短描述…",
+  "firstNameLabel": "您的名字（可选）",
+  "firstNamePlaceholder": "名字",
+  "emailLabel": "电子邮件（可选）",
+  "emailPlaceholder": "you@example.com",
+  "emailHelper": "如果您已有账户，我们将通过电子邮件向您发送登录链接以保存此善举。如果尚未注册，我们将在下一步预填信息，以便您加入此运动。",
+  "checkInboxHeading": "检查您的收件箱",
+  "checkInboxBody": "我们已向 {email} 发送了登录链接，以便将此善举添加到您的账户。",
+  "checkInboxResend": "重新发送链接",
+  "checkInboxResent": "已发送！请检查您的收件箱。",
+  "checkInboxDidntGet": "没收到？",
+  "checkInboxUsePersonal": "改用个人电子邮件",
+  "checkInboxUsePersonalHelper": "工作或学校账户通常会阻止验证邮件。个人邮箱（Gmail、iCloud 等）通常会即时收到。",
+  "checkInboxEmailLabel": "电子邮件地址",
+  "checkInboxSendToThis": "发送到此邮箱",
+  "checkInboxSentToNew": "验证邮件已发送至 {email} — 请检查该收件箱以加入浪潮。",
+  "checkInboxInvalidEmail": "请输入有效的电子邮件地址。",
+  "checkInboxCancel": "取消",
+  "notYou": "不是您？",
+  "claimedToast": "善举已添加到您的账户。",
+  "addMedia": "添加媒体",
+  "videoLabel": "视频网址（可选）",
+  "videoPlaceholder": "https://…",
+  "photoLabel": "添加照片（可选）",
+  "photoConsentLabel": "我已获得分享此照片的许可，并且同意 Pásalo Pa'lante 在宣传材料中使用它。",
+  "photoConsentRequired": "请确认照片许可才能继续。",
+  "termsAgreePrefix": "我同意",
+  "termsLink": "条款和条件",
+  "termsRequired": "请同意条款和条件才能继续。",
+  "submit": "分享",
+  "submitting": "正在分享…",
+  "back": "返回",
+  "thanksHeading": "感谢您为善意浪潮添砖加瓦。",
+  "thanksHeadingShort": "感谢您为善意浪潮添砖加瓦，现在让它扩散开来",
+  "thanksHeadingDesktop": "感谢您为善意浪潮添砖加瓦",
+  "thanksBody": "现在让它扩散开来——与世界分享您的善举。",
+  "shareSubheadSmall": "与世界分享您的善举",
+  "takeItFurtherEyebrow": "更进一步",
+  "takeItFurtherHeading": "创建账户以追踪您的善举",
+  "takeItFurtherBullets": [
+   "承诺参与全球善意季（2026年11月1日 – 2027年1月31日），帮助我们创造10亿善举的世界纪录。"
+  ],
+  "yourPledgeLabel": "您的承诺",
+  "actsSharedLabel": "已分享的善举",
+  "currentStreakLabel": "当前连胜",
+  "yourOrgLabel": "您的组织",
+  "viewDashboard": "查看您的仪表盘",
+  "modifyPledge": "修改承诺",
+  "shareButton": "分享",
+  "downloadButton": "下载图片",
+  "copyLink": "复制链接",
+  "copied": "已复制！",
+  "shareAnother": "分享另一个善举",
+  "defaultGraphicLine": "我做了一个善举",
+  "graphicFooter": "在 JoinPasa.com 加入浪潮",
+  "submitError": "出错了。请重试。",
+  "uploadError": "照片上传失败。请尝试较小的图片。",
+  "shareDialog": {
+   "title": "您想分享到哪里？",
+   "description": "将您的善意卡发送给朋友——选择一个目的地。",
+   "helper": "有些平台直接分享图片；其他平台可能会分享链接或提示您先下载。",
+   "nativeShare": "通过设备分享…",
+   "facebook": "Facebook",
+   "twitter": "X / Twitter",
+   "whatsapp": "WhatsApp",
+   "linkedin": "LinkedIn",
+   "instagram": "Instagram",
+   "copyLink": "复制链接",
+   "download": "下载图片",
+   "instagramHint": "图片已下载，标题已复制——打开 Instagram 并粘贴。",
+   "shareFailed": "无法分享——请尝试其他选项。"
+  }
+ },
+ "mapPage": {
+  "eyebrow": "实时爱心地图",
+  "title": "您身边的爱心",
+  "description": "查看世界各地爱心行动和承诺的来源，从您周围100英里半径开始。",
+  "searchPlaceholder": "搜索国家",
+  "useMyLocation": "使用我的位置",
+  "locationDenied": "位置访问被拒绝。请搜索国家。",
+  "locationUnavailable": "此设备无法使用位置功能。请搜索国家。",
+  "zoomIn": "放大",
+  "zoomOut": "缩小",
+  "acts": "行动",
+  "commitments": "承诺",
+  "radiusNote": "显示您位置周围100英里半径"
+ },
+ "navbar": {
+  "home": "首页",
+  "inspiration": "灵感",
+  "ideas": "想法",
+  "wall": "爱心墙",
+  "getInvolved": "参与其中",
+  "ourStory": "我们的故事",
+  "howItWorks": "运作方式",
+  "anthem": "颂歌",
+  "proof": "证明",
+  "joinMovement": "加入运动",
+  "donateNow": "捐款",
+  "signIn": "登录",
+  "myAccount": "我的账户"
+ },
+ "hero": {
+  "eyebrow": "全球最大的协调爱心运动",
+  "title": "加入我们，在全球范围内<br/>\n<em>激发超过10亿次爱心行动</em>",
+  "body1": "飓风菲奥娜过后，邻里互助的行动演变成一项世界纪录：2025年11月，波多黎各全境共发生了110万次爱心行动。",
+  "body2": "2026年，这项运动将走向全球。我们将在11月1日至1月31日启动全球爱心季。您的每一次行动都将汇入这股浪潮。",
+  "cta": "立即参与！",
+  "countdownLabel": "全球爱心季开始于",
+  "days": "天",
+  "hours": "小时",
+  "minutes": "分钟",
+  "seconds": "秒"
+ },
+ "impactTicker": {
+  "stat1Label": "5天内的爱心行动",
+  "stat2Label": "市",
+  "stat3Label": "学生和教育工作者被激活"
+ },
+ "getInvolved": {
+  "buildHeading": "与我们共建",
+  "buildBody": "以志愿者、大使、顾问或战略合作伙伴的身份加入。或者只需注册在全球爱心季（2026年11月1日 – 2027年1月31日）期间进行一次爱心行动。",
+  "buildCta": "加入运动",
+  "fundHeading": "资助影响力",
+  "fundBody": "支持Te Amo PR在波多黎各的任务，并帮助Pásalo Pa'lante大规模扩展。作为一家1101a2、CECFL和501(c)(3)认证组织，我们确保您的支持在教育、健康和社区发展方面创造真实、持久的影响，赋能全岛的波多黎各社区。",
+  "fundCta": "立即捐款",
+  "doorHeading": "开启战略之门",
+  "doorBody": "向我们介绍教育部长、联合国教科文组织/联合国、名人、影响者、运动员、主要媒体、拥有广泛影响力的组织等。",
+  "doorCta": "写信给我们"
+ },
+ "twoPaths": {
+  "eyebrow": "您在浪潮中的位置",
+  "heading": "无论您以何种方式出现，您都属于这里。",
+  "body": "无论您是寻求有意义的连接方式的个人，还是准备动员社区的团体——这场运动都是为您而生。",
+  "indTitle": "致个人",
+  "indSubtitle": "您无需许可即可改变他人的一天。",
+  "indBody": "您不需要预算、计划或任何人的批准。只需决定做一件善事并传递下去。您的一个举动会产生涟漪，其意义远超您的想象。",
+  "whatYouGet": "您将获得：",
+  "indBullet1": "→ 在全球善意季期间，为十亿善举的世界纪录做出贡献",
+  "indBullet2": "→ 追踪您的善举并感受他人的善意",
+  "indBullet3": "→ 参与善意挑战",
+  "indBullet4": "→ 建立每日善意连胜并赢得徽章",
+  "indBullet5": "→ 创造值得讲述（和值得体验）的故事",
+  "indCta": "分享一个善举",
+  "ambTitle": "致大使和组织",
+  "ambSubtitle": "您已经拥有社区。我们已经构建了工具包。",
+  "ambBody": "学校、企业、信仰社区、非营利组织和拥有平台的创作者：您无需建立新项目。Pásalo Pa'lante 会在您现有工作的基础上锦上添花。",
+  "ambBullet1": "→ 一套即用型启动工具包",
+  "ambBullet2": "→ 衡量工具以追踪您的影响力",
+  "ambBullet3": "→ 访问全球对齐组织的网络",
+  "ambBullet4": "→ 一个您的员工会记住的故事",
+  "ambCta": "成为善意大使"
+ },
+ "theMoment": {
+  "eyebrow": "这一刻",
+  "days": "天",
+  "hours": "小时",
+  "minutes": "分钟",
+  "seconds": "秒",
+  "date": "2026年11月7日至11日 · 东部时间上午11:11达到高潮",
+  "body1": "五天的全球协调善意，在11/11上午11:11达到一个同步的时刻。一股共同目标的浪潮，时区接力，环绕地球。",
+  "body2": "这是一个共同暂停的时刻——无论您以何种方式做到最好。祈祷。反思。静坐。歌唱。只需停下来，选择善意，与数百万人在同一时间做同样的事情。",
+  "body3": "不是因为有人告诉我们，而是因为我们选择这样做。"
+ },
+ "novemberBand": {
+  "eyebrow": "全球善意季",
+  "heading": "三个月。十亿善举。一个世界。",
+  "body": "全球善意季从2026年11月1日持续到2027年1月31日——一股协调的善意浪潮席卷每个时区、每个国家、每个准备好出现的社区。您的一个善举是我们达到十亿目标的一部分。",
+  "cta": "分享一个善举"
+ },
+ "donateBand": {
+  "eyebrow": "资助浪潮",
+  "heading": "每一美元都将善意传递到人们手中",
+  "body": "您的捐款将资助善意卡、启动工具包以及使全球运动成为可能的基础设施。",
+  "cta": "查看如何捐赠"
+ },
+ "donate": {
+  "eyebrow": "立即捐赠",
+  "heading": "每一美元都有助于善意在全球传播",
+  "body": "您的捐款将资助善意卡、启动工具包、衡量基础设施和社区支持，使这项运动成为可能。100%的捐款将用于Te Amo PR的宣传工作。",
+  "amount1": "$25",
+  "impact1": "将善意卡送到50名学生手中",
+  "amount2": "$100",
+  "impact2": "为社区团体配备一套完整的启动工具包",
+  "amount3": "$500",
+  "impact3": "支持整个学校的参与",
+  "note": "没有微不足道的善举。也没有微不足道的捐赠。",
+  "cta": "立即捐赠",
+  "altMethods": "如需支票、电汇、ACH存款、汇票或其他替代方式，请写信给我们：",
+  "taxNote": "向Te Amo PR的捐款可抵税。"
+ },
+ "footer": {
+  "brand": "全球最大的协调善意运动。诞生于波多黎各。发展到200多个国家。",
+  "poweredBy": "由...提供支持",
+  "teAmoPR": "Te Amo PR",
+  "joinHeader": "加入",
+  "getInvolved": "参与其中",
+  "shareAct": "分享一个善举",
+  "individuals": "个人",
+  "ambassadors": "大使",
+  "donateNow": "捐赠",
+  "learnHeader": "探索",
+  "ourStory": "我们的故事",
+  "howItWorks": "运作方式",
+  "ideas": "想法",
+  "wallOfKindness": "善意之墙",
+  "connectHeader": "连接",
+  "copyright": "© 2026 Te Amo PR。保留所有权利。",
+  "termsOfService": "服务条款",
+  "privacyPolicy": "隐私政策",
+  "communityGuidelines": "社区准则",
+  "contact": "联系我们",
+  "termsConditions": "条款和条件",
+  "madeBy": "网站由We & Goliath制作"
+ },
+ "story": {
+  "eyebrow": "始于何处",
+  "heading": "生于灾难。<br/>建于爱。",
+  "quote": "“社会隔离和孤独对健康和死亡率有着严重影响……我们必须像对待身体和心理健康一样，紧急对待社会健康。”",
+  "quoteCite": "— 世界卫生组织社会联系委员会，2025年",
+  "body1": "玛丽亚飓风摧毁波多黎各后，邻居们纷纷伸出援手。他们修缮屋顶，分享食物，在黑暗中互相扶持。五年后，当菲奥娜飓风来袭时，同样的事情再次发生。这并非巧合。这是一个启示：当人们获得一个简单的行善结构时，他们不只是参与。他们被点燃了。",
+  "body2": "Pásalo Pa'lante（“传递下去”）将每个社区中已有的本能——帮助、连接、出现的冲动——转化为有结构、可见且具有感染力的事物。三个步骤。零成本。无先决条件。只需决定做一件善事并传递下去。",
+  "body3": "2025年，波多黎各对此进行了测试。五天内，超过一百万次善举。所有78个市镇团结一致。一项经认证的世界纪录。以及一些更难以量化的东西：整个民众对彼此和对自己的感受发生了转变。",
+  "body4": "全球四分之一的成年人表示感到孤独。世界各地的社区都在瓦解。但数据显示，协调一致的善举不仅仅是一个美好的想法——它是一种可衡量的干预。而且它已准备好进行推广。",
+  "closing": "Pásalo Pa'lante 并没有要求你解决所有问题。它邀请你加入一股互相扶持的人潮。你的一个举动将汇入亿万个其他举动。"
+ },
+ "howItWorks": {
+  "eyebrow": "运作方式",
+  "heading": "让善意传播开来的3个步骤",
+  "body": "无论你是一个人还是一个大型组织，你的善举都能在世界各地激起涟漪。",
+  "step1Title": "做一件善事",
+  "step1Body": "无论大小，都算数。<br/>查看“善意点子”获取灵感",
+  "step2Title": "邀请他们传递下去",
+  "step2Body": "请他们为他人做一件善事，如果他们愿意，可以在 JoinPasa.com 上发布。",
+  "step3Title": "分享并看着它扩散",
+  "step3Body": "在网站上分享你的善举，然后在社交媒体上发布，激励你的朋友。",
+  "cta": "分享善举"
+ },
+ "anthem": {
+  "eyebrow": "主题曲",
+  "heading": "按下播放键。感受一场运动的活力。",
+  "body": "Pásalo Pa'lante 主题曲，由来自波多黎各的艺术家和影响者倾情演绎，成为了一场触及百万人运动的心跳。点击播放。然后传递下去。"
+ },
+ "scienceProof": {
+  "eyebrow": "证据",
+  "heading": "当一百万人选择在同一周行善时，会发生什么？",
+  "bodyPart1": "波多黎各回答了这个问题。2025年11月，共发生了1,135,096次善举，覆盖所有78个市镇和每所学校。第三方验证记录了最高的集体情感连贯性，其偶然发生的可能性为万亿分之一。",
+  "bodyBold": "证据确凿。全球浪潮即将到来。",
+  "bodyPart2": "",
+  "stat1Value": "1,135,096",
+  "stat1Label": "5天内的善举",
+  "stat2Value": "所有78个",
+  "stat2Label": "市镇参与",
+  "stat3Value": "270,000+",
+  "stat3Label": "学生和教育工作者被激活",
+  "stat3Sub": "",
+  "stat4Value": "40+",
+  "stat4Label": "名人大使",
+  "quote": "心数研究所记录了在人口层面激活期间测得的最高集体情感连贯性转变。这不仅仅是人们友善。这是整个民众感受方式的可衡量变化。",
+  "quoteLink": "探索数据 →"
+ },
+ "globalMap": {
+  "eyebrow": "浪潮正在蔓延",
+  "heading": "从一个岛屿到200个国家。我们需要你来实现。",
+  "body": "我们宣布全球善意季：11月1日至1月31日，我们的目标是将这场运动带到地球上的每个国家。如果没有准备好将其带回家的领导者，这不会发生。如果你的国家尚未被代表，那不是一个空白。那是一个邀请。",
+  "cta": "将运动带到你的社区"
+ },
+ "visualTransition": {
+  "line1": "一个涟漪。",
+  "line2": "百万波浪。",
+  "line3": "一个更友善的世界。"
+ },
+ "inspiration": {
+  "heroEyebrow": "灵感",
+  "heroTitle": "",
+  "heroBody": "",
+  "dailyHeading": "今日五善",
+  "dailyBody": "AI为您精选今日善举。选择一项——每项善举都意义非凡。",
+  "minutes": "分钟",
+  "markDid": "我做了",
+  "didThis": "已完成——谢谢您",
+  "doneBadge": "已记录",
+  "refresh": "刷新想法",
+  "loadError": "无法加载今日想法。请重试。",
+  "intentionalEyebrow": "有意识地行动",
+  "intentionalHeading": "有意识的善举",
+  "intentionalQuestion": "这个人、社区或情况需要我提供什么帮助？",
+  "intentionalIdeas": [
+   "联系一位多年未见的朋友。",
+   "帮助一位您平时不会接触的人。",
+   "每周提供一小时的专业服务。"
+  ],
+  "wallHeading": "善意之墙",
+  "wallBody": "来自善意浪潮的精彩故事，按社区喜爱度排名。",
+  "tabAll": "全部",
+  "tabGiven": "已付出",
+  "tabReceived": "已收到",
+  "tabSeen": "已看到",
+  "tagGiven": "已付出的善意",
+  "tagReceived": "已收到的善意",
+  "tagSeen": "已看到的善意",
+  "sortMostLiked": "最受欢迎",
+  "sortMostRecent": "最新",
+  "wallEnd": "您已到达底部。",
+  "wallEmpty": "暂无故事——成为第一个分享的人吧。",
+  "noDescription": "一项善举。",
+  "anonymous": "匿名",
+  "signInToReact": "登录以发送爱心。",
+  "readMore": "阅读更多",
+  "close": "关闭",
+  "translatedFromEn": "译自英文",
+  "translatedFromEs": "译自西班牙文",
+  "seeOriginal": "查看原文",
+  "seeTranslation": "查看译文",
+  "translating": "正在翻译…",
+  "videosHeading": "精选视频",
+  "videosBody": "简短真实的瞬间——即将推出。",
+  "videosComingSoon": "即将推出",
+  "volunteerEyebrow": "深入参与",
+  "volunteerHeading": "团体志愿服务机会",
+  "volunteerBody": "值得信赖的目录，助您寻找本地、远程和全球的服务方式。",
+  "anchorIdeas": "善意想法",
+  "anchorWall": "善意之墙",
+  "anchorVolunteer": "志愿服务",
+  "ideasHeading": "善意想法",
+  "ideasBody": "选择您今天想付出的方式——没有错误的选择。",
+  "ideasFilterLabel": "我想用我的：",
+  "shareThis": "分享此善举",
+  "categoryWords": "言语",
+  "categoryTime": "时间",
+  "categoryMoney": "金钱",
+  "categoryHands": "亲力亲为",
+  "categoryBusiness": "商业",
+  "categoryGroup": "团体",
+  "ideas": {
+   "words": [
+    {
+     "title": "发送一条真诚的感谢信息",
+     "why": "告诉某人他们对您重要的确切原因。"
+    },
+    {
+     "title": "联系一位多年未见的朋友",
+     "why": "一句简短的“想念你”可以重新开启一扇有意义的大门。"
+    },
+    {
+     "title": "为一家小企业留下真诚的评价",
+     "why": "公开的言语传播得比您想象的更远。"
+    },
+    {
+     "title": "真诚地赞美一位陌生人",
+     "why": "具体、真诚的赞美最能深入人心。"
+    },
+    {
+     "title": "给一位曾塑造您的老师写张便条",
+     "why": "教育者很少听到他们有多么重要。"
+    },
+    {
+     "title": "原谅某人——大声说出或在心中",
+     "why": "放下会解放你们双方。"
+    }
+   ],
+   "time": [
+    {
+     "title": "给祖父母或年长的亲戚打电话",
+     "why": "十分钟的关注是一份真正的礼物。"
+    },
+    {
+     "title": "帮邻居遛狗或跑腿",
+     "why": "减轻某人一天中的一个小负担。"
+    },
+    {
+     "title": "本周为一名学生辅导一小时",
+     "why": "您的知识是别人突破的关键。"
+    },
+    {
+     "title": "陪伴一位孤独的人",
+     "why": "陪伴往往是最善良的行为。"
+    },
+    {
+     "title": "全心全意地倾听——不打断",
+     "why": "真正的倾听比建议更稀有。"
+    },
+    {
+     "title": "为一位疲惫的父母照看孩子",
+     "why": "一小时的休息可以重置一整周。"
+    }
+   ],
+   "money": [
+    {
+     "title": "为身后的人买单",
+     "why": "一个小小的惊喜可以改变某人的一整天。"
+    },
+    {
+     "title": "今天慷慨地给小费",
+     "why": "服务人员能感受到每一笔额外的钱。"
+    },
+    {
+     "title": "捐赠给当地的食物银行",
+     "why": "饥饿是可以解决的，一餐一餐地解决。"
+    },
+    {
+     "title": "资助一个孩子的学习用品",
+     "why": "工具将潜力转化为进步。"
+    },
+    {
+     "title": "为同事支付咖啡或午餐费用",
+     "why": "小小的举动建立起大大的信任。"
+    },
+    {
+     "title": "捐赠给朋友关心的事业",
+     "why": "尊重您所爱之人所重视的事物。"
+    }
+   ],
+   "hands": [
+    {
+     "title": "帮助一位您平时不会接触的人",
+     "why": "跨越您通常不会跨越的界限——连接随之而来。"
+    },
+    {
+     "title": "清理您街道上的垃圾",
+     "why": "关心共享空间就是关心其中的每一个人。"
+    },
+    {
+     "title": "为有需要的邻居做饭",
+     "why": "温暖的食物承载着温暖的意图。"
+    },
+    {
+     "title": "帮助年迈的邻居搬运杂货",
+     "why": "分担后，沉重的袋子会变轻。"
+    },
+    {
+     "title": "扶门——并进行眼神交流",
+     "why": "微小的礼节表明真正的尊重。"
+    },
+    {
+     "title": "为某人修理或建造东西",
+     "why": "分享技能使关怀可见。"
+    }
+   ],
+   "business": [
+    {
+     "title": "每周提供一小时的专业服务",
+     "why": "您的专业知识是别人缺失的部分。"
+    },
+    {
+     "title": "指导您领域内的新人",
+     "why": "打开您希望有人为您打开的门。"
+    },
+    {
+     "title": "提前或全额支付供应商款项",
+     "why": "现金流对小企业来说就是善意。"
+    },
+    {
+     "title": "从代表性不足的社区招聘",
+     "why": "真正的机会比慈善更快地改变生活。"
+    },
+    {
+     "title": "为同事写推荐信",
+     "why": "公开的言语打开私密的门。"
+    },
+    {
+     "title": "进行有助于某人的介绍",
+     "why": "您的网络是您可以赠予的礼物。"
+    }
+   ],
+   "group": [
+    {
+     "title": "组织一次社区清洁活动",
+     "why": "小团队可以在一个下午内改造共享空间。"
+    },
+    {
+     "title": "在工作中发起一项善意挑战",
+     "why": "文化通过日常行为传播。"
+    },
+    {
+     "title": "举办一次社区聚餐",
+     "why": "共享餐食消除了无形的隔阂。"
+    },
+    {
+     "title": "协调一次团体志愿服务日",
+     "why": "众人拾柴火焰高，影响持久。"
+    },
+    {
+     "title": "与朋友们一起成立一个捐赠圈",
+     "why": "汇集起来的慷慨比单独捐赠更有力量。"
+    },
+    {
+     "title": "作为一个团队，领养一所当地学校或收容所",
+     "why": "持续的伙伴关系胜过一次性帮助。"
+    }
+   ]
+  }
+ },
+ "joinWave": {
+  "eyebrow": "您受邀了",
+  "heading": "加入善意浪潮",
+  "intro": "某人，在某地，做过、接受过或目睹过一件善举——并与世界分享了它。现在轮到您来加入这股涟漪了。",
+  "featuredEyebrow": "分享的善举来自",
+  "nextStepEyebrow": "您的下一步",
+  "nextStepHeading": "承诺一个善举",
+  "nextStepBody": "在全球善意季（2026年11月1日 – 2027年1月31日）期间，承诺一个（或多个）善举。每一个承诺都将计入十亿目标。",
+  "orShare": "或者分享您自己的善举",
+  "shareCta": "立即分享善举",
+  "loading": "正在加载善举…",
+  "notFoundHeading": "我们找不到那个善举。",
+  "notFoundBody": "但善意浪潮仍在继续。分享您自己的善举或做出承诺，让它继续传播。",
+  "genericEyebrow": "一张传递给您的善意卡片",
+  "genericCardText": "善意今天抵达了您。收下它，为他人做一件小事，然后将这张卡片传递下去。",
+  "genericCardName": "Pásalo Pa'lante",
+  "invitedEyebrow": "{name} 邀请您",
+  "invitedIntro": "{name} 是 Pásalo Pa'lante 的一员——这是一个全球性的运动，人们一次一个善举地传递善意。他们想到了您，并邀请您加入他们。写下您的名字，承诺一个善举，让善意浪潮继续前行。"
+ },
+ "commit": {
+  "sectionEyebrow": "参与其中",
+  "sectionHeading": "承诺您的行动。或帮助引领这场运动。",
+  "sectionBody": "全球善意季将于2026年11月1日至2027年1月31日举行，我们的目标是实现全球十亿次善举。承诺您（或您的团队）将完成多少善举，或者承担更重要的角色：国家领导人、组织大使、志愿者或社区倡导者。每一次承诺都至关重要。每一位领导者都能扩大善意的浪潮。",
+  "cta": "做出承诺",
+  "tabIndividual": "个人",
+  "tabOrganization": "团体",
+  "firstNameLabel": "您的名字",
+  "firstNamePlaceholder": "名字",
+  "lastNameLabel": "您的姓氏",
+  "publicNameHint": "您的公开名称默认为您的名字和姓氏首字母（例如“Daniel R.”）。您可以随时在“我的账户”中更改——您的全名将保持私密。",
+  "lastNamePlaceholder": "姓氏",
+  "lastNameRequired": "请填写您的姓氏。",
+  "countryRequired": "请选择您的国家。",
+  "emailLabel": "电子邮件",
+  "emailPlaceholder": "you@example.com",
+  "emailHint": "追踪您的善举和连胜！",
+  "pledgeLabel": "在全球善意季（2026年11月1日至2027年1月31日）期间，您将承诺完成多少次善举？\n",
+  "pledgeHint": "要有抱负——每一次善举都会产生涟漪效应。",
+  "orgNameLabel": "团体名称",
+  "orgNamePlaceholder": "您的团队、学校或公司",
+  "chapterLabel": "分会（可选）",
+  "chapterPlaceholder": "例如：圣胡安分会",
+  "orgWebsiteLabel": "网站",
+  "orgWebsitePlaceholder": "https://…",
+  "orgPledgeLabel": "您的团体在全球善意季（2026年11月1日至2027年1月31日）期间承诺的善举总数：",
+  "messageLabel": "简短留言（可选）",
+  "messagePlaceholder": "您为什么加入这场浪潮？",
+  "submit": "做出我的承诺",
+  "submitOrg": "做出我们的承诺",
+  "orgCertify": "通过做出团体承诺，您证明您是该团体的官方代表，并负责鼓励个人善举。",
+  "submitting": "正在承诺…",
+  "thanks": "感谢您的承诺！",
+  "thanksBody": "您刚刚为全球浪潮添砖加瓦。",
+  "statActs": "已承诺的善举",
+  "statPeople": "全球承诺",
+  "submitError": "发生了一些错误。请重试。",
+  "afterShareEyebrow": "更进一步",
+  "afterShareHeading": "为全球善意季承诺更多善举",
+  "afterShareBody": "您已经分享了一次——现在承诺您将再做多少次，以帮助在全球善意季（2026年11月1日至2027年1月31日）期间创造十亿次善举的世界纪录。",
+  "helpRoleLabel": "您想如何提供帮助？",
+  "helpRolePlaceholder": "选择一个角色",
+  "helpRoleDoActs": "亲自做善事",
+  "helpRoleChampion": "倡导者（影响者或推广者）",
+  "helpRoleAmbassador": "大使（国家领导人）",
+  "helpRoleCivic": "公民/政治领袖",
+  "helpRoleVolunteer": "加入团队（志愿者机会）",
+  "countryLabel": "国家",
+  "countryPlaceholder": "搜索国家…",
+  "countryEmpty": "未找到国家。",
+  "orgTypeLabel": "您领导的是哪种类型的团体？",
+  "orgTypePlaceholder": "选择类型",
+  "orgTypeSchool": "学校/大学",
+  "orgTypeCompany": "公司",
+  "orgTypeNonprofit": "非营利组织",
+  "orgTypeNgo": "非政府组织",
+  "orgTypeFaith": "信仰/精神团体",
+  "orgTypeOther": "其他"
+ }
+}

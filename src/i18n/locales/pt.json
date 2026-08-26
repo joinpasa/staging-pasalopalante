@@ -1,0 +1,722 @@
+{
+ "mapPage": {
+  "eyebrow": "Mapa de bondade ao vivo",
+  "title": "Bondade Perto de Você",
+  "description": "Veja de onde vêm os atos de bondade e os compromissos em todo o mundo, começando com um raio de 160 km ao seu redor.",
+  "searchPlaceholder": "Pesquisar um país",
+  "useMyLocation": "Usar minha localização",
+  "locationDenied": "O acesso à localização foi negado. Pesquise um país em vez disso.",
+  "locationUnavailable": "A localização não está disponível neste dispositivo. Pesquise um país em vez disso.",
+  "zoomIn": "Mais zoom",
+  "zoomOut": "Menos zoom",
+  "acts": "atos",
+  "commitments": "compromissos",
+  "radiusNote": "Raio de 160 km mostrado ao redor da sua localização"
+ },
+ "navbar": {
+  "home": "Início",
+  "inspiration": "Inspiração",
+  "ideas": "Ideias",
+  "wall": "Mural da Bondade",
+  "getInvolved": "Participe",
+  "ourStory": "Nossa História",
+  "howItWorks": "Como Funciona",
+  "anthem": "Hino",
+  "proof": "Prova",
+  "joinMovement": "Junte-se ao Movimento",
+  "donateNow": "Doar",
+  "signIn": "Entrar",
+  "myAccount": "Minha Conta"
+ },
+ "hero": {
+  "eyebrow": "O Maior Movimento Coordenado de Bondade do Mundo",
+  "title": "Junte-se a Nós para Desencadear Mais de<br/>\n<em>1 Bilhão de Atos de Bondade</em> em Todo o Mundo",
+  "body1": "O que começou como vizinhos ajudando vizinhos após o Furacão Fiona se tornou um recorde mundial certificado: 1,1 milhão de atos de bondade em todo o Porto Rico em novembro de 2025.",
+  "body2": "Em 2026, está se espalhando globalmente. Estamos lançando a Temporada Global da Bondade de 1º de novembro a 31 de janeiro. Seu único ato se junta à onda.",
+  "cta": "Participe Hoje!",
+  "countdownLabel": "A Temporada Global da Bondade começa em",
+  "days": "Dias",
+  "hours": "Horas",
+  "minutes": "Minutos",
+  "seconds": "Segundos"
+ },
+ "impactTicker": {
+  "stat1Label": "Atos de Bondade em 5 Dias",
+  "stat2Label": "Municípios",
+  "stat3Label": "Estudantes e Educadores Ativados"
+ },
+ "getInvolved": {
+  "buildHeading": "Construa Conosco",
+  "buildBody": "Junte-se como voluntário, embaixador, consultor ou parceiro estratégico. Ou apenas registre-se para fazer um ato de bondade durante a Temporada Global da Bondade (1º de novembro de 2026 – 31 de janeiro de 2027).",
+  "buildCta": "Junte-se ao Movimento",
+  "fundHeading": "Financie o Impacto",
+  "fundBody": "Apoie as missões da Te Amo PR em Porto Rico e ajude a expandir Pásalo Pa'lante em escala. Como uma organização certificada 1101a2, CECFL e 501(c)(3), garantimos que seu apoio crie um impacto real e duradouro na educação, saúde e desenvolvimento comunitário, capacitando as comunidades porto-riquenhas em toda a ilha.",
+  "fundCta": "Doar Agora",
+  "doorHeading": "Abra uma Porta Estratégica",
+  "doorBody": "Apresente-nos a Ministros da Educação, UNESCO/ONU, celebridades, influenciadores, atletas, grandes mídias, organizações com grande alcance, etc.",
+  "doorCta": "Escreva para Nós"
+ },
+ "share": {
+  "sectionEyebrow": "Junte-se à Onda",
+  "sectionHeading": "Compartilhe um Ato de Gentileza",
+  "sectionBody": "Todo ato conta. Conte-nos sobre um momento de gentileza que você realizou, testemunhou ou recebeu — e nós o adicionaremos à onda global.",
+  "sectionCta": "Compartilhe um Ato de Gentileza",
+  "modeQuestion": "Como a gentileza aconteceu?",
+  "modePerformed": "Eu Fiz um Ato de Gentileza",
+  "modeWitnessed": "Eu Testemunhei Gentileza",
+  "modeReceived": "Eu Recebi Gentileza",
+  "detailsHeading": "Conte-nos sobre isso",
+  "descriptionLabel": "O que aconteceu?",
+  "descriptionPlaceholder": "Uma breve descrição do ato de gentileza…",
+  "firstNameLabel": "Seu primeiro nome (opcional)",
+  "firstNamePlaceholder": "Primeiro nome",
+  "emailLabel": "E-mail (opcional)",
+  "emailPlaceholder": "voce@exemplo.com",
+  "emailHelper": "Se você já tem uma conta, enviaremos um link por e-mail para você fazer login e salvar este ato. Caso contrário, preencheremos automaticamente na próxima etapa para que você possa se juntar ao movimento.",
+  "checkInboxHeading": "Verifique sua caixa de entrada",
+  "checkInboxBody": "Enviamos um link de login para {email} para que possamos adicionar este ato de gentileza à sua conta.",
+  "checkInboxResend": "Reenviar link",
+  "checkInboxResent": "Enviado! Verifique sua caixa de entrada.",
+  "checkInboxDidntGet": "Não recebeu?",
+  "checkInboxUsePersonal": "Use um e-mail pessoal em vez disso",
+  "checkInboxUsePersonalHelper": "Contas de trabalho ou escola geralmente bloqueiam e-mails de verificação. Um endereço pessoal (Gmail, iCloud, etc.) geralmente chega instantaneamente.",
+  "checkInboxEmailLabel": "Endereço de e-mail",
+  "checkInboxSendToThis": "Enviar para este e-mail",
+  "checkInboxSentToNew": "E-mail de verificação enviado para {email} — verifique essa caixa de entrada para se juntar à Onda.",
+  "checkInboxInvalidEmail": "Por favor, insira um endereço de e-mail válido.",
+  "checkInboxCancel": "Cancelar",
+  "notYou": "Não é você?",
+  "claimedToast": "Ato de gentileza adicionado à sua conta.",
+  "addMedia": "Adicionar mídia",
+  "videoLabel": "URL do vídeo (opcional)",
+  "videoPlaceholder": "https://…",
+  "photoLabel": "Adicionar uma foto (opcional)",
+  "photoConsentLabel": "Tenho permissão para compartilhar esta foto e concordo que Pásalo Pa'lante a utilize em materiais de campanha.",
+  "photoConsentRequired": "Por favor, confirme a permissão da foto para continuar.",
+  "termsAgreePrefix": "Eu concordo com os",
+  "termsLink": "Termos e Condições",
+  "termsRequired": "Por favor, concorde com os Termos e Condições para continuar.",
+  "submit": "Compartilhar",
+  "submitting": "Compartilhando…",
+  "back": "Voltar",
+  "thanksHeading": "Obrigado por adicionar à onda.",
+  "thanksHeadingShort": "Obrigado por adicionar à onda, agora ajude-a a se espalhar",
+  "thanksHeadingDesktop": "Obrigado por adicionar à onda",
+  "thanksBody": "Agora ajude-a a se espalhar — compartilhe seu ato com o mundo.",
+  "shareSubheadSmall": "Compartilhe seu ato com o mundo",
+  "takeItFurtherEyebrow": "Vá Além",
+  "takeItFurtherHeading": "Crie uma Conta para Acompanhar seus Atos de Gentileza",
+  "takeItFurtherBullets": [
+   "Faça uma promessa para a Temporada Global de Gentileza (1º de novembro de 2026 – 31 de janeiro de 2027) para nos ajudar a criar um recorde mundial de 1 bilhão de atos de gentileza."
+  ],
+  "yourPledgeLabel": "Sua promessa",
+  "actsSharedLabel": "Atos compartilhados",
+  "currentStreakLabel": "Sequência atual",
+  "yourOrgLabel": "Seu grupo",
+  "viewDashboard": "Ver seu painel",
+  "modifyPledge": "Modificar promessa",
+  "shareButton": "Compartilhar",
+  "downloadButton": "Baixar imagem",
+  "copyLink": "Copiar link",
+  "copied": "Copiado!",
+  "shareAnother": "Compartilhar Outro Ato",
+  "defaultGraphicLine": "Eu fiz um ato de gentileza",
+  "graphicFooter": "Junte-se à Onda em JoinPasa.com",
+  "submitError": "Algo deu errado. Por favor, tente novamente.",
+  "uploadError": "Falha no upload da foto. Tente uma imagem menor.",
+  "shareDialog": {
+   "title": "Onde você quer compartilhar isso?",
+   "description": "Envie seu cartão de gentileza para amigos — escolha um destino.",
+   "helper": "Algumas plataformas compartilham a imagem diretamente; outras podem compartilhar um link ou solicitar que você baixe primeiro.",
+   "nativeShare": "Compartilhar via dispositivo…",
+   "facebook": "Facebook",
+   "twitter": "X / Twitter",
+   "whatsapp": "WhatsApp",
+   "linkedin": "LinkedIn",
+   "instagram": "Instagram",
+   "copyLink": "Copiar link",
+   "download": "Baixar imagem",
+   "instagramHint": "Imagem baixada e legenda copiada — abra o Instagram e cole.",
+   "shareFailed": "Não foi possível compartilhar — tente outra opção."
+  }
+ },
+ "legal": {
+  "terms": "Termos de Serviço",
+  "privacy": "Política de Privacidade",
+  "community": "Diretrizes da Comunidade",
+  "reconsentTitle": "Atualizamos nossas políticas",
+  "reconsentBody": "Por favor, revise e aceite os documentos atualizados para continuar usando o Pásalo Pa'lante.",
+  "iAgree": "Eu concordo",
+  "ageTermsLabel": "Tenho pelo menos 13 anos, concordo com os {terms} e li a {privacy}.",
+  "reminderOptIn": "Envie-me lembretes diários de gentileza por e-mail.",
+  "ageTermsRequired": "Por favor, concorde com os Termos e a Política de Privacidade para continuar.",
+  "anonDisclosure": "Ao enviar, você concorda com nossos {terms}, {privacy} e {community}. Você confirma que tem pelo menos 13 anos de idade. Se alguém for identificável em sua foto ou vídeo, você tem a permissão deles (ou a permissão dos pais, se tiverem menos de 18 anos).",
+  "optionalEmailHelper": "Digite seu e-mail se quiser a capacidade de solicitar alterações ou remoção posteriormente."
+ },
+ "verticalImageStack": {
+  "hint": "Role ou arraste"
+ },
+ "auth": {
+  "title": "Bem-vindo",
+  "subtitle": "Faça login para acompanhar seus atos de bondade, sequências e distintivos.",
+  "magicTab": "Link por e-mail",
+  "passwordTab": "Senha",
+  "magicHeading": "Enviaremos um link de login por e-mail",
+  "magicHint": "Não é necessária senha. Basta clicar no link em sua caixa de entrada.",
+  "magicSend": "Enviar link de login",
+  "magicSent": "Verifique seu e-mail!",
+  "magicSentBody": "Enviamos um link de login para {email}. Clique nele para finalizar o login.",
+  "magicError": "Não foi possível enviar o link. Por favor, tente novamente.",
+  "orPassword": "ou faça login com uma senha",
+  "signInTab": "Entrar",
+  "signUpTab": "Criar conta",
+  "signIn": "Entrar",
+  "signUp": "Criar conta",
+  "email": "E-mail",
+  "password": "Senha",
+  "passwordHint": "Pelo menos 8 caracteres.",
+  "displayName": "Seu nome",
+  "backHome": "Voltar para a página inicial",
+  "signUpSuccess": "Bem-vindo! Sua conta está pronta.",
+  "claimNote": "Se você já se comprometeu com este e-mail, seu compromisso será vinculado automaticamente.",
+  "newHerePrompt": "Novo no Pásalo Pa'lante?",
+  "newHereCta": "Participe para criar uma conta e juntar-se ao movimento."
+ },
+ "joinWave": {
+  "eyebrow": "Você está convidado(a)",
+  "heading": "Junte-se à Onda de Gentileza",
+  "intro": "Alguém, em algum lugar, fez, recebeu ou testemunhou um ato de gentileza — e compartilhou com o mundo. Agora é a sua vez de adicionar à onda.",
+  "featuredEyebrow": "Um ato de gentileza compartilhado por",
+  "nextStepEyebrow": "Seu próximo passo",
+  "nextStepHeading": "Prometa um ato de gentileza",
+  "nextStepBody": "Comprometa-se com um (ou muitos) atos de gentileza durante a Temporada Global de Gentileza (1º de novembro de 2026 – 31 de janeiro de 2027). Cada promessa conta para a meta de um bilhão.",
+  "orShare": "Ou compartilhe seu próprio ato de gentileza",
+  "shareCta": "Compartilhe um ato agora",
+  "loading": "Carregando o ato de gentileza…",
+  "notFoundHeading": "Não conseguimos encontrar esse ato de gentileza.",
+  "notFoundBody": "Mas a onda ainda está em movimento. Compartilhe um dos seus ou faça uma promessa para mantê-la em movimento.",
+  "genericEyebrow": "Um cartão de gentileza passado para você",
+  "genericCardText": "A gentileza chegou até você hoje. Pegue-o, faça um pequeno ato por outra pessoa e passe este cartão adiante.",
+  "genericCardName": "Pásalo Pa'lante",
+  "invitedEyebrow": "{name} convida você",
+  "invitedIntro": "{name} faz parte do Pásalo Pa'lante — um movimento global de pessoas que passam a gentileza adiante, um ato de cada vez. Eles pensaram em você e estão convidando você para se juntar a eles. Adicione seu nome, prometa um ato de gentileza e mantenha a onda em movimento."
+ },
+ "commit": {
+  "sectionEyebrow": "Participe",
+  "sectionHeading": "Prometa Seus Atos. Ou Ajude a Liderar o Movimento.",
+  "sectionBody": "A Temporada Global de Gentileza acontece de 1º de novembro de 2026 a 31 de janeiro de 2027, e nosso objetivo é um bilhão de atos de gentileza em todo o mundo. Prometa quantos você (ou seu grupo) irá se comprometer, ou assuma um papel maior: líder de país, embaixador organizacional, voluntário ou campeão comunitário. Cada promessa conta. Cada líder multiplica a onda.",
+  "cta": "Faça uma Promessa",
+  "tabIndividual": "Individual",
+  "tabOrganization": "Grupo",
+  "firstNameLabel": "Seu primeiro nome",
+  "firstNamePlaceholder": "Primeiro nome",
+  "lastNameLabel": "Seu sobrenome",
+  "publicNameHint": "Seu nome público será seu primeiro nome e a inicial do seu sobrenome (por exemplo, \"Daniel R.\"). Você pode alterá-lo a qualquer momento em Minha Conta — seu nome completo permanece privado.",
+  "lastNamePlaceholder": "Sobrenome",
+  "lastNameRequired": "Por favor, adicione seu sobrenome.",
+  "countryRequired": "Por favor, selecione seu país.",
+  "emailLabel": "E-mail",
+  "emailPlaceholder": "voce@exemplo.com",
+  "emailHint": "Acompanhe Sua Gentileza e Sequências!",
+  "pledgeLabel": "Quantos atos de gentileza você se comprometerá a fazer durante a Temporada Global de Gentileza (1º de novembro de 2026 – 31 de janeiro de 2027)?",
+  "pledgeHint": "Seja ambicioso — cada ato se espalha.",
+  "orgNameLabel": "Nome do grupo",
+  "orgNamePlaceholder": "Sua equipe, escola ou empresa",
+  "chapterLabel": "Capítulo (opcional)",
+  "chapterPlaceholder": "ex: capítulo de São Paulo",
+  "orgWebsiteLabel": "Site",
+  "orgWebsitePlaceholder": "https://…",
+  "orgPledgeLabel": "Total de atos de gentileza que seu grupo se compromete a fazer durante a Temporada Global de Gentileza (1º de novembro de 2026 – 31 de janeiro de 2027):",
+  "messageLabel": "Uma breve mensagem (opcional)",
+  "messagePlaceholder": "Por que você está se juntando à onda?",
+  "submit": "Fazer minha promessa",
+  "submitOrg": "Fazer nossa promessa",
+  "orgCertify": "Ao fazer um compromisso de grupo, você certifica que é um representante oficial deste grupo e assume a responsabilidade de incentivar os atos individuais de gentileza.",
+  "submitting": "Prometendo…",
+  "thanks": "Obrigado(a) por se comprometer!",
+  "thanksBody": "Você acabou de adicionar à onda global.",
+  "statActs": "Atos prometidos",
+  "statPeople": "Promessas globais",
+  "submitError": "Algo deu errado. Por favor, tente novamente.",
+  "afterShareEyebrow": "Vá além",
+  "afterShareHeading": "Prometa mais atos para a Temporada Global de Gentileza",
+  "afterShareBody": "Você compartilhou um — agora comprometa-se com quantos mais você fará para ajudar a criar um recorde mundial de um bilhão de atos de gentileza durante a Temporada Global de Gentileza (1º de novembro de 2026 – 31 de janeiro de 2027).",
+  "helpRoleLabel": "Como você quer ajudar?",
+  "helpRolePlaceholder": "Escolha uma função",
+  "helpRoleDoActs": "Fazer Atos de Gentileza Eu Mesmo",
+  "helpRoleChampion": "Campeão (Influenciador ou Promotor)",
+  "helpRoleAmbassador": "Embaixador (Líder de País)",
+  "helpRoleCivic": "Líder Cívico / Político",
+  "helpRoleVolunteer": "Junte-se à Equipe (Oportunidades de Voluntariado)",
+  "countryLabel": "País",
+  "countryPlaceholder": "Pesquisar um país…",
+  "countryEmpty": "Nenhum país encontrado.",
+  "orgTypeLabel": "Que tipo de Grupo você lidera?",
+  "orgTypePlaceholder": "Escolha um tipo",
+  "orgTypeSchool": "Escola / Universidade",
+  "orgTypeCompany": "Empresa",
+  "orgTypeNonprofit": "Organização sem fins lucrativos",
+  "orgTypeNgo": "ONG",
+  "orgTypeFaith": "Grupo Religioso / Espiritual",
+  "orgTypeOther": "Outro"
+ },
+ "account": {
+  "profileTitle": "Seu Perfil",
+  "profileSubtitle": "Nomes e país são privados. Apenas seu nome público é exibido no site.",
+  "profileFirstName": "Primeiro nome",
+  "profileLastName": "Sobrenome",
+  "profileCountry": "País",
+  "profileCountryPlaceholder": "Selecione seu país",
+  "profileCountryEmpty": "Nenhum país encontrado.",
+  "profilePublicName": "Nome público",
+  "profileModeInitial": "Primeiro nome + inicial do sobrenome",
+  "profileModeFull": "Nome completo",
+  "profileModeCustom": "Nome de exibição personalizado",
+  "profileCustomPlaceholder": "Escolha um nome de exibição",
+  "profileChecking": "Verificando disponibilidade…",
+  "profileAvailable": "Este nome está disponível.",
+  "profileTaken": "Este nome já está em uso.",
+  "profileInvalid": "Use 2 a 30 caracteres: letras, números, espaços, . - ' _",
+  "profileReserved": "Este nome não está disponível.",
+  "profilePreview": "Exibido publicamente como",
+  "profileSave": "Salvar perfil",
+  "profileSaved": "Perfil atualizado.",
+  "profileSaveError": "Não foi possível salvar seu perfil. Por favor, tente novamente.",
+  "profileCountryPrompt": "Adicione seu país para completar seu perfil.",
+  "greeting": "Olá, {name} 👋",
+  "memberSince": "Membro desde",
+  "signOut": "Sair",
+  "roleGroupLeader": "Líder de Grupo",
+  "roleChampion": "Campeão",
+  "roleAmbassador": "Embaixador",
+  "roleCivic": "Líder Cívico",
+  "roleVolunteer": "Voluntário",
+  "actsHeading": "Você compartilhou {count} atos de bondade",
+  "logAnother": "Compartilhar outro",
+  "emptyActs": "Você ainda não compartilhou um ato. Comece a onda!",
+  "confirmDeleteAct": "Excluir este ato? Isso não pode ser desfeito.",
+  "deleted": "Excluído",
+  "saved": "Salvo",
+  "emptyAct": {
+   "performed": "Eu fiz um ato de bondade",
+   "received": "Eu recebi bondade",
+   "witnessed": "Eu vi um ato de bondade"
+  },
+  "commitmentHeading": "Meu Compromisso Pessoal",
+  "commitmentBody": "Você se comprometeu a {count} atos de bondade em {month}.",
+  "eventMonth": "Temporada Global de Bondade (1º de novembro de 2026 – 31 de janeiro de 2027)",
+  "progressLabel": "{done} de {total} registrados",
+  "seasonCountdownEyebrow": "Contagem regressiva para a Temporada Global de Bondade",
+  "seasonCountdownCaption": "No horário de Porto Rico, onde a onda começou.",
+  "emptyCommitment": "Faça sua promessa de 1 bilhão de atos.",
+  "makePersonalCommitment": "Fazer um compromisso pessoal",
+  "personalCommitmentIntro": "Quantos atos de bondade você se compromete pessoalmente a fazer em {month}?",
+  "personalCommitmentNote": "Seus atos pessoais também contam para o total do seu grupo.",
+  "submitPersonalCommitment": "Salvar meu compromisso",
+  "modify": "Modificar",
+  "save": "Salvar",
+  "cancel": "Cancelar",
+  "pastCommitments": "Compromissos anteriores",
+  "groupHeading": "Seu Grupo de Bondade",
+  "groupPledgeHeading": "Promessa do grupo",
+  "leaderRole": "Líder",
+  "members": "Membros",
+  "acts": "Atos",
+  "pledges": "Promessas",
+  "yourChapter": "Seu capítulo",
+  "wholeOrg": "Grupo inteiro",
+  "inspirationHeading": "Inspiração",
+  "moreInspiration": "Mais inspiração",
+  "nextIdea": "Próxima ideia",
+  "remindersHeading": "Lembretes",
+  "remindersBody": "Quer receber lembretes diários de bondade?",
+  "byEmail": "Por E-mail",
+  "byPhone": "Por Telefone",
+  "turnOff": "Desativar",
+  "enterPhone": "Digite seu telefone",
+  "phoneSaved": "Telefone salvo",
+  "smsConsent": "Ao fornecer seu número, você concorda em receber lembretes por SMS. Tarifas de mensagens e dados podem ser aplicadas.",
+  "frequency": "Frequência",
+  "freqDaily": "Diário",
+  "freqWeekdays": "Dias de semana",
+  "freqWeekly": "Semanal",
+  "time": "Hora",
+  "remindersComingSoon": "A entrega de lembretes está sendo configurada — suas preferências estão salvas.",
+  "streaksHeading": "Distintivos",
+  "dayStreak": "dias consecutivos",
+  "longest": "Mais longo",
+  "totalActs": "Total de atos",
+  "invitesHeading": "Seus Convites",
+  "invitesJoined": "Pessoas que aderiram",
+  "invitesPledges": "Promessas que fizeram",
+  "invitesActs": "Atos que registraram",
+  "invitesEmpty": "Compartilhe um ato de bondade e seu link iniciará uma onda aqui.",
+  "invitesLinkHint": "Seu link de convite pessoal",
+  "invitesCopied": "Link de convite copiado",
+  "footerNote": "Pásalo Pa'lante · Desenvolvido por Te Amo PR"
+ },
+ "story": {
+  "eyebrow": "Onde Tudo Começou",
+  "heading": "Nascido do Desastre.\nConstruído no Amor.",
+  "quote": "\"O isolamento social e a solidão têm sérios impactos na saúde e na mortalidade… Devemos tratar a saúde social com a mesma urgência que a saúde física e mental.\"",
+  "quoteCite": "— Comissão da OMS sobre Conexão Social, 2025",
+  "body1": "Depois que o Furacão María devastou Porto Rico, os vizinhos simplesmente apareceram. Eles consertaram telhados, compartilharam comida, se apoiaram no escuro. Quando Fiona atingiu cinco anos depois, a mesma coisa aconteceu. Isso não foi coincidência. Foi uma revelação: quando as pessoas recebem uma estrutura simples para a bondade, elas não apenas participam. Elas se acendem.",
+  "body2": "Pásalo Pa'lante (\"Passe Adiante\") canaliza o instinto que já vive em cada comunidade — o impulso de ajudar, de conectar, de aparecer — em algo estruturado, visível e contagioso. Três passos. Sem custo. Sem pré-requisitos. Apenas a decisão de fazer uma coisa gentil e passá-la adiante.",
+  "body3": "Em 2025, Porto Rico colocou isso à prova. Mais de um milhão de atos de bondade em cinco dias. Todos os 78 municípios unidos. Um recorde mundial certificado. E algo mais difícil de quantificar: uma mudança na forma como toda uma população se sentia em relação uns aos outros e a si mesmos.",
+  "body4": "Um em cada quatro adultos em todo o mundo relata sentir-se sozinho. Comunidades em todos os lugares estão se desintegrando. Mas os dados mostram que a bondade coordenada não é apenas uma boa ideia — é uma intervenção mensurável. E está pronta para escalar.",
+  "closing": "Pásalo Pa'lante não está pedindo para você consertar tudo. Está convidando você para uma onda de pessoas que se apoiam. Seu único ato se une a bilhões de outros."
+ },
+ "howItWorks": {
+  "eyebrow": "Como Funciona",
+  "heading": "3 Passos Que Fazem a Bondade se Tornar Viral",
+  "body": "Seja você uma pessoa ou uma grande organização, seus atos de bondade podem enviar ondas ao redor do mundo.",
+  "step1Title": "Faça um Ato de Bondade",
+  "step1Body": "Grande ou pequeno, tudo conta.\nVeja Ideias de Bondade para inspiração",
+  "step2Title": "Convide-os a Passar Adiante",
+  "step2Body": "Peça a eles para fazerem uma coisa gentil por outra pessoa e, se quiserem, postar em JoinPasa.com.",
+  "step3Title": "Compartilhe e Veja a Onda se Espalhar",
+  "step3Body": "Compartilhe seu ato de bondade no site, depois poste nas redes sociais e inspire seus amigos.",
+  "cta": "Compartilhe um Ato de Bondade"
+ },
+ "anthem": {
+  "eyebrow": "O Hino",
+  "heading": "Dê o Play. Sinta um Movimento Ganhar Vida.",
+  "body": "O hino Pásalo Pa'lante, com artistas e influenciadores de todo Porto Rico, tornou-se o coração de um movimento que alcançou mais de um milhão de pessoas. Dê o play. Depois passe adiante.",
+  "quote": "Te Amo PR"
+ },
+ "scienceProof": {
+  "eyebrow": "A Prova",
+  "heading": "O Que Acontece Quando Um Milhão de Pessoas Escolhem a Bondade na Mesma Semana?",
+  "bodyPart1": "Porto Rico respondeu a essa pergunta. 1.135.096 atos em novembro de 2025, cobrindo todos os 78 municípios e todas as escolas. A verificação de terceiros registrou a mais alta coerência emocional coletiva com uma probabilidade de 1 em um trilhão de chance.",
+  "bodyBold": "A prova está aí. A onda global é a próxima.",
+  "bodyPart2": "",
+  "stat1Value": "1.135.096",
+  "stat1Label": "Atos de Bondade em 5 Dias",
+  "stat2Value": "Todos os 78",
+  "stat2Label": "Municípios Participaram",
+  "stat3Value": "270.000+",
+  "stat3Label": "Alunos e Educadores Ativados",
+  "stat3Sub": "",
+  "stat4Value": "40+",
+  "stat4Label": "Embaixadores Celebridades",
+  "quote": "O HeartMath Institute registrou a maior mudança de coerência emocional coletiva já medida durante uma ativação em nível populacional. Não eram apenas pessoas sendo gentis. Foi uma mudança mensurável na forma como toda uma população se sentia.",
+  "quoteLink": "Explore os dados →"
+ },
+ "globalMap": {
+  "eyebrow": "A Onda Está se Espalhando",
+  "heading": "De Uma Ilha para 200 Países. Precisamos de Você para Chegar Lá.",
+  "body": "Estamos declarando a Temporada Global da Bondade: de 1º de novembro a 31 de janeiro, e nosso objetivo é levar este movimento para todos os países da Terra. Isso não acontecerá sem líderes prontos para levá-lo para casa. Se o seu país ainda não está representado, isso não é uma lacuna. É um convite.",
+  "cta": "Traga o Movimento para Sua Comunidade"
+ },
+ "visualTransition": {
+  "line1": "Uma Onda.",
+  "line2": "Um Milhão de Ondas.",
+  "line3": "Um Mundo Mais Gentil."
+ },
+ "twoPaths": {
+  "eyebrow": "Seu Lugar na Onda",
+  "heading": "Não importa como você apareça, você pertence aqui.",
+  "body": "Seja você uma pessoa procurando uma maneira significativa de se conectar, ou um grupo pronto para mobilizar sua comunidade — este movimento foi construído para você.",
+  "indTitle": "Para Indivíduos",
+  "indSubtitle": "Você não precisa de permissão para mudar o dia de alguém.",
+  "indBody": "Você não precisa de orçamento, de um plano ou da aprovação de ninguém. Apenas a decisão de fazer uma coisa gentil e passá-la adiante. Seu único ato cria ondas e importa mais do que você pensa.",
+  "whatYouGet": "O que você ganha:",
+  "indBullet1": "→ Contribua para um recorde mundial de 1 bilhão de atos de bondade durante a Temporada Global da Bondade",
+  "indBullet2": "→ Acompanhe seus atos e aprecie a bondade dos outros",
+  "indBullet3": "→ Participe dos Desafios da Bondade",
+  "indBullet4": "→ Construa uma sequência diária de bondade e ganhe distintivos",
+  "indBullet5": "→ Crie histórias que valem a pena contar (e viver)",
+  "indCta": "Compartilhe um Ato de Bondade",
+  "ambTitle": "Para Embaixadores e Organizações",
+  "ambSubtitle": "Você já tem a comunidade. Nós construímos o kit de ferramentas.",
+  "ambBody": "Escolas, empresas, comunidades de fé, organizações sem fins lucrativos e criadores com uma plataforma: você não precisa construir um novo programa. Pásalo Pa'lante se sobrepõe ao que você já está fazendo.",
+  "ambBullet1": "→ Um Kit de Ativação pronto para uso",
+  "ambBullet2": "→ Ferramentas de medição para acompanhar seu impacto",
+  "ambBullet3": "→ Acesso a uma rede global de organizações alinhadas",
+  "ambBullet4": "→ Uma história que seu povo vai lembrar",
+  "ambCta": "Torne-se um Embaixador da Bondade"
+ },
+ "theMoment": {
+  "eyebrow": "O Momento",
+  "days": "Dias",
+  "hours": "Horas",
+  "minutes": "Minutos",
+  "seconds": "Segundos",
+  "date": "7 a 11 de novembro de 2026 · Culminando às 11:11 ET",
+  "body1": "Cinco dias de bondade global coordenada, construindo em direção a um único momento sincronizado em 11/11 às 11:11. Uma onda de propósito compartilhado circulando o planeta, fuso horário por fuso horário.",
+  "body2": "Este é um momento para pausar juntos — da melhor forma que você o fizer. Ore. Reflita. Sente-se em silêncio. Cante. Simplesmente pare e escolha a bondade, junto com milhões de outros fazendo a mesma coisa ao mesmo tempo.",
+  "body3": "Não porque alguém nos diz para fazer. Porque nós escolhemos fazer."
+ },
+ "novemberBand": {
+  "eyebrow": "Temporada Global da Bondade",
+  "heading": "Três Meses. Um Bilhão de Atos. Um Mundo.",
+  "body": "A Temporada Global da Bondade acontece de 1º de novembro de 2026 a 31 de janeiro de 2027 — uma onda coordenada de bondade rolando por todos os fusos horários, todos os países, todas as comunidades prontas para aparecer. Seu único ato faz parte de como chegamos a um bilhão.",
+  "cta": "Compartilhe um Ato de Bondade"
+ },
+ "donateBand": {
+  "eyebrow": "Financie a Onda",
+  "heading": "Cada Dólar Coloca a Bondade nas Mãos de Alguém",
+  "body": "Sua doação financia Cartões de Bondade, kits de ferramentas de ativação e a infraestrutura que torna um movimento global possível.",
+  "cta": "Veja Como Doar"
+ },
+ "donate": {
+  "eyebrow": "Doe Agora",
+  "heading": "Cada Dólar Ajuda a Bondade a se Espalhar Globalmente",
+  "body": "Sua doação financia os Cartões de Bondade, kits de ferramentas de ativação, infraestrutura de medição e suporte comunitário que tornam este movimento possível. 100% das contribuições vão para o trabalho de campanha da Te Amo PR.",
+  "amount1": "$25",
+  "impact1": "coloca Cartões de Bondade nas mãos de 50 estudantes",
+  "amount2": "$100",
+  "impact2": "equipa um grupo comunitário com um Kit de Ativação completo",
+  "amount3": "$500",
+  "impact3": "apoia a participação de uma escola inteira",
+  "note": "Nenhum ato de bondade é pequeno demais. Nem nenhum presente.",
+  "cta": "Doe Agora",
+  "altMethods": "Para cheques, transferências bancárias, depósitos ACH, ordens de pagamento ou outros métodos alternativos, por favor, escreva para nós em:",
+  "taxNote": "Doações para Te Amo PR são dedutíveis de impostos."
+ },
+ "footer": {
+  "brand": "O maior movimento de bondade coordenado do mundo. Nascido em Porto Rico. Crescendo em mais de 200 países.",
+  "poweredBy": "Desenvolvido por",
+  "teAmoPR": "Te Amo PR",
+  "joinHeader": "Junte-se",
+  "getInvolved": "Participe",
+  "shareAct": "Compartilhe um ato de bondade",
+  "individuals": "Indivíduos",
+  "ambassadors": "Embaixadores",
+  "donateNow": "Doe",
+  "learnHeader": "Explore",
+  "ourStory": "Nossa História",
+  "howItWorks": "Como Funciona",
+  "ideas": "Ideias",
+  "wallOfKindness": "Mural da Bondade",
+  "connectHeader": "Conecte-se",
+  "copyright": "© 2026 Te Amo PR. Todos os direitos reservados.",
+  "termsOfService": "Termos de Serviço",
+  "privacyPolicy": "Política de Privacidade",
+  "communityGuidelines": "Diretrizes da Comunidade",
+  "contact": "Contato",
+  "termsConditions": "Termos e Condições",
+  "madeBy": "Website por We & Goliath"
+ },
+ "inspiration": {
+  "heroEyebrow": "Inspiração",
+  "heroTitle": "",
+  "heroBody": "",
+  "dailyHeading": "5 Atos de Hoje",
+  "dailyBody": "Selecionados por IA para hoje. Escolha um — cada ato conta.",
+  "minutes": "min",
+  "markDid": "Eu fiz isso",
+  "didThis": "Feito — obrigado",
+  "doneBadge": "Registrado",
+  "refresh": "Atualizar ideias",
+  "loadError": "Não foi possível carregar as ideias de hoje. Por favor, tente novamente.",
+  "intentionalEyebrow": "Seja Intencional",
+  "intentionalHeading": "Atos Intencionais de Bondade",
+  "intentionalQuestion": "O que esta pessoa, comunidade ou situação precisa de mim?",
+  "intentionalIdeas": [
+   "Entre em contato com um amigo com quem você não fala há anos.",
+   "Ajude alguém com quem você normalmente não interagiria.",
+   "Ofereça seus serviços profissionais por uma hora por semana."
+  ],
+  "wallHeading": "Mural da Bondade",
+  "wallBody": "Principais histórias da onda, classificadas pelo amor da comunidade.",
+  "tabAll": "Todos",
+  "tabGiven": "Dado",
+  "tabReceived": "Recebido",
+  "tabSeen": "Visto",
+  "tagGiven": "Bondade dada",
+  "tagReceived": "Bondade recebida",
+  "tagSeen": "Bondade vista",
+  "sortMostLiked": "Mais curtidos",
+  "sortMostRecent": "Mais recentes",
+  "wallEnd": "Você chegou ao fim.",
+  "wallEmpty": "Nenhuma história ainda — seja o primeiro a compartilhar uma.",
+  "noDescription": "Um ato de bondade.",
+  "anonymous": "Anônimo",
+  "signInToReact": "Faça login para enviar um coração.",
+  "readMore": "Leia mais",
+  "close": "Fechar",
+  "translatedFromEn": "Traduzido do inglês",
+  "translatedFromEs": "Traduzido do espanhol",
+  "seeOriginal": "Ver original",
+  "seeTranslation": "Ver tradução",
+  "translating": "Traduzindo…",
+  "videosHeading": "Vídeos em Destaque",
+  "videosBody": "Momentos curtos e reais — em breve.",
+  "videosComingSoon": "Em breve",
+  "volunteerEyebrow": "Aprofunde-se",
+  "volunteerHeading": "Oportunidades de Voluntariado em Grupo",
+  "volunteerBody": "Diretórios confiáveis para encontrar maneiras locais, remotas e globais de servir.",
+  "anchorIdeas": "Ideias de Bondade",
+  "anchorWall": "Mural da Bondade",
+  "anchorVolunteer": "Voluntariado",
+  "ideasHeading": "Ideias de Bondade",
+  "ideasBody": "Escolha a forma como você quer doar hoje — não há escolha errada.",
+  "ideasFilterLabel": "Eu quero doar com meu(minha):",
+  "shareThis": "Compartilhe este ato",
+  "categoryWords": "Palavras",
+  "categoryTime": "Tempo",
+  "categoryMoney": "Dinheiro",
+  "categoryHands": "Mãos à obra",
+  "categoryBusiness": "Negócios",
+  "categoryGroup": "Grupo",
+  "ideas": {
+   "words": [
+    {
+     "title": "Envie uma mensagem de agradecimento sincera",
+     "why": "Diga a alguém exatamente por que ela é importante para você."
+    },
+    {
+     "title": "Entre em contato com um amigo com quem você não fala há anos",
+     "why": "Um breve 'pensando em você' pode reabrir uma porta significativa."
+    },
+    {
+     "title": "Deixe uma avaliação sincera para uma pequena empresa",
+     "why": "Palavras públicas viajam mais longe do que você pensa."
+    },
+    {
+     "title": "Elogie um estranho genuinamente",
+     "why": "Elogios específicos e honestos são os mais profundos."
+    },
+    {
+     "title": "Escreva uma nota para um professor que te marcou",
+     "why": "Educadores raramente ouvem o quanto foram importantes."
+    },
+    {
+     "title": "Perdoe alguém — em voz alta ou em seu coração",
+     "why": "Deixar ir liberta ambos."
+    }
+   ],
+   "time": [
+    {
+     "title": "Ligue para um avô ou parente mais velho",
+     "why": "Dez minutos de atenção são um verdadeiro presente."
+    },
+    {
+     "title": "Passeie com o cachorro de um vizinho ou faça um recado",
+     "why": "Tire um pequeno peso do dia de alguém."
+    },
+    {
+     "title": "Dê aulas particulares a um aluno por uma hora esta semana",
+     "why": "Seu conhecimento é a descoberta de outra pessoa."
+    },
+    {
+     "title": "Sente-se com alguém que está sozinho",
+     "why": "A presença é muitas vezes o ato mais gentil de todos."
+    },
+    {
+     "title": "Ouça — completamente — sem interromper",
+     "why": "A escuta real é mais rara do que o conselho."
+    },
+    {
+     "title": "Cuide dos filhos de um pai exausto",
+     "why": "Uma hora de descanso pode reiniciar uma semana inteira."
+    }
+   ],
+   "money": [
+    {
+     "title": "Pague o pedido de quem está atrás de você",
+     "why": "Uma pequena surpresa pode mudar o dia inteiro de alguém."
+    },
+    {
+     "title": "Dê uma gorjeta generosa hoje",
+     "why": "Trabalhadores de serviço sentem cada dólar extra."
+    },
+    {
+     "title": "Doe para um banco de alimentos local",
+     "why": "A fome é solucionável, uma refeição de cada vez."
+    },
+    {
+     "title": "Patrocine os materiais escolares de uma criança",
+     "why": "Ferramentas transformam potencial em progresso."
+    },
+    {
+     "title": "Pague o café ou almoço de um colega de trabalho",
+     "why": "Pequenos gestos constroem grande confiança."
+    },
+    {
+     "title": "Doe para uma causa que um amigo se importa",
+     "why": "Honre o que importa para as pessoas que você ama."
+    }
+   ],
+   "hands": [
+    {
+     "title": "Ajude alguém com quem você normalmente não interagiria",
+     "why": "Cruze uma linha que você normalmente não cruza — a conexão segue."
+    },
+    {
+     "title": "Recolha o lixo da sua rua",
+     "why": "Cuidar do espaço compartilhado é cuidar de todos nele."
+    },
+    {
+     "title": "Cozinhe uma refeição para um vizinho necessitado",
+     "why": "Comida quente carrega intenção calorosa."
+    },
+    {
+     "title": "Ajude um vizinho idoso com as compras",
+     "why": "Sacos pesados ficam mais leves quando compartilhados."
+    },
+    {
+     "title": "Segure a porta — e faça contato visual",
+     "why": "Pequenas cortesias sinalizam respeito real."
+    },
+    {
+     "title": "Conserte ou construa algo para alguém",
+     "why": "Habilidade compartilhada é cuidado visível."
+    }
+   ],
+   "business": [
+    {
+     "title": "Ofereça seus serviços profissionais por uma hora por semana",
+     "why": "Sua expertise é a peça que falta para outra pessoa."
+    },
+    {
+     "title": "Seja mentor de alguém que está começando em sua área",
+     "why": "Abra a porta que você gostaria que tivessem aberto para você."
+    },
+    {
+     "title": "Pague um fornecedor antecipadamente ou integralmente",
+     "why": "Fluxo de caixa é bondade para pequenas empresas."
+    },
+    {
+     "title": "Contrate de uma comunidade sub-representada",
+     "why": "Oportunidades reais mudam vidas mais rápido do que a caridade."
+    },
+    {
+     "title": "Escreva uma recomendação para um colega",
+     "why": "Palavras públicas abrem portas privadas."
+    },
+    {
+     "title": "Faça uma apresentação que ajude alguém",
+     "why": "Sua rede é um presente que você pode dar."
+    }
+   ],
+   "group": [
+    {
+     "title": "Organize uma limpeza no bairro",
+     "why": "Pequenas equipes transformam espaços compartilhados em uma única tarde."
+    },
+    {
+     "title": "Faça um desafio de bondade no trabalho",
+     "why": "A cultura se espalha através do comportamento diário."
+    },
+    {
+     "title": "Organize um almoço comunitário",
+     "why": "Refeições compartilhadas dissolvem paredes invisíveis."
+    },
+    {
+     "title": "Coordene um dia de voluntariado em grupo",
+     "why": "Muitas mãos, impacto duradouro."
+    },
+    {
+     "title": "Comece um círculo de doação com amigos",
+     "why": "A generosidade conjunta vai mais longe do que a doação individual."
+    },
+    {
+     "title": "Adote uma escola ou abrigo local como equipe",
+     "why": "Parceria sustentada supera ajuda pontual."
+    }
+   ]
+  }
+ }
+}
