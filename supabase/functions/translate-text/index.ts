@@ -5,6 +5,7 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
 };
 
 const LANG_NAMES: Record<string, string> = {
@@ -30,7 +31,10 @@ interface Body {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  // Fix OPTIONS preflight response for CORS
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { status: 200, headers: corsHeaders });
+  }
 
   try {
     const body = (await req.json()) as Body;
@@ -87,7 +91,6 @@ Deno.serve(async (req) => {
     if (!translation) return json({ error: "Empty translation" }, 502);
 
     return json({ translation }, 200, {
-      // Cache aggressively at the edge; the translation is deterministic enough.
       "Cache-Control": "public, max-age=86400, s-maxage=604800",
     });
   } catch (e) {
