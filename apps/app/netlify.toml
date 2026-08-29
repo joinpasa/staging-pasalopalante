@@ -1,0 +1,10 @@
+[build]
+  base = "apps/app"
+  publish = "dist"
+  command = "cd ../.. && npm install && npm run build --workspace=@pasalopalante/app"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = false

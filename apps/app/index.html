@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pásalo Pa'lante</title>
+    <meta name="description" content="Pásalo Pa'lante — log acts of kindness, view your streak and badges, and share your pass with the movement." />
+    <meta name="author" content="Te Amo PR" />
+    <meta name="robots" content="noindex, nofollow" />
+
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#faf8f4" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Pásalo" />
+
+    <style>
+      /* Critical inline CSS: brand-correct first paint, no unstyled flash. */
+      html, body {
+        margin: 0;
+        background-color: #faf8f4; /* warm cream */
+        color: #292420;
+        font-family: "DM Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      #ppl-splash {
+        position: fixed;
+        inset: 0;
+        z-index: 2147483000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #faf8f4;
+        transition: opacity 260ms ease, visibility 260ms ease;
+      }
+      #ppl-splash img {
+        width: 132px;
+        height: auto;
+        opacity: 0;
+        animation: ppl-splash-in 600ms ease 80ms forwards;
+      }
+      @keyframes ppl-splash-in {
+        from { opacity: 0; transform: scale(0.96); }
+        to { opacity: 1; transform: scale(1); }
+      }
+      html.app-ready #ppl-splash {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #ppl-splash, #ppl-splash img { transition: none; animation: none; opacity: 1; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="ppl-splash" aria-hidden="true">
+      <img src="/logo-PPL.png" alt="" width="132" height="132" />
+    </div>
+    <div id="root"></div>
+
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

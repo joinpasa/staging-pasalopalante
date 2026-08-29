@@ -1,73 +1,42 @@
-# Welcome to your Lovable project
+# Pásalo Pa'lante
 
-## Project info
+A monorepo containing two independently deployable apps that share one design system, auth layer, and Supabase backend:
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+- **`apps/website`** — the public marketing site (pasalopalante.com): landing page, share/commit flows, wall of kindness, donate, legal pages.
+- **`apps/app`** — the installed/logged-in app (app.pasalopalante.com), also packaged for the App Store / Play Store via Capacitor: home feed, wall, pass/QR, map, badges.
+- **`packages/shared`** — auth context, Supabase client, i18n, shadcn UI components, and design tokens used by both apps. Not published or built independently — each app's Vite config resolves it directly from source via the `@shared/*` alias.
+- **`supabase/`** — the single shared Supabase project (migrations + edge functions) both apps talk to.
 
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+## Getting started
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+npm install          # installs once for the whole workspace
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+npm run dev:website  # http://localhost:8080
+npm run dev:app      # http://localhost:8081
 ```
 
-**Edit a file directly in GitHub**
+## Building
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```sh
+npm run build:website
+npm run build:app
+# or both:
+npm run build
+```
 
-**Use GitHub Codespaces**
+## Testing
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```sh
+npm test                     # unit tests: shared, website, app, and cross-cutting repo checks
+npm run test:e2e:website     # Playwright, requires the website dev server running
+npm run test:e2e:app         # Playwright, requires the app dev server running
+```
 
-## What technologies are used for this project?
+## Technologies
 
-This project is built with:
+Vite, TypeScript, React, React Router, shadcn-ui, Tailwind CSS, Supabase, Capacitor (native app shells for `apps/app`).
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Deploying
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Each app deploys independently. `apps/website/netlify.toml` and `apps/app/netlify.toml` each configure their own Netlify site with `base` pointed at the respective app directory — set each site's production domain (pasalopalante.com / app.pasalopalante.com) in the Netlify dashboard.
