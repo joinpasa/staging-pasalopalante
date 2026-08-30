@@ -11,11 +11,8 @@ import YourActs from "@/components/account/YourActs";
 import InspirationCard from "@/components/account/InspirationCard";
 import YourCommitment from "@/components/account/YourCommitment";
 import StreaksBadges from "@/components/account/StreaksBadges";
-import RemindersCard from "@/components/account/RemindersCard";
 import YourGroup from "@/components/account/YourGroup";
 import YourInvitations from "@/components/account/YourInvitations";
-import ProfileSettingsCard from "@/components/account/ProfileSettingsCard";
-import SetPasswordCard from "@/components/account/SetPasswordCard";
 import { Skeleton } from "@shared/components/ui/skeleton";
 
 const AccountPage = () => {
@@ -25,7 +22,6 @@ const AccountPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [profile, setProfile] = useState<any>(null);
   const [profileLoading, setProfileLoading] = useState(true);
-  const [profileRefresh, setProfileRefresh] = useState(0);
 
   useEffect(() => {
     if (!loading && !user) navigate("/auth", { replace: true });
@@ -58,7 +54,7 @@ const AccountPage = () => {
       }
     })();
     return () => { cancelled = true; };
-  }, [user, profileRefresh]);
+  }, [user]);
 
 
   // Flush any signup consent stashed in sessionStorage during /auth → magic link → /account.
@@ -127,19 +123,10 @@ const AccountPage = () => {
             <InspirationCard />
             <YourActs userId={user.id} />
             <YourCommitment userId={user.id} email={profile?.email || user.email || ""} />
-            {!profileLoading && (
-              <ProfileSettingsCard
-                userId={user.id}
-                profile={profile}
-                onSaved={() => setProfileRefresh((n) => n + 1)}
-              />
-            )}
           </div>
           <div className="space-y-8">
             <YourGroup userId={user.id} />
             <YourInvitations userId={user.id} />
-            <RemindersCard userId={user.id} email={profile?.email || user.email || ""} />
-            <SetPasswordCard />
           </div>
         </div>
 

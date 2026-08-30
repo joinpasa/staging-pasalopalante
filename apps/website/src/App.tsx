@@ -18,6 +18,7 @@ import ShareThanks from "./pages/ShareThanks.tsx";
 import CommitPage from "./pages/CommitPage.tsx";
 import AuthPage from "./pages/AuthPage.tsx";
 import AccountPage from "./pages/AccountPage.tsx";
+import AccountSettingsPage from "./pages/AccountSettingsPage.tsx";
 import IdeasPage from "./pages/IdeasPage.tsx";
 import WallPage from "./pages/WallPage.tsx";
 import MapPage from "./pages/MapPage.tsx";
@@ -78,6 +79,7 @@ const App = () => (
               <Route path="/commit" element={<CommitPage />} />
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/account" element={<AccountPage />} />
+              <Route path="/account/settings" element={<AccountSettingsPage />} />
               <Route path="/ideas" element={<IdeasPage />} />
               <Route path="/wall" element={<WallPage />} />
               <Route path="/map" element={<MapPage />} />
