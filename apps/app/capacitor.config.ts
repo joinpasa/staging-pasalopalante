@@ -6,6 +6,10 @@ const config: CapacitorConfig = {
   appId: 'com.pasalopalante.app',
   appName: 'Pásalo Pa\'lante',
   webDir: 'dist',
+  // TODO (pre-App Store/Play Store submission): this loads the web app
+  // remotely on every launch instead of bundling webDir locally. Fine for
+  // now; most store reviewers expect the native shell to work offline from
+  // a bundled build, so revisit before submitting.
   server: {
     url: 'https://app.pasalopalante.com',
     cleartext: true,
