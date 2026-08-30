@@ -7,6 +7,7 @@ import { Label } from "@shared/components/ui/label";
 import { toast } from "sonner";
 import { Eye, EyeOff, KeyRound } from "lucide-react";
 import { PASSWORD_HINT, validatePassword } from "@shared/lib/passwordStrength";
+import { syncGhlTag } from "@shared/lib/ghlSync";
 
 export default function SetPasswordCard() {
   const { user } = useAuth();
@@ -49,6 +50,7 @@ export default function SetPasswordCard() {
     if (error) toast.error(error.message);
     else {
       toast.success(hasPassword ? "Password updated." : "Password set. You can now sign in with email + password.");
+      if (!hasPassword) syncGhlTag(user?.email, "password-set");
       setPw("");
       setPwConfirm("");
       setOpen(false);

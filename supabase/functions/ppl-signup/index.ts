@@ -110,6 +110,21 @@ Deno.serve(async (req) => {
   const now = new Date().toISOString();
   const today = now.split("T")[0];
 
+  // Lifecycle milestones (password set, email verified): tag-only, GHL-only —
+  // no Airtable signup record, and must not touch the contact's other tags.
+  if (formType === "password-set" || formType === "email-verified") {
+    try {
+      const ghlContactId = await ghlAddTags(data.email, [formType], {
+        firstName: data.firstName || "",
+        lastName: data.lastName || "",
+      });
+      return json({ success: true, ghlContactId });
+    } catch (err) {
+      console.error(`${formType} GHL sync failed:`, err);
+      return json({ error: "Integration failed", detail: (err as Error).message }, 500);
+    }
+  }
+
   // Course Creator form: GHL-only path (no Airtable field mapping yet).
   if (formType === "course-creator") {
     try {
@@ -424,6 +439,45 @@ async function ghlUpsertContact(contact: {
     const created = await createRes.json();
     return created.contact?.id;
   }
+}
+
+// Adds tags to an existing contact without touching its other tags or
+// fields — unlike ghlUpsertContact, whose PUT replaces the entire tags
+// array. Falls back to creating a bare contact with just these tags if no
+// match is found, so a lifecycle event never gets silently dropped.
+async function ghlAddTags(
+  email: string,
+  tags: string[],
+  fallbackName: { firstName: string; lastName: string },
+): Promise<string | undefined> {
+  const headers = {
+    Authorization: `Bearer ${CONFIG.ghl.apiKey}`,
+    "Content-Type": "application/json",
+    Version: "2021-07-28",
+  };
+
+  const searchRes = await fetch(
+    `${CONFIG.ghl.baseUrl}/contacts/search?email=${encodeURIComponent(email)}&locationId=${CONFIG.ghl.locationId}`,
+    { headers }
+  );
+  const searchData = await searchRes.json();
+  const existing = searchData.contacts?.[0];
+
+  if (!existing) {
+    return ghlUpsertContact({
+      ...fallbackName,
+      email, phone: "", country: "", city: "", companyName: "",
+      tags, source: "PPL App", customFields: {},
+    });
+  }
+
+  const res = await fetch(`${CONFIG.ghl.baseUrl}/contacts/${existing.id}/tags`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ tags }),
+  });
+  if (!res.ok) throw new Error(`GHL add-tags failed: ${await res.text()}`);
+  return existing.id;
 }
 
 // GHL expects an ISO 3166-1 alpha-2 country code. Map English country names to

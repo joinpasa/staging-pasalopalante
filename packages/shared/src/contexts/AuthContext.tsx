@@ -3,6 +3,9 @@ import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@shared/integrations/supabase/client";
 import { clearStoredReferral, getStoredReferral } from "@shared/lib/referral";
 import { getCanonicalOrigin } from "@shared/lib/canonicalOrigin";
+import { syncGhlTag } from "@shared/lib/ghlSync";
+
+const GHL_EMAIL_VERIFIED_SYNCED_KEY = "ppl_ghl_email_verified_synced";
 
 interface AuthContextType {
   user: User | null;
@@ -55,7 +58,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     })();
   }, [user]);
 
-
+  // Tag the contact in GHL the first time a verified session shows up on this
+  // browser (reaching a session at all means the magic link was clicked).
+  // Gated by localStorage, not a ref, so it only fires once ever per browser
+  // rather than once per mount.
+  useEffect(() => {
+    if (!user?.email) return;
+    if (localStorage.getItem(GHL_EMAIL_VERIFIED_SYNCED_KEY)) return;
+    localStorage.setItem(GHL_EMAIL_VERIFIED_SYNCED_KEY, "1");
+    syncGhlTag(user.email, "email-verified");
+  }, [user]);
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });

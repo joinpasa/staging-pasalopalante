@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { supabase } from "@shared/integrations/supabase/client";
 import { PASSWORD_HINT, validatePassword } from "@shared/lib/passwordStrength";
+import { syncGhlTag } from "@shared/lib/ghlSync";
 
 /** Set/change-password form shared by the VerificationBanner nudge and the
  *  full Account page — same validation, show/hide toggle, and submit logic
@@ -45,6 +46,7 @@ export default function PasswordForm({
       return;
     }
     toast.success(hasPassword ? "Password updated." : "Password set. You can now sign in with email + password.");
+    if (!hasPassword) syncGhlTag(user.email, "password-set");
     setPw("");
     setPwConfirm("");
     onSaved();
