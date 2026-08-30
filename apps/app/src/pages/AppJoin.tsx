@@ -9,6 +9,7 @@ import { supabase } from "@shared/integrations/supabase/client";
 import { COUNTRIES } from "@shared/data/countries";
 import { cn } from "@shared/lib/utils";
 import { getAuthErrorMessage } from "@shared/lib/authErrors";
+import { submitPPLForm } from "@shared/lib/pplForm";
 
 const PLEDGE_PRESETS = [1, 5, 10, 25, 100];
 
@@ -68,6 +69,18 @@ export default function AppJoin() {
       if (failure) {
         toast.error(failure);
         return;
+      }
+      // PPL Integration — sync to Airtable + GHL, tagged as an app signup
+      try {
+        await submitPPLForm("app-join", {
+          fullName: `${firstName.trim()} ${lastName.trim()}`.trim(),
+          email: email.trim(),
+          country: country || undefined,
+          pledgeCount: submittedPledge,
+          message: "Joined via the Pásalo app",
+        });
+      } catch {
+        // Non-fatal — commitment already succeeded
       }
       const { error: magicLinkError } = await signInWithMagicLink(email.trim(), firstName.trim());
       if (magicLinkError) {

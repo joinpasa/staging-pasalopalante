@@ -1,6 +1,6 @@
 import { supabase } from "@shared/integrations/supabase/client";
 
-export type FormType = "get-involved" | "pledge" | "course-creator";
+export type FormType = "get-involved" | "pledge" | "course-creator" | "app-join";
 
 export interface GetInvolvedData {
   fullName: string;

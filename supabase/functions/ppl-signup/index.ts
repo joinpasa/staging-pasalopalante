@@ -156,7 +156,7 @@ Deno.serve(async (req) => {
     city:             data.city || null,
     organization:     data.organization || null,
     participant_type: data.participantType || null,
-    form_source:      formType === "pledge" ? "Pledge / Commit" : "Get Involved",
+    form_source:      formSourceLabel(formType),
     pledge_count:     data.pledgeCount ? parseInt(data.pledgeCount) : 0,
     message:          data.message || null,
     signup_date:      now,
@@ -173,7 +173,7 @@ Deno.serve(async (req) => {
         [SIGNUP_FIELDS.cityTown]:        data.city || "",
         [SIGNUP_FIELDS.organization]:    data.organization || "",
         [SIGNUP_FIELDS.participantType]: data.participantType || "Individual",
-        [SIGNUP_FIELDS.formSource]:      formType === "pledge" ? "Pledge / Commit" : "Get Involved",
+        [SIGNUP_FIELDS.formSource]:      formSourceLabel(formType),
         [SIGNUP_FIELDS.pledgeCount]:     data.pledgeCount ? parseInt(data.pledgeCount) : null,
         [SIGNUP_FIELDS.message]:         data.message || "",
         [SIGNUP_FIELDS.signupDate]:      now,
@@ -197,7 +197,7 @@ Deno.serve(async (req) => {
         city:         data.city || "",
         companyName:  data.organization || "",
         tags:         buildGHLTags(formType, data),
-        source:       "PPL Website",
+        source:       formType === "app-join" ? "PPL App" : "PPL Website",
         customFields: {
           participant_type: data.participantType || "Individual",
           pledge_count:     data.pledgeCount || "",
@@ -435,10 +435,24 @@ function toIso2(input: string): string {
   return ISO2_BY_NAME[value.toLowerCase()] || "";
 }
 
+// Labels shown in Airtable's Signups/Contacts "Form Source" field. Keep in
+// sync with buildGHLTags below — both exist so GHL automations and Airtable
+// views can branch on exactly which surface a signup came from.
+const FORM_SOURCE_LABELS: Record<string, string> = {
+  pledge: "Pledge / Commit",
+  "get-involved": "Get Involved",
+  "app-join": "App Join",
+};
+
+function formSourceLabel(formType: string): string {
+  return FORM_SOURCE_LABELS[formType] ?? "Get Involved";
+}
+
 function buildGHLTags(formType: string, data: Record<string, string>) {
-  const tags = ["PPL2026", "ppl-website"];
+  const tags = ["PPL2026", formType === "app-join" ? "ppl-app" : "ppl-website"];
   if (formType === "pledge") tags.push("pledged");
   if (formType === "get-involved") tags.push("get-involved");
+  if (formType === "app-join") tags.push("app-join");
   if (data.participantType) tags.push(data.participantType.toLowerCase().replace(" ", "-"));
   if (data.country === "Puerto Rico" || data.country === "PR") tags.push("puerto-rico");
   return tags;
