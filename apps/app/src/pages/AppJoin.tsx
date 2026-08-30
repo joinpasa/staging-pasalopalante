@@ -5,6 +5,7 @@ import { ArrowRight, CheckCircle2, Mail } from "lucide-react";
 
 import PasaMark from "@/components/app/PasaMark";
 import OnboardingWalkthrough from "@/components/app/OnboardingWalkthrough";
+import { PENDING_EMAIL_KEY } from "@/components/app/VerificationBanner";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { supabase } from "@shared/integrations/supabase/client";
 import { COUNTRIES } from "@shared/data/countries";
@@ -23,7 +24,7 @@ const ONBOARDING_SEEN_KEY = "ppl-onboarding-seen";
  * log in with a password or ask for a fresh link.
  */
 export default function AppJoin() {
-  const { signIn, signInWithMagicLink } = useAuth();
+  const { user, signIn, signInWithMagicLink } = useAuth();
   const navigate = useNavigate();
   const [tab, setTab] = useState<"join" | "login">("join");
 
@@ -54,6 +55,7 @@ export default function AppJoin() {
         return;
       }
       setIsNewSignup(true);
+      localStorage.setItem(PENDING_EMAIL_KEY, email.trim());
       setSentTo(email.trim());
     } catch {
       toast.error("Something went wrong. Please try again.");
@@ -96,7 +98,10 @@ export default function AppJoin() {
       setBusy(false);
       localStorage.setItem(ONBOARDING_SEEN_KEY, "1");
       setShowOnboarding(false);
-      navigate("/", { replace: true });
+      // Most people land here before clicking the verification link — send
+      // them to the Wall (open to everyone) rather than Home, which is
+      // gated behind a verified session.
+      navigate(user ? "/" : "/wall", { replace: true });
     }
   }
 
@@ -134,6 +139,7 @@ export default function AppJoin() {
       return;
     }
     setIsNewSignup(false);
+    localStorage.setItem(PENDING_EMAIL_KEY, loginEmail.trim());
     setSentTo(loginEmail.trim());
   }
 

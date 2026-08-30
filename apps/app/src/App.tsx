@@ -15,6 +15,7 @@ import AppMap from "./pages/AppMap.tsx";
 import AppBadges from "./pages/AppBadges.tsx";
 import AppJoin from "./pages/AppJoin.tsx";
 import AppLog from "./pages/AppLog.tsx";
+import RequireVerified from "@/components/app/RequireVerified";
 import ScrollToTopOnRouteChange from "@shared/components/ScrollToTopOnRouteChange";
 import ReconsentGate from "@shared/components/ReconsentGate";
 import InstallPrompt from "@shared/components/InstallPrompt";
@@ -51,13 +52,13 @@ const App = () => (
             <ReconsentGate />
             <Routes>
               <Route path="/" element={<AppShell />}>
-                <Route index element={<AppHome />} />
+                <Route index element={<RequireVerified><AppHome /></RequireVerified>} />
                 <Route path="wall" element={<AppWall />} />
-                <Route path="pass" element={<AppPass />} />
-                <Route path="map" element={<AppMap />} />
-                <Route path="badges" element={<AppBadges />} />
+                <Route path="pass" element={<RequireVerified><AppPass /></RequireVerified>} />
+                <Route path="map" element={<RequireVerified><AppMap /></RequireVerified>} />
+                <Route path="badges" element={<RequireVerified><AppBadges /></RequireVerified>} />
                 <Route path="join" element={<AppJoin />} />
-                <Route path="log" element={<AppLog />} />
+                <Route path="log" element={<RequireVerified><AppLog /></RequireVerified>} />
               </Route>
               {/* No standalone 404 screen in the phone-shaped shell — send
                   anything unmatched back to the app home. */}
