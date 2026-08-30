@@ -128,6 +128,9 @@ export default function VerificationBanner() {
           <input
             type="password"
             autoComplete="new-password"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
             minLength={8}
             required
             autoFocus
@@ -139,6 +142,9 @@ export default function VerificationBanner() {
           <input
             type="password"
             autoComplete="new-password"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
             minLength={8}
             required
             value={pwConfirm}

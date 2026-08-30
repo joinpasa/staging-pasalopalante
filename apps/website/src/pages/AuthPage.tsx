@@ -99,7 +99,7 @@ const AuthPage = () => {
                   </div>
                   <div>
                     <Label htmlFor="signin-password">{t.auth.password}</Label>
-                    <Input id="signin-password" name="password" type="password" required autoComplete="current-password" />
+                    <Input id="signin-password" name="password" type="password" required autoComplete="current-password" autoCapitalize="none" autoCorrect="off" spellCheck={false} />
                   </div>
                   <Button type="submit" variant="outline" className="w-full" disabled={busy}>
                     {busy ? "…" : t.auth.signIn}

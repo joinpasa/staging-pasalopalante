@@ -312,6 +312,9 @@ export default function AppJoin() {
               value={loginPassword}
               onChange={(e) => setLoginPassword(e.target.value)}
               autoComplete="current-password"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
               className={inputClass}
             />
           </Field>

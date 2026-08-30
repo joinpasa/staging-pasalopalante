@@ -77,11 +77,11 @@ export default function SetPasswordCard() {
         <form onSubmit={submit} className="mt-5 space-y-3 max-w-sm">
           <div>
             <Label htmlFor="new-pw">New password</Label>
-            <Input id="new-pw" type="password" autoComplete="new-password" minLength={8} value={pw} onChange={(e) => setPw(e.target.value)} required />
+            <Input id="new-pw" type="password" autoComplete="new-password" autoCapitalize="none" autoCorrect="off" spellCheck={false} minLength={8} value={pw} onChange={(e) => setPw(e.target.value)} required />
           </div>
           <div>
             <Label htmlFor="new-pw-confirm">Confirm password</Label>
-            <Input id="new-pw-confirm" type="password" autoComplete="new-password" minLength={8} value={pwConfirm} onChange={(e) => setPwConfirm(e.target.value)} required />
+            <Input id="new-pw-confirm" type="password" autoComplete="new-password" autoCapitalize="none" autoCorrect="off" spellCheck={false} minLength={8} value={pwConfirm} onChange={(e) => setPwConfirm(e.target.value)} required />
           </div>
           <div className="flex gap-2">
             <Button type="submit" disabled={busy}>{busy ? "…" : (hasPassword ? "Update password" : "Save password")}</Button>
