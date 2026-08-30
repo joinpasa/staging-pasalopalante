@@ -588,6 +588,27 @@ export type Database = {
         }
         Relationships: []
       }
+      pass_handoffs: {
+        Row: {
+          created_at: string
+          from_user_id: string
+          id: string
+          to_user_id: string
+        }
+        Insert: {
+          created_at?: string
+          from_user_id: string
+          id?: string
+          to_user_id: string
+        }
+        Update: {
+          created_at?: string
+          from_user_id?: string
+          id?: string
+          to_user_id?: string
+        }
+        Relationships: []
+      }
       push_subscriptions: {
         Row: {
           auth: string
@@ -860,6 +881,13 @@ export type Database = {
           acts: number
           commitments: number
           country: string
+        }[]
+      }
+      log_pass_handoff: {
+        Args: { _code: string }
+        Returns: {
+          from_name: string
+          from_user_id: string
         }[]
       }
       move_to_dlq: {

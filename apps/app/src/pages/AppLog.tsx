@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
 import ShareActFlow from "@shared/components/share/ShareActFlow";
@@ -7,10 +7,15 @@ import { useLanguage } from "@shared/contexts/LanguageContext";
 /**
  * In-app "log an act of kindness" screen. Keeps the user inside the standalone
  * app (no jump to the marketing site) and returns them to /app when done.
+ *
+ * Coming from a pass hand-off (/wave) carries a `with` param naming who was
+ * just scanned, prefilled into the description as a starting point.
  */
 export default function AppLog() {
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const withName = searchParams.get("with")?.trim();
 
   return (
     <div className="px-5 pt-5 pb-8">
@@ -30,6 +35,8 @@ export default function AppLog() {
 
       <ShareActFlow
         redirectTo="/"
+        initialMode={withName ? "performed" : undefined}
+        initialDescription={withName ? `Passed it forward to ${withName}: ` : undefined}
       />
     </div>
   );

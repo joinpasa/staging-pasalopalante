@@ -15,6 +15,7 @@ import AppMap from "./pages/AppMap.tsx";
 import AppBadges from "./pages/AppBadges.tsx";
 import AppJoin from "./pages/AppJoin.tsx";
 import AppLog from "./pages/AppLog.tsx";
+import AppWave from "./pages/AppWave.tsx";
 import RequireVerified from "@/components/app/RequireVerified";
 import ScrollToTopOnRouteChange from "@shared/components/ScrollToTopOnRouteChange";
 import ReconsentGate from "@shared/components/ReconsentGate";
@@ -53,6 +54,10 @@ const App = () => (
                 <Route path="badges" element={<RequireVerified><AppBadges /></RequireVerified>} />
                 <Route path="join" element={<AppJoin />} />
                 <Route path="log" element={<RequireVerified><AppLog /></RequireVerified>} />
+                {/* Handles its own auth branching (redirects to /join with
+                    the code intact if not signed in), so not wrapped in
+                    RequireVerified like the routes above. */}
+                <Route path="wave" element={<AppWave />} />
               </Route>
               {/* No standalone 404 screen in the phone-shaped shell — send
                   anything unmatched back to the app home. */}
