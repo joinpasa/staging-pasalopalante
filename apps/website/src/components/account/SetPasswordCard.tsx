@@ -5,13 +5,15 @@ import { Button } from "@shared/components/ui/button";
 import { Input } from "@shared/components/ui/input";
 import { Label } from "@shared/components/ui/label";
 import { toast } from "sonner";
-import { KeyRound } from "lucide-react";
+import { Eye, EyeOff, KeyRound } from "lucide-react";
+import { PASSWORD_HINT, validatePassword } from "@shared/lib/passwordStrength";
 
 export default function SetPasswordCard() {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [pw, setPw] = useState("");
   const [pwConfirm, setPwConfirm] = useState("");
+  const [showPw, setShowPw] = useState(false);
   const [busy, setBusy] = useState(false);
   const [hasPassword, setHasPassword] = useState(false);
 
@@ -29,8 +31,9 @@ export default function SetPasswordCard() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (pw.length < 8) {
-      toast.error("Password must be at least 8 characters.");
+    const validationError = validatePassword(pw);
+    if (validationError) {
+      toast.error(validationError);
       return;
     }
     if (pw !== pwConfirm) {
@@ -77,12 +80,46 @@ export default function SetPasswordCard() {
         <form onSubmit={submit} className="mt-5 space-y-3 max-w-sm">
           <div>
             <Label htmlFor="new-pw">New password</Label>
-            <Input id="new-pw" type="password" autoComplete="new-password" autoCapitalize="none" autoCorrect="off" spellCheck={false} minLength={8} value={pw} onChange={(e) => setPw(e.target.value)} required />
+            <div className="relative">
+              <Input
+                id="new-pw"
+                type={showPw ? "text" : "password"}
+                autoComplete="new-password"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
+                minLength={8}
+                value={pw}
+                onChange={(e) => setPw(e.target.value)}
+                required
+                className="pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPw((v) => !v)}
+                aria-label={showPw ? "Hide password" : "Show password"}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/50 hover:text-foreground"
+              >
+                {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
           </div>
           <div>
             <Label htmlFor="new-pw-confirm">Confirm password</Label>
-            <Input id="new-pw-confirm" type="password" autoComplete="new-password" autoCapitalize="none" autoCorrect="off" spellCheck={false} minLength={8} value={pwConfirm} onChange={(e) => setPwConfirm(e.target.value)} required />
+            <Input
+              id="new-pw-confirm"
+              type={showPw ? "text" : "password"}
+              autoComplete="new-password"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              minLength={8}
+              value={pwConfirm}
+              onChange={(e) => setPwConfirm(e.target.value)}
+              required
+            />
           </div>
+          <p className="text-xs text-foreground/50">{PASSWORD_HINT}</p>
           <div className="flex gap-2">
             <Button type="submit" disabled={busy}>{busy ? "…" : (hasPassword ? "Update password" : "Save password")}</Button>
             <Button type="button" variant="ghost" onClick={() => { setOpen(false); setPw(""); setPwConfirm(""); }}>Cancel</Button>

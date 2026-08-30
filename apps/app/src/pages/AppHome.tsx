@@ -89,12 +89,12 @@ export default function AppHome() {
           </p>
         </div>
         {user ? (
-          <a
-            href="https://pasalopalante.com/account"
+          <Link
+            to="/account"
             className="rounded-full border border-border bg-app-surface px-2.5 py-1.5 text-xs font-semibold text-foreground"
           >
             Account
-          </a>
+          </Link>
         ) : (
           <Link
             to="/join"
