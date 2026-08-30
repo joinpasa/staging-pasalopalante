@@ -1,7 +1,7 @@
 DO $$
 BEGIN
   PERFORM net.http_post(
-    url := 'https://kifjuljtklfayrivzmyq.supabase.co/functions/v1/classify-act',
+    url := 'https://tipfbleltjexofsjffwb.supabase.co/functions/v1/classify-act',
     headers := jsonb_build_object(
       'Content-Type', 'application/json',
       'Authorization', 'Bearer ' || (

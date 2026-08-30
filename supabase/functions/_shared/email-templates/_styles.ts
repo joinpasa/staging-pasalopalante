@@ -2,7 +2,7 @@
 // Inline styles only — email clients don't support external CSS.
 
 export const LOGO_URL =
-  'https://kifjuljtklfayrivzmyq.supabase.co/storage/v1/object/public/email-assets/logo-ppl.png'
+  'https://tipfbleltjexofsjffwb.supabase.co/storage/v1/object/public/email-assets/logo-ppl.png'
 
 export const BRAND_NAME = "Pásalo Pa'lante"
 
