@@ -250,7 +250,7 @@ export default function AppHome() {
                   <span
                     className={cn(
                       "shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold",
-                      act.mode === "did"
+                      act.mode === "performed"
                         ? "bg-app-coral-tint text-app-coral"
                         : "bg-app-teal-tint text-app-teal",
                     )}
