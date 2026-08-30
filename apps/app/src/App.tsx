@@ -18,7 +18,6 @@ import AppLog from "./pages/AppLog.tsx";
 import RequireVerified from "@/components/app/RequireVerified";
 import ScrollToTopOnRouteChange from "@shared/components/ScrollToTopOnRouteChange";
 import ReconsentGate from "@shared/components/ReconsentGate";
-import InstallPrompt from "@shared/components/InstallPrompt";
 import { DirectionProvider } from "@radix-ui/react-direction";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { LANGUAGES } from "@shared/i18n/translations";
@@ -32,11 +31,6 @@ const RadixDirection = ({ children }: { children: ReactNode }) => {
   const rtl = LANGUAGES.find((l) => l.code === lang)?.rtl;
   return <DirectionProvider dir={rtl ? "rtl" : "ltr"}>{children}</DirectionProvider>;
 };
-
-/** The installed-app screens carry their own chrome, so no floating language
- *  switcher here (unlike the website). The install prompt still shows so
- *  people who arrive by scanning a pass QR get a download/install popup. */
-const AppWidgets = () => <InstallPrompt />;
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -64,7 +58,6 @@ const App = () => (
                   anything unmatched back to the app home. */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
-            <AppWidgets />
           </BrowserRouter>
 
         </TooltipProvider>
