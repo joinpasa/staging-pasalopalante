@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { CheckCircle2, Mail } from "lucide-react";
+import { ArrowRight, CheckCircle2, Mail } from "lucide-react";
 
 import PasaMark from "@/components/app/PasaMark";
+import OnboardingWalkthrough from "@/components/app/OnboardingWalkthrough";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { supabase } from "@shared/integrations/supabase/client";
 import { COUNTRIES } from "@shared/data/countries";
@@ -11,15 +12,15 @@ import { cn } from "@shared/lib/utils";
 import { getAuthErrorMessage } from "@shared/lib/authErrors";
 import { submitPPLForm } from "@shared/lib/pplForm";
 
-const PLEDGE_PRESETS = [1, 5, 10, 25, 100];
+const ONBOARDING_SEEN_KEY = "ppl-onboarding-seen";
 
 /**
  * Sign-up and sign-in for the installed app.
  *
- * Joining works exactly like the website: you commit to a number of acts of
- * kindness, which creates your commitment record and emails a link that signs
- * you in. People who already have an account can log in with a password or ask
- * for a fresh link.
+ * Joining is a quick account-setup step (name, email, country) — the
+ * commitment pledge is chosen right after, in the welcome walkthrough, so
+ * account creation itself stays fast. People who already have an account can
+ * log in with a password or ask for a fresh link.
  */
 export default function AppJoin() {
   const { signIn, signInWithMagicLink } = useAuth();
@@ -30,11 +31,11 @@ export default function AppJoin() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [country, setCountry] = useState("");
-  const [pledge, setPledge] = useState(10);
-  const [pledgeText, setPledgeText] = useState("10");
   const [agreed, setAgreed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
+  const [isNewSignup, setIsNewSignup] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -45,13 +46,23 @@ export default function AppJoin() {
     if (!country) return toast.error("Please pick your country.");
     if (!agreed) return toast.error("Please accept the terms to continue.");
 
-    const parsedPledge = Number.parseInt(pledgeText, 10);
-    const submittedPledge = Number.isFinite(parsedPledge)
-      ? Math.min(1000000000, Math.max(1, parsedPledge))
-      : 1;
-    setPledge(submittedPledge);
-    setPledgeText(String(submittedPledge));
+    setBusy(true);
+    try {
+      const { error: magicLinkError } = await signInWithMagicLink(email.trim(), firstName.trim());
+      if (magicLinkError) {
+        toast.error(getAuthErrorMessage(magicLinkError));
+        return;
+      }
+      setIsNewSignup(true);
+      setSentTo(email.trim());
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setBusy(false);
+    }
+  }
 
+  async function finishOnboarding(pledgeCount: number) {
     setBusy(true);
     try {
       const { data, error } = await supabase.functions.invoke("submit-commitment", {
@@ -60,38 +71,32 @@ export default function AppJoin() {
           first_name: firstName.trim(),
           last_name: lastName.trim(),
           email: email.trim(),
-          pledge_count: submittedPledge,
+          pledge_count: pledgeCount,
           country,
           help_role: "do_acts",
         },
       });
       const failure = (data as { error?: string } | null)?.error ?? error?.message;
-      if (failure) {
-        toast.error(failure);
-        return;
-      }
+      if (failure) toast.error(failure);
       // PPL Integration — sync to Airtable + GHL, tagged as an app signup
       try {
         await submitPPLForm("app-join", {
           fullName: `${firstName.trim()} ${lastName.trim()}`.trim(),
           email: email.trim(),
           country: country || undefined,
-          pledgeCount: submittedPledge,
+          pledgeCount,
           message: "Joined via the Pásalo app",
         });
       } catch {
         // Non-fatal — commitment already succeeded
       }
-      const { error: magicLinkError } = await signInWithMagicLink(email.trim(), firstName.trim());
-      if (magicLinkError) {
-        toast.error(getAuthErrorMessage(magicLinkError));
-        return;
-      }
-      setSentTo(email.trim());
     } catch {
-      toast.error("Something went wrong. Please try again.");
+      toast.error("Something went wrong saving your pledge. You can set it later from your profile.");
     } finally {
       setBusy(false);
+      localStorage.setItem(ONBOARDING_SEEN_KEY, "1");
+      setShowOnboarding(false);
+      navigate("/", { replace: true });
     }
   }
 
@@ -128,7 +133,12 @@ export default function AppJoin() {
       toast.error(getAuthErrorMessage(error));
       return;
     }
+    setIsNewSignup(false);
     setSentTo(loginEmail.trim());
+  }
+
+  if (showOnboarding) {
+    return <OnboardingWalkthrough onFinish={finishOnboarding} busy={busy} />;
   }
 
   if (sentTo) {
@@ -140,6 +150,16 @@ export default function AppJoin() {
           We sent a sign-in link to <span className="font-semibold text-foreground">{sentTo}</span>.
           Open it on this phone and the app will be signed in.
         </p>
+        {isNewSignup && !localStorage.getItem(ONBOARDING_SEEN_KEY) && (
+          <button
+            type="button"
+            onClick={() => setShowOnboarding(true)}
+            className="flex h-12 w-full max-w-xs items-center justify-center gap-2 rounded-2xl bg-app-coral font-semibold text-app-surface"
+          >
+            Proceed to Next Step
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        )}
         <button
           type="button"
           onClick={() => setSentTo(null)}
@@ -240,60 +260,6 @@ export default function AppJoin() {
             </select>
           </Field>
 
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              My commitment
-            </p>
-            <p className="mt-1 text-sm text-foreground">
-              How many acts of kindness will you pass forward?
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {PLEDGE_PRESETS.map((n) => (
-                <button
-                  key={n}
-                  type="button"
-                  onClick={() => {
-                    setPledge(n);
-                    setPledgeText(String(n));
-                  }}
-                  className={cn(
-                    "min-w-[3.25rem] rounded-full border px-3 py-2 text-sm font-semibold transition-colors",
-                    pledge === n
-                      ? "border-app-coral bg-app-coral text-app-surface"
-                      : "border-border bg-app-surface text-foreground",
-                  )}
-                >
-                  {n}
-                </button>
-              ))}
-              <input
-                type="number"
-                inputMode="numeric"
-                min={1}
-                max={1000000000}
-                value={pledgeText}
-                onChange={(e) => {
-                  const raw = e.target.value;
-                  setPledgeText(raw);
-                  const parsed = Number.parseInt(raw, 10);
-                  if (Number.isFinite(parsed)) {
-                    setPledge(Math.min(1000000000, Math.max(1, parsed)));
-                  }
-                }}
-                onBlur={() => {
-                  const parsed = Number.parseInt(pledgeText, 10);
-                  const normalized = Number.isFinite(parsed)
-                    ? Math.min(1000000000, Math.max(1, parsed))
-                    : 1;
-                  setPledge(normalized);
-                  setPledgeText(String(normalized));
-                }}
-                aria-label="Custom number of acts"
-                className={cn(inputClass, "w-24")}
-              />
-            </div>
-          </div>
-
           <label className="flex items-start gap-2 text-xs leading-relaxed text-foreground/80">
             <input
               type="checkbox"
@@ -319,7 +285,7 @@ export default function AppJoin() {
             disabled={busy}
             className="flex h-14 w-full items-center justify-center rounded-2xl bg-app-coral font-semibold text-app-surface disabled:opacity-60"
           >
-            {busy ? "Sending…" : `Commit to ${pledge} acts & join`}
+            {busy ? "Sending…" : "Create Account"}
           </button>
         </form>
       ) : (
