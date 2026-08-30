@@ -162,6 +162,11 @@ Deno.serve(async (req) => {
     signup_date:      now,
   });
 
+  // Airtable and GHL are configured independently (you may have keys for
+  // only one at a time), so each is its own non-fatal try/catch — a missing
+  // or failing provider must never block the other, or the form submission
+  // itself, which has already succeeded by this point.
+  let signupRecordId: string | null = null;
   try {
     const signupRecord = await airtableCreate(
       CONFIG.airtable.signupsTableId,
@@ -184,32 +189,37 @@ Deno.serve(async (req) => {
         [SIGNUP_FIELDS.ipCountry]:       data.ipCountry || "",
       }
     );
-    const signupRecordId = signupRecord.id;
+    signupRecordId = signupRecord.id;
+  } catch (airtableError) {
+    console.error("Airtable signup create failed (non-fatal):", airtableError);
+  }
 
-    let ghlContactId = null;
-    try {
-      ghlContactId = await ghlUpsertContact({
-        firstName:    data.fullName?.split(" ")[0] || "",
-        lastName:     data.fullName?.split(" ").slice(1).join(" ") || "",
-        email:        data.email,
-        phone:        data.phone || "",
-        country:      data.country || "",
-        city:         data.city || "",
-        companyName:  data.organization || "",
-        tags:         buildGHLTags(formType, data),
-        source:       formType === "app-join" ? "PPL App" : "PPL Website",
-        customFields: {
-          participant_type: data.participantType || "Individual",
-          pledge_count:     data.pledgeCount || "",
-          form_source:      formType,
-          utm_source:       data.utm_source || "",
-          utm_campaign:     data.utm_campaign || "",
-        },
-      });
-    } catch (ghlError) {
-      console.error("GHL sync failed (non-fatal):", ghlError);
-    }
+  let ghlContactId: string | null = null;
+  try {
+    ghlContactId = await ghlUpsertContact({
+      firstName:    data.fullName?.split(" ")[0] || "",
+      lastName:     data.fullName?.split(" ").slice(1).join(" ") || "",
+      email:        data.email,
+      phone:        data.phone || "",
+      country:      data.country || "",
+      city:         data.city || "",
+      companyName:  data.organization || "",
+      tags:         buildGHLTags(formType, data),
+      source:       formType === "app-join" ? "PPL App" : "PPL Website",
+      customFields: {
+        participant_type: data.participantType || "Individual",
+        pledge_count:     data.pledgeCount || "",
+        form_source:      formType,
+        utm_source:       data.utm_source || "",
+        utm_campaign:     data.utm_campaign || "",
+      },
+    });
+  } catch (ghlError) {
+    console.error("GHL sync failed (non-fatal):", ghlError);
+  }
 
+  let contactRecordId: string | null = null;
+  try {
     const contactRecord = await airtableUpsertContact({
       email:           data.email,
       fullName:        data.fullName || "",
@@ -223,25 +233,29 @@ Deno.serve(async (req) => {
       ghlContactId,
       formType,
     });
+    contactRecordId = contactRecord?.id || null;
+  } catch (airtableError) {
+    console.error("Airtable contact upsert failed (non-fatal):", airtableError);
+  }
 
-    if (ghlContactId) {
+  if (ghlContactId && signupRecordId) {
+    try {
       await airtableUpdate(CONFIG.airtable.signupsTableId, signupRecordId, {
         [SIGNUP_FIELDS.ghlContactId]: ghlContactId,
         [SIGNUP_FIELDS.ghlSynced]:    true,
         [SIGNUP_FIELDS.status]:       "Converted to Contact",
       });
+    } catch (airtableError) {
+      console.error("Airtable status update failed (non-fatal):", airtableError);
     }
-
-    return json({
-      success: true,
-      signupRecordId,
-      contactRecordId: contactRecord?.id || null,
-      ghlContactId,
-    });
-  } catch (err) {
-    console.error("Integration error:", err);
-    return json({ error: "Integration failed", detail: (err as Error).message }, 500);
   }
+
+  return json({
+    success: true,
+    signupRecordId,
+    contactRecordId,
+    ghlContactId,
+  });
 });
 
 const AIRTABLE_WEBHOOK_URL =
