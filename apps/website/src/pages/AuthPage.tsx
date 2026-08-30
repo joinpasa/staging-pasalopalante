@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { useLanguage } from "@shared/contexts/LanguageContext";
+import { getAuthErrorMessage } from "@shared/lib/authErrors";
 import { Button } from "@shared/components/ui/button";
 import { Input } from "@shared/components/ui/input";
 import { Label } from "@shared/components/ui/label";
@@ -47,7 +48,7 @@ const AuthPage = () => {
     setBusy(true);
     const { error } = await signIn(String(fd.get("email")), String(fd.get("password")));
     setBusy(false);
-    if (error) toast.error(error.message);
+    if (error) toast.error(getAuthErrorMessage(error));
     else navigate(next);
   };
 

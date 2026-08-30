@@ -8,6 +8,7 @@ import { useAuth } from "@shared/contexts/AuthContext";
 import { supabase } from "@shared/integrations/supabase/client";
 import { COUNTRIES } from "@shared/data/countries";
 import { cn } from "@shared/lib/utils";
+import { getAuthErrorMessage } from "@shared/lib/authErrors";
 
 const PLEDGE_PRESETS = [1, 5, 10, 25, 100];
 
@@ -68,7 +69,11 @@ export default function AppJoin() {
         toast.error(failure);
         return;
       }
-      await signInWithMagicLink(email.trim(), firstName.trim());
+      const { error: magicLinkError } = await signInWithMagicLink(email.trim(), firstName.trim());
+      if (magicLinkError) {
+        toast.error(getAuthErrorMessage(magicLinkError));
+        return;
+      }
       setSentTo(email.trim());
     } catch {
       toast.error("Something went wrong. Please try again.");
@@ -83,7 +88,7 @@ export default function AppJoin() {
     const { error } = await signIn(loginEmail.trim(), loginPassword);
     setBusy(false);
     if (error) {
-      toast.error(error.message);
+      toast.error(getAuthErrorMessage(error));
       return;
     }
     navigate("/", { replace: true });
@@ -94,7 +99,7 @@ export default function AppJoin() {
     setBusy(true);
     const { error } = await signInWithMagicLink(loginEmail.trim());
     setBusy(false);
-    if (error) toast.error(error.message);
+    if (error) toast.error(getAuthErrorMessage(error));
     else setSentTo(loginEmail.trim());
   }
 

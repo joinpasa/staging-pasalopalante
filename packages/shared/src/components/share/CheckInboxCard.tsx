@@ -6,6 +6,7 @@ import { supabase } from "@shared/integrations/supabase/client";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { Button } from "@shared/components/ui/button";
 import { Input } from "@shared/components/ui/input";
+import { getAuthErrorMessage } from "@shared/lib/authErrors";
 
 const emailSchema = z.string().trim().email().max(255);
 
@@ -30,25 +31,31 @@ export default function CheckInboxCard({ email, actId }: { email: string; actId:
 
   async function sendLink(target: string) {
     const origin = resolveOrigin();
-    await supabase.auth.signInWithOtp({
+    const { error } = await supabase.auth.signInWithOtp({
       email: target,
       options: {
         shouldCreateUser: true,
         emailRedirectTo: `${origin}/share/thanks/${actId}?claim=1`,
       },
     });
+    return error;
   }
 
   async function resend() {
     if (cooldown) return;
     setResending(true);
     try {
-      await sendLink(currentEmail);
+      const sendError = await sendLink(currentEmail);
+      if (sendError) {
+        toast.error(getAuthErrorMessage(sendError));
+        return;
+      }
       toast.success(t.share.checkInboxResent);
       setCooldown(true);
       setTimeout(() => setCooldown(false), 30000);
     } catch (e) {
       console.error(e);
+      toast.error(getAuthErrorMessage(null));
     } finally {
       setResending(false);
     }
@@ -65,7 +72,11 @@ export default function CheckInboxCard({ email, actId }: { email: string; actId:
     const target = parsed.data;
     setSending(true);
     try {
-      await sendLink(target);
+      const sendError = await sendLink(target);
+      if (sendError) {
+        setError(getAuthErrorMessage(sendError));
+        return;
+      }
       setCurrentEmail(target);
       // Keep sessionStorage aligned for refreshes
       try {
