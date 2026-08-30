@@ -60,7 +60,7 @@ Deno.serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: Deno.env.get("GEMINI_MODEL_LITE") || "gemini-2.5-flash-lite",
+        model: Deno.env.get("GEMINI_MODEL_LITE") || "gemini-3.6-flash",
         messages: [
           {
             role: "system",

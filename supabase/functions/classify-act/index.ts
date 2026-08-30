@@ -11,7 +11,7 @@ type Tag = typeof TAGS[number];
 
 // Config, not a magic number: only tags scoring at or above this are written.
 const CONFIDENCE_THRESHOLD = Number(Deno.env.get("TAG_CONFIDENCE_THRESHOLD") ?? "0.7");
-const CLASSIFIER_MODEL = Deno.env.get("GEMINI_MODEL") || "gemini-2.5-flash";
+const CLASSIFIER_MODEL = Deno.env.get("GEMINI_MODEL") || "gemini-3.6-flash";
 const CALL_TIMEOUT_MS = 15000;
 const MAX_ATTEMPTS = 2; // initial call + one retry, per spec
 

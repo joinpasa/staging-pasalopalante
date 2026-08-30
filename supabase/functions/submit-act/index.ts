@@ -21,7 +21,7 @@ const REASON_CODES = [
 const STRICT_MODE = true;
 // Below this confidence with any flagged reason → treat as rejected (in STRICT_MODE).
 const CONFIDENCE_THRESHOLD = 0.6;
-const MODERATION_MODEL = Deno.env.get("GEMINI_MODEL") || "gemini-2.5-flash";
+const MODERATION_MODEL = Deno.env.get("GEMINI_MODEL") || "gemini-3.6-flash";
 
 interface SubmitBody {
   mode: string;
