@@ -49,14 +49,19 @@ interface Props {
    *  specific person it's being passed to. Lets the recipient later send a
    *  one-tap "thanks" back. Never set for a regular act. */
   toUserId?: string;
+  /** Render mode-select and details as one screen (a compact radio row)
+   *  instead of the two-step wizard. Used by the site-wide share popup;
+   *  other call sites (the app's /log flow, inline inspiration cards) keep
+   *  the wizard unchanged. */
+  singleStep?: boolean;
 }
 
-export default function ShareActFlow({ onClose, initialMode, initialDescription, redirectTo, toUserId }: Props) {
+export default function ShareActFlow({ onClose, initialMode, initialDescription, redirectTo, toUserId, singleStep }: Props) {
   const { t } = useLanguage();
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [step, setStep] = useState<1 | 2>(initialMode ? 2 : 1);
+  const [step, setStep] = useState<1 | 2>(initialMode || singleStep ? 2 : 1);
   const [mode, setMode] = useState<Mode | null>(initialMode ?? null);
   const [description, setDescription] = useState(initialDescription ?? "");
   const [firstName, setFirstName] = useState("");
@@ -125,7 +130,10 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
   }
 
   async function handleSubmit() {
-    if (!mode) return;
+    if (!mode) {
+      toast.error(t.share.chooseModeError);
+      return;
+    }
     const parsed = detailsSchema.safeParse({
       description,
       first_name: firstName,
@@ -260,6 +268,189 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
     }
   }
 
+  const detailsFields = (
+    <>
+      <div className="space-y-2">
+        <Label htmlFor="desc">{t.share.descriptionLabel}</Label>
+        <Textarea
+          id="desc"
+          rows={4}
+          maxLength={1000}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder={t.share.descriptionPlaceholder}
+        />
+      </div>
+
+      {(!user || !profileDisplayName) && (
+        <div className="space-y-2">
+          <Label htmlFor="first_name">{t.share.firstNameLabel}</Label>
+          <Input
+            id="first_name"
+            type="text"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            placeholder={t.share.firstNamePlaceholder}
+            maxLength={60}
+          />
+        </div>
+      )}
+
+      {!user && (
+
+        <div className="space-y-2">
+          <Label htmlFor="email">{t.share.emailLabel}</Label>
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder={t.share.emailPlaceholder}
+            maxLength={200}
+          />
+          <p className="text-xs text-muted-foreground">{t.share.emailHelper}</p>
+        </div>
+      )}
+
+      <Collapsible open={mediaOpen} onOpenChange={setMediaOpen}>
+        <CollapsibleTrigger className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors">
+          <ChevronDown
+            size={16}
+            className={`transition-transform ${mediaOpen ? "" : "-rotate-90"}`}
+          />
+          {t.share.addMedia}
+        </CollapsibleTrigger>
+        <CollapsibleContent className="space-y-6 pt-4">
+          <div className="space-y-3">
+            <Label>{t.share.photoLabel}</Label>
+            <div className="flex flex-wrap gap-3">
+              {photos.map((p, i) => (
+                <div key={i} className="relative w-24 h-24 rounded-lg overflow-hidden border">
+                  <img src={p.preview} alt="" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPhotos(photos.filter((_, idx) => idx !== i));
+                      setPhotoConsent(false);
+                    }}
+                    className="absolute top-1 end-1 bg-background/90 rounded-full p-0.5 shadow"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+              {photos.length < 1 ? (
+                <label className="w-24 h-24 rounded-lg border-2 border-dashed border-border hover:border-primary flex items-center justify-center cursor-pointer text-muted-foreground hover:text-primary transition-colors">
+                  <ImagePlus size={20} />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => addPhotos(e.target.files)}
+                  />
+                </label>
+              ) : null}
+            </div>
+            {photos.length > 0 && (
+              <label className="flex items-start gap-2 text-xs text-foreground/80 cursor-pointer pt-1">
+                <input
+                  type="checkbox"
+                  checked={photoConsent}
+                  onChange={(e) => setPhotoConsent(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 accent-primary cursor-pointer"
+                />
+                <span>{t.share.photoConsentLabel}</span>
+              </label>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="video">{t.share.videoLabel}</Label>
+            <Input
+              id="video"
+              type="url"
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
+              placeholder={t.share.videoPlaceholder}
+              maxLength={500}
+            />
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
+
+      {!user && (
+        <p className="text-sm text-foreground/85 leading-relaxed bg-warm-cream/60 border border-border rounded-xl p-4">
+          {t.legal.anonDisclosure
+            .split("{terms}").flatMap((seg, i, arr) =>
+              i < arr.length - 1
+                ? [seg, <a key={`t${i}`} href="/terms" target="_blank" rel="noopener noreferrer" className="underline text-primary">{t.legal.terms}</a>]
+                : [seg])
+            .flatMap((node, i) => typeof node === "string"
+              ? node.split("{privacy}").flatMap((seg, j, arr) =>
+                  j < arr.length - 1
+                    ? [seg, <a key={`p${i}-${j}`} href="/privacy" target="_blank" rel="noopener noreferrer" className="underline text-primary">{t.legal.privacy}</a>]
+                    : [seg])
+              : [node])
+            .flatMap((node, i) => typeof node === "string"
+              ? node.split("{community}").flatMap((seg, j, arr) =>
+                  j < arr.length - 1
+                    ? [seg, <a key={`c${i}-${j}`} href="/community-guidelines" target="_blank" rel="noopener noreferrer" className="underline text-primary">{t.legal.community}</a>]
+                    : [seg])
+              : [node])}
+        </p>
+      )}
+
+      <Button
+        onClick={handleSubmit}
+        disabled={submitting}
+        className="w-full !py-6 text-base"
+      >
+        {submitting ? (
+          <>
+            <Loader2 className="animate-spin" /> {t.share.submitting}
+          </>
+        ) : (
+          t.share.submit
+        )}
+      </Button>
+    </>
+  );
+
+  if (singleStep) {
+    const modeOptions: { key: Mode; label: string }[] = [
+      { key: "performed", label: t.share.modeGaveCompact },
+      { key: "received", label: t.share.modeReceivedCompact },
+      { key: "witnessed", label: t.share.modeWitnessedCompact },
+    ];
+    return (
+      <div className="w-full max-w-2xl mx-auto space-y-6">
+        <div className="space-y-3">
+          <h2 className="headline-md text-foreground">{t.share.modeQuestion}</h2>
+          <div className="flex flex-wrap gap-x-8 gap-y-3">
+            {modeOptions.map((m) => (
+              <label key={m.key} className="inline-flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="share-mode"
+                  checked={mode === m.key}
+                  onChange={() => setMode(m.key)}
+                  className="h-4 w-4 accent-primary cursor-pointer"
+                />
+                <span className="text-sm font-medium uppercase tracking-wide text-foreground">
+                  {m.label}
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <h3 className="headline-md text-foreground">{t.share.detailsHeading}</h3>
+
+        {detailsFields}
+      </div>
+    );
+  }
+
   return (
     <div className="w-full max-w-2xl mx-auto">
       <AnimatePresence mode="wait">
@@ -330,149 +521,7 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
 
             <h2 className="headline-md text-foreground">{t.share.detailsHeading}</h2>
 
-            <div className="space-y-2">
-              <Label htmlFor="desc">{t.share.descriptionLabel}</Label>
-              <Textarea
-                id="desc"
-                rows={4}
-                maxLength={1000}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder={t.share.descriptionPlaceholder}
-              />
-            </div>
-
-            {(!user || !profileDisplayName) && (
-              <div className="space-y-2">
-                <Label htmlFor="first_name">{t.share.firstNameLabel}</Label>
-                <Input
-                  id="first_name"
-                  type="text"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  placeholder={t.share.firstNamePlaceholder}
-                  maxLength={60}
-                />
-              </div>
-            )}
-
-            {!user && (
-
-              <div className="space-y-2">
-                <Label htmlFor="email">{t.share.emailLabel}</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={t.share.emailPlaceholder}
-                  maxLength={200}
-                />
-                <p className="text-xs text-muted-foreground">{t.share.emailHelper}</p>
-              </div>
-            )}
-
-            <Collapsible open={mediaOpen} onOpenChange={setMediaOpen}>
-              <CollapsibleTrigger className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors">
-                <ChevronDown
-                  size={16}
-                  className={`transition-transform ${mediaOpen ? "" : "-rotate-90"}`}
-                />
-                {t.share.addMedia}
-              </CollapsibleTrigger>
-              <CollapsibleContent className="space-y-6 pt-4">
-                <div className="space-y-3">
-                  <Label>{t.share.photoLabel}</Label>
-                  <div className="flex flex-wrap gap-3">
-                    {photos.map((p, i) => (
-                      <div key={i} className="relative w-24 h-24 rounded-lg overflow-hidden border">
-                        <img src={p.preview} alt="" className="w-full h-full object-cover" />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setPhotos(photos.filter((_, idx) => idx !== i));
-                            setPhotoConsent(false);
-                          }}
-                          className="absolute top-1 end-1 bg-background/90 rounded-full p-0.5 shadow"
-                        >
-                          <X size={14} />
-                        </button>
-                      </div>
-                    ))}
-                    {photos.length < 1 ? (
-                      <label className="w-24 h-24 rounded-lg border-2 border-dashed border-border hover:border-primary flex items-center justify-center cursor-pointer text-muted-foreground hover:text-primary transition-colors">
-                        <ImagePlus size={20} />
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => addPhotos(e.target.files)}
-                        />
-                      </label>
-                    ) : null}
-                  </div>
-                  {photos.length > 0 && (
-                    <label className="flex items-start gap-2 text-xs text-foreground/80 cursor-pointer pt-1">
-                      <input
-                        type="checkbox"
-                        checked={photoConsent}
-                        onChange={(e) => setPhotoConsent(e.target.checked)}
-                        className="mt-0.5 h-4 w-4 accent-primary cursor-pointer"
-                      />
-                      <span>{t.share.photoConsentLabel}</span>
-                    </label>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="video">{t.share.videoLabel}</Label>
-                  <Input
-                    id="video"
-                    type="url"
-                    value={videoUrl}
-                    onChange={(e) => setVideoUrl(e.target.value)}
-                    placeholder={t.share.videoPlaceholder}
-                    maxLength={500}
-                  />
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-
-            {!user && (
-              <p className="text-sm text-foreground/85 leading-relaxed bg-warm-cream/60 border border-border rounded-xl p-4">
-                {t.legal.anonDisclosure
-                  .split("{terms}").flatMap((seg, i, arr) =>
-                    i < arr.length - 1
-                      ? [seg, <a key={`t${i}`} href="/terms" target="_blank" rel="noopener noreferrer" className="underline text-primary">{t.legal.terms}</a>]
-                      : [seg])
-                  .flatMap((node, i) => typeof node === "string"
-                    ? node.split("{privacy}").flatMap((seg, j, arr) =>
-                        j < arr.length - 1
-                          ? [seg, <a key={`p${i}-${j}`} href="/privacy" target="_blank" rel="noopener noreferrer" className="underline text-primary">{t.legal.privacy}</a>]
-                          : [seg])
-                    : [node])
-                  .flatMap((node, i) => typeof node === "string"
-                    ? node.split("{community}").flatMap((seg, j, arr) =>
-                        j < arr.length - 1
-                          ? [seg, <a key={`c${i}-${j}`} href="/community-guidelines" target="_blank" rel="noopener noreferrer" className="underline text-primary">{t.legal.community}</a>]
-                          : [seg])
-                    : [node])}
-              </p>
-            )}
-
-            <Button
-              onClick={handleSubmit}
-              disabled={submitting}
-              className="w-full !py-6 text-base"
-            >
-              {submitting ? (
-                <>
-                  <Loader2 className="animate-spin" /> {t.share.submitting}
-                </>
-              ) : (
-                t.share.submit
-              )}
-            </Button>
+            {detailsFields}
           </motion.div>
         )}
       </AnimatePresence>

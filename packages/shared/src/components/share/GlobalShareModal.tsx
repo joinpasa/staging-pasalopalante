@@ -33,6 +33,7 @@ export default function GlobalShareModal() {
             <X size={20} />
           </DialogPrimitive.Close>
           <ShareActFlow
+            singleStep
             initialMode={shareModalOptions.initialMode}
             initialDescription={shareModalOptions.initialDescription}
             onClose={closeShareModal}
