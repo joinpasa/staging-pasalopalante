@@ -5,7 +5,7 @@ import { ArrowRight, CheckCircle2, Mail } from "lucide-react";
 
 import PasaMark from "@/components/app/PasaMark";
 import OnboardingWalkthrough from "@/components/app/OnboardingWalkthrough";
-import { PENDING_EMAIL_KEY } from "@/components/app/VerificationBanner";
+import { PENDING_EMAIL_KEY, PENDING_PROFILE_KEY } from "@/lib/pendingSignup";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { supabase } from "@shared/integrations/supabase/client";
 import { COUNTRIES } from "@shared/data/countries";
@@ -59,6 +59,10 @@ export default function AppJoin() {
       }
       setIsNewSignup(true);
       localStorage.setItem(PENDING_EMAIL_KEY, email.trim());
+      localStorage.setItem(
+        PENDING_PROFILE_KEY,
+        JSON.stringify({ firstName: firstName.trim(), lastName: lastName.trim(), country }),
+      );
       setSentTo(email.trim());
     } catch {
       toast.error("Something went wrong. Please try again.");

@@ -5,11 +5,10 @@ import { toast } from "sonner";
 import { KeyRound, Mail, X } from "lucide-react";
 
 import PasswordForm from "@/components/app/PasswordForm";
+import { PENDING_EMAIL_KEY } from "@/lib/pendingSignup";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { getCanonicalOrigin } from "@shared/lib/canonicalOrigin";
 import { supabase } from "@shared/integrations/supabase/client";
-
-export const PENDING_EMAIL_KEY = "ppl-pending-email";
 
 /** Extra, harder-to-miss nudge for a fully anonymous visitor: shows after a
  *  short delay or on first scroll, whichever comes first — the thin top

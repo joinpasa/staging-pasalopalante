@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { ArrowLeft, KeyRound, LogOut } from "lucide-react";
+import { ArrowLeft, KeyRound, Loader2, LogOut } from "lucide-react";
 
 import PasswordForm from "@/components/app/PasswordForm";
 import PushToggle from "@/components/app/PushToggle";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { supabase } from "@shared/integrations/supabase/client";
 import { COUNTRIES } from "@shared/data/countries";
+import { DISPLAY_NAME_RE, isReservedDisplayName } from "@shared/lib/displayName";
 
 const inputClass =
   "w-full rounded-xl border border-border bg-app-surface px-3 py-3 text-sm text-foreground outline-none focus:border-app-coral";
@@ -25,6 +26,10 @@ export default function AppAccount() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [country, setCountry] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [savedNickname, setSavedNickname] = useState("");
+  const [checkingNickname, setCheckingNickname] = useState(false);
+  const [nicknameAvailable, setNicknameAvailable] = useState<boolean | null>(null);
   const [saving, setSaving] = useState(false);
   const [hasPassword, setHasPassword] = useState(true);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
@@ -34,21 +39,52 @@ export default function AppAccount() {
     (async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("first_name, last_name, country, has_password")
+        .select("first_name, last_name, country, has_password, custom_display_name")
         .eq("user_id", user.id)
         .maybeSingle();
       setFirstName(data?.first_name ?? "");
       setLastName(data?.last_name ?? "");
       setCountry(data?.country ?? "");
       setHasPassword(!!data?.has_password);
+      setNickname(data?.custom_display_name ?? "");
+      setSavedNickname(data?.custom_display_name ?? "");
       setLoading(false);
     })();
   }, [user]);
+
+  const trimmedNickname = nickname.trim();
+  const nicknameValid = !trimmedNickname || (DISPLAY_NAME_RE.test(trimmedNickname) && !isReservedDisplayName(trimmedNickname));
+
+  // Debounced availability check — same rule as the website's nickname field.
+  useEffect(() => {
+    if (!trimmedNickname || !nicknameValid || trimmedNickname.toLowerCase() === savedNickname.toLowerCase()) {
+      setNicknameAvailable(trimmedNickname && trimmedNickname.toLowerCase() === savedNickname.toLowerCase() ? true : null);
+      return;
+    }
+    let cancelled = false;
+    setCheckingNickname(true);
+    const id = setTimeout(async () => {
+      const { data } = await supabase.rpc("is_display_name_available", { candidate: trimmedNickname });
+      if (!cancelled) {
+        setNicknameAvailable(data === true);
+        setCheckingNickname(false);
+      }
+    }, 450);
+    return () => {
+      cancelled = true;
+      clearTimeout(id);
+      setCheckingNickname(false);
+    };
+  }, [trimmedNickname, nicknameValid, savedNickname]);
 
   if (!user) return null;
 
   const saveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (trimmedNickname && (!nicknameValid || nicknameAvailable === false)) {
+      toast.error(nicknameValid ? "That nickname is taken." : "Nickname must be 2-30 letters/numbers.");
+      return;
+    }
     setSaving(true);
     const { error } = await supabase
       .from("profiles")
@@ -56,11 +92,16 @@ export default function AppAccount() {
         first_name: firstName.trim() || null,
         last_name: lastName.trim() || null,
         country: country || null,
+        public_name_mode: trimmedNickname ? "custom" : "initial",
+        custom_display_name: trimmedNickname || null,
       })
       .eq("user_id", user.id);
     setSaving(false);
     if (error) toast.error("Couldn't save your profile. Please try again.");
-    else toast.success("Profile updated.");
+    else {
+      toast.success("Profile updated.");
+      setSavedNickname(trimmedNickname);
+    }
   };
 
   const handleLogout = async () => {
@@ -119,6 +160,33 @@ export default function AppAccount() {
                     </option>
                   ))}
                 </select>
+              </label>
+              <label className="block space-y-1.5">
+                <span className="text-xs font-semibold text-muted-foreground">Nickname</span>
+                <input
+                  maxLength={30}
+                  placeholder="How you'll appear on the Wall"
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                  className={inputClass}
+                />
+                <p className="text-[11px] leading-snug text-muted-foreground">
+                  {trimmedNickname && isReservedDisplayName(trimmedNickname) ? (
+                    <span className="text-destructive">That name isn't available.</span>
+                  ) : trimmedNickname && !nicknameValid ? (
+                    <span className="text-destructive">2-30 letters, numbers, spaces, or - ' _</span>
+                  ) : checkingNickname ? (
+                    <span className="inline-flex items-center gap-1">
+                      <Loader2 className="h-3 w-3 animate-spin" /> Checking availability…
+                    </span>
+                  ) : trimmedNickname && nicknameAvailable === true ? (
+                    <span className="text-app-teal">Available</span>
+                  ) : trimmedNickname && nicknameAvailable === false ? (
+                    <span className="text-destructive">Already taken</span>
+                  ) : (
+                    "Optional — used on the Wall and when people connect with you via /wave. Leave blank to show your first name and last initial instead."
+                  )}
+                </p>
               </label>
               <button
                 type="submit"
