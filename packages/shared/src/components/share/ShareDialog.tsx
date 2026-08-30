@@ -261,7 +261,7 @@ export default function ShareDialog({
               className="justify-start gap-2 h-11"
             >
               <span className="shrink-0">{o.icon}</span>
-              <span className="truncate text-sm">{o.label}</span>
+              <span className="truncate text-xs sm:text-sm">{o.label}</span>
             </Button>
           ))}
         </div>
