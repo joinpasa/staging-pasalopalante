@@ -11,6 +11,7 @@ import { supabase } from "@shared/integrations/supabase/client";
 import { COUNTRIES } from "@shared/data/countries";
 import { cn } from "@shared/lib/utils";
 import { getAuthErrorMessage } from "@shared/lib/authErrors";
+import { getCanonicalOrigin } from "@shared/lib/canonicalOrigin";
 import { submitPPLForm } from "@shared/lib/pplForm";
 
 const ONBOARDING_SEEN_KEY = "ppl-onboarding-seen";
@@ -49,7 +50,9 @@ export default function AppJoin() {
 
     setBusy(true);
     try {
-      const { error: magicLinkError } = await signInWithMagicLink(email.trim(), firstName.trim());
+      // "/" lands them on the app's own Home once verified — /account is the
+      // website's page and doesn't exist as a route here.
+      const { error: magicLinkError } = await signInWithMagicLink(email.trim(), firstName.trim(), "/");
       if (magicLinkError) {
         toast.error(getAuthErrorMessage(magicLinkError));
         return;
@@ -125,7 +128,7 @@ export default function AppJoin() {
     // this, signInWithOtp defaults to creating a new account.
     const { error } = await supabase.auth.signInWithOtp({
       email: loginEmail.trim(),
-      options: { shouldCreateUser: false },
+      options: { shouldCreateUser: false, emailRedirectTo: `${getCanonicalOrigin()}/` },
     });
     setBusy(false);
     if (error) {

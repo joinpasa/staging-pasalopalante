@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { KeyRound, Mail, X } from "lucide-react";
 
 import { useAuth } from "@shared/contexts/AuthContext";
+import { getCanonicalOrigin } from "@shared/lib/canonicalOrigin";
 import { supabase } from "@shared/integrations/supabase/client";
 
 export const PENDING_EMAIL_KEY = "ppl-pending-email";
@@ -121,7 +122,7 @@ export default function VerificationBanner() {
       setResending(true);
       const { error } = await supabase.auth.signInWithOtp({
         email: pendingEmail,
-        options: { shouldCreateUser: false },
+        options: { shouldCreateUser: false, emailRedirectTo: `${getCanonicalOrigin()}/` },
       });
       setResending(false);
       if (error) toast.error("Couldn't resend the link. Please try again shortly.");

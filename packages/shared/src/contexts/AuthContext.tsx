@@ -2,14 +2,15 @@ import { createContext, useContext, useEffect, useRef, useState, type ReactNode 
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@shared/integrations/supabase/client";
 import { clearStoredReferral, getStoredReferral } from "@shared/lib/referral";
+import { getCanonicalOrigin } from "@shared/lib/canonicalOrigin";
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string, displayName?: string) => Promise<{ error: Error | null }>;
-  signInWithMagicLink: (email: string, displayName?: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, displayName?: string, redirectPath?: string) => Promise<{ error: Error | null }>;
+  signInWithMagicLink: (email: string, displayName?: string, redirectPath?: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: Error | null }>;
 }
@@ -56,35 +57,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 
 
-  // Use the published canonical origin for emailed links so users aren't sent
-  // back to ephemeral preview URLs after clicking a magic link / reset link.
-  const getCanonicalOrigin = () => {
-    const o = window.location.origin;
-    const isPreview =
-      o.includes("id-preview--") ||
-      o.includes("lovableproject.com") ||
-      o.includes("lovable.app") === false; // localhost / unknown
-    if (isPreview && !o.startsWith("http://localhost")) {
-      return "https://pasalopalante.com";
-    }
-    // For localhost dev, still use the published origin so emailed links work.
-    if (o.startsWith("http://localhost")) {
-      return "https://pasalopalante.com";
-    }
-    return o;
-  };
-
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error };
   };
 
-  const signUp = async (email: string, password: string, displayName?: string) => {
+  const signUp = async (email: string, password: string, displayName?: string, redirectPath = "/account") => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: `${getCanonicalOrigin()}/account`,
+        emailRedirectTo: `${getCanonicalOrigin()}${redirectPath}`,
         data: displayName ? { display_name: displayName } : undefined,
       },
     });
@@ -95,11 +78,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await supabase.auth.signOut();
   };
 
-  const signInWithMagicLink = async (email: string, displayName?: string) => {
+  const signInWithMagicLink = async (email: string, displayName?: string, redirectPath = "/account") => {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${getCanonicalOrigin()}/account`,
+        emailRedirectTo: `${getCanonicalOrigin()}${redirectPath}`,
         data: displayName ? { display_name: displayName } : undefined,
       },
     });

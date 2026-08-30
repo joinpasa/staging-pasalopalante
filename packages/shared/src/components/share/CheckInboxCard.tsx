@@ -7,15 +7,9 @@ import { useLanguage } from "@shared/contexts/LanguageContext";
 import { Button } from "@shared/components/ui/button";
 import { Input } from "@shared/components/ui/input";
 import { getAuthErrorMessage } from "@shared/lib/authErrors";
+import { getCanonicalOrigin } from "@shared/lib/canonicalOrigin";
 
 const emailSchema = z.string().trim().email().max(255);
-
-function resolveOrigin() {
-  const o = window.location.origin;
-  return o.includes("localhost") || o.includes("id-preview--")
-    ? "https://pasalopalante.com"
-    : o;
-}
 
 export default function CheckInboxCard({ email, actId }: { email: string; actId: string }) {
   const { t } = useLanguage();
@@ -30,12 +24,11 @@ export default function CheckInboxCard({ email, actId }: { email: string; actId:
   const [sentToNew, setSentToNew] = useState<string | null>(null);
 
   async function sendLink(target: string) {
-    const origin = resolveOrigin();
     const { error } = await supabase.auth.signInWithOtp({
       email: target,
       options: {
         shouldCreateUser: true,
-        emailRedirectTo: `${origin}/share/thanks/${actId}?claim=1`,
+        emailRedirectTo: `${getCanonicalOrigin()}/share/thanks/${actId}?claim=1`,
       },
     });
     return error;
