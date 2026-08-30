@@ -22,6 +22,7 @@ export default function VerificationBanner() {
   const [resending, setResending] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [pw, setPw] = useState("");
+  const [pwConfirm, setPwConfirm] = useState("");
   const [savingPw, setSavingPw] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
@@ -78,6 +79,10 @@ export default function VerificationBanner() {
       toast.error("Password must be at least 8 characters.");
       return;
     }
+    if (pw !== pwConfirm) {
+      toast.error("Passwords don't match. Watch out for a password manager auto-filling a different one.");
+      return;
+    }
     setSavingPw(true);
     const { error } = await supabase.auth.updateUser({ password: pw });
     if (!error) await supabase.from("profiles").update({ has_password: true }).eq("user_id", user.id);
@@ -88,6 +93,7 @@ export default function VerificationBanner() {
     }
     toast.success("Password set. You can now sign in with email + password.");
     setPw("");
+    setPwConfirm("");
     setShowPasswordForm(false);
     setHasPassword(true);
   };
@@ -118,34 +124,48 @@ export default function VerificationBanner() {
         )}
       </div>
       {showPasswordForm && (
-        <form onSubmit={savePassword} className="mt-2 flex items-center gap-2">
+        <form onSubmit={savePassword} className="mt-2 space-y-2">
           <input
             type="password"
+            autoComplete="new-password"
             minLength={8}
             required
             autoFocus
             value={pw}
             onChange={(e) => setPw(e.target.value)}
             placeholder="New password"
-            className="h-9 flex-1 rounded-lg border border-border bg-app-surface px-2.5 text-sm text-foreground outline-none focus:border-app-coral"
+            className="h-9 w-full rounded-lg border border-border bg-app-surface px-2.5 text-sm text-foreground outline-none focus:border-app-coral"
           />
-          <button
-            type="submit"
-            disabled={savingPw}
-            className="h-9 shrink-0 rounded-lg bg-app-coral px-3 text-xs font-semibold text-app-surface disabled:opacity-60"
-          >
-            {savingPw ? "…" : "Save"}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setShowPasswordForm(false);
-              setPw("");
-            }}
-            className="h-9 shrink-0 rounded-lg border border-border bg-app-surface px-3 text-xs font-semibold text-foreground"
-          >
-            Cancel
-          </button>
+          <input
+            type="password"
+            autoComplete="new-password"
+            minLength={8}
+            required
+            value={pwConfirm}
+            onChange={(e) => setPwConfirm(e.target.value)}
+            placeholder="Confirm password"
+            className="h-9 w-full rounded-lg border border-border bg-app-surface px-2.5 text-sm text-foreground outline-none focus:border-app-coral"
+          />
+          <div className="flex items-center gap-2">
+            <button
+              type="submit"
+              disabled={savingPw}
+              className="h-9 shrink-0 rounded-lg bg-app-coral px-3 text-xs font-semibold text-app-surface disabled:opacity-60"
+            >
+              {savingPw ? "…" : "Save"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setShowPasswordForm(false);
+                setPw("");
+                setPwConfirm("");
+              }}
+              className="h-9 shrink-0 rounded-lg border border-border bg-app-surface px-3 text-xs font-semibold text-foreground"
+            >
+              Cancel
+            </button>
+          </div>
         </form>
       )}
     </div>

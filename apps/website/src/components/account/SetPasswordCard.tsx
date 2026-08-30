@@ -11,6 +11,7 @@ export default function SetPasswordCard() {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [pw, setPw] = useState("");
+  const [pwConfirm, setPwConfirm] = useState("");
   const [busy, setBusy] = useState(false);
   const [hasPassword, setHasPassword] = useState(false);
 
@@ -22,7 +23,7 @@ export default function SetPasswordCard() {
         .select("has_password")
         .eq("user_id", user.id)
         .maybeSingle();
-      setHasPassword(!!(data as any)?.has_password);
+      setHasPassword(!!(data as { has_password?: boolean } | null)?.has_password);
     })();
   }, [user]);
 
@@ -30,6 +31,10 @@ export default function SetPasswordCard() {
     e.preventDefault();
     if (pw.length < 8) {
       toast.error("Password must be at least 8 characters.");
+      return;
+    }
+    if (pw !== pwConfirm) {
+      toast.error("Passwords don't match. Watch out for a password manager auto-filling a different one.");
       return;
     }
     setBusy(true);
@@ -42,6 +47,7 @@ export default function SetPasswordCard() {
     else {
       toast.success(hasPassword ? "Password updated." : "Password set. You can now sign in with email + password.");
       setPw("");
+      setPwConfirm("");
       setOpen(false);
       setHasPassword(true);
     }
@@ -70,12 +76,16 @@ export default function SetPasswordCard() {
       {open && (
         <form onSubmit={submit} className="mt-5 space-y-3 max-w-sm">
           <div>
-            <Label htmlFor="new-pw">{hasPassword ? "New password" : "New password"}</Label>
-            <Input id="new-pw" type="password" minLength={8} value={pw} onChange={(e) => setPw(e.target.value)} required />
+            <Label htmlFor="new-pw">New password</Label>
+            <Input id="new-pw" type="password" autoComplete="new-password" minLength={8} value={pw} onChange={(e) => setPw(e.target.value)} required />
+          </div>
+          <div>
+            <Label htmlFor="new-pw-confirm">Confirm password</Label>
+            <Input id="new-pw-confirm" type="password" autoComplete="new-password" minLength={8} value={pwConfirm} onChange={(e) => setPwConfirm(e.target.value)} required />
           </div>
           <div className="flex gap-2">
             <Button type="submit" disabled={busy}>{busy ? "…" : (hasPassword ? "Update password" : "Save password")}</Button>
-            <Button type="button" variant="ghost" onClick={() => { setOpen(false); setPw(""); }}>Cancel</Button>
+            <Button type="button" variant="ghost" onClick={() => { setOpen(false); setPw(""); setPwConfirm(""); }}>Cancel</Button>
           </div>
         </form>
       )}
