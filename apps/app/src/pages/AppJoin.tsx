@@ -110,10 +110,25 @@ export default function AppJoin() {
   async function handleMagicLogin() {
     if (!loginEmail.trim()) return toast.error("Enter your email first.");
     setBusy(true);
-    const { error } = await signInWithMagicLink(loginEmail.trim());
+    // shouldCreateUser: false — this tab is "I have an account", so an
+    // unrecognized email must be rejected, not silently signed up. Without
+    // this, signInWithOtp defaults to creating a new account.
+    const { error } = await supabase.auth.signInWithOtp({
+      email: loginEmail.trim(),
+      options: { shouldCreateUser: false },
+    });
     setBusy(false);
-    if (error) toast.error(getAuthErrorMessage(error));
-    else setSentTo(loginEmail.trim());
+    if (error) {
+      const code = (error as { code?: string }).code;
+      if (code === "user_not_found" || code === "signup_disabled" || code === "otp_disabled") {
+        toast.error("We couldn't find an account with that email. Let's get you set up instead.");
+        setTab("join");
+        return;
+      }
+      toast.error(getAuthErrorMessage(error));
+      return;
+    }
+    setSentTo(loginEmail.trim());
   }
 
   if (sentTo) {

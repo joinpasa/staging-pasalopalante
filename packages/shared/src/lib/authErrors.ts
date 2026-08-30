@@ -17,6 +17,8 @@ export function getAuthErrorMessage(error: AuthError | Error | null | undefined)
       return "Too many attempts — please wait a few minutes and try again.";
     case "invalid_credentials":
       return "Incorrect email or password.";
+    case "user_not_found":
+      return "We couldn't find an account with that email.";
     case "email_not_confirmed":
       return "Please confirm your email address first — check your inbox for the link we sent.";
     case "user_already_exists":
