@@ -36,6 +36,7 @@ import StandaloneHomeRedirect from "./components/StandaloneHomeRedirect";
 import ReconsentGate from "@shared/components/ReconsentGate";
 import LanguageSwitcher from "@shared/components/LanguageSwitcher";
 import InstallPrompt from "@shared/components/InstallPrompt";
+import GlobalShareModal from "@shared/components/share/GlobalShareModal";
 import { DirectionProvider } from "@radix-ui/react-direction";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { LANGUAGES } from "@shared/i18n/translations";
@@ -55,6 +56,7 @@ const SiteWidgets = () => (
   <>
     <LanguageSwitcher />
     <InstallPrompt />
+    <GlobalShareModal />
   </>
 );
 

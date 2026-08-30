@@ -20,7 +20,7 @@ function Inner() {
   return (
     <main className="relative min-h-screen bg-warm-cream pt-20 pb-24 section-padding">
       <button
-        onClick={() => navigate("/")}
+        onClick={() => navigate(-1)}
         aria-label="Close"
         className="fixed top-6 right-6 z-50 w-11 h-11 rounded-full bg-foreground/5 hover:bg-foreground/10 text-foreground flex items-center justify-center transition-colors"
       >
@@ -32,7 +32,7 @@ function Inner() {
         </p>
         <h1 className="headline-xl text-foreground">{t.share.sectionHeading}</h1>
       </div>
-      <ShareActFlow onClose={() => navigate("/")} />
+      <ShareActFlow onClose={() => navigate(-1)} />
     </main>
   );
 }

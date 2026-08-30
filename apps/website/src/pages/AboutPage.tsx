@@ -3,10 +3,12 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import SEO from "@/components/SEO";
 import { useLanguage } from "@shared/contexts/LanguageContext";
+import { useUI } from "@shared/contexts/UIContext";
 import { Link } from "react-router-dom";
 
 export default function AboutPage() {
   const { lang } = useLanguage();
+  const { openShareModal } = useUI();
   const isEs = lang === "es";
 
   return (
@@ -66,9 +68,9 @@ export default function AboutPage() {
                 </Link>
               </li>
               <li>
-                <Link to="/share" className="text-primary hover:underline">
+                <button type="button" onClick={() => openShareModal()} className="text-primary hover:underline">
                   {isEs ? "Comparte un acto de bondad" : "Share an act of kindness"}
-                </Link>
+                </button>
               </li>
               <li>
                 <Link to="/wall" className="text-primary hover:underline">

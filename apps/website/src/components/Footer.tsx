@@ -1,8 +1,10 @@
 import { Instagram, Facebook, Twitter, Youtube } from "lucide-react";
 import { useLanguage } from "@shared/contexts/LanguageContext";
+import { useUI } from "@shared/contexts/UIContext";
 
 const Footer = () => {
   const { t } = useLanguage();
+  const { openShareModal } = useUI();
 
   return (
     <footer className="section-padding py-16 bg-cyan-900">
@@ -39,7 +41,15 @@ const Footer = () => {
             <ul className="space-y-2">
               <li><a href="/get-involved" className="text-warm-cream/70 hover:text-warm-cream transition-colors text-sm">{t.footer.getInvolved}</a></li>
               <li><a href="/commit" className="text-warm-cream/70 hover:text-warm-cream transition-colors text-sm">Pledge</a></li>
-              <li><a href="/share" className="text-warm-cream/70 hover:text-warm-cream transition-colors text-sm">{t.footer.shareAct}</a></li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => openShareModal()}
+                  className="text-warm-cream/70 hover:text-warm-cream transition-colors text-sm"
+                >
+                  {t.footer.shareAct}
+                </button>
+              </li>
               <li><a href="/donate" className="text-warm-cream/70 hover:text-warm-cream transition-colors text-sm">{t.footer.donateNow}</a></li>
             </ul>
           </div>

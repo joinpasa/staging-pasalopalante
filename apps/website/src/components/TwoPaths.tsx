@@ -4,6 +4,7 @@ import { Handshake, Users } from "lucide-react";
 import community4 from "@/assets/community-4.jpg";
 import community5 from "@/assets/community-5.jpg";
 import { useLanguage } from "@shared/contexts/LanguageContext";
+import { useUI } from "@shared/contexts/UIContext";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -18,6 +19,7 @@ const TwoPaths = () => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const { t } = useLanguage();
+  const { openShareModal } = useUI();
 
   return (
     <section id="join" ref={ref} className="bg-warm-sand section-padding section-spacing">
@@ -54,9 +56,9 @@ const TwoPaths = () => {
                 <li>{t.twoPaths.indBullet4}</li>
                 <li>{t.twoPaths.indBullet5}</li>
               </ul>
-              <a href="/share" className="btn-primary w-full text-center">
+              <button type="button" onClick={() => openShareModal()} className="btn-primary w-full text-center">
                 {t.twoPaths.indCta}
-              </a>
+              </button>
             </div>
           </motion.div>
 

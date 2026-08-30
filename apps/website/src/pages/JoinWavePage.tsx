@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import WaveForwardArrow from "@shared/components/icons/WaveForwardArrow";
 
 import { useLanguage } from "@shared/contexts/LanguageContext";
+import { useUI } from "@shared/contexts/UIContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import KindnessCard from "@shared/components/share/KindnessCard";
@@ -27,6 +28,7 @@ function publicPhotoUrl(path: string) {
 function Inner() {
   const { id } = useParams<{ id: string }>();
   const { t } = useLanguage();
+  const { openShareModal } = useUI();
   const [act, setAct] = useState<Act | null>(null);
   const [loading, setLoading] = useState(true);
   const [inviterName, setInviterName] = useState<string | null>(null);
@@ -139,9 +141,9 @@ function Inner() {
 
             <p className="text-sm text-muted-foreground mb-4">
               {t.joinWave.orShare}{" "}
-              <Link to="/share" className="text-primary font-bold hover:underline">
+              <button type="button" onClick={() => openShareModal()} className="text-primary font-bold hover:underline">
                 {t.joinWave.shareCta} →
-              </Link>
+              </button>
             </p>
 
             <div className="bg-card border border-border rounded-2xl p-6 md:p-8 shadow-sm">

@@ -3,10 +3,12 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import SEO from "@/components/SEO";
 import { useLanguage } from "@shared/contexts/LanguageContext";
+import { useUI } from "@shared/contexts/UIContext";
 import { Link } from "react-router-dom";
 
 export default function ProgramsPage() {
   const { lang } = useLanguage();
+  const { openShareModal } = useUI();
   const isEs = lang === "es";
   const t = (en: string, es: string) => (isEs ? es : en);
 
@@ -104,9 +106,19 @@ export default function ProgramsPage() {
               >
                 <h2 className="font-display text-2xl text-warm-earth mb-3">{p.title}</h2>
                 <p className="text-foreground/80 leading-relaxed mb-4">{p.body}</p>
-                <Link to={p.link} className="text-primary hover:underline font-medium">
-                  {p.cta} →
-                </Link>
+                {p.link === "/share" ? (
+                  <button
+                    type="button"
+                    onClick={() => openShareModal()}
+                    className="text-primary hover:underline font-medium"
+                  >
+                    {p.cta} →
+                  </button>
+                ) : (
+                  <Link to={p.link} className="text-primary hover:underline font-medium">
+                    {p.cta} →
+                  </Link>
+                )}
               </section>
             ))}
           </div>

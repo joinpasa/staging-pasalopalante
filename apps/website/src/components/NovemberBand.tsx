@@ -1,12 +1,13 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { Link } from "react-router-dom";
 import { useLanguage } from "@shared/contexts/LanguageContext";
+import { useUI } from "@shared/contexts/UIContext";
 
 const NovemberBand = () => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const { t } = useLanguage();
+  const { openShareModal } = useUI();
 
   return (
     <section ref={ref} className="section-padding py-20 md:py-24 text-center">
@@ -39,7 +40,7 @@ const NovemberBand = () => {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.3 }}
         >
-          <Link to="/share" className="btn-primary">{t.novemberBand.cta}</Link>
+          <button type="button" onClick={() => openShareModal()} className="btn-primary">{t.novemberBand.cta}</button>
         </motion.div>
       </div>
     </section>

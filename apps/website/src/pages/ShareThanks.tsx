@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { Award, Download, Flame, Share2, Heart, Sparkles } from "lucide-react";
 import { toPng } from "html-to-image";
 import { toast } from "sonner";
 
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useAuth } from "@shared/contexts/AuthContext";
+import { useUI } from "@shared/contexts/UIContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ShareGraphic from "@shared/components/share/ShareGraphic";
@@ -36,6 +37,7 @@ function Inner() {
   const { id } = useParams<{ id: string }>();
   const { t, lang } = useLanguage();
   const { user } = useAuth();
+  const { openShareModal } = useUI();
   const referralCode = useReferralCode(user?.id);
   const [searchParams, setSearchParams] = useSearchParams();
   const [act, setAct] = useState<Act | null>(null);
@@ -246,12 +248,13 @@ function Inner() {
         </div>
 
         <div className="text-center mt-12">
-          <Link
-            to="/share"
+          <button
+            type="button"
+            onClick={() => openShareModal()}
             className="inline-block text-sm font-bold text-primary hover:underline"
           >
             {t.share.shareAnother}
-          </Link>
+          </button>
         </div>
       </div>
     </main>

@@ -13,7 +13,7 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { t } = useLanguage();
   const { user } = useAuth();
-  const { shareModalOpen } = useUI();
+  const { shareModalOpen, openShareModal } = useUI();
   const [navStats, setNavStats] = useState<{ acts: number; streak: number }>({ acts: 0, streak: 0 });
   const location = useLocation();
   const isHome = location.pathname === "/";
@@ -90,14 +90,15 @@ const Navbar = () => {
           >
             {t.navbar.donateNow}
           </Link>
-          <Link
-            to="/share"
+          <button
+            type="button"
+            onClick={() => openShareModal()}
             className={`text-sm font-medium tracking-wide transition-colors ${
               isSolid ? "text-foreground/70 hover:text-foreground" : "text-white/80 hover:text-white"
             }`}
           >
             {t.share.sectionCta}
-          </Link>
+          </button>
           <Link to="/get-involved" className="btn-primary !py-3 !px-6 !text-sm">
             {t.navbar.getInvolved}
           </Link>
@@ -161,9 +162,13 @@ const Navbar = () => {
                   {l.label}
                 </Link>
               ))}
-              <Link to="/share" onClick={() => setMobileOpen(false)} className="text-lg font-medium text-foreground/80">
+              <button
+                type="button"
+                onClick={() => { setMobileOpen(false); openShareModal(); }}
+                className="text-lg font-medium text-foreground/80 text-left"
+              >
                 {t.share.sectionCta}
-              </Link>
+              </button>
               <Link to="/get-involved" onClick={() => setMobileOpen(false)} className="btn-primary text-center mt-2">
                 {t.navbar.getInvolved}
               </Link>

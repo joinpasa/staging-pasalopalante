@@ -2,6 +2,7 @@ import { motion, useInView, useAnimation } from "framer-motion";
 import { useRef, useCallback, useEffect } from "react";
 import { Heart, ArrowRight, Sparkles } from "lucide-react";
 import { useLanguage } from "@shared/contexts/LanguageContext";
+import { useUI } from "@shared/contexts/UIContext";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -99,6 +100,7 @@ const HowItWorks = () => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const { t } = useLanguage();
+  const { openShareModal } = useUI();
 
   const steps = [
     { title: t.howItWorks.step1Title, body: t.howItWorks.step1Body },
@@ -128,7 +130,7 @@ const HowItWorks = () => {
         </div>
 
         <motion.div custom={6} variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"} className="text-center mt-12">
-          <a href="/share" className="btn-primary">{t.howItWorks.cta}</a>
+          <button type="button" onClick={() => openShareModal()} className="btn-primary">{t.howItWorks.cta}</button>
         </motion.div>
       </div>
     </section>
