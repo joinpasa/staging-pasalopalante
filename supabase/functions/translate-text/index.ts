@@ -1,4 +1,4 @@
-// Translates short user-submitted text via the Lovable AI Gateway.
+// Translates short user-submitted text via the Gemini API.
 // Public (no JWT) because acts of kindness are publicly readable.
 
 const corsHeaders = {
@@ -50,17 +50,17 @@ Deno.serve(async (req) => {
       : "the source language";
     const targetName = LANG_NAMES[target];
 
-    const apiKey = Deno.env.get("LOVABLE_API_KEY");
+    const apiKey = Deno.env.get("GEMINI_API_KEY");
     if (!apiKey) return json({ error: "Translation service not configured" }, 500);
 
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const res = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash-lite",
+        model: Deno.env.get("GEMINI_MODEL_LITE") || "gemini-2.5-flash-lite",
         messages: [
           {
             role: "system",

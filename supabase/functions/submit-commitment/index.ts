@@ -69,21 +69,21 @@ Deno.serve(async (req) => {
     }
 
     // Lightweight AI safety check on the message only (optional)
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
     let safe = true;
     let reason: string | null = null;
     let language = "en";
 
-    if (message && LOVABLE_API_KEY) {
+    if (message && GEMINI_API_KEY) {
       try {
-        const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        const aiRes = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${LOVABLE_API_KEY}`,
+            Authorization: `Bearer ${GEMINI_API_KEY}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "google/gemini-3-flash-preview",
+            model: Deno.env.get("GEMINI_MODEL") || "gemini-2.5-flash",
             messages: [
               {
                 role: "system",

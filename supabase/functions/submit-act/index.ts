@@ -21,7 +21,7 @@ const REASON_CODES = [
 const STRICT_MODE = true;
 // Below this confidence with any flagged reason → treat as rejected (in STRICT_MODE).
 const CONFIDENCE_THRESHOLD = 0.6;
-const MODERATION_MODEL = "google/gemini-3-flash-preview";
+const MODERATION_MODEL = Deno.env.get("GEMINI_MODEL") || "gemini-2.5-flash";
 
 interface SubmitBody {
   mode: string;
@@ -62,7 +62,7 @@ Deno.serve(async (req) => {
 
     if (videoUrl && !/^https?:\/\//i.test(videoUrl)) return badRequest("Invalid video URL");
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
@@ -75,11 +75,11 @@ Deno.serve(async (req) => {
     let category = "time_services";
     let language = "en";
 
-    if (description && LOVABLE_API_KEY) {
-      const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    if (description && GEMINI_API_KEY) {
+      const aiRes = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          Authorization: `Bearer ${GEMINI_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({

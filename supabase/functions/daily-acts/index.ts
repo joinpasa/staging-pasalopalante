@@ -52,8 +52,8 @@ Deno.serve(async (req) => {
       }
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY missing");
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY missing");
 
     const sys =
       lang === "es"
@@ -65,14 +65,14 @@ Deno.serve(async (req) => {
         ? "Genera 5 actos sencillos para hoy. Variedad: para un ser querido, un desconocido, una comunidad, en línea y uno bite-sized de 10 minutos. Evita repetir ideas comunes."
         : "Generate 5 simple acts for today. Mix: for a loved one, a stranger, a community, online, and one bite-sized 10-minute task. Avoid clichés.";
 
-    const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const aiResp = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${GEMINI_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: Deno.env.get("GEMINI_MODEL") || "gemini-2.5-flash",
         messages: [
           { role: "system", content: sys },
           { role: "user", content: user },
