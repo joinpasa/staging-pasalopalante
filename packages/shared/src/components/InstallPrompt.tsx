@@ -86,10 +86,12 @@ const InstallPrompt = () => {
     }
   };
 
-  // Full navigation so an installed PWA can take over on supported browsers;
-  // otherwise it lands on the in-site app shell at /app.
+  // Full navigation so an installed PWA can take over on supported browsers.
+  // Cross-origin because this component renders on both the website and the
+  // app — "open the app" always means the app's own domain, regardless of
+  // which surface is currently showing this prompt.
   const openApp = () => {
-    window.location.assign("/app");
+    window.location.assign("https://app.pasalopalante.com/");
   };
 
   const copy = {
