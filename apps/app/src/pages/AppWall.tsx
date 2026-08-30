@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
+import ReactionButton from "@/components/app/ReactionButton";
 import { useAuth } from "@shared/contexts/AuthContext";
-import { useMyRecentActs, useWallActs } from "@/hooks/useAppData";
+import { useActReactions, useMyRecentActs, useWallActs } from "@/hooks/useAppData";
 import { actEmoji, modeLabel, timeAgo } from "@shared/lib/appActs";
 import { cn } from "@shared/lib/utils";
 
@@ -29,6 +31,15 @@ export default function AppWall() {
     ? (mine.data ?? []).map((act) => ({ ...act, name: "You", photoUrl: null as string | null }))
     : (worldwide.data ?? []);
   const loading = showingMine ? mine.isLoading : worldwide.isLoading;
+
+  const { reactions, toggle } = useActReactions(posts.map((p) => p.id));
+  const onToggleReact = (actId: string) => {
+    if (!user) {
+      toast("Join to react to acts of kindness.");
+      return;
+    }
+    void toggle(actId);
+  };
 
   return (
     <div className="px-5 pt-6">
@@ -120,7 +131,7 @@ export default function AppWall() {
                 <p className="mt-3 text-sm leading-relaxed text-foreground">{post.description}</p>
 
                 {post.tags.length > 0 && (
-                  <div className="mt-4 flex flex-wrap gap-2 border-t border-border pt-3.5">
+                  <div className="mt-4 flex flex-wrap gap-2">
                     {post.tags.slice(0, 3).map((tag) => (
                       <span
                         key={tag}
@@ -131,6 +142,14 @@ export default function AppWall() {
                     ))}
                   </div>
                 )}
+
+                <div className="mt-4 flex items-center border-t border-border pt-3.5">
+                  <ReactionButton
+                    count={reactions[post.id]?.count ?? 0}
+                    reacted={reactions[post.id]?.reacted ?? false}
+                    onToggle={() => onToggleReact(post.id)}
+                  />
+                </div>
               </div>
             </article>
           ))}

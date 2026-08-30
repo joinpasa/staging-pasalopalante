@@ -45,9 +45,13 @@ interface Props {
   initialDescription?: string;
   /** Where to go after a successful log. Defaults to the thanks page. */
   redirectTo?: string;
+  /** Set only when this act is logged via a /wave pass hand-off — the
+   *  specific person it's being passed to. Lets the recipient later send a
+   *  one-tap "thanks" back. Never set for a regular act. */
+  toUserId?: string;
 }
 
-export default function ShareActFlow({ onClose, initialMode, initialDescription, redirectTo }: Props) {
+export default function ShareActFlow({ onClose, initialMode, initialDescription, redirectTo, toUserId }: Props) {
   const { t } = useLanguage();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -156,6 +160,7 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
           email: email.trim() || undefined,
           video_url: videoUrl.trim() || undefined,
           photo_paths: photoPaths,
+          to_user_id: toUserId || undefined,
         },
       });
 

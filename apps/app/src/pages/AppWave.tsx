@@ -20,6 +20,7 @@ export default function AppWave() {
   const code = (searchParams.get("ref") ?? "").trim();
   const [status, setStatus] = useState<"checking" | "connected" | "invalid">("checking");
   const [name, setName] = useState("");
+  const [ownerId, setOwnerId] = useState("");
 
   useEffect(() => {
     if (loading) return;
@@ -39,6 +40,7 @@ export default function AppWave() {
         return;
       }
       setName(row.from_name || "a fellow member");
+      setOwnerId(row.from_user_id);
       setStatus("connected");
     })();
   }, [user, loading, code, navigate]);
@@ -73,7 +75,9 @@ export default function AppWave() {
       </p>
       <button
         type="button"
-        onClick={() => navigate(`/log?with=${encodeURIComponent(name)}`)}
+        onClick={() =>
+          navigate(`/log?with=${encodeURIComponent(name)}&toUserId=${encodeURIComponent(ownerId)}`)
+        }
         className="flex h-14 w-full max-w-xs items-center justify-center gap-2 rounded-2xl bg-app-coral font-semibold text-app-surface"
       >
         <HeartHandshake className="h-4 w-4" />

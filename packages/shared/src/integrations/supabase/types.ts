@@ -66,6 +66,7 @@ export type Database = {
           tag_confidence: Json | null
           tags: string[] | null
           terms_version: string | null
+          to_user_id: string | null
           type_tag: string | null
           user_agent: string | null
           user_id: string | null
@@ -90,6 +91,7 @@ export type Database = {
           tag_confidence?: Json | null
           tags?: string[] | null
           terms_version?: string | null
+          to_user_id?: string | null
           type_tag?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -114,6 +116,7 @@ export type Database = {
           tag_confidence?: Json | null
           tags?: string[] | null
           terms_version?: string | null
+          to_user_id?: string | null
           type_tag?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -710,6 +713,35 @@ export type Database = {
           reason?: string
         }
         Relationships: []
+      }
+      thanks: {
+        Row: {
+          act_id: string
+          created_at: string
+          from_user_id: string
+          id: string
+        }
+        Insert: {
+          act_id: string
+          created_at?: string
+          from_user_id: string
+          id?: string
+        }
+        Update: {
+          act_id?: string
+          created_at?: string
+          from_user_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "thanks_act_id_fkey"
+            columns: ["act_id"]
+            isOneToOne: false
+            referencedRelation: "acts_of_kindness"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_badges: {
         Row: {

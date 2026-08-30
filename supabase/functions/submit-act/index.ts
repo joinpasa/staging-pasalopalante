@@ -30,7 +30,10 @@ interface SubmitBody {
   email?: string;
   video_url?: string;
   photo_paths?: string[];
+  to_user_id?: string;
 }
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function badRequest(msg: string) {
   return new Response(JSON.stringify({ error: msg }), {
@@ -179,6 +182,14 @@ Deno.serve(async (req) => {
       } catch (_) { /* ignore */ }
     }
 
+    // to_user_id only ever comes from the /wave hand-off flow: requires a
+    // real signed-in caller, a syntactically valid id, and can't be self.
+    let toUserId: string | null = null;
+    const rawToUserId = (body.to_user_id ?? "").toString().trim();
+    if (userId && rawToUserId && UUID_RE.test(rawToUserId) && rawToUserId !== userId) {
+      toUserId = rawToUserId;
+    }
+
     // Resolve display name.
     let finalFirstName = firstName;
     if (userId) {
@@ -296,6 +307,7 @@ Deno.serve(async (req) => {
         status: rowStatus,
         moderation_reason: shortReason,
         user_id: userId,
+        to_user_id: toUserId,
         ip_address: ipAddress,
         user_agent: userAgent,
         terms_version: termsVersion,

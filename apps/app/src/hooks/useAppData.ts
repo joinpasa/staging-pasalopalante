@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@shared/integrations/supabase/client";
 import { useAuth } from "@shared/contexts/AuthContext";
 
@@ -137,6 +137,154 @@ export function useWallActs(limit = 20) {
   });
 }
 
+
+export interface ReactionState {
+  count: number;
+  reacted: boolean;
+}
+
+function reactionsKey(actIds: string[]) {
+  return ["app", "reactions", actIds.slice().sort().join(",")] as const;
+}
+
+/**
+ * Heart-reaction counts (+ whether the signed-in user reacted) for a batch of
+ * acts, via the existing reaction_counts/my_reactions RPCs and act_reactions
+ * table — same infrastructure the website's Wall of Kindness already uses.
+ * Returns a toggle() that updates optimistically before the network call
+ * resolves, so a tap always feels instant.
+ */
+export function useActReactions(actIds: string[]) {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const key = reactionsKey(actIds);
+
+  const query = useQuery({
+    queryKey: key,
+    enabled: actIds.length > 0,
+    queryFn: async (): Promise<Record<string, ReactionState>> => {
+      const [{ data: countRows }, mineRows] = await Promise.all([
+        supabase.rpc("reaction_counts", { _act_ids: actIds }),
+        user
+          ? supabase.rpc("my_reactions", { _act_ids: actIds }).then((r) => r.data ?? [])
+          : Promise.resolve([]),
+      ]);
+      const counts: Record<string, number> = {};
+      (countRows ?? []).forEach((r) => {
+        counts[r.act_id] = Number(r.count) || 0;
+      });
+      const mine = new Set(mineRows.map((r) => r.act_id));
+
+      const result: Record<string, ReactionState> = {};
+      for (const id of actIds) {
+        result[id] = { count: counts[id] ?? 0, reacted: mine.has(id) };
+      }
+      return result;
+    },
+  });
+
+  const toggle = async (actId: string) => {
+    if (!user) return false;
+    const current = query.data?.[actId] ?? { count: 0, reacted: false };
+    const next: ReactionState = {
+      count: Math.max(0, current.count + (current.reacted ? -1 : 1)),
+      reacted: !current.reacted,
+    };
+    queryClient.setQueryData(key, (prev: Record<string, ReactionState> | undefined) => ({
+      ...prev,
+      [actId]: next,
+    }));
+
+    const revert = () =>
+      queryClient.setQueryData(key, (prev: Record<string, ReactionState> | undefined) => ({
+        ...prev,
+        [actId]: current,
+      }));
+
+    if (current.reacted) {
+      const { error } = await supabase
+        .from("act_reactions")
+        .delete()
+        .eq("act_id", actId)
+        .eq("user_id", user.id)
+        .eq("reaction", "heart");
+      if (error) revert();
+    } else {
+      const { error } = await supabase
+        .from("act_reactions")
+        .insert({ act_id: actId, user_id: user.id, reaction: "heart" });
+      if (error && !String(error.message).includes("duplicate")) revert();
+    }
+    return true;
+  };
+
+  return { reactions: query.data ?? {}, toggle };
+}
+
+/** Which of these acts the signed-in user has already sent a "thanks" for
+ *  (or, from the giver's side, which of their own acts have been thanked —
+ *  since only one specific recipient can ever thank a given act, "has any
+ *  thanks row" and "did I as the recipient send it" are the same check). */
+export function useThanksForActs(actIds: string[]) {
+  return useQuery({
+    queryKey: ["app", "thanks", actIds.slice().sort().join(",")],
+    enabled: actIds.length > 0,
+    queryFn: async (): Promise<Set<string>> => {
+      const { data, error } = await supabase.from("thanks").select("act_id").in("act_id", actIds);
+      if (error) throw error;
+      return new Set((data ?? []).map((r) => r.act_id));
+    },
+  });
+}
+
+export interface ReceivedAct extends AppAct {
+  fromName: string;
+}
+
+/** Acts passed to the signed-in user via a /wave hand-off (to_user_id = them).
+ *  Regular acts never have to_user_id set, so they never appear here. */
+export function useActsReceivedByMe(limit = 10) {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ["app", "received-acts", user?.id, limit],
+    enabled: !!user,
+    queryFn: async (): Promise<ReceivedAct[]> => {
+      const { data, error } = await supabase
+        .from("acts_of_kindness")
+        .select("id, description, created_at, mode, tags, first_name")
+        .eq("to_user_id", user!.id)
+        .eq("status", "published")
+        .order("created_at", { ascending: false })
+        .limit(limit);
+      if (error) throw error;
+      return (data ?? []).map((row) => ({
+        id: row.id,
+        description: row.description ?? "An act of kindness",
+        createdAt: row.created_at,
+        mode: row.mode,
+        tags: row.tags ?? [],
+        fromName: row.first_name?.trim() || "a fellow member",
+      }));
+    },
+  });
+}
+
+/** Sends a one-tap "thanks" for an act received via a hand-off. Invalidates
+ *  the thanks query on success so both sides' badges update. */
+export function useSendThanks() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  return async (actId: string) => {
+    if (!user) return { error: "Not signed in" };
+    const { error } = await supabase.from("thanks").insert({ act_id: actId, from_user_id: user.id });
+    if (!error) {
+      queryClient.invalidateQueries({ queryKey: ["app", "thanks"] });
+    }
+    return { error: error?.message ?? null };
+  };
+}
 
 /** Public movement totals used by the shared counters. */
 export function useMovementTotals() {

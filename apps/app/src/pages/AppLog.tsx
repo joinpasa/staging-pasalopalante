@@ -9,13 +9,16 @@ import { useLanguage } from "@shared/contexts/LanguageContext";
  * app (no jump to the marketing site) and returns them to /app when done.
  *
  * Coming from a pass hand-off (/wave) carries a `with` param naming who was
- * just scanned, prefilled into the description as a starting point.
+ * just scanned (prefilled into the description) and a `toUserId` param with
+ * their actual user id, so the act can be linked to them for the "thanks"
+ * feature — only acts logged this way ever get a to_user_id.
  */
 export default function AppLog() {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const withName = searchParams.get("with")?.trim();
+  const toUserId = searchParams.get("toUserId")?.trim();
 
   return (
     <div className="px-5 pt-5 pb-8">
@@ -37,6 +40,7 @@ export default function AppLog() {
         redirectTo="/"
         initialMode={withName ? "performed" : undefined}
         initialDescription={withName ? `Passed it forward to ${withName}: ` : undefined}
+        toUserId={toUserId || undefined}
       />
     </div>
   );
