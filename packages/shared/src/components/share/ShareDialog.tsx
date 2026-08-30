@@ -47,8 +47,11 @@ interface Props {
   };
 }
 
-function openPopup(url: string) {
-  window.open(url, "_blank", "noopener,noreferrer,width=640,height=720");
+// Returns false when the browser silently blocked the popup (common on
+// Safari), so callers can fall back to something the user can actually see.
+function openPopup(url: string): boolean {
+  const win = window.open(url, "_blank", "noopener,noreferrer,width=640,height=720");
+  return !!win;
 }
 
 export default function ShareDialog({
@@ -144,23 +147,28 @@ export default function ShareDialog({
     toast.success(labels.instagramHint);
   }
 
+  // If the browser silently blocked the popup (common on Safari), fall back
+  // to copying the link so the click still does something visible.
+  async function shareViaPopup(url: string) {
+    if (!openPopup(url)) await copyLink();
+  }
   function shareFacebook() {
-    openPopup(
+    return shareViaPopup(
       `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`,
     );
   }
   function shareTwitter() {
-    openPopup(
+    return shareViaPopup(
       `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
     );
   }
   function shareWhatsApp() {
-    openPopup(
+    return shareViaPopup(
       `https://api.whatsapp.com/send?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`,
     );
   }
   function shareLinkedIn() {
-    openPopup(
+    return shareViaPopup(
       `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
     );
   }
@@ -194,19 +202,19 @@ export default function ShareDialog({
       key: "facebook",
       label: labels.facebook,
       icon: <Facebook size={20} />,
-      onClick: () => shareFacebook(),
+      onClick: () => withBusy("facebook", shareFacebook),
     },
     {
       key: "twitter",
       label: labels.twitter,
       icon: <Twitter size={20} />,
-      onClick: () => shareTwitter(),
+      onClick: () => withBusy("twitter", shareTwitter),
     },
     {
       key: "whatsapp",
       label: labels.whatsapp,
       icon: <MessageCircle size={20} />,
-      onClick: () => shareWhatsApp(),
+      onClick: () => withBusy("whatsapp", shareWhatsApp),
     },
     {
       key: "linkedin",
