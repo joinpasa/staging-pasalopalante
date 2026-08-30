@@ -1,4 +1,4 @@
-name = "stagingmain-pasalopalante"
+name = "stagingsite-pasalopalante"
 compatibility_date = "2024-09-23"
 
 # Pure static-asset deployment — no Worker script. This is the modern
