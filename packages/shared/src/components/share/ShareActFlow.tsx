@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ChevronDown, Heart, ImagePlus, Loader2, X } from "lucide-react";
+import { ArrowLeft, Heart, Loader2, Play, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -11,15 +11,13 @@ import { Button } from "@shared/components/ui/button";
 import { Input } from "@shared/components/ui/input";
 import { Textarea } from "@shared/components/ui/textarea";
 import { Label } from "@shared/components/ui/label";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@shared/components/ui/collapsible";
 import { supabase } from "@shared/integrations/supabase/client";
 import { logConsent } from "@shared/lib/legal";
 
 type Mode = "performed" | "witnessed" | "received";
+
+const MAX_FILES = 6;
+const MAX_FILE_SIZE = 25 * 1024 * 1024;
 
 const detailsSchema = z.object({
   description: z.string().trim().max(1000).optional(),
@@ -29,12 +27,6 @@ const detailsSchema = z.object({
     .trim()
     .max(200)
     .refine((v) => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), "Enter a valid email")
-    .optional(),
-  video_url: z
-    .string()
-    .trim()
-    .max(500)
-    .refine((v) => !v || /^https?:\/\//i.test(v), "Must start with http(s)://")
     .optional(),
 });
 
@@ -62,16 +54,16 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
   const navigate = useNavigate();
 
   const [step, setStep] = useState<1 | 2>(initialMode || singleStep ? 2 : 1);
-  const [mode, setMode] = useState<Mode | null>(initialMode ?? null);
+  const [mode, setMode] = useState<Mode | null>(initialMode ?? (singleStep ? "performed" : null));
   const [description, setDescription] = useState(initialDescription ?? "");
   const [firstName, setFirstName] = useState("");
   const [profileDisplayName, setProfileDisplayName] = useState<string | null>(null);
   const [email, setEmail] = useState("");
-  const [videoUrl, setVideoUrl] = useState("");
-  const [photos, setPhotos] = useState<{ file: File; preview: string }[]>([]);
+  const [files, setFiles] = useState<{ file: File; preview: string; isVideo: boolean }[]>([]);
   const [photoConsent, setPhotoConsent] = useState(false);
-  const [mediaOpen, setMediaOpen] = useState(false);
+  const [dragging, setDragging] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load logged-in user's display name so we only ask for a name when missing.
   useEffect(() => {
@@ -99,19 +91,25 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
     setStep(2);
   }
 
-  function addPhotos(files: FileList | null) {
-    if (!files) return;
-    const next = [...photos];
-    for (const f of Array.from(files)) {
-      if (next.length >= 1) break;
-      if (!f.type.startsWith("image/")) continue;
-      if (f.size > 5 * 1024 * 1024) {
+  function addFiles(list: FileList | File[] | null) {
+    if (!list) return;
+    const next = [...files];
+    for (const f of Array.from(list)) {
+      if (next.length >= MAX_FILES) break;
+      const isVideo = f.type.startsWith("video/");
+      if (!isVideo && !f.type.startsWith("image/")) continue;
+      if (f.size > MAX_FILE_SIZE) {
         toast.error(t.share.uploadError);
         continue;
       }
-      next.push({ file: f, preview: URL.createObjectURL(f) });
+      next.push({ file: f, preview: URL.createObjectURL(f), isVideo });
     }
-    setPhotos(next);
+    setFiles(next);
+  }
+
+  function removeFile(i: number) {
+    setFiles((prev) => prev.filter((_, idx) => idx !== i));
+    setPhotoConsent(false);
   }
 
   async function uploadPhoto(file: File): Promise<string | null> {
@@ -138,13 +136,12 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
       description,
       first_name: firstName,
       email,
-      video_url: videoUrl,
     });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
       return;
     }
-    if (photos.length > 0 && !photoConsent) {
+    if (files.length > 0 && !photoConsent) {
       toast.error(t.share.photoConsentRequired);
       return;
     }
@@ -153,8 +150,8 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
     setSubmitting(true);
     try {
       const photoPaths: string[] = [];
-      for (const p of photos) {
-        const path = await uploadPhoto(p.file);
+      for (const f of files) {
+        const path = await uploadPhoto(f.file);
         if (path) photoPaths.push(path);
       }
 
@@ -166,7 +163,6 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
           description: description.trim() || undefined,
           first_name: trimmedFirstName || undefined,
           email: email.trim() || undefined,
-          video_url: videoUrl.trim() || undefined,
           photo_paths: photoPaths,
           to_user_id: toUserId || undefined,
         },
@@ -280,24 +276,43 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
           onChange={(e) => setDescription(e.target.value)}
           placeholder={t.share.descriptionPlaceholder}
         />
+        {singleStep && <p className="text-xs text-muted-foreground">{t.share.descriptionHelper}</p>}
       </div>
 
       {(!user || !profileDisplayName) && (
-        <div className="space-y-2">
-          <Label htmlFor="first_name">{t.share.firstNameLabel}</Label>
-          <Input
-            id="first_name"
-            type="text"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            placeholder={t.share.firstNamePlaceholder}
-            maxLength={60}
-          />
+        <div className={singleStep ? "grid grid-cols-1 sm:grid-cols-2 gap-3.5" : "space-y-2"}>
+          <div className="space-y-2">
+            <Label htmlFor="first_name">{t.share.firstNameLabel}</Label>
+            <Input
+              id="first_name"
+              type="text"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              placeholder={t.share.firstNamePlaceholder}
+              maxLength={60}
+            />
+          </div>
+          {singleStep && !user && (
+            <div className="space-y-2">
+              <Label htmlFor="email">{t.share.emailLabel}</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={t.share.emailPlaceholder}
+                maxLength={200}
+              />
+            </div>
+          )}
         </div>
       )}
 
-      {!user && (
+      {singleStep && !user && (
+        <p className="text-xs text-muted-foreground -mt-2">{t.share.claimHelper}</p>
+      )}
 
+      {!singleStep && !user && (
         <div className="space-y-2">
           <Label htmlFor="email">{t.share.emailLabel}</Label>
           <Input
@@ -312,71 +327,79 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
         </div>
       )}
 
-      <Collapsible open={mediaOpen} onOpenChange={setMediaOpen}>
-        <CollapsibleTrigger className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors">
-          <ChevronDown
-            size={16}
-            className={`transition-transform ${mediaOpen ? "" : "-rotate-90"}`}
-          />
-          {t.share.addMedia}
-        </CollapsibleTrigger>
-        <CollapsibleContent className="space-y-6 pt-4">
-          <div className="space-y-3">
-            <Label>{t.share.photoLabel}</Label>
-            <div className="flex flex-wrap gap-3">
-              {photos.map((p, i) => (
-                <div key={i} className="relative w-24 h-24 rounded-lg overflow-hidden border">
-                  <img src={p.preview} alt="" className="w-full h-full object-cover" />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPhotos(photos.filter((_, idx) => idx !== i));
-                      setPhotoConsent(false);
-                    }}
-                    className="absolute top-1 end-1 bg-background/90 rounded-full p-0.5 shadow"
-                  >
-                    <X size={14} />
-                  </button>
-                </div>
-              ))}
-              {photos.length < 1 ? (
-                <label className="w-24 h-24 rounded-lg border-2 border-dashed border-border hover:border-primary flex items-center justify-center cursor-pointer text-muted-foreground hover:text-primary transition-colors">
-                  <ImagePlus size={20} />
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => addPhotos(e.target.files)}
-                  />
-                </label>
-              ) : null}
-            </div>
-            {photos.length > 0 && (
-              <label className="flex items-start gap-2 text-xs text-foreground/80 cursor-pointer pt-1">
-                <input
-                  type="checkbox"
-                  checked={photoConsent}
-                  onChange={(e) => setPhotoConsent(e.target.checked)}
-                  className="mt-0.5 h-4 w-4 accent-primary cursor-pointer"
-                />
-                <span>{t.share.photoConsentLabel}</span>
-              </label>
-            )}
-          </div>
+      <div className="space-y-3">
+        <Label>{t.share.mediaOptionalLabel}</Label>
 
-          <div className="space-y-2">
-            <Label htmlFor="video">{t.share.videoLabel}</Label>
-            <Input
-              id="video"
-              type="url"
-              value={videoUrl}
-              onChange={(e) => setVideoUrl(e.target.value)}
-              placeholder={t.share.videoPlaceholder}
-              maxLength={500}
+        {files.length > 0 && (
+          <div className="flex flex-wrap gap-3">
+            {files.map((f, i) => (
+              <div key={i} className="relative w-[84px] h-[84px] rounded-xl overflow-hidden border">
+                {f.isVideo ? (
+                  <div className="w-full h-full bg-muted flex items-center justify-center">
+                    <Play size={22} className="text-muted-foreground fill-current" />
+                  </div>
+                ) : (
+                  <img src={f.preview} alt="" className="w-full h-full object-cover" />
+                )}
+                <button
+                  type="button"
+                  onClick={() => removeFile(i)}
+                  className="absolute top-1 end-1 w-[22px] h-[22px] rounded-full bg-black/65 text-white flex items-center justify-center"
+                  aria-label="Remove"
+                >
+                  <X size={13} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {files.length < MAX_FILES && (
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => fileInputRef.current?.click()}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") fileInputRef.current?.click(); }}
+            onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+            onDragLeave={(e) => { e.preventDefault(); setDragging(false); }}
+            onDrop={(e) => {
+              e.preventDefault();
+              setDragging(false);
+              addFiles(e.dataTransfer.files);
+            }}
+            className={`rounded-2xl border-2 border-dashed px-5 py-6 flex flex-col items-center justify-center text-center cursor-pointer transition-colors ${
+              dragging ? "border-primary bg-warm-blush" : "border-border bg-warm-cream hover:border-primary/50"
+            }`}
+          >
+            <Upload size={26} className="text-primary mb-2" />
+            <p className="text-sm text-foreground">
+              {t.share.dropzonePrefix}{" "}
+              <span className="text-primary underline underline-offset-2">{t.share.dropzoneBrowse}</span>
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">{t.share.dropzoneHint}</p>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*,video/*"
+              multiple
+              className="hidden"
+              onChange={(e) => addFiles(e.target.files)}
             />
           </div>
-        </CollapsibleContent>
-      </Collapsible>
+        )}
+
+        {files.length > 0 && (
+          <label className="flex items-start gap-2 text-xs text-foreground/80 cursor-pointer pt-1">
+            <input
+              type="checkbox"
+              checked={photoConsent}
+              onChange={(e) => setPhotoConsent(e.target.checked)}
+              className="mt-0.5 h-4 w-4 accent-primary cursor-pointer"
+            />
+            <span>{t.share.photoConsentLabel}</span>
+          </label>
+        )}
+      </div>
 
       {!user && (
         <p className="text-sm text-foreground/85 leading-relaxed bg-warm-cream/60 border border-border rounded-xl p-4">
@@ -410,7 +433,7 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
             <Loader2 className="animate-spin" /> {t.share.submitting}
           </>
         ) : (
-          t.share.submit
+          singleStep ? t.share.submitCompact : t.share.submit
         )}
       </Button>
     </>
@@ -418,33 +441,36 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
 
   if (singleStep) {
     const modeOptions: { key: Mode; label: string }[] = [
-      { key: "performed", label: t.share.modeGaveCompact },
-      { key: "received", label: t.share.modeReceivedCompact },
-      { key: "witnessed", label: t.share.modeWitnessedCompact },
+      { key: "performed", label: t.share.modeGaveShort },
+      { key: "received", label: t.share.modeReceivedShort },
+      { key: "witnessed", label: t.share.modeWitnessedShort },
     ];
     return (
       <div className="w-full max-w-2xl mx-auto space-y-6">
-        <div className="space-y-3">
-          <h2 className="headline-md text-foreground">{t.share.modeQuestion}</h2>
-          <div className="flex flex-wrap gap-x-8 gap-y-3">
+        <div className="space-y-2.5">
+          <p className="text-xs uppercase tracking-[0.18em] text-primary font-semibold">{t.share.formEyebrow}</p>
+          <h2 className="headline-md text-foreground">{t.share.formHeading}</h2>
+        </div>
+
+        <div className="space-y-2.5">
+          <Label>{t.share.modeToggleLabel}</Label>
+          <div className="grid grid-cols-3 gap-2.5">
             {modeOptions.map((m) => (
-              <label key={m.key} className="inline-flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="share-mode"
-                  checked={mode === m.key}
-                  onChange={() => setMode(m.key)}
-                  className="h-4 w-4 accent-primary cursor-pointer"
-                />
-                <span className="text-sm font-medium uppercase tracking-wide text-foreground">
-                  {m.label}
-                </span>
-              </label>
+              <button
+                key={m.key}
+                type="button"
+                onClick={() => setMode(m.key)}
+                className={`rounded-xl px-2 py-3.5 text-sm font-semibold transition-all ${
+                  mode === m.key
+                    ? "border-2 border-primary bg-primary text-primary-foreground"
+                    : "border-2 border-border bg-warm-cream text-foreground hover:border-primary/40"
+                }`}
+              >
+                {m.label}
+              </button>
             ))}
           </div>
         </div>
-
-        <h3 className="headline-md text-foreground">{t.share.detailsHeading}</h3>
 
         {detailsFields}
       </div>

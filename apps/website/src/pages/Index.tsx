@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
+import LiveFromWall from "@/components/LiveFromWall";
 import ImpactTicker from "@/components/ImpactTicker";
 import TheStory from "@/components/TheStory";
 import HowItWorks from "@/components/HowItWorks";
@@ -26,6 +27,7 @@ const Index = () => {
       />
       <Navbar />
       <Hero />
+      <LiveFromWall />
       <HowItWorks />
       <AnthemSection />
       <TheStory />
