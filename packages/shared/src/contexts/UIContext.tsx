@@ -14,6 +14,9 @@ interface UIContextType {
   openShareModal: (opts?: ShareModalOptions) => void;
   closeShareModal: () => void;
   shareModalOptions: ShareModalOptions;
+  /** True while a page's own Navbar (with its inline language switcher) is mounted. */
+  navbarMounted: boolean;
+  setNavbarMounted: (mounted: boolean) => void;
 }
 
 const noop = () => {};
@@ -23,6 +26,7 @@ const UIContext = createContext<UIContextType | undefined>(undefined);
 export const UIProvider = ({ children }: { children: ReactNode }) => {
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [shareModalOptions, setShareModalOptions] = useState<ShareModalOptions>({});
+  const [navbarMounted, setNavbarMounted] = useState(false);
 
   const openShareModal = (opts: ShareModalOptions = {}) => {
     setShareModalOptions(opts);
@@ -32,7 +36,15 @@ export const UIProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <UIContext.Provider
-      value={{ shareModalOpen, setShareModalOpen, openShareModal, closeShareModal, shareModalOptions }}
+      value={{
+        shareModalOpen,
+        setShareModalOpen,
+        openShareModal,
+        closeShareModal,
+        shareModalOptions,
+        navbarMounted,
+        setNavbarMounted,
+      }}
     >
       {children}
     </UIContext.Provider>
@@ -48,6 +60,8 @@ export const useUI = () => {
       openShareModal: noop,
       closeShareModal: noop,
       shareModalOptions: {},
+      navbarMounted: false,
+      setNavbarMounted: noop,
     };
   }
   return ctx;

@@ -7,6 +7,7 @@ import { useAuth } from "@shared/contexts/AuthContext";
 import { useUI } from "@shared/contexts/UIContext";
 import { smoothScrollTo } from "@shared/lib/smoothScrollTo";
 import SubNav from "@/components/SubNav";
+import LanguageSwitcher from "@shared/components/LanguageSwitcher";
 import { supabase } from "@shared/integrations/supabase/client";
 
 const SCROLL_THRESHOLD = 80;
@@ -17,7 +18,7 @@ const Navbar = () => {
   const [exploreOpen, setExploreOpen] = useState(false);
   const { t } = useLanguage();
   const { user } = useAuth();
-  const { shareModalOpen, openShareModal } = useUI();
+  const { shareModalOpen, openShareModal, setNavbarMounted } = useUI();
   const [navStats, setNavStats] = useState<{ acts: number; streak: number }>({ acts: 0, streak: 0 });
   const location = useLocation();
   const navigate = useNavigate();
@@ -41,6 +42,11 @@ const Navbar = () => {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    setNavbarMounted(true);
+    return () => setNavbarMounted(false);
+  }, [setNavbarMounted]);
 
   useEffect(() => {
     if (!exploreOpen) return;
@@ -88,100 +94,100 @@ const Navbar = () => {
         isSolid ? "bg-warm-cream/95 backdrop-blur-md border-b border-border shadow-sm" : "bg-transparent"
       }`}
     >
-      <div className="section-padding flex items-center justify-between h-20 flex-wrap gap-4">
-        <div className="flex items-center gap-8">
-          <Link to="/">
-            <img
-              src="/logo-PPL.png"
-              alt="Pásalo Pa'lante"
-              className={`h-10 transition-all duration-300 ${isSolid ? "" : "brightness-0 invert"}`}
-            />
+      <div className="section-padding flex items-center justify-between h-20 gap-4">
+        <Link to="/" className="shrink-0">
+          <img
+            src="/logo-PPL.png"
+            alt="Pásalo Pa'lante"
+            className={`h-10 transition-all duration-300 ${isSolid ? "" : "brightness-0 invert"}`}
+          />
+        </Link>
+
+        <div className="hidden md:flex items-center gap-6">
+          <button
+            type="button"
+            onClick={() => goToAnchor("how-it-works")}
+            className={`text-sm font-medium tracking-wide transition-colors duration-300 ${linkClass}`}
+          >
+            {t.navbar.howItWorks}
+          </button>
+          <Link to="/wall" className={`text-sm font-medium tracking-wide transition-colors duration-300 ${linkClass}`}>
+            {t.navbar.wall}
           </Link>
 
-          <div className="hidden md:flex items-center gap-8">
+          <div ref={exploreRef} className="relative">
             <button
               type="button"
-              onClick={() => goToAnchor("how-it-works")}
-              className={`text-sm font-medium tracking-wide transition-colors duration-300 ${linkClass}`}
+              onClick={() => setExploreOpen((v) => !v)}
+              aria-haspopup="true"
+              aria-expanded={exploreOpen}
+              className={`flex items-center gap-1.5 text-sm font-medium tracking-wide transition-colors duration-300 ${linkClass}`}
             >
-              {t.navbar.howItWorks}
+              {t.navbar.explore}
+              <ChevronDown size={14} className={`transition-transform duration-200 ${exploreOpen ? "rotate-180" : ""}`} />
             </button>
-            <Link to="/wall" className={`text-sm font-medium tracking-wide transition-colors duration-300 ${linkClass}`}>
-              {t.navbar.wall}
-            </Link>
-
-            <div ref={exploreRef} className="relative">
-              <button
-                type="button"
-                onClick={() => setExploreOpen((v) => !v)}
-                aria-haspopup="true"
-                aria-expanded={exploreOpen}
-                className={`flex items-center gap-1.5 text-sm font-medium tracking-wide transition-colors duration-300 ${linkClass}`}
-              >
-                {t.navbar.explore}
-                <ChevronDown size={14} className={`transition-transform duration-200 ${exploreOpen ? "rotate-180" : ""}`} />
-              </button>
-              <div
-                className={`absolute left-0 top-[calc(100%+18px)] min-w-[210px] rounded-2xl border border-border bg-warm-cream p-2 shadow-2xl transition-all duration-200 ${
-                  exploreOpen
-                    ? "opacity-100 visible translate-y-0"
-                    : "opacity-0 invisible -translate-y-1.5 pointer-events-none"
-                }`}
-              >
-                {exploreItems.map((item) => (
-                  item.anchor ? (
-                    <button
-                      key={item.label}
-                      type="button"
-                      onClick={() => { setExploreOpen(false); goToAnchor(item.anchor); }}
-                      className="block w-full text-left rounded-lg px-4 py-2.5 text-sm text-foreground/80 hover:bg-warm-sand transition-colors"
-                    >
-                      {item.label}
-                    </button>
-                  ) : (
-                    <Link
-                      key={item.label}
-                      to={item.href!}
-                      onClick={() => setExploreOpen(false)}
-                      className="block rounded-lg px-4 py-2.5 text-sm text-foreground/80 hover:bg-warm-sand transition-colors"
-                    >
-                      {item.label}
-                    </Link>
-                  )
-                ))}
-              </div>
+            <div
+              className={`absolute right-0 top-[calc(100%+18px)] min-w-[210px] rounded-2xl border border-border bg-warm-cream p-2 shadow-2xl transition-all duration-200 ${
+                exploreOpen
+                  ? "opacity-100 visible translate-y-0"
+                  : "opacity-0 invisible -translate-y-1.5 pointer-events-none"
+              }`}
+            >
+              {exploreItems.map((item) => (
+                item.anchor ? (
+                  <button
+                    key={item.label}
+                    type="button"
+                    onClick={() => { setExploreOpen(false); goToAnchor(item.anchor); }}
+                    className="block w-full text-left rounded-lg px-4 py-2.5 text-sm text-foreground/80 hover:bg-warm-sand transition-colors"
+                  >
+                    {item.label}
+                  </button>
+                ) : (
+                  <Link
+                    key={item.label}
+                    to={item.href!}
+                    onClick={() => setExploreOpen(false)}
+                    className="block rounded-lg px-4 py-2.5 text-sm text-foreground/80 hover:bg-warm-sand transition-colors"
+                  >
+                    {item.label}
+                  </Link>
+                )
+              ))}
             </div>
-
-            <span className={`h-5 w-px ${isSolid ? "bg-border" : "bg-white/25"}`} aria-hidden="true" />
-
-            {user ? (
-              <Link
-                to="/account"
-                aria-label={t.navbar.myAccount}
-                className={`flex items-center gap-2 rounded-full px-3 py-2 text-xs font-semibold transition-colors ${
-                  isSolid
-                    ? "bg-foreground/5 text-foreground hover:bg-foreground/10"
-                    : "bg-white/15 text-white hover:bg-white/25"
-                }`}
-              >
-                <User size={18} />
-                <span className="inline-flex items-center gap-1"><Heart size={13} className="fill-current" />{navStats.acts}</span>
-                {navStats.streak > 0 && <span className="inline-flex items-center gap-1"><Flame size={13} className="fill-current" />{navStats.streak}</span>}
-              </Link>
-            ) : (
-              <Link to="/auth" className={`text-sm font-medium tracking-wide transition-colors duration-300 ${linkClass}`}>
-                {t.navbar.signIn}
-              </Link>
-            )}
-
-            <button
-              type="button"
-              onClick={() => openShareModal()}
-              className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.04]"
-            >
-              {t.share.sectionCta}
-            </button>
           </div>
+
+          <LanguageSwitcher variant="inline" triggerClassName={linkClass} />
+
+          <span className={`h-5 w-px ${isSolid ? "bg-border" : "bg-white/25"}`} aria-hidden="true" />
+
+          {user ? (
+            <Link
+              to="/account"
+              aria-label={t.navbar.myAccount}
+              className={`flex items-center gap-2 rounded-full px-3 py-2 text-xs font-semibold transition-colors ${
+                isSolid
+                  ? "bg-foreground/5 text-foreground hover:bg-foreground/10"
+                  : "bg-white/15 text-white hover:bg-white/25"
+              }`}
+            >
+              <User size={18} />
+              <span className="inline-flex items-center gap-1"><Heart size={13} className="fill-current" />{navStats.acts}</span>
+              {navStats.streak > 0 && <span className="inline-flex items-center gap-1"><Flame size={13} className="fill-current" />{navStats.streak}</span>}
+            </Link>
+          ) : (
+            <Link to="/auth" className={`text-sm font-medium tracking-wide transition-colors duration-300 ${linkClass}`}>
+              {t.navbar.signIn}
+            </Link>
+          )}
+
+          <button
+            type="button"
+            onClick={() => openShareModal()}
+            className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.04]"
+          >
+            {t.share.sectionCta}
+          </button>
         </div>
 
         <button
@@ -217,6 +223,7 @@ const Navbar = () => {
               <Link to="/wall" onClick={() => setMobileOpen(false)} className="text-lg font-medium text-foreground/80">
                 {t.navbar.wall}
               </Link>
+              <LanguageSwitcher variant="inline" align="left" triggerClassName="text-lg font-medium text-foreground/80" />
               {exploreItems.map((item) => (
                 item.anchor ? (
                   <button
