@@ -332,7 +332,7 @@ function Inner() {
             <img
               src={schoolImage}
               alt=""
-              className="h-[180px] md:h-[230px] w-full object-cover"
+              className="h-[180px] md:h-[230px] w-full object-cover object-top"
             />
             <div className="flex flex-1 flex-col p-7 md:p-9">
               <div className="mb-[18px] grid h-12 w-12 place-items-center rounded-xl bg-primary/10">
@@ -355,7 +355,7 @@ function Inner() {
             <img
               src={ambassadorImage}
               alt=""
-              className="h-[180px] md:h-[230px] w-full object-cover"
+              className="h-[180px] md:h-[230px] w-full object-cover object-top"
             />
             <div className="flex flex-1 flex-col p-7 md:p-9">
               <div className="mb-[18px] grid h-12 w-12 place-items-center rounded-xl bg-cyan-900/10">
