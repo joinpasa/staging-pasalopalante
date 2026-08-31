@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { Award, Download, Flame, Heart, Instagram, MessageCircle, Sparkles, Twitter } from "lucide-react";
+import { Award, Building2, Download, Flame, Heart, Instagram, MessageCircle, Sparkles, Twitter, Users } from "lucide-react";
 import { toPng } from "html-to-image";
 import { toast } from "sonner";
+import schoolImage from "@/assets/getinvolved-build.jpg";
+import ambassadorImage from "@/assets/ppl-group.png";
 
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useAuth } from "@shared/contexts/AuthContext";
@@ -313,26 +315,66 @@ function Inner() {
         </div>
 
         {/* Stage 2 */}
-        <p className="text-xs uppercase tracking-widest text-primary font-semibold mb-2">
-          {t.share.thanksStageTwoEyebrow}
-        </p>
+        <div className="flex items-center gap-4 mb-3">
+          <span className="inline-flex items-center rounded-full bg-cyan-900 px-4 py-1.5 text-[11.5px] font-bold uppercase tracking-[0.18em] text-warm-cream">
+            {t.share.thanksStageTwoEyebrow}
+          </span>
+          <span className="h-px flex-1 bg-border" />
+        </div>
         <h2 className="headline-lg text-foreground mb-3">{t.share.thanksStageTwoHeading}</h2>
-        <p className="text-foreground/80 mb-8">{t.share.thanksStageTwoBody}</p>
+        <p className="text-foreground/70 text-lg md:text-xl leading-relaxed max-w-[62ch] mb-8 md:mb-12">
+          {t.share.thanksStageTwoBody}
+        </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-background border border-border rounded-2xl p-8 text-center shadow-sm">
-            <h3 className="font-serif text-xl text-foreground mb-1">{t.share.thanksSchoolTitle}</h3>
-            <p className="text-foreground/70 mb-6">{t.share.thanksSchoolBody}</p>
-            <Button asChild variant="outline">
-              <Link to="/contact">{t.share.thanksSchoolCta}</Link>
-            </Button>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-8">
+          {/* Bring To School or Workplace */}
+          <div className="flex flex-col overflow-hidden rounded-[22px] bg-card">
+            <img
+              src={schoolImage}
+              alt=""
+              className="h-[180px] md:h-[230px] w-full object-cover"
+            />
+            <div className="flex flex-1 flex-col p-7 md:p-9">
+              <div className="mb-[18px] grid h-12 w-12 place-items-center rounded-xl bg-primary/10">
+                <Building2 size={22} className="text-primary" strokeWidth={1.9} />
+              </div>
+              <h3 className="font-display text-2xl md:text-3xl leading-tight text-foreground mb-2.5">
+                {t.share.thanksSchoolTitle}
+              </h3>
+              <p className="flex-1 text-base md:text-[16.5px] leading-relaxed text-muted-foreground mb-7">
+                {t.share.thanksSchoolBody}
+              </p>
+              <Button asChild className="self-start rounded-full px-7 py-6 text-[15.5px]">
+                <Link to="/contact">{t.share.thanksSchoolCta}</Link>
+              </Button>
+            </div>
           </div>
-          <div className="bg-background border border-border rounded-2xl p-8 text-center shadow-sm">
-            <h3 className="font-serif text-xl text-foreground mb-1">{t.share.thanksAmbassadorTitle}</h3>
-            <p className="text-foreground/70 mb-6">{t.share.thanksAmbassadorBody}</p>
-            <Button asChild>
-              <Link to="/commit">{t.share.thanksAmbassadorCta}</Link>
-            </Button>
+
+          {/* Become an Ambassador */}
+          <div className="flex flex-col overflow-hidden rounded-[22px] bg-card">
+            <img
+              src={ambassadorImage}
+              alt=""
+              className="h-[180px] md:h-[230px] w-full object-cover"
+            />
+            <div className="flex flex-1 flex-col p-7 md:p-9">
+              <div className="mb-[18px] grid h-12 w-12 place-items-center rounded-xl bg-cyan-900/10">
+                <Users size={22} className="text-cyan-900" strokeWidth={1.9} />
+              </div>
+              <h3 className="font-display text-2xl md:text-3xl leading-tight text-foreground mb-2.5">
+                {t.share.thanksAmbassadorTitle}
+              </h3>
+              <p className="flex-1 text-base md:text-[16.5px] leading-relaxed text-muted-foreground mb-7">
+                {t.share.thanksAmbassadorBody}
+              </p>
+              <Button
+                asChild
+                variant="outline"
+                className="self-start rounded-full border-2 border-cyan-900 px-7 py-6 text-[15.5px] text-cyan-900 hover:bg-cyan-900/5"
+              >
+                <Link to="/commit">{t.share.thanksAmbassadorCta}</Link>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
