@@ -19,6 +19,9 @@ interface Props {
   onToggleReact?: () => void;
   onReadMore?: () => void;
   seed?: string | null;
+  /** Shows the "Kindness Given/Received/Seen" eyebrow tag even on the
+   *  minimal variant (which normally only shows it on "branded"). */
+  showModeEyebrow?: boolean;
 }
 
 const TEXT_SHADOW = "0 1px 2px rgba(255,255,255,0.4)";
@@ -38,6 +41,7 @@ const KindnessCard = forwardRef<HTMLDivElement, Props>(function KindnessCard(
     onToggleReact,
     onReadMore,
     seed,
+    showModeEyebrow = false,
   },
   ref,
 ) {
@@ -55,6 +59,7 @@ const KindnessCard = forwardRef<HTMLDivElement, Props>(function KindnessCard(
   const hasText = text.length > 0;
   const hasPhoto = !!photoUrl;
   const isBranded = variant === "branded";
+  const showEyebrow = isBranded || showModeEyebrow;
 
   const photoOnly = hasPhoto && !hasText;
   const photoText = hasPhoto && hasText;
@@ -149,7 +154,7 @@ const KindnessCard = forwardRef<HTMLDivElement, Props>(function KindnessCard(
               crossOrigin="anonymous"
               className="max-w-full max-h-full w-auto h-auto object-contain"
             />
-            {isBranded && renderBrandedEyebrow()}
+            {showEyebrow && renderBrandedEyebrow()}
           </div>
 
           {/* Text panel */}
@@ -211,7 +216,7 @@ const KindnessCard = forwardRef<HTMLDivElement, Props>(function KindnessCard(
             crossOrigin="anonymous"
             className="max-w-full max-h-full w-auto h-auto object-contain"
           />
-          {isBranded && renderBrandedEyebrow()}
+          {showEyebrow && renderBrandedEyebrow()}
           {isBranded && renderLogoWatermark()}
         </div>
       )}
@@ -219,12 +224,12 @@ const KindnessCard = forwardRef<HTMLDivElement, Props>(function KindnessCard(
       {/* ===================== TEXT ONLY (or empty branded) ===================== */}
       {(textOnly || emptyBranded) && (
         <>
-          {isBranded && renderBrandedEyebrow()}
+          {showEyebrow && renderBrandedEyebrow()}
           <div
             ref={textBox}
             className="absolute left-0 right-0 flex items-center justify-center text-center px-8"
             style={{
-              top: isBranded ? 56 : 40,
+              top: showEyebrow ? 56 : 40,
               bottom: variant === "minimal" ? 56 : 60,
             }}
           >
