@@ -4,7 +4,7 @@ import { Award, Building2, Download, Flame, Heart, Instagram, MessageCircle, Spa
 import { toPng } from "html-to-image";
 import { toast } from "sonner";
 import schoolImage from "@/assets/getinvolved-build.jpg";
-import ambassadorImage from "@/assets/ppl-group.png";
+import ambassadorImage from "@/assets/community-5.jpg";
 
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useAuth } from "@shared/contexts/AuthContext";
