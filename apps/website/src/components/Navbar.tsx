@@ -26,6 +26,11 @@ const Navbar = () => {
   const isHome = location.pathname === "/";
   const hasSubNav = isHome || location.pathname === "/ideas";
   const isSolid = !isHome || scrolled;
+  // Alternate-domain branding: passforwardkindness.com shows "Pass Kindness
+  // Forward" beside the logo. Requires that domain to be routed to this same
+  // site at the host level (Cloudflare custom domain) - a separate infra step.
+  const hostname = typeof window !== "undefined" ? window.location.hostname.replace(/^www\./, "") : "";
+  const isPassKindnessForward = hostname === "passforwardkindness.com";
 
   const exploreItems = [
     { label: t.navbar.ideas, href: "/ideas" },
@@ -95,12 +100,17 @@ const Navbar = () => {
       }`}
     >
       <div className="section-padding flex items-center justify-between h-20 gap-4">
-        <Link to="/" className="shrink-0">
+        <Link to="/" className="shrink-0 flex items-center gap-2.5">
           <img
             src="/logo-PPL.png"
             alt="Pásalo Pa'lante"
             className={`h-10 transition-all duration-300 ${isSolid ? "" : "brightness-0 invert"}`}
           />
+          {isPassKindnessForward && (
+            <span className={`text-base md:text-lg font-semibold tracking-tight transition-colors duration-300 ${isSolid ? "text-foreground" : "text-white"}`}>
+              Pass Kindness Forward
+            </span>
+          )}
         </Link>
 
         <div className="hidden md:flex items-center gap-6">
