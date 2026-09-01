@@ -435,9 +435,30 @@ async function ghlUpsertContact(contact: {
       headers,
       body: JSON.stringify(payload),
     });
-    if (!createRes.ok) throw new Error(`GHL create failed: ${await createRes.text()}`);
-    const created = await createRes.json();
-    return created.contact?.id;
+    if (createRes.ok) {
+      const created = await createRes.json();
+      return created.contact?.id;
+    }
+
+    // GHL's contact search can lag just behind a contact it created moments
+    // earlier (e.g. website-signup and email-verified firing back-to-back
+    // for the same email) - the search above then misses it, we try to
+    // create a duplicate, and GHL rejects it. Its error conveniently names
+    // the existing contact's id, so update that one instead of failing.
+    const errBody = await createRes.text();
+    let dupeId: string | undefined;
+    try {
+      dupeId = JSON.parse(errBody)?.meta?.contactId;
+    } catch { /* not JSON - fall through to throw below */ }
+    if (!dupeId) throw new Error(`GHL create failed: ${errBody}`);
+
+    const retryRes = await fetch(`${CONFIG.ghl.baseUrl}/contacts/${dupeId}`, {
+      method: "PUT",
+      headers,
+      body: JSON.stringify(payload),
+    });
+    if (!retryRes.ok) throw new Error(`GHL update (after duplicate) failed: ${await retryRes.text()}`);
+    return dupeId;
   }
 }
 
