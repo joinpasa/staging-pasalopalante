@@ -57,7 +57,7 @@ const Hero = () => {
 
       <div className="relative z-10 section-padding w-full pt-32 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-          <div className="lg:col-span-7">
+          <div className="lg:col-span-6">
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -71,7 +71,7 @@ const Hero = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.8 }}
-              className="headline-xl text-warm-cream mb-8 [&_em]:text-warm-gold"
+              className="headline-xl lg:text-5xl xl:text-6xl text-warm-cream mb-8 [&_em]:text-warm-gold"
             >
               <span dangerouslySetInnerHTML={{ __html: t.hero.title }} />
             </motion.h1>
@@ -163,7 +163,7 @@ const Hero = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.0, duration: 0.8 }}
-            className="lg:col-span-5 w-full"
+            className="lg:col-span-6 w-full"
           >
             <HeroVideo />
           </motion.div>
