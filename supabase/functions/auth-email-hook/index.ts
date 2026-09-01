@@ -38,9 +38,9 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 const SITE_NAME = "Pásalo Pa'lante"
 const ROOT_DOMAIN = "pasalopalante.com"
 // Emails must be sent from the domain actually verified with Resend, which is
-// this dedicated subdomain (kept separate from the root domain specifically
-// so its SPF/DKIM/DMARC records never collide with GHL's records on the root).
-const SENDER_DOMAIN = "notify.pasalopalante.com"
+// this dedicated subdomain (chosen instead of notify.pasalopalante.com because
+// GHL/Mailgun already had conflicting MX/SPF records on "notify").
+const SENDER_DOMAIN = "ntf.pasalopalante.com"
 
 // Sample data for preview mode ONLY (not used in actual email sending).
 const SAMPLE_PROJECT_URL = `https://${ROOT_DOMAIN}`
