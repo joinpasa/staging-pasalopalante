@@ -187,6 +187,7 @@ const translations = {
     liveWall: {
       eyebrow: "Live from the wall",
       minutesAgo: "{n} min ago",
+      statLine: "{n} acts shared today",
     },
     joinWave: {
       eyebrow: "You're Invited",
@@ -866,6 +867,7 @@ const translations = {
     liveWall: {
       eyebrow: "En vivo desde el muro",
       minutesAgo: "hace {n} min",
+      statLine: "{n} actos compartidos hoy",
     },
     joinWave: {
       eyebrow: "Estás invitado",
@@ -2267,6 +2269,7 @@ const translations = {
     liveWall: {
       eyebrow: "Live von der Wand",
       minutesAgo: "vor {n} Min.",
+      statLine: "{n} Akte heute geteilt",
     },
     joinWave: {
       eyebrow: "Sie sind eingeladen",
