@@ -186,7 +186,12 @@ const translations = {
     },
     liveWall: {
       eyebrow: "Live from the wall",
+      justNow: "Just now",
       minutesAgo: "{n} min ago",
+      hourAgo: "an hour ago",
+      hoursAgo: "{n} hours ago",
+      dayAgo: "a day ago",
+      daysAgo: "{n} days ago",
       statLine: "{n} acts shared today",
     },
     joinWave: {
@@ -866,7 +871,12 @@ const translations = {
     },
     liveWall: {
       eyebrow: "En vivo desde el muro",
+      justNow: "Justo ahora",
       minutesAgo: "hace {n} min",
+      hourAgo: "hace una hora",
+      hoursAgo: "hace {n} horas",
+      dayAgo: "hace un día",
+      daysAgo: "hace {n} días",
       statLine: "{n} actos compartidos hoy",
     },
     joinWave: {
@@ -2268,7 +2278,12 @@ const translations = {
     },
     liveWall: {
       eyebrow: "Live von der Wand",
+      justNow: "Gerade eben",
       minutesAgo: "vor {n} Min.",
+      hourAgo: "vor einer Stunde",
+      hoursAgo: "vor {n} Stunden",
+      dayAgo: "vor einem Tag",
+      daysAgo: "vor {n} Tagen",
       statLine: "{n} Akte heute geteilt",
     },
     joinWave: {

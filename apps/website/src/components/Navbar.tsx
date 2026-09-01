@@ -127,7 +127,7 @@ const Navbar = () => {
               <ChevronDown size={14} className={`transition-transform duration-200 ${exploreOpen ? "rotate-180" : ""}`} />
             </button>
             <div
-              className={`absolute right-0 top-[calc(100%+18px)] min-w-[210px] rounded-2xl border border-border bg-warm-cream p-2 shadow-2xl transition-all duration-200 ${
+              className={`absolute right-0 top-[calc(100%+18px)] z-50 min-w-[210px] rounded-2xl border border-border bg-warm-cream p-2 shadow-2xl transition-all duration-200 ${
                 exploreOpen
                   ? "opacity-100 visible translate-y-0"
                   : "opacity-0 invisible -translate-y-1.5 pointer-events-none"

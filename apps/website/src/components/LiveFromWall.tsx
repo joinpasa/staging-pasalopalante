@@ -16,8 +16,16 @@ const ROTATE_MS = 7000;
 const POOL_LIMIT = 15;
 const VISIBLE = 3;
 
-function minutesAgo(iso: string): number {
-  return Math.max(1, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
+function timeAgo(iso: string, t: ReturnType<typeof useLanguage>["t"]): string {
+  const minutes = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+  if (minutes < 1) return t.liveWall.justNow;
+  if (minutes < 60) return t.liveWall.minutesAgo.replace("{n}", String(minutes));
+  const hours = Math.floor(minutes / 60);
+  if (hours === 1) return t.liveWall.hourAgo;
+  if (hours < 24) return t.liveWall.hoursAgo.replace("{n}", String(hours));
+  const days = Math.floor(hours / 24);
+  if (days === 1) return t.liveWall.dayAgo;
+  return t.liveWall.daysAgo.replace("{n}", String(days));
 }
 
 // Subtle, distinct tints pulled from the existing warm.* palette - no new colors.
@@ -115,7 +123,7 @@ const LiveFromWall = () => {
           {t.liveWall.eyebrow}
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-start">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <AnimatePresence mode="popLayout">
             {(visible ?? [0, 1, 2]).map((entry, i) => {
               const act = visible ? (entry as Act) : null;
@@ -152,7 +160,7 @@ const LiveFromWall = () => {
                         )}
                         <p className="text-[15px] leading-snug text-foreground">{act.description}</p>
                         <p className="mt-1.5 text-xs text-muted-foreground">
-                          {t.liveWall.minutesAgo.replace("{n}", String(minutesAgo(act.created_at)))}
+                          {timeAgo(act.created_at, t)}
                         </p>
                         {act.first_name && (
                           <p className="text-xs text-foreground/50 mt-0.5">{act.first_name}</p>
