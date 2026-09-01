@@ -573,6 +573,7 @@ const translations = {
       invitesLinkHint: "Your personal invite link",
       invitesCopied: "Invite link copied",
       footerNote: "Pásalo Pa'lante · Powered by Te Amo PR",
+      dismiss: "Dismiss",
     },
     inspiration: {
       heroEyebrow: "Inspiration",
@@ -1263,6 +1264,7 @@ const translations = {
       invitesLinkHint: "Tu enlace personal de invitación",
       invitesCopied: "Enlace de invitación copiado",
       footerNote: "Pásalo Pa'lante · Por Te Amo PR",
+      dismiss: "Descartar",
     },
     inspiration: {
       heroEyebrow: "Inspiración",
@@ -1877,7 +1879,8 @@ const translations = {
       "invitesEmpty": "Partagez un acte de gentillesse et votre lien lancera une vague ici.",
       "invitesLinkHint": "Votre lien d'invitation personnel",
       "invitesCopied": "Lien d'invitation copié",
-      "footerNote": "Pásalo Pa'lante · Propulsé par Te Amo PR"
+      "footerNote": "Pásalo Pa'lante · Propulsé par Te Amo PR",
+      "dismiss": "Ignorer"
     },
     "inspiration": {
       "heroEyebrow": "Inspiration",
@@ -2675,6 +2678,7 @@ const translations = {
       invitesLinkHint: "Dein persönlicher Einladungslink",
       invitesCopied: "Einladungslink kopiert",
       footerNote: "Pásalo Pa'lante · Betrieben von Te Amo PR",
+      dismiss: "Verwerfen",
     },
     inspiration: {
       heroEyebrow: "Inspiration",

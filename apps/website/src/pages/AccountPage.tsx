@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
+import { X } from "lucide-react";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { supabase } from "@shared/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProfileHeader from "@/components/account/ProfileHeader";
+import SetPasswordCard from "@/components/account/SetPasswordCard";
 import YourActs from "@/components/account/YourActs";
 import InspirationCard from "@/components/account/InspirationCard";
 import YourCommitment from "@/components/account/YourCommitment";
@@ -22,6 +24,7 @@ const AccountPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [profile, setProfile] = useState<any>(null);
   const [profileLoading, setProfileLoading] = useState(true);
+  const [passwordPromptDismissed, setPasswordPromptDismissed] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) navigate("/auth", { replace: true });
@@ -114,6 +117,20 @@ const AccountPage = () => {
           <Skeleton className="h-24 w-full rounded-2xl" />
         ) : (
           <ProfileHeader profile={profile} />
+        )}
+
+        {!profileLoading && profile && !profile.has_password && !passwordPromptDismissed && (
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setPasswordPromptDismissed(true)}
+              aria-label={t.account.dismiss}
+              className="absolute right-4 top-4 text-foreground/40 hover:text-foreground/70"
+            >
+              <X size={16} />
+            </button>
+            <SetPasswordCard />
+          </div>
         )}
 
         <StreaksBadges userId={user.id} />
