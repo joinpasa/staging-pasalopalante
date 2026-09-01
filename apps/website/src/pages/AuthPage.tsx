@@ -4,6 +4,7 @@ import { useAuth } from "@shared/contexts/AuthContext";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { getAuthErrorMessage } from "@shared/lib/authErrors";
 import { supabase } from "@shared/integrations/supabase/client";
+import { syncGhlTag } from "@shared/lib/ghlSync";
 import { Button } from "@shared/components/ui/button";
 import { Input } from "@shared/components/ui/input";
 import { Label } from "@shared/components/ui/label";
@@ -48,8 +49,14 @@ const AuthPage = () => {
     setBusy(true);
     const { error } = await signInWithMagicLink(email);
     setBusy(false);
-    if (error) toast.error(t.auth.magicError);
-    else setMagicSentTo(email);
+    if (error) {
+      toast.error(t.auth.magicError);
+    } else {
+      // Tag the contact immediately on request, not just after the link is
+      // clicked, so signups who never verify still show up in GHL.
+      if (tab === "signup") syncGhlTag(email, "website-signup");
+      setMagicSentTo(email);
+    }
   };
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {

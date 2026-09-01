@@ -1,6 +1,6 @@
 import { supabase } from "@shared/integrations/supabase/client";
 
-export type GhlLifecycleTag = "password-set" | "email-verified";
+export type GhlLifecycleTag = "password-set" | "email-verified" | "website-signup";
 
 /**
  * Fire-and-forget: tag a contact in GoHighLevel for a lifecycle milestone

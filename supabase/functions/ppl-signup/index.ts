@@ -110,9 +110,10 @@ Deno.serve(async (req) => {
   const now = new Date().toISOString();
   const today = now.split("T")[0];
 
-  // Lifecycle milestones (password set, email verified): tag-only, GHL-only —
-  // no Airtable signup record, and must not touch the contact's other tags.
-  if (formType === "password-set" || formType === "email-verified") {
+  // Lifecycle milestones (password set, email verified, requested a signup
+  // link but hasn't clicked it yet): tag-only, GHL-only — no Airtable signup
+  // record, and must not touch the contact's other tags.
+  if (formType === "password-set" || formType === "email-verified" || formType === "website-signup") {
     try {
       const ghlContactId = await ghlAddTags(data.email, [formType], {
         firstName: data.firstName || "",
