@@ -101,8 +101,16 @@ Deno.serve(async (req) => {
   // holds that key (the pg_cron job, via Vault) can trigger queue processing.
   const token = authHeader.slice('Bearer '.length).trim()
   if (token !== supabaseServiceKey) {
+    // TEMPORARY diagnostic (safe: JWTs share a constant "eyJhbG..." prefix,
+    // so this leaks no secret entropy) - remove once the mismatch is found.
     return new Response(
-      JSON.stringify({ error: 'Forbidden' }),
+      JSON.stringify({
+        error: 'Forbidden',
+        gotLen: token.length,
+        gotPrefix: token.slice(0, 8),
+        expectedLen: supabaseServiceKey.length,
+        expectedPrefix: supabaseServiceKey.slice(0, 8),
+      }),
       { status: 403, headers: { 'Content-Type': 'application/json' } }
     )
   }
