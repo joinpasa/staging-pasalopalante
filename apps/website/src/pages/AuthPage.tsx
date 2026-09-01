@@ -18,16 +18,24 @@ function safeNext(raw: string | null): string {
   return raw;
 }
 
+type AuthTab = "signin" | "signup";
+
 const AuthPage = () => {
   const { t } = useLanguage();
   const { signIn, signInWithMagicLink, resetPassword, user, loading } = useAuth();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const next = safeNext(params.get("next"));
+  const [tab, setTab] = useState<AuthTab>(params.get("tab") === "signup" ? "signup" : "signin");
   const [busy, setBusy] = useState(false);
   const [magicSentTo, setMagicSentTo] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [needsReset, setNeedsReset] = useState<{ email: string; sent: boolean } | null>(null);
+
+  function selectTab(newTab: AuthTab) {
+    setTab(newTab);
+    setShowPassword(false); // password sign-in is a Sign in-tab-only affordance
+  }
 
   useEffect(() => {
     if (!loading && user) navigate(next, { replace: true });
@@ -84,8 +92,39 @@ const AuthPage = () => {
         <img src="/logo-PPL.png" alt="Pásalo Pa'lante" className="h-12" />
       </Link>
       <div className="w-full max-w-md bg-background rounded-2xl shadow-sm border border-border p-8">
-        <h1 className="font-serif text-3xl text-center mb-2">{t.auth.title}</h1>
-        <p className="text-sm text-foreground/70 text-center mb-6">{t.auth.subtitle}</p>
+        {!magicSentTo && !needsReset && (
+          <div className="flex items-center gap-1 rounded-full bg-warm-sand/60 p-1 mb-6" role="tablist">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === "signin"}
+              onClick={() => selectTab("signin")}
+              className={`flex-1 rounded-full py-2 text-sm font-semibold transition-colors ${
+                tab === "signin" ? "bg-background text-foreground shadow-sm" : "text-foreground/50 hover:text-foreground/70"
+              }`}
+            >
+              {t.auth.signInTab}
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === "signup"}
+              onClick={() => selectTab("signup")}
+              className={`flex-1 rounded-full py-2 text-sm font-semibold transition-colors ${
+                tab === "signup" ? "bg-background text-foreground shadow-sm" : "text-foreground/50 hover:text-foreground/70"
+              }`}
+            >
+              {t.auth.signUpTab}
+            </button>
+          </div>
+        )}
+
+        <h1 className="font-serif text-3xl text-center mb-2">
+          {tab === "signup" ? t.auth.createAccountHeading : t.auth.title}
+        </h1>
+        <p className="text-sm text-foreground/70 text-center mb-6">
+          {tab === "signup" ? t.auth.createAccountSubtitle : t.auth.subtitle}
+        </p>
 
         {magicSentTo ? (
           <div className="text-center space-y-4 py-6">
@@ -125,36 +164,38 @@ const AuthPage = () => {
                 <Input id="magic-email" name="email" type="email" required autoComplete="email" />
               </div>
               <Button type="submit" className="w-full" disabled={busy}>
-                {busy ? "…" : t.auth.magicSend}
+                {busy ? "…" : tab === "signup" ? t.auth.magicSendSignup : t.auth.magicSend}
               </Button>
               <p className="text-xs text-foreground/60 text-center">{t.auth.magicHint}</p>
             </form>
 
-            <div className="mt-6 pt-6 border-t border-border">
-              {!showPassword ? (
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(true)}
-                  className="w-full text-sm text-foreground/60 hover:text-foreground underline underline-offset-4"
-                >
-                  {t.auth.orPassword}
-                </button>
-              ) : (
-                <form onSubmit={handleSignIn} className="space-y-4">
-                  <div>
-                    <Label htmlFor="signin-email">{t.auth.email}</Label>
-                    <Input id="signin-email" name="email" type="email" required autoComplete="email" />
-                  </div>
-                  <div>
-                    <Label htmlFor="signin-password">{t.auth.password}</Label>
-                    <Input id="signin-password" name="password" type="password" required autoComplete="current-password" autoCapitalize="none" autoCorrect="off" spellCheck={false} />
-                  </div>
-                  <Button type="submit" variant="outline" className="w-full" disabled={busy}>
-                    {busy ? "…" : t.auth.signIn}
-                  </Button>
-                </form>
-              )}
-            </div>
+            {tab === "signin" && (
+              <div className="mt-6 pt-6 border-t border-border">
+                {!showPassword ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(true)}
+                    className="w-full text-sm text-foreground/60 hover:text-foreground underline underline-offset-4"
+                  >
+                    {t.auth.orPassword}
+                  </button>
+                ) : (
+                  <form onSubmit={handleSignIn} className="space-y-4">
+                    <div>
+                      <Label htmlFor="signin-email">{t.auth.email}</Label>
+                      <Input id="signin-email" name="email" type="email" required autoComplete="email" />
+                    </div>
+                    <div>
+                      <Label htmlFor="signin-password">{t.auth.password}</Label>
+                      <Input id="signin-password" name="password" type="password" required autoComplete="current-password" autoCapitalize="none" autoCorrect="off" spellCheck={false} />
+                    </div>
+                    <Button type="submit" variant="outline" className="w-full" disabled={busy}>
+                      {busy ? "…" : t.auth.signIn}
+                    </Button>
+                  </form>
+                )}
+              </div>
+            )}
           </>
         )}
 

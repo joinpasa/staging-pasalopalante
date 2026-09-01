@@ -122,7 +122,7 @@ function Inner() {
     if (postShare?.kind === "check_inbox") {
       setShowClaim(true);
     } else {
-      navigate("/auth");
+      navigate("/auth?tab=signup");
     }
   }
 
