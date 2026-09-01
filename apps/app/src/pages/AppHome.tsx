@@ -1,15 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { LayoutGrid, HeartHandshake } from "lucide-react";
-import { toast } from "sonner";
 
 import PasaMark from "@/components/app/PasaMark";
 import JoinGate from "@/components/app/JoinGate";
 import ReactionButton from "@/components/app/ReactionButton";
-import OnboardingWalkthrough from "@/components/app/OnboardingWalkthrough";
-import { ONBOARDING_SEEN_KEY } from "@/lib/pendingSignup";
 import { useAuth } from "@shared/contexts/AuthContext";
-import { supabase } from "@shared/integrations/supabase/client";
 import {
   useActReactions,
   useActsReceivedByMe,
@@ -45,45 +41,6 @@ export default function AppHome() {
   const sendThanks = useSendThanks();
   const [justThanked, setJustThanked] = useState<Set<string>>(new Set());
 
-  // A website signup lands here with ?onboarding=1 plus their profile in the
-  // URL (the website only collects an email; there's no shared localStorage
-  // between the two origins to carry it across the magic-link redirect).
-  // Gated by the same seen-flag AppJoin's own pre-verification path uses, so
-  // it never shows twice regardless of which flow someone signed up through.
-  const [showOnboarding, setShowOnboarding] = useState(false);
-  const [onboardingBusy, setOnboardingBusy] = useState(false);
-  useEffect(() => {
-    if (searchParams.get("onboarding") === "1" && user && !localStorage.getItem(ONBOARDING_SEEN_KEY)) {
-      setShowOnboarding(true);
-    }
-  }, [searchParams, user]);
-
-  async function finishOnboarding(pledgeCount: number) {
-    setOnboardingBusy(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("submit-commitment", {
-        body: {
-          type: "individual",
-          first_name: searchParams.get("firstName") || "",
-          last_name: searchParams.get("lastName") || "",
-          email: user?.email || "",
-          pledge_count: pledgeCount,
-          country: searchParams.get("country") || "",
-          help_role: "do_acts",
-        },
-      });
-      const failure = (data as { error?: string } | null)?.error ?? error?.message;
-      if (failure) toast.error(failure);
-    } catch {
-      toast.error("Something went wrong saving your pledge. You can set it later from your profile.");
-    } finally {
-      setOnboardingBusy(false);
-      localStorage.setItem(ONBOARDING_SEEN_KEY, "1");
-      setShowOnboarding(false);
-      navigate("/", { replace: true });
-    }
-  }
-
   // Someone scanned a pass QR (pasalopalante.com/app?ref=<code>). If the app
   // is installed (running standalone), stay here. If not, send them to join
   // so they can sign up / install — preserving the referral code. Only fires
@@ -116,10 +73,6 @@ export default function AppHome() {
   const actsAllTime = totals?.actsAllTime ?? 0;
   const progress = Math.min((actsAllTime / GOAL) * 100, 100);
   const greetingName = me?.firstName ?? (user ? "friend" : "there");
-
-  if (showOnboarding) {
-    return <OnboardingWalkthrough onFinish={finishOnboarding} busy={onboardingBusy} />;
-  }
 
   return (
     <div className="space-y-5 px-5 pt-5">

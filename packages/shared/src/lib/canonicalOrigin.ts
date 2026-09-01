@@ -13,21 +13,3 @@ export function getCanonicalOrigin(): string {
   if (origin.startsWith("http://localhost")) return __CANONICAL_ORIGIN__;
   return origin;
 }
-
-const STAGING_WEBSITE_ORIGIN = "https://stagingsite-pasalopalante.connect-bef.workers.dev";
-const STAGING_APP_ORIGIN = "https://stagingapp-pasalopalante.connect-bef.workers.dev";
-const PROD_APP_ORIGIN = "https://app.pasalopalante.com";
-
-/**
- * The app's origin, callable from the *website* (which runs on a different
- * domain than the app). Mirrors whichever environment the website is
- * currently running in — staging website -> staging app, anything else
- * (production, localhost) -> production app.
- */
-export function getAppOrigin(): string {
-  const origin = window.location.origin;
-  if (origin === STAGING_WEBSITE_ORIGIN || origin.startsWith("http://localhost")) {
-    return STAGING_APP_ORIGIN;
-  }
-  return PROD_APP_ORIGIN;
-}

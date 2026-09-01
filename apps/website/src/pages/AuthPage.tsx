@@ -5,12 +5,9 @@ import { useLanguage } from "@shared/contexts/LanguageContext";
 import { getAuthErrorMessage } from "@shared/lib/authErrors";
 import { supabase } from "@shared/integrations/supabase/client";
 import { syncGhlTag } from "@shared/lib/ghlSync";
-import { getAppOrigin } from "@shared/lib/canonicalOrigin";
-import { COUNTRIES } from "@shared/data/countries";
 import { Button } from "@shared/components/ui/button";
 import { Input } from "@shared/components/ui/input";
 import { Label } from "@shared/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@shared/components/ui/select";
 import { toast } from "sonner";
 import { CheckCircle2, KeyRound } from "lucide-react";
 import Footer from "@/components/Footer";
@@ -36,8 +33,6 @@ const AuthPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [needsReset, setNeedsReset] = useState<{ email: string; sent: boolean } | null>(null);
   const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [country, setCountry] = useState("");
 
   function selectTab(newTab: AuthTab) {
     setTab(newTab);
@@ -52,37 +47,15 @@ const AuthPage = () => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const email = String(fd.get("email"));
-
-    if (tab === "signup" && !country) {
-      toast.error(t.commit.countryRequired);
-      return;
-    }
-
     setBusy(true);
-
-    // Both flows hand off to the app's dashboard, not the website's own
-    // account page - that's where "Home" and the account experience
-    // actually live. New signups also carry their profile over via query
-    // params so the app can show the welcome onboarding carousel (which
-    // needs a name/country to submit the pledge step) on first landing.
-    const redirectPath =
-      tab === "signup"
-        ? `${getAppOrigin()}/?${new URLSearchParams({
-            onboarding: "1",
-            firstName: firstName.trim(),
-            lastName: lastName.trim(),
-            country,
-          }).toString()}`
-        : `${getAppOrigin()}/`;
-
-    const { error } = await signInWithMagicLink(email, tab === "signup" ? firstName.trim() : undefined, redirectPath);
+    const { error } = await signInWithMagicLink(email, tab === "signup" ? firstName.trim() : undefined);
     setBusy(false);
     if (error) {
       toast.error(t.auth.magicError);
     } else {
       // Tag the contact immediately on request, not just after the link is
       // clicked, so signups who never verify still show up in GHL.
-      if (tab === "signup") syncGhlTag(email, "website-signup", { firstName, lastName });
+      if (tab === "signup") syncGhlTag(email, "website-signup", { firstName });
       setMagicSentTo(email);
     }
   };
@@ -196,45 +169,17 @@ const AuthPage = () => {
             <>
               <form onSubmit={handleMagicLink} className="space-y-4">
                 {tab === "signup" && (
-                  <>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="signup-first-name">{t.commit.firstNameLabel}</Label>
-                        <Input
-                          id="signup-first-name"
-                          required
-                          maxLength={60}
-                          value={firstName}
-                          onChange={(e) => setFirstName(e.target.value)}
-                          autoComplete="given-name"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="signup-last-name">{t.commit.lastNameLabel}</Label>
-                        <Input
-                          id="signup-last-name"
-                          required
-                          maxLength={60}
-                          value={lastName}
-                          onChange={(e) => setLastName(e.target.value)}
-                          autoComplete="family-name"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <Label htmlFor="signup-country">{t.commit.countryLabel}</Label>
-                      <Select value={country} onValueChange={setCountry} required>
-                        <SelectTrigger id="signup-country">
-                          <SelectValue placeholder={t.commit.countryPlaceholder} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {COUNTRIES.map((c) => (
-                            <SelectItem key={c} value={c}>{c}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </>
+                  <div>
+                    <Label htmlFor="signup-first-name">{t.commit.firstNameLabel}</Label>
+                    <Input
+                      id="signup-first-name"
+                      required
+                      maxLength={60}
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      autoComplete="given-name"
+                    />
+                  </div>
                 )}
                 <div>
                   <Label htmlFor="magic-email">{t.auth.email}</Label>
