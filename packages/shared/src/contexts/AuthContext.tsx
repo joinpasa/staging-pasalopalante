@@ -7,6 +7,14 @@ import { syncGhlTag } from "@shared/lib/ghlSync";
 
 const GHL_EMAIL_VERIFIED_SYNCED_KEY = "ppl_ghl_email_verified_synced";
 
+// redirectPath is usually a path on this app's own origin, but callers that
+// need to hand off to a *different* app (e.g. the website redirecting a new
+// signup into the app's dashboard) can pass a full absolute URL instead.
+function resolveRedirectTo(redirectPath: string): string {
+  if (/^https?:\/\//.test(redirectPath)) return redirectPath;
+  return `${getCanonicalOrigin()}${redirectPath}`;
+}
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -79,7 +87,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       email,
       password,
       options: {
-        emailRedirectTo: `${getCanonicalOrigin()}${redirectPath}`,
+        emailRedirectTo: resolveRedirectTo(redirectPath),
         data: displayName ? { display_name: displayName } : undefined,
       },
     });
@@ -94,7 +102,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${getCanonicalOrigin()}${redirectPath}`,
+        emailRedirectTo: resolveRedirectTo(redirectPath),
         data: displayName ? { display_name: displayName } : undefined,
       },
     });

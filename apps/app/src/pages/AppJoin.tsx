@@ -5,7 +5,7 @@ import { ArrowRight, CheckCircle2, Mail } from "lucide-react";
 
 import PasaMark from "@/components/app/PasaMark";
 import OnboardingWalkthrough from "@/components/app/OnboardingWalkthrough";
-import { PENDING_EMAIL_KEY, PENDING_PROFILE_KEY } from "@/lib/pendingSignup";
+import { PENDING_EMAIL_KEY, PENDING_PROFILE_KEY, ONBOARDING_SEEN_KEY } from "@/lib/pendingSignup";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { supabase } from "@shared/integrations/supabase/client";
 import { COUNTRIES } from "@shared/data/countries";
@@ -13,8 +13,6 @@ import { cn } from "@shared/lib/utils";
 import { getAuthErrorMessage } from "@shared/lib/authErrors";
 import { getCanonicalOrigin } from "@shared/lib/canonicalOrigin";
 import { submitPPLForm } from "@shared/lib/pplForm";
-
-const ONBOARDING_SEEN_KEY = "ppl-onboarding-seen";
 
 /**
  * Sign-up and sign-in for the installed app.
