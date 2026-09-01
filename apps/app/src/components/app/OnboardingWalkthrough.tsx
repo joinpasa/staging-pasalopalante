@@ -2,25 +2,56 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link2, ScanLine, LayoutGrid, Radio } from "lucide-react";
 import { cn } from "@shared/lib/utils";
+import { COUNTRIES } from "@shared/data/countries";
 
 const PLEDGE_PRESETS = [1, 5, 10, 25, 100];
 const DEFAULT_PLEDGE = 10;
 
+export interface OnboardingResult {
+  pledgeCount: number;
+  firstName: string;
+  lastName: string;
+  country: string;
+}
+
 interface OnboardingWalkthroughProps {
-  /** Called once, with the chosen pledge count, when the tour finishes or is skipped. */
-  onFinish: (pledgeCount: number) => void;
+  /** Whatever's already on file - e.g. a website signup only ever collects
+   *  an email + first name, so lastName/country usually still need asking. */
+  firstName?: string;
+  lastName?: string;
+  country?: string;
+  /** Called once, with the finished profile + chosen pledge count, when the
+   *  tour finishes or is skipped. */
+  onFinish: (result: OnboardingResult) => void;
   busy?: boolean;
 }
 
 /**
- * 3-step welcome tour shown once right after account creation. Step 2 is
- * where the pledge count is actually chosen — moved here from the signup
- * form so account creation stays a single quick step.
+ * Welcome tour shown once right after account creation, on whichever
+ * platform the account first lands on verified. The pledge count (and,
+ * when missing, last name/country) is chosen here rather than on the
+ * signup form, so account creation itself stays a single quick step.
  */
-export default function OnboardingWalkthrough({ onFinish, busy }: OnboardingWalkthroughProps) {
+export default function OnboardingWalkthrough({
+  firstName: initialFirstName = "",
+  lastName: initialLastName = "",
+  country: initialCountry = "",
+  onFinish,
+  busy,
+}: OnboardingWalkthroughProps) {
+  const needsProfile = !initialLastName.trim() || !initialCountry.trim();
   const [step, setStep] = useState(0);
   const [pledge, setPledge] = useState(DEFAULT_PLEDGE);
   const [pledgeText, setPledgeText] = useState(String(DEFAULT_PLEDGE));
+  const [firstName, setFirstName] = useState(initialFirstName);
+  const [lastName, setLastName] = useState(initialLastName);
+  const [country, setCountry] = useState(initialCountry);
+
+  // welcome -> [profile] -> pledge -> ready
+  const profileStep = 1;
+  const pledgeStep = needsProfile ? 2 : 1;
+  const readyStep = needsProfile ? 3 : 2;
+  const totalSteps = readyStep + 1;
 
   const commitPledgeText = () => {
     const parsed = Number.parseInt(pledgeText, 10);
@@ -30,15 +61,23 @@ export default function OnboardingWalkthrough({ onFinish, busy }: OnboardingWalk
     return normalized;
   };
 
-  const skip = () => onFinish(commitPledgeText());
-  const finish = () => onFinish(commitPledgeText());
+  const complete = () => {
+    onFinish({
+      pledgeCount: commitPledgeText(),
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      country,
+    });
+  };
+
+  const profileIncomplete = needsProfile && (!firstName.trim() || !lastName.trim() || !country);
 
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 px-5">
       <div className="w-full max-w-sm rounded-2xl bg-app-surface p-6 shadow-xl">
         <div className="flex items-center justify-between">
           <div className="flex gap-1.5">
-            {[0, 1, 2].map((i) => (
+            {Array.from({ length: totalSteps }, (_, i) => (
               <span
                 key={i}
                 className={cn(
@@ -50,8 +89,8 @@ export default function OnboardingWalkthrough({ onFinish, busy }: OnboardingWalk
           </div>
           <button
             type="button"
-            onClick={skip}
-            disabled={busy}
+            onClick={complete}
+            disabled={busy || profileIncomplete}
             className="text-xs font-semibold text-muted-foreground underline disabled:opacity-60"
           >
             Skip for now
@@ -61,7 +100,7 @@ export default function OnboardingWalkthrough({ onFinish, busy }: OnboardingWalk
         <AnimatePresence mode="wait">
           {step === 0 && (
             <motion.div
-              key="step-0"
+              key="step-welcome"
               initial={{ opacity: 0, x: 16 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -16 }}
@@ -81,9 +120,65 @@ export default function OnboardingWalkthrough({ onFinish, busy }: OnboardingWalk
             </motion.div>
           )}
 
-          {step === 1 && (
+          {needsProfile && step === profileStep && (
             <motion.div
-              key="step-1"
+              key="step-profile"
+              initial={{ opacity: 0, x: 16 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -16 }}
+              transition={{ duration: 0.2 }}
+              className="mt-6"
+            >
+              <h2 className="text-center font-sans text-xl font-extrabold text-foreground">
+                A Little About You
+              </h2>
+              <p className="mt-2 text-center text-sm leading-relaxed text-muted-foreground">
+                Just enough to put you on the map.
+              </p>
+              <div className="mt-4 space-y-3 text-left">
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground" htmlFor="onb-first-name">First name</label>
+                    <input
+                      id="onb-first-name"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      autoComplete="given-name"
+                      className="mt-1 w-full rounded-xl border border-border bg-app-canvas px-3 py-2 text-sm text-foreground outline-none focus:border-app-coral"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground" htmlFor="onb-last-name">Last name</label>
+                    <input
+                      id="onb-last-name"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      autoComplete="family-name"
+                      className="mt-1 w-full rounded-xl border border-border bg-app-canvas px-3 py-2 text-sm text-foreground outline-none focus:border-app-coral"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground" htmlFor="onb-country">Country</label>
+                  <select
+                    id="onb-country"
+                    value={country}
+                    onChange={(e) => setCountry(e.target.value)}
+                    className="mt-1 w-full rounded-xl border border-border bg-app-canvas px-3 py-2 text-sm text-foreground outline-none focus:border-app-coral"
+                  >
+                    <option value="">Select your country</option>
+                    {COUNTRIES.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {step === pledgeStep && (
+            <motion.div
+              key="step-pledge"
               initial={{ opacity: 0, x: 16 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -16 }}
@@ -137,9 +232,9 @@ export default function OnboardingWalkthrough({ onFinish, busy }: OnboardingWalk
             </motion.div>
           )}
 
-          {step === 2 && (
+          {step === readyStep && (
             <motion.div
-              key="step-2"
+              key="step-ready"
               initial={{ opacity: 0, x: 16 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -16 }}
@@ -174,21 +269,23 @@ export default function OnboardingWalkthrough({ onFinish, busy }: OnboardingWalk
         </AnimatePresence>
 
         <div className="mt-6">
-          {step < 2 ? (
+          {step < readyStep ? (
             <button
               type="button"
               onClick={() => {
-                if (step === 1) commitPledgeText();
+                if (step === profileStep && profileIncomplete) return;
+                if (step === pledgeStep) commitPledgeText();
                 setStep((s) => s + 1);
               }}
-              className="flex h-12 w-full items-center justify-center rounded-2xl bg-app-coral font-semibold text-app-surface"
+              disabled={step === profileStep && profileIncomplete}
+              className="flex h-12 w-full items-center justify-center rounded-2xl bg-app-coral font-semibold text-app-surface disabled:opacity-60"
             >
               Next
             </button>
           ) : (
             <button
               type="button"
-              onClick={finish}
+              onClick={complete}
               disabled={busy}
               className="flex h-12 w-full items-center justify-center rounded-2xl bg-app-coral font-semibold text-app-surface disabled:opacity-60"
             >

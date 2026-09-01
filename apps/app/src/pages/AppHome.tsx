@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { LayoutGrid, HeartHandshake } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import PasaMark from "@/components/app/PasaMark";
 import JoinGate from "@/components/app/JoinGate";
 import ReactionButton from "@/components/app/ReactionButton";
+import OnboardingWalkthrough, { type OnboardingResult } from "@/components/app/OnboardingWalkthrough";
 import { useAuth } from "@shared/contexts/AuthContext";
+import { supabase } from "@shared/integrations/supabase/client";
 import {
   useActReactions,
   useActsReceivedByMe,
@@ -40,6 +44,44 @@ export default function AppHome() {
   ]);
   const sendThanks = useSendThanks();
   const [justThanked, setJustThanked] = useState<Set<string>>(new Set());
+  const queryClient = useQueryClient();
+
+  // A brand-new, verified account that hasn't pledged yet and hasn't seen
+  // the tour - reachable regardless of which platform/device the signup
+  // request vs. the link click happened on, since both flags live on the
+  // account (profiles.onboarding_seen, commitments), not local storage.
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingBusy, setOnboardingBusy] = useState(false);
+  useEffect(() => {
+    if (me && !me.onboardingSeen && !me.hasCommitment) setShowOnboarding(true);
+  }, [me]);
+
+  async function finishOnboarding({ pledgeCount, firstName, lastName, country }: OnboardingResult) {
+    if (!user) return;
+    setOnboardingBusy(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("submit-commitment", {
+        body: {
+          type: "individual",
+          first_name: firstName,
+          last_name: lastName,
+          email: user.email,
+          pledge_count: pledgeCount,
+          country,
+          help_role: "do_acts",
+        },
+      });
+      const failure = (data as { error?: string } | null)?.error ?? error?.message;
+      if (failure) toast.error(failure);
+    } catch {
+      toast.error("Something went wrong saving your pledge. You can set it later from your profile.");
+    } finally {
+      await supabase.from("profiles").update({ onboarding_seen: true }).eq("user_id", user.id);
+      setOnboardingBusy(false);
+      setShowOnboarding(false);
+      queryClient.invalidateQueries({ queryKey: ["app", "me"] });
+    }
+  }
 
   // Someone scanned a pass QR (pasalopalante.com/app?ref=<code>). If the app
   // is installed (running standalone), stay here. If not, send them to join
@@ -73,6 +115,18 @@ export default function AppHome() {
   const actsAllTime = totals?.actsAllTime ?? 0;
   const progress = Math.min((actsAllTime / GOAL) * 100, 100);
   const greetingName = me?.firstName ?? (user ? "friend" : "there");
+
+  if (showOnboarding) {
+    return (
+      <OnboardingWalkthrough
+        firstName={me?.firstName}
+        lastName={me?.lastName}
+        country={me?.place !== "Worldwide" ? me?.place : ""}
+        onFinish={finishOnboarding}
+        busy={onboardingBusy}
+      />
+    );
+  }
 
   return (
     <div className="space-y-5 px-5 pt-5">

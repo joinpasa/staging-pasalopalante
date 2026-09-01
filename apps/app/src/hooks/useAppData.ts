@@ -13,6 +13,7 @@ import { useAuth } from "@shared/contexts/AuthContext";
 
 export interface AppMe {
   firstName: string;
+  lastName: string;
   displayName: string;
   place: string;
   referralCode: string | null;
@@ -22,6 +23,8 @@ export interface AppMe {
   pledged: number;
   peoplePassedTo: number;
   rippleActs: number;
+  onboardingSeen: boolean;
+  hasCommitment: boolean;
 }
 
 export function useAppMe() {
@@ -36,7 +39,7 @@ export function useAppMe() {
       const [profileRes, streakRes, pledgeRes, referralRes] = await Promise.all([
         supabase
           .from("profiles")
-          .select("display_name, first_name, country, referral_code")
+          .select("display_name, first_name, last_name, country, referral_code, onboarding_seen")
           .eq("user_id", uid)
           .maybeSingle(),
         supabase.rpc("user_streak", { _user_id: uid }),
@@ -53,6 +56,7 @@ export function useAppMe() {
 
       return {
         firstName: profile?.first_name?.trim() || displayName.split(" ")[0],
+        lastName: profile?.last_name?.trim() || "",
         displayName,
         place: profile?.country?.trim() || "Worldwide",
         referralCode: profile?.referral_code ?? null,
@@ -62,6 +66,8 @@ export function useAppMe() {
         pledged: (pledgeRes.data ?? []).reduce((sum, row) => sum + (row.pledge_count ?? 0), 0),
         peoplePassedTo: Number(referral?.joined_count ?? 0),
         rippleActs: Number(referral?.acts_count ?? 0),
+        onboardingSeen: !!profile?.onboarding_seen,
+        hasCommitment: (pledgeRes.data ?? []).length > 0,
       };
     },
   });

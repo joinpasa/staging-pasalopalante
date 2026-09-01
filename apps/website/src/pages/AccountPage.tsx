@@ -15,6 +15,7 @@ import YourCommitment from "@/components/account/YourCommitment";
 import StreaksBadges from "@/components/account/StreaksBadges";
 import YourGroup from "@/components/account/YourGroup";
 import YourInvitations from "@/components/account/YourInvitations";
+import WelcomeCarousel, { type OnboardingResult } from "@/components/account/WelcomeCarousel";
 import { Skeleton } from "@shared/components/ui/skeleton";
 
 const AccountPage = () => {
@@ -25,6 +26,9 @@ const AccountPage = () => {
   const [profile, setProfile] = useState<any>(null);
   const [profileLoading, setProfileLoading] = useState(true);
   const [passwordPromptDismissed, setPasswordPromptDismissed] = useState(false);
+  const [hasCommitment, setHasCommitment] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingBusy, setOnboardingBusy] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) navigate("/auth", { replace: true });
@@ -46,18 +50,47 @@ const AccountPage = () => {
       // (e.g. submitted before sign-up). The DB also has a trigger that
       // auto-links on insert; this covers anything legacy.
       try { await supabase.rpc("claim_my_acts"); } catch { /* non-fatal */ }
-      const { data } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      const [{ data }, { data: commitments }] = await Promise.all([
+        supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle(),
+        supabase.from("commitments").select("id").eq("type", "individual").eq("user_id", user.id).limit(1),
+      ]);
       if (!cancelled) {
         setProfile(data);
+        setHasCommitment((commitments ?? []).length > 0);
         setProfileLoading(false);
+        if (data && !data.onboarding_seen && !(commitments ?? []).length) setShowOnboarding(true);
       }
     })();
     return () => { cancelled = true; };
   }, [user]);
+
+  async function finishOnboarding({ pledgeCount, firstName, lastName, country }: OnboardingResult) {
+    if (!user) return;
+    setOnboardingBusy(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("submit-commitment", {
+        body: {
+          type: "individual",
+          first_name: firstName,
+          last_name: lastName,
+          email: user.email,
+          pledge_count: pledgeCount,
+          country,
+          help_role: "do_acts",
+        },
+      });
+      const failure = (data as { error?: string } | null)?.error ?? error?.message;
+      if (failure) toast.error(failure);
+      else setHasCommitment(true);
+    } catch {
+      toast.error("Something went wrong saving your pledge. You can set it later below.");
+    } finally {
+      await supabase.from("profiles").update({ onboarding_seen: true }).eq("user_id", user.id);
+      setProfile((prev: any) => (prev ? { ...prev, onboarding_seen: true } : prev));
+      setOnboardingBusy(false);
+      setShowOnboarding(false);
+    }
+  }
 
 
   // Flush any signup consent stashed in sessionStorage during /auth → magic link → /account.
@@ -106,6 +139,18 @@ const AccountPage = () => {
       <div className="min-h-screen bg-warm-cream flex items-center justify-center">
         <div className="text-foreground/60">…</div>
       </div>
+    );
+  }
+
+  if (showOnboarding) {
+    return (
+      <WelcomeCarousel
+        firstName={profile?.first_name}
+        lastName={profile?.last_name}
+        country={profile?.country}
+        onFinish={finishOnboarding}
+        busy={onboardingBusy}
+      />
     );
   }
 

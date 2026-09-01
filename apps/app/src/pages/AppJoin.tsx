@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { ArrowRight, CheckCircle2, Mail } from "lucide-react";
 
 import PasaMark from "@/components/app/PasaMark";
-import OnboardingWalkthrough from "@/components/app/OnboardingWalkthrough";
+import OnboardingWalkthrough, { type OnboardingResult } from "@/components/app/OnboardingWalkthrough";
 import { PENDING_EMAIL_KEY, PENDING_PROFILE_KEY, ONBOARDING_SEEN_KEY } from "@/lib/pendingSignup";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { supabase } from "@shared/integrations/supabase/client";
@@ -69,7 +69,7 @@ export default function AppJoin() {
     }
   }
 
-  async function finishOnboarding(pledgeCount: number) {
+  async function finishOnboarding({ pledgeCount }: OnboardingResult) {
     setBusy(true);
     try {
       const { data, error } = await supabase.functions.invoke("submit-commitment", {
@@ -149,7 +149,15 @@ export default function AppJoin() {
   }
 
   if (showOnboarding) {
-    return <OnboardingWalkthrough onFinish={finishOnboarding} busy={busy} />;
+    return (
+      <OnboardingWalkthrough
+        firstName={firstName}
+        lastName={lastName}
+        country={country}
+        onFinish={finishOnboarding}
+        busy={busy}
+      />
+    );
   }
 
   if (sentTo) {

@@ -518,6 +518,7 @@ export type Database = {
           id: string
           language: string | null
           last_name: string | null
+          onboarding_seen: boolean
           org_name: string | null
           org_type: string | null
           phone: string | null
@@ -546,6 +547,7 @@ export type Database = {
           id?: string
           language?: string | null
           last_name?: string | null
+          onboarding_seen?: boolean
           org_name?: string | null
           org_type?: string | null
           phone?: string | null
@@ -574,6 +576,7 @@ export type Database = {
           id?: string
           language?: string | null
           last_name?: string | null
+          onboarding_seen?: boolean
           org_name?: string | null
           org_type?: string | null
           phone?: string | null
