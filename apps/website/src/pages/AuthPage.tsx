@@ -3,11 +3,12 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { getAuthErrorMessage } from "@shared/lib/authErrors";
+import { supabase } from "@shared/integrations/supabase/client";
 import { Button } from "@shared/components/ui/button";
 import { Input } from "@shared/components/ui/input";
 import { Label } from "@shared/components/ui/label";
 import { toast } from "sonner";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, KeyRound } from "lucide-react";
 import Footer from "@/components/Footer";
 
 function safeNext(raw: string | null): string {
@@ -19,13 +20,14 @@ function safeNext(raw: string | null): string {
 
 const AuthPage = () => {
   const { t } = useLanguage();
-  const { signIn, signInWithMagicLink, user, loading } = useAuth();
+  const { signIn, signInWithMagicLink, resetPassword, user, loading } = useAuth();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const next = safeNext(params.get("next"));
   const [busy, setBusy] = useState(false);
   const [magicSentTo, setMagicSentTo] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [needsReset, setNeedsReset] = useState<{ email: string; sent: boolean } | null>(null);
 
   useEffect(() => {
     if (!loading && user) navigate(next, { replace: true });
@@ -45,11 +47,35 @@ const AuthPage = () => {
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
+    const email = String(fd.get("email"));
     setBusy(true);
-    const { error } = await signIn(String(fd.get("email")), String(fd.get("password")));
+    const { error } = await signIn(email, String(fd.get("password")));
+    if (error && "code" in error && error.code === "invalid_credentials") {
+      // Wrong password could just mean "wrong password" - but it's also
+      // exactly what every migrated/never-set-a-password account sees on
+      // any password attempt, since none of them have a real one. Check
+      // has_password (public profiles read) to tell the two apart instead
+      // of showing a generic error to someone who was never going to get in
+      // this way no matter what they typed.
+      const { data: profile } = await supabase.from("profiles").select("has_password").ilike("email", email).maybeSingle();
+      if (profile && profile.has_password === false) {
+        setBusy(false);
+        setNeedsReset({ email, sent: false });
+        return;
+      }
+    }
     setBusy(false);
     if (error) toast.error(getAuthErrorMessage(error));
     else navigate(next);
+  };
+
+  const handleSendReset = async () => {
+    if (!needsReset) return;
+    setBusy(true);
+    const { error } = await resetPassword(needsReset.email);
+    setBusy(false);
+    if (error) toast.error(getAuthErrorMessage(error));
+    else setNeedsReset({ ...needsReset, sent: true });
   };
 
   return (
@@ -68,6 +94,28 @@ const AuthPage = () => {
             <p className="text-sm text-foreground/70">
               {t.auth.magicSentBody.replace("{email}", magicSentTo)}
             </p>
+          </div>
+        ) : needsReset ? (
+          <div className="text-center space-y-4 py-6">
+            <KeyRound className="mx-auto text-primary" size={40} />
+            <h2 className="font-serif text-xl">{t.auth.welcomeBackHeading}</h2>
+            {needsReset.sent ? (
+              <p className="text-sm text-foreground/70">{t.auth.resetLinkSent.replace("{email}", needsReset.email)}</p>
+            ) : (
+              <>
+                <p className="text-sm text-foreground/70">{t.auth.welcomeBackBody}</p>
+                <Button type="button" className="w-full" disabled={busy} onClick={handleSendReset}>
+                  {busy ? "…" : t.auth.sendResetLink}
+                </Button>
+              </>
+            )}
+            <button
+              type="button"
+              onClick={() => setNeedsReset(null)}
+              className="text-sm text-foreground/60 hover:text-foreground underline underline-offset-4"
+            >
+              {t.auth.tryDifferentEmail}
+            </button>
           </div>
         ) : (
           <>
