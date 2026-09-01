@@ -1,8 +1,10 @@
 // Shared brand styles for Pásalo Pa'lante auth emails.
 // Inline styles only — email clients don't support external CSS.
 
+// The Supabase Storage bucket this originally pointed at (email-assets/logo-ppl.png)
+// doesn't exist in this project - pointing at the staging site's own logo asset instead.
 export const LOGO_URL =
-  'https://tipfbleltjexofsjffwb.supabase.co/storage/v1/object/public/email-assets/logo-ppl.png'
+  'https://stagingsite-pasalopalante.connect-bef.workers.dev/logo-PPL.png'
 
 export const BRAND_NAME = "Pásalo Pa'lante"
 
