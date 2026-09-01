@@ -85,12 +85,40 @@
         margin: 0;
         padding: 0;
       }
+      /* Paints instantly (no JS needed) to cover the gap between first HTML
+         paint and React mounting - logo only, never the crawler fallback text. */
+      #boot-splash {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #faf8f4;
+        z-index: 9999;
+      }
+      #boot-splash img {
+        height: 56px;
+        animation: boot-splash-pulse 1.6s ease-in-out infinite;
+      }
+      html.app-ready #boot-splash {
+        display: none;
+      }
+      @keyframes boot-splash-pulse {
+        0%, 100% { opacity: 0.55; }
+        50% { opacity: 1; }
+      }
     </style>
   </head>
 
   <body>
     <div id="root">
-      <!-- Crawler-readable fallback content. Replaced by the React app on load. -->
+      <div id="boot-splash" aria-hidden="true">
+        <img src="/logo-PPL.png" alt="" />
+      </div>
+      <!-- Crawler-readable fallback content for clients that don't run JS.
+           Real browsers never render <noscript> contents, so this never
+           flashes on screen - the boot-splash above covers that gap instead. -->
+      <noscript>
       <header>
         <h1>Pásalo Pa'lante — A Global Kindness Movement by Te Amo PR</h1>
         <p>
@@ -273,6 +301,7 @@
           </p>
         </footer>
       </main>
+      </noscript>
     </div>
 
     <script type="module" src="/src/main.tsx"></script>
