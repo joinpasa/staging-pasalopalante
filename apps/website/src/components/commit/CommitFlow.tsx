@@ -43,7 +43,6 @@ type Mode = "individual" | "organization";
 type HelpRole = "do_acts" | "champion" | "ambassador" | "civic" | "volunteer";
 type OrgType = "school" | "company" | "nonprofit" | "ngo" | "faith" | "other";
 
-const INDIVIDUAL_PRESETS = [1, 5, 10, 25, 100];
 const GROUP_PRESETS = [100, 1000, 10000];
 
 export default function CommitFlow({ onSuccess, compact = false, prefilledEmail, onClearPrefilledEmail, initialMode = "individual" }: Props) {
@@ -418,51 +417,52 @@ export default function CommitFlow({ onSuccess, compact = false, prefilledEmail,
 
         </TabsContent>
 
-        <div className="space-y-3">
-          <Label htmlFor="pledge" className="whitespace-pre-line">
-            {mode === "individual" ? t.commit.pledgeLabel : t.commit.orgPledgeLabel}
-          </Label>
-          <div className="flex flex-wrap gap-2">
-            {(mode === "organization" ? GROUP_PRESETS : INDIVIDUAL_PRESETS).map((n) => (
-              <button
-                type="button"
-                key={n}
-                onClick={() => setPledge(n)}
-                className={`px-4 py-2 rounded-full border text-sm font-medium transition-colors ${
-                  pledgeCount === n
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-background text-foreground border-border hover:border-primary"
-                }`}
-              >
-                {n}
-              </button>
-            ))}
-            <Input
-              id="pledge"
-              type="number"
-              inputMode="numeric"
-              min={mode === "organization" ? 100 : 1}
-              max={1000000000}
-              value={pledgeText}
-              onChange={(e) => {
-                const raw = e.target.value;
-                setPledgeText(raw);
-                const parsed = parseInt(raw, 10);
-                if (Number.isFinite(parsed)) setPledgeCount(Math.min(1000000000, Math.max(1, parsed)));
-              }}
-              onBlur={() => {
-                const min = mode === "organization" ? 100 : 1;
-                const parsed = parseInt(pledgeText, 10);
-                const next = Number.isFinite(parsed)
-                  ? Math.min(1000000000, Math.max(min, parsed))
-                  : min;
-                setPledge(next);
-              }}
-              className="w-28"
-            />
+        {mode === "organization" && (
+          <div className="space-y-3">
+            <Label htmlFor="pledge" className="whitespace-pre-line">
+              {t.commit.orgPledgeLabel}
+            </Label>
+            <div className="flex flex-wrap gap-2">
+              {GROUP_PRESETS.map((n) => (
+                <button
+                  type="button"
+                  key={n}
+                  onClick={() => setPledge(n)}
+                  className={`px-4 py-2 rounded-full border text-sm font-medium transition-colors ${
+                    pledgeCount === n
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-background text-foreground border-border hover:border-primary"
+                  }`}
+                >
+                  {n}
+                </button>
+              ))}
+              <Input
+                id="pledge"
+                type="number"
+                inputMode="numeric"
+                min={100}
+                max={1000000000}
+                value={pledgeText}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  setPledgeText(raw);
+                  const parsed = parseInt(raw, 10);
+                  if (Number.isFinite(parsed)) setPledgeCount(Math.min(1000000000, Math.max(1, parsed)));
+                }}
+                onBlur={() => {
+                  const parsed = parseInt(pledgeText, 10);
+                  const next = Number.isFinite(parsed)
+                    ? Math.min(1000000000, Math.max(100, parsed))
+                    : 100;
+                  setPledge(next);
+                }}
+                className="w-28"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">{t.commit.pledgeHint}</p>
           </div>
-          <p className="text-xs text-muted-foreground">{t.commit.pledgeHint}</p>
-        </div>
+        )}
 
 
         {!user && (

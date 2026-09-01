@@ -87,129 +87,131 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-warm-cream flex flex-col items-center justify-center px-6 py-20">
-      <Link to="/" className="mb-8">
-        <img src="/logo-PPL.png" alt="Pásalo Pa'lante" className="h-12" />
-      </Link>
-      <div className="w-full max-w-md bg-background rounded-2xl shadow-sm border border-border p-8">
-        {!magicSentTo && !needsReset && (
-          <div className="flex items-center gap-1 rounded-full bg-warm-sand/60 p-1 mb-6" role="tablist">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={tab === "signin"}
-              onClick={() => selectTab("signin")}
-              className={`flex-1 rounded-full py-2 text-sm font-semibold transition-colors ${
-                tab === "signin" ? "bg-background text-foreground shadow-sm" : "text-foreground/50 hover:text-foreground/70"
-              }`}
-            >
-              {t.auth.signInTab}
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={tab === "signup"}
-              onClick={() => selectTab("signup")}
-              className={`flex-1 rounded-full py-2 text-sm font-semibold transition-colors ${
-                tab === "signup" ? "bg-background text-foreground shadow-sm" : "text-foreground/50 hover:text-foreground/70"
-              }`}
-            >
-              {t.auth.signUpTab}
-            </button>
-          </div>
-        )}
+    <div className="min-h-screen bg-warm-cream flex flex-col">
+      <div className="flex-1 flex flex-col items-center justify-center px-6 py-20">
+        <Link to="/" className="mb-8">
+          <img src="/logo-PPL.png" alt="Pásalo Pa'lante" className="h-12" />
+        </Link>
+        <div className="w-full max-w-md bg-background rounded-2xl shadow-sm border border-border p-8">
+          {!magicSentTo && !needsReset && (
+            <div className="flex items-center gap-1 rounded-full bg-warm-sand/60 p-1 mb-6" role="tablist">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={tab === "signin"}
+                onClick={() => selectTab("signin")}
+                className={`flex-1 rounded-full py-2 text-sm font-semibold transition-colors ${
+                  tab === "signin" ? "bg-background text-foreground shadow-sm" : "text-foreground/50 hover:text-foreground/70"
+                }`}
+              >
+                {t.auth.signInTab}
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={tab === "signup"}
+                onClick={() => selectTab("signup")}
+                className={`flex-1 rounded-full py-2 text-sm font-semibold transition-colors ${
+                  tab === "signup" ? "bg-background text-foreground shadow-sm" : "text-foreground/50 hover:text-foreground/70"
+                }`}
+              >
+                {t.auth.signUpTab}
+              </button>
+            </div>
+          )}
 
-        <h1 className="font-serif text-3xl text-center mb-2">
-          {tab === "signup" ? t.auth.createAccountHeading : t.auth.title}
-        </h1>
-        <p className="text-sm text-foreground/70 text-center mb-6">
-          {tab === "signup" ? t.auth.createAccountSubtitle : t.auth.subtitle}
-        </p>
+          <h1 className="font-serif text-3xl text-center mb-2">
+            {tab === "signup" ? t.auth.createAccountHeading : t.auth.title}
+          </h1>
+          <p className="text-sm text-foreground/70 text-center mb-6">
+            {tab === "signup" ? t.auth.createAccountSubtitle : t.auth.subtitle}
+          </p>
 
-        {magicSentTo ? (
-          <div className="text-center space-y-4 py-6">
-            <CheckCircle2 className="mx-auto text-primary" size={40} />
-            <h2 className="font-serif text-xl">{t.auth.magicSent}</h2>
-            <p className="text-sm text-foreground/70">
-              {t.auth.magicSentBody.replace("{email}", magicSentTo)}
-            </p>
-          </div>
-        ) : needsReset ? (
-          <div className="text-center space-y-4 py-6">
-            <KeyRound className="mx-auto text-primary" size={40} />
-            <h2 className="font-serif text-xl">{t.auth.welcomeBackHeading}</h2>
-            {needsReset.sent ? (
-              <p className="text-sm text-foreground/70">{t.auth.resetLinkSent.replace("{email}", needsReset.email)}</p>
-            ) : (
-              <>
-                <p className="text-sm text-foreground/70">{t.auth.welcomeBackBody}</p>
-                <Button type="button" className="w-full" disabled={busy} onClick={handleSendReset}>
-                  {busy ? "…" : t.auth.sendResetLink}
+          {magicSentTo ? (
+            <div className="text-center space-y-4 py-6">
+              <CheckCircle2 className="mx-auto text-primary" size={40} />
+              <h2 className="font-serif text-xl">{t.auth.magicSent}</h2>
+              <p className="text-sm text-foreground/70">
+                {t.auth.magicSentBody.replace("{email}", magicSentTo)}
+              </p>
+            </div>
+          ) : needsReset ? (
+            <div className="text-center space-y-4 py-6">
+              <KeyRound className="mx-auto text-primary" size={40} />
+              <h2 className="font-serif text-xl">{t.auth.welcomeBackHeading}</h2>
+              {needsReset.sent ? (
+                <p className="text-sm text-foreground/70">{t.auth.resetLinkSent.replace("{email}", needsReset.email)}</p>
+              ) : (
+                <>
+                  <p className="text-sm text-foreground/70">{t.auth.welcomeBackBody}</p>
+                  <Button type="button" className="w-full" disabled={busy} onClick={handleSendReset}>
+                    {busy ? "…" : t.auth.sendResetLink}
+                  </Button>
+                </>
+              )}
+              <button
+                type="button"
+                onClick={() => setNeedsReset(null)}
+                className="text-sm text-foreground/60 hover:text-foreground underline underline-offset-4"
+              >
+                {t.auth.tryDifferentEmail}
+              </button>
+            </div>
+          ) : (
+            <>
+              <form onSubmit={handleMagicLink} className="space-y-4">
+                <div>
+                  <Label htmlFor="magic-email">{t.auth.email}</Label>
+                  <Input id="magic-email" name="email" type="email" required autoComplete="email" />
+                </div>
+                <Button type="submit" className="w-full" disabled={busy}>
+                  {busy ? "…" : tab === "signup" ? t.auth.magicSendSignup : t.auth.magicSend}
                 </Button>
-              </>
-            )}
-            <button
-              type="button"
-              onClick={() => setNeedsReset(null)}
-              className="text-sm text-foreground/60 hover:text-foreground underline underline-offset-4"
-            >
-              {t.auth.tryDifferentEmail}
-            </button>
-          </div>
-        ) : (
-          <>
-            <form onSubmit={handleMagicLink} className="space-y-4">
-              <div>
-                <Label htmlFor="magic-email">{t.auth.email}</Label>
-                <Input id="magic-email" name="email" type="email" required autoComplete="email" />
-              </div>
-              <Button type="submit" className="w-full" disabled={busy}>
-                {busy ? "…" : tab === "signup" ? t.auth.magicSendSignup : t.auth.magicSend}
-              </Button>
-              <p className="text-xs text-foreground/60 text-center">{t.auth.magicHint}</p>
-            </form>
+                <p className="text-xs text-foreground/60 text-center">{t.auth.magicHint}</p>
+              </form>
 
-            {tab === "signin" && (
-              <div className="mt-6 pt-6 border-t border-border">
-                {!showPassword ? (
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(true)}
-                    className="w-full text-sm text-foreground/60 hover:text-foreground underline underline-offset-4"
-                  >
-                    {t.auth.orPassword}
-                  </button>
-                ) : (
-                  <form onSubmit={handleSignIn} className="space-y-4">
-                    <div>
-                      <Label htmlFor="signin-email">{t.auth.email}</Label>
-                      <Input id="signin-email" name="email" type="email" required autoComplete="email" />
-                    </div>
-                    <div>
-                      <Label htmlFor="signin-password">{t.auth.password}</Label>
-                      <Input id="signin-password" name="password" type="password" required autoComplete="current-password" autoCapitalize="none" autoCorrect="off" spellCheck={false} />
-                    </div>
-                    <Button type="submit" variant="outline" className="w-full" disabled={busy}>
-                      {busy ? "…" : t.auth.signIn}
-                    </Button>
-                  </form>
-                )}
-              </div>
-            )}
-          </>
-        )}
+              {tab === "signin" && (
+                <div className="mt-6 pt-6 border-t border-border">
+                  {!showPassword ? (
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(true)}
+                      className="w-full text-sm text-foreground/60 hover:text-foreground underline underline-offset-4"
+                    >
+                      {t.auth.orPassword}
+                    </button>
+                  ) : (
+                    <form onSubmit={handleSignIn} className="space-y-4">
+                      <div>
+                        <Label htmlFor="signin-email">{t.auth.email}</Label>
+                        <Input id="signin-email" name="email" type="email" required autoComplete="email" />
+                      </div>
+                      <div>
+                        <Label htmlFor="signin-password">{t.auth.password}</Label>
+                        <Input id="signin-password" name="password" type="password" required autoComplete="current-password" autoCapitalize="none" autoCorrect="off" spellCheck={false} />
+                      </div>
+                      <Button type="submit" variant="outline" className="w-full" disabled={busy}>
+                        {busy ? "…" : t.auth.signIn}
+                      </Button>
+                    </form>
+                  )}
+                </div>
+              )}
+            </>
+          )}
 
-        <p className="mt-6 pt-6 border-t border-border text-sm text-center text-foreground/70">
-          {t.auth.newHerePrompt}{" "}
-          <Link to="/commit" className="text-primary underline underline-offset-4 font-medium">
-            {t.auth.newHereCta}
-          </Link>
-        </p>
+          <p className="mt-6 pt-6 border-t border-border text-sm text-center text-foreground/70">
+            {t.auth.newHerePrompt}{" "}
+            <Link to="/commit" className="text-primary underline underline-offset-4 font-medium">
+              {t.auth.newHereCta}
+            </Link>
+          </p>
+        </div>
+
+        <Link to="/" className="text-sm text-foreground/60 hover:text-foreground mt-6 mb-12">
+          ← {t.auth.backHome}
+        </Link>
       </div>
-
-      <Link to="/" className="text-sm text-foreground/60 hover:text-foreground mt-6 mb-12">
-        ← {t.auth.backHome}
-      </Link>
       <Footer />
     </div>
   );
