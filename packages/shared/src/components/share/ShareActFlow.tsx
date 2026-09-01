@@ -248,6 +248,17 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
         sessionStorage.setItem(`share_post_${data.id}`, JSON.stringify(postShare));
       }
 
+      // The thank-you page re-fetches by id, but a freshly submitted act is
+      // often still "pending_review" (not yet "published"), and the public
+      // RLS policy only exposes published acts to anonymous readers - so
+      // that re-fetch can legitimately come back empty right after
+      // submitting. Stash what was just submitted so the page has something
+      // to show immediately regardless of publish/moderation timing.
+      sessionStorage.setItem(
+        `share_content_${data.id}`,
+        JSON.stringify({ description: description.trim() || null, first_name: trimmedFirstName || null, mode, photo_paths: photoPaths }),
+      );
+
       if (user) {
         sessionStorage.setItem(
           `share_rewards_${data.id}`,

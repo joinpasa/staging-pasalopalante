@@ -67,6 +67,22 @@ function Inner() {
         .select("id, description, first_name, mode, photo_paths")
         .eq("id", id)
         .maybeSingle();
+
+      // A just-submitted act is often still pending review, and the public
+      // read policy only exposes published acts - so this fetch can come
+      // back empty right after submitting, even though the act was saved
+      // correctly. Fall back to what was actually submitted in this session.
+      if (!data) {
+        try {
+          const raw = sessionStorage.getItem(`share_content_${id}`);
+          if (raw) {
+            const stashed = JSON.parse(raw);
+            setAct({ id, ...stashed });
+            setLoading(false);
+            return;
+          }
+        } catch { /* noop */ }
+      }
       setAct(data);
       setLoading(false);
     })();

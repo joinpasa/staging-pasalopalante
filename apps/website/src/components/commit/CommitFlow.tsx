@@ -379,7 +379,8 @@ export default function CommitFlow({ onSuccess, compact = false, prefilledEmail,
               <Label htmlFor="org-web" className="flex items-center gap-1.5 h-5">{t.commit.orgWebsiteLabel}</Label>
               <Input
                 id="org-web"
-                type="url"
+                type="text"
+                inputMode="url"
                 required
                 maxLength={300}
                 placeholder={t.commit.orgWebsitePlaceholder}
