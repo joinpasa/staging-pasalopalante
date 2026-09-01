@@ -16,6 +16,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [exploreOpen, setExploreOpen] = useState(false);
+  const [mobileExploreOpen, setMobileExploreOpen] = useState(false);
   const { t } = useLanguage();
   const { user } = useAuth();
   const { shareModalOpen, openShareModal, setNavbarMounted } = useUI();
@@ -234,27 +235,51 @@ const Navbar = () => {
                 {t.navbar.wall}
               </Link>
               <LanguageSwitcher variant="inline" align="left" triggerClassName="text-lg font-medium text-foreground/80" />
-              {exploreItems.map((item) => (
-                item.anchor ? (
-                  <button
-                    key={item.label}
-                    type="button"
-                    onClick={() => { setMobileOpen(false); goToAnchor(item.anchor); }}
-                    className="text-lg font-medium text-foreground/80 text-left"
-                  >
-                    {item.label}
-                  </button>
-                ) : (
-                  <Link
-                    key={item.label}
-                    to={item.href!}
-                    onClick={() => setMobileOpen(false)}
-                    className="text-lg font-medium text-foreground/80"
-                  >
-                    {item.label}
-                  </Link>
-                )
-              ))}
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setMobileExploreOpen((v) => !v)}
+                  aria-expanded={mobileExploreOpen}
+                  className="flex items-center gap-1.5 text-lg font-medium text-foreground/80"
+                >
+                  {t.navbar.explore}
+                  <ChevronDown size={16} className={`transition-transform duration-200 ${mobileExploreOpen ? "rotate-180" : ""}`} />
+                </button>
+                <AnimatePresence>
+                  {mobileExploreOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="flex flex-col gap-4 pl-4 pt-4">
+                        {exploreItems.map((item) => (
+                          item.anchor ? (
+                            <button
+                              key={item.label}
+                              type="button"
+                              onClick={() => { setMobileOpen(false); goToAnchor(item.anchor); }}
+                              className="text-base font-medium text-foreground/70 text-left"
+                            >
+                              {item.label}
+                            </button>
+                          ) : (
+                            <Link
+                              key={item.label}
+                              to={item.href!}
+                              onClick={() => setMobileOpen(false)}
+                              className="text-base font-medium text-foreground/70"
+                            >
+                              {item.label}
+                            </Link>
+                          )
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
               <button
                 type="button"
                 onClick={() => { setMobileOpen(false); openShareModal(); }}
