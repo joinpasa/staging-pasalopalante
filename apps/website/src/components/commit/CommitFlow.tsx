@@ -30,6 +30,7 @@ import {
 import { COUNTRIES } from "@shared/data/countries";
 import { cn } from "@shared/lib/utils";
 import { submitPPLForm } from "@shared/lib/pplForm";
+import { getAuthErrorMessage } from "@shared/lib/authErrors";
 
 interface Props {
   onSuccess?: () => void;
@@ -144,7 +145,12 @@ export default function CommitFlow({ onSuccess, compact = false, prefilledEmail,
         // Non-fatal — commit already succeeded
       }
       if (!user && email) {
-        signInWithMagicLink(email, firstName || undefined).catch(() => {});
+        // Not awaited — must not delay the redirect below. The "sent" page
+        // still shows unconditionally, but if this actually failed (e.g. a
+        // rate limit), surface it rather than silently pretending it worked.
+        signInWithMagicLink(email, firstName || undefined).then(({ error }) => {
+          if (error) toast.error(getAuthErrorMessage(error));
+        });
       }
       onSuccess?.();
       navigate(user ? "/account?committed=1" : "/commit?sent=" + encodeURIComponent(email));

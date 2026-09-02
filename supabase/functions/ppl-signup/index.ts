@@ -427,7 +427,6 @@ async function ghlUpsertContact(contact: {
     email:       contact.email,
     companyName: contact.companyName,
     source:      contact.source,
-    locationId:  CONFIG.ghl.locationId,
     tags:        contact.tags,
     customFields: Object.entries(contact.customFields || {}).map(([key, value]) => ({
       key, field_value: String(value),
@@ -439,6 +438,10 @@ async function ghlUpsertContact(contact: {
   if (iso2) payload.country = iso2;
 
   if (existing) {
+    // locationId is create-only — GHL's update endpoint rejects it
+    // ("property locationId should not exist"), which was silently
+    // failing every update-path sync (e.g. password-set) that went
+    // through this function.
     const updateRes = await fetch(
       `${CONFIG.ghl.baseUrl}/contacts/${existing.id}`,
       {
@@ -453,7 +456,7 @@ async function ghlUpsertContact(contact: {
     const createRes = await fetch(`${CONFIG.ghl.baseUrl}/contacts/`, {
       method: "POST",
       headers,
-      body: JSON.stringify(payload),
+      body: JSON.stringify({ ...payload, locationId: CONFIG.ghl.locationId }),
     });
     if (createRes.ok) {
       const created = await createRes.json();

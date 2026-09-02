@@ -13,6 +13,7 @@ import { Textarea } from "@shared/components/ui/textarea";
 import { Label } from "@shared/components/ui/label";
 import { supabase } from "@shared/integrations/supabase/client";
 import { logConsent } from "@shared/lib/legal";
+import { getAuthErrorMessage } from "@shared/lib/authErrors";
 
 type Mode = "performed" | "witnessed" | "received";
 
@@ -232,8 +233,10 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
         // Always allow user creation: if the email is already registered, Supabase
         // sends a sign-in magic link; if not, it sends a sign-up link. We intentionally
         // do not check existence client-side (prevents anonymous email enumeration).
-        // Not awaited — we optimistically show "check your inbox" the same way this
-        // already didn't check whether the send actually succeeded.
+        // Not awaited — must not delay the redirect. We optimistically show "check
+        // your inbox" immediately, but still surface it if the send actually failed
+        // (e.g. a rate limit) — signInWithOtp resolves with an error rather than
+        // rejecting, so a bare .catch() here would never see an API-level failure.
         supabase.auth
           .signInWithOtp({
             email: trimmedEmail,
@@ -243,7 +246,9 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
               data: trimmedFirstName ? { display_name: trimmedFirstName } : undefined,
             },
           })
-          .catch((err) => console.error("magic link send failed", err));
+          .then(({ error }) => {
+            if (error) toast.error(getAuthErrorMessage(error));
+          });
         postShare = { kind: "check_inbox", email: trimmedEmail };
       }
       if (postShare) {
