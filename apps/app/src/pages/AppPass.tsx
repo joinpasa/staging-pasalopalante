@@ -15,8 +15,12 @@ export default function AppPass() {
   const { user } = useAuth();
   const { data: me } = useAppMe();
 
-  // Your invite code comes from your profile, so the chain it builds is real.
-  const code = (me?.referralCode ?? "").toUpperCase();
+  // Your invite code comes from your profile, so the chain it builds is
+  // real. Keep the actual value exactly as stored (lowercase hex) — both
+  // log_pass_handoff and claim_referral match it case-sensitively, so
+  // anything that mutates the case here breaks every scan/redemption of
+  // this code. Uppercase is purely a CSS treatment on the display text.
+  const code = me?.referralCode ?? "";
   const passUrl = code ? `app.pasalopalante.com?ref=${code}` : "app.pasalopalante.com";
 
   return (
@@ -90,7 +94,7 @@ function MyCode({
           Your pass code
         </p>
         <div className="mt-1 flex items-center justify-center gap-3">
-          <p className="font-sans text-2xl font-extrabold tracking-[0.15em] text-foreground">
+          <p className="font-sans text-2xl font-extrabold uppercase tracking-[0.15em] text-foreground">
             {code || "…"}
           </p>
         </div>
@@ -156,13 +160,15 @@ function ScanPanel() {
     let cancelled = false;
     let raf = 0;
 
-    /** Pull the pass code out of whatever the QR encodes (URL or bare code). */
+    /** Pull the pass code out of whatever the QR encodes (URL or bare code).
+     *  Preserves case exactly — log_pass_handoff matches it case-sensitively
+     *  against the lowercase hex value actually stored on the profile. */
     const readCode = (raw: string) => {
       try {
         const url = new URL(raw);
-        return (url.searchParams.get("ref") ?? "").toUpperCase() || raw;
+        return url.searchParams.get("ref") || raw;
       } catch {
-        return raw.toUpperCase();
+        return raw;
       }
     };
 
@@ -378,10 +384,14 @@ function ManualEntry() {
     <div className="mt-2.5 flex gap-2">
       <input
         value={val}
-        onChange={(e) => setVal(e.target.value.toUpperCase())}
+        // The code is displayed in uppercase (CSS only), but the actual
+        // stored value is lowercase hex and matched case-sensitively — so
+        // whatever someone types (reading the uppercase display) needs to
+        // be lowered before it'll match.
+        onChange={(e) => setVal(e.target.value.toLowerCase())}
         placeholder="ENTER CODE"
         aria-label="Type pass code manually"
-        className="flex-1 rounded-xl bg-app-surface px-3 py-2.5 text-sm font-bold tracking-wider text-app-ink placeholder:font-normal placeholder:tracking-normal placeholder:text-app-ink/40"
+        className="flex-1 rounded-xl bg-app-surface px-3 py-2.5 text-sm font-bold uppercase tracking-wider text-app-ink placeholder:font-normal placeholder:normal-case placeholder:tracking-normal placeholder:text-app-ink/40"
       />
       <a
         href={valid ? `/wave?ref=${encodeURIComponent(val.trim())}` : undefined}
