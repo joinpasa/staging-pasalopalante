@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Camera, Download, Share2, HelpCircle, ChevronDown, Apple, Smartphone } from "lucide-react";
-import PassQrCode from "@/components/app/PassQrCode";
+import PassQrCode, { type PassQrCodeHandle } from "@/components/app/PassQrCode";
 import JoinGate from "@/components/app/JoinGate";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { useAppMe } from "@/hooks/useAppData";
@@ -80,6 +80,8 @@ function MyCode({
   passUrl: string;
   carried: number;
 }) {
+  const qrRef = useRef<PassQrCodeHandle>(null);
+
   return (
     <div className="pt-6">
       <h1 className="text-center font-sans text-2xl font-extrabold">Pass it forward</h1>
@@ -89,7 +91,7 @@ function MyCode({
       </p>
 
       <div className="mt-5 rounded-3xl bg-app-surface p-5">
-        <PassQrCode value={`https://${passUrl}`} />
+        <PassQrCode ref={qrRef} value={`https://${passUrl}`} />
         <p className="mt-3 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
           Your pass code
         </p>
@@ -123,7 +125,13 @@ function MyCode({
         </button>
         <button
           type="button"
-          onClick={() => toast.success("Saving the code image is not wired up in the beta yet.")}
+          onClick={async () => {
+            try {
+              await qrRef.current?.download();
+            } catch {
+              toast.error("Couldn't save the code image — please try again.");
+            }
+          }}
           aria-label="Save pass code image"
           className="flex h-14 w-14 items-center justify-center rounded-2xl border border-app-surface/40"
         >
