@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Heart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@shared/contexts/LanguageContext";
-import { supabase } from "@shared/integrations/supabase/client";
+import { supabasePublic } from "@shared/integrations/supabase/publicClient";
 
 interface Act {
   id: string;
@@ -45,7 +45,7 @@ const LiveFromWall = () => {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const { data } = await supabase
+      const { data } = await supabasePublic
         .from("acts_of_kindness")
         .select("id, description, first_name, mode, created_at")
         .eq("status", "published")
@@ -59,7 +59,7 @@ const LiveFromWall = () => {
 
       const startOfDay = new Date();
       startOfDay.setUTCHours(0, 0, 0, 0);
-      const { count } = await supabase
+      const { count } = await supabasePublic
         .from("acts_of_kindness")
         .select("id", { count: "exact", head: true })
         .eq("status", "published")
@@ -74,7 +74,7 @@ const LiveFromWall = () => {
   // interval-based rotation below is what keeps the section feeling alive
   // regardless of whether Realtime is on.
   useEffect(() => {
-    const channel = supabase
+    const channel = supabasePublic
       .channel("live-from-wall")
       .on(
         "postgres_changes",
@@ -88,7 +88,7 @@ const LiveFromWall = () => {
         },
       )
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
+    return () => { supabasePublic.removeChannel(channel); };
   }, []);
 
   // Rotates which 3 cards show so the section doesn't sit static between

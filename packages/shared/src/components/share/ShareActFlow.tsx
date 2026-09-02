@@ -193,29 +193,31 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
         return;
       }
 
+      // Everything below is a best-effort side effect (profile name, consent
+      // audit log, magic link) that the redirect to the thank-you page must
+      // never wait on — logConsent in particular includes a third-party IP
+      // lookup with no timeout, which was stalling the redirect for 10-20s
+      // whenever that external service was slow. Fire-and-forget instead of
+      // awaiting; each already swallows its own errors.
+
       // If logged-in user supplied a name and didn't have a display_name, save it.
       if (user && trimmedFirstName && !profileDisplayName) {
-        try {
-          await supabase
-            .from("profiles")
-            .update({ display_name: trimmedFirstName })
-            .eq("user_id", user.id);
-        } catch (err) {
-          console.error("profile update failed", err);
-        }
+        supabase
+          .from("profiles")
+          .update({ display_name: trimmedFirstName })
+          .eq("user_id", user.id)
+          .then(({ error }) => {
+            if (error) console.error("profile update failed", error);
+          });
       }
 
       // Log a consent record for this submission (audit trail).
-      try {
-        await logConsent({
-          context: user ? "signup" : "anon_act",
-          act_id: data.id,
-          user_id: user?.id ?? null,
-          email: email.trim() || null,
-        });
-      } catch (err) {
-        console.error("consent log failed", err);
-      }
+      logConsent({
+        context: user ? "signup" : "anon_act",
+        act_id: data.id,
+        user_id: user?.id ?? null,
+        email: email.trim() || null,
+      }).catch((err) => console.error("consent log failed", err));
 
       // If signed-out and email provided: send a magic link.
       //  - Existing account → sign-in link (claims this act on landing).
@@ -223,26 +225,26 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
       let postShare: { kind: "check_inbox" | "prefill"; email: string } | null = null;
       const trimmedEmail = email.trim().toLowerCase();
       if (!user && trimmedEmail) {
-        try {
-          const origin =
-            window.location.origin.includes("localhost") || window.location.origin.includes("id-preview--")
-              ? "https://pasalopalante.com"
-              : window.location.origin;
-          // Always allow user creation: if the email is already registered, Supabase
-          // sends a sign-in magic link; if not, it sends a sign-up link. We intentionally
-          // do not check existence client-side (prevents anonymous email enumeration).
-          await supabase.auth.signInWithOtp({
+        const origin =
+          window.location.origin.includes("localhost") || window.location.origin.includes("id-preview--")
+            ? "https://pasalopalante.com"
+            : window.location.origin;
+        // Always allow user creation: if the email is already registered, Supabase
+        // sends a sign-in magic link; if not, it sends a sign-up link. We intentionally
+        // do not check existence client-side (prevents anonymous email enumeration).
+        // Not awaited — we optimistically show "check your inbox" the same way this
+        // already didn't check whether the send actually succeeded.
+        supabase.auth
+          .signInWithOtp({
             email: trimmedEmail,
             options: {
               shouldCreateUser: true,
               emailRedirectTo: `${origin}/share/thanks/${data.id}?claim=1`,
               data: trimmedFirstName ? { display_name: trimmedFirstName } : undefined,
             },
-          });
-          postShare = { kind: "check_inbox", email: trimmedEmail };
-        } catch (err) {
-          console.error("magic link send failed", err);
-        }
+          })
+          .catch((err) => console.error("magic link send failed", err));
+        postShare = { kind: "check_inbox", email: trimmedEmail };
       }
       if (postShare) {
         sessionStorage.setItem(`share_post_${data.id}`, JSON.stringify(postShare));

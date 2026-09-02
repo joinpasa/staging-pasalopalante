@@ -12,6 +12,7 @@ import {
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { supabase } from "@shared/integrations/supabase/client";
+import { supabasePublic } from "@shared/integrations/supabase/publicClient";
 import { toast } from "sonner";
 import { pickCardGradient } from "@shared/lib/cardGradients";
 import WallCard, { WallMode } from "./WallCard";
@@ -121,7 +122,7 @@ export default function WallOfKindness() {
       if (sort === "recent") {
         const from = recentOffsetRef.current;
         const to = from + PAGE_SIZE - 1;
-        let q = supabase
+        let q = supabasePublic
           .from("acts_of_kindness")
           .select("id, description, first_name, photo_paths, video_url, created_at, mode, language")
           .eq("status", "published")
@@ -141,7 +142,7 @@ export default function WallOfKindness() {
         while (likedBufferRef.current.length < PAGE_SIZE && !likedDoneRef.current) {
           const from = likedFetchedOffsetRef.current;
           const to = from + LIKED_CANDIDATE_BATCH - 1;
-          let q = supabase
+          let q = supabasePublic
             .from("acts_of_kindness")
             .select("id, description, first_name, photo_paths, video_url, created_at, mode, language")
             .eq("status", "published")

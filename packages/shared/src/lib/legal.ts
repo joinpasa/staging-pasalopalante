@@ -1,5 +1,6 @@
 // Shared helpers for legal-document version tracking & consent capture.
 import { supabase } from "@shared/integrations/supabase/client";
+import { supabasePublic } from "@shared/integrations/supabase/publicClient";
 
 export type DocKey = "terms" | "privacy" | "community_guidelines";
 
@@ -21,7 +22,7 @@ export function fetchLegalVersions(): Promise<LegalVersions> {
   if (cached) return cached;
   cached = (async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabasePublic
         .from("legal_document_versions")
         .select("doc_key, version, major");
       if (error || !data) return FALLBACK;
@@ -39,10 +40,15 @@ export function fetchLegalVersions(): Promise<LegalVersions> {
   return cached;
 }
 
-/** Best-effort client IP. Browser cannot read it directly; we ping ipify. */
+/** Best-effort client IP. Browser cannot read it directly; we ping ipify.
+ *  Capped at 3s — this is a third-party service with no SLA, and callers
+ *  (submission flows in particular) must never hang waiting on it. */
 export async function fetchClientIp(): Promise<string | null> {
   try {
-    const r = await fetch("https://api.ipify.org?format=json", { cache: "no-store" });
+    const r = await fetch("https://api.ipify.org?format=json", {
+      cache: "no-store",
+      signal: AbortSignal.timeout(3000),
+    });
     if (!r.ok) return null;
     const j = (await r.json()) as { ip?: string };
     return j.ip ?? null;
