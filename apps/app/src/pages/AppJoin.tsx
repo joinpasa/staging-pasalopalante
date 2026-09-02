@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { ArrowRight, CheckCircle2, Mail } from "lucide-react";
+import { ArrowRight, CheckCircle2, KeyRound, Mail } from "lucide-react";
 
 import PasaMark from "@/components/app/PasaMark";
 import OnboardingWalkthrough, { type OnboardingResult } from "@/components/app/OnboardingWalkthrough";
 import { PENDING_EMAIL_KEY, PENDING_PROFILE_KEY, ONBOARDING_SEEN_KEY } from "@/lib/pendingSignup";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { supabase } from "@shared/integrations/supabase/client";
+import { supabasePublic } from "@shared/integrations/supabase/publicClient";
 import { COUNTRIES } from "@shared/data/countries";
 import { cn } from "@shared/lib/utils";
 import { getAuthErrorMessage } from "@shared/lib/authErrors";
@@ -23,7 +24,7 @@ import { submitPPLForm } from "@shared/lib/pplForm";
  * log in with a password or ask for a fresh link.
  */
 export default function AppJoin() {
-  const { user, signIn, signInWithMagicLink } = useAuth();
+  const { user, signIn, signInWithMagicLink, resetPassword } = useAuth();
   const navigate = useNavigate();
   const [tab, setTab] = useState<"join" | "login">("join");
 
@@ -39,12 +40,26 @@ export default function AppJoin() {
 
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  const [needsReset, setNeedsReset] = useState<{ email: string; sent: boolean } | null>(null);
+
+  // Client-side cooldown so an impatient tap on "email me a link" can't
+  // rapid-fire this and trip Supabase's own OTP rate limit — mirrors the
+  // same guard on the website's AuthPage.
+  const lastMagicLinkSentAt = useRef(0);
+  const MAGIC_LINK_COOLDOWN_MS = 30_000;
+  function magicLinkOnCooldown() {
+    const elapsed = Date.now() - lastMagicLinkSentAt.current;
+    if (elapsed >= MAGIC_LINK_COOLDOWN_MS) return false;
+    toast.error(`Please wait ${Math.ceil((MAGIC_LINK_COOLDOWN_MS - elapsed) / 1000)}s before requesting another link.`);
+    return true;
+  }
 
   async function handleJoin(e: React.FormEvent) {
     e.preventDefault();
     if (!firstName.trim() || !lastName.trim()) return toast.error("Please add your name.");
     if (!country) return toast.error("Please pick your country.");
     if (!agreed) return toast.error("Please accept the terms to continue.");
+    if (magicLinkOnCooldown()) return;
 
     setBusy(true);
     try {
@@ -55,6 +70,7 @@ export default function AppJoin() {
         toast.error(getAuthErrorMessage(magicLinkError));
         return;
       }
+      lastMagicLinkSentAt.current = Date.now();
       setIsNewSignup(true);
       localStorage.setItem(PENDING_EMAIL_KEY, email.trim());
       localStorage.setItem(
@@ -114,6 +130,24 @@ export default function AppJoin() {
     e.preventDefault();
     setBusy(true);
     const { error } = await signIn(loginEmail.trim(), loginPassword);
+    if (error && "code" in error && error.code === "invalid_credentials") {
+      // Wrong password could just mean "wrong password" - but it's also
+      // exactly what every migrated/never-set-a-password account sees on
+      // any password attempt, since none of them have a real one. Check
+      // has_password (public profiles read) to tell the two apart instead
+      // of showing a generic error to someone who was never going to get in
+      // this way no matter what they typed.
+      const { data: profile } = await supabasePublic
+        .from("profiles")
+        .select("has_password")
+        .ilike("email", loginEmail.trim())
+        .maybeSingle();
+      if (profile && profile.has_password === false) {
+        setBusy(false);
+        setNeedsReset({ email: loginEmail.trim(), sent: false });
+        return;
+      }
+    }
     setBusy(false);
     if (error) {
       toast.error(getAuthErrorMessage(error));
@@ -122,8 +156,24 @@ export default function AppJoin() {
     navigate("/", { replace: true });
   }
 
+  function handleForgotPassword() {
+    const email = loginEmail.trim();
+    if (!email) return toast.error("Enter your email first.");
+    setNeedsReset({ email, sent: false });
+  }
+
+  async function handleSendReset() {
+    if (!needsReset) return;
+    setBusy(true);
+    const { error } = await resetPassword(needsReset.email);
+    setBusy(false);
+    if (error) toast.error(getAuthErrorMessage(error));
+    else setNeedsReset({ ...needsReset, sent: true });
+  }
+
   async function handleMagicLogin() {
     if (!loginEmail.trim()) return toast.error("Enter your email first.");
+    if (magicLinkOnCooldown()) return;
     setBusy(true);
     // shouldCreateUser: false — this tab is "I have an account", so an
     // unrecognized email must be rejected, not silently signed up. Without
@@ -143,6 +193,7 @@ export default function AppJoin() {
       toast.error(getAuthErrorMessage(error));
       return;
     }
+    lastMagicLinkSentAt.current = Date.now();
     setIsNewSignup(false);
     localStorage.setItem(PENDING_EMAIL_KEY, loginEmail.trim());
     setSentTo(loginEmail.trim());
@@ -157,6 +208,45 @@ export default function AppJoin() {
         onFinish={finishOnboarding}
         busy={busy}
       />
+    );
+  }
+
+  if (needsReset) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 py-12 text-center">
+        <KeyRound className="h-12 w-12 text-app-coral" />
+        <h1 className="font-sans text-2xl font-extrabold text-foreground">
+          {needsReset.sent ? "Check your email" : "Set a password"}
+        </h1>
+        {needsReset.sent ? (
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            We sent a password reset link to{" "}
+            <span className="font-semibold text-foreground">{needsReset.email}</span>.
+          </p>
+        ) : (
+          <>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              We'll email you a link to set a new password for{" "}
+              <span className="font-semibold text-foreground">{needsReset.email}</span>.
+            </p>
+            <button
+              type="button"
+              onClick={handleSendReset}
+              disabled={busy}
+              className="flex h-12 w-full max-w-xs items-center justify-center rounded-2xl bg-app-coral font-semibold text-app-surface disabled:opacity-60"
+            >
+              {busy ? "…" : "Send reset link"}
+            </button>
+          </>
+        )}
+        <button
+          type="button"
+          onClick={() => setNeedsReset(null)}
+          className="text-sm font-semibold text-app-coral underline"
+        >
+          Use a different email
+        </button>
+      </div>
     );
   }
 
@@ -319,7 +409,20 @@ export default function AppJoin() {
               className={inputClass}
             />
           </Field>
-          <Field label="Password">
+          <Field
+            label={
+              <span className="flex items-center justify-between">
+                Password
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  className="text-xs font-normal normal-case text-app-coral underline"
+                >
+                  Forgot password?
+                </button>
+              </span>
+            }
+          >
             <input
               type="password"
               value={loginPassword}
@@ -356,7 +459,7 @@ export default function AppJoin() {
 const inputClass =
   "w-full rounded-xl border border-border bg-app-surface px-3 py-3 text-sm text-foreground outline-none focus:border-app-coral";
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, children }: { label: React.ReactNode; children: React.ReactNode }) {
   return (
     <label className="block space-y-1.5">
       <span className="text-xs font-semibold text-muted-foreground">{label}</span>
