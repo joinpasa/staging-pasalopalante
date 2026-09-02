@@ -95,11 +95,14 @@ export default function WallOfKindness() {
     let counts: Record<string, number> = {};
     let myReactions = new Set<string>();
     if (ids.length) {
-      const { data: rx } = await supabase.rpc("reaction_counts", { _act_ids: ids });
+      // Public aggregate, same anon-visible data regardless of who's asking —
+      // use the session-free client, same as the base acts query below.
+      const { data: rx } = await supabasePublic.rpc("reaction_counts", { _act_ids: ids });
       (rx ?? []).forEach((r: { act_id: string; count: number }) => {
         counts[r.act_id] = Number(r.count) || 0;
       });
       if (user) {
+        // Needs the real session — this one is genuinely user-specific.
         const { data: mine } = await supabase.rpc("my_reactions", { _act_ids: ids });
         (mine ?? []).forEach((r: { act_id: string }) => myReactions.add(r.act_id));
       }
