@@ -136,6 +136,9 @@ export default function CommitFlow({ onSuccess, compact = false, prefilledEmail,
           message: mode === "organization"
             ? `Org: ${orgName} | Type: ${orgType} | Chapter: ${chapter} | Website: ${orgWebsite}`
             : `Role: ${helpRole}`,
+          mode,
+          orgType: mode === "organization" ? orgType || undefined : undefined,
+          helpRole: mode === "individual" ? helpRole || undefined : undefined,
         });
       } catch {
         // Non-fatal — commit already succeeded

@@ -19,6 +19,12 @@ export interface PledgeData {
   country?: string;
   pledgeCount?: number;
   message?: string;
+  /** Individual vs. Organization tab on the /commit pledge form — drives GHL category tagging. */
+  mode?: "individual" | "organization";
+  /** Set when mode is "organization" — school/company/nonprofit/ngo/faith/other. */
+  orgType?: string;
+  /** Set when mode is "individual" — do_acts/champion/ambassador/civic/volunteer. */
+  helpRole?: string;
 }
 
 export interface CourseCreatorData {

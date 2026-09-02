@@ -233,6 +233,26 @@ Deno.serve(async (req) => {
     console.error("GHL sync failed (non-fatal):", ghlError);
   }
 
+  // Get Involved category tags (get-involved-lead + individual/school/
+  // nonprofit/company/ambassador) — added on top via the same additive
+  // tagging utility as the email-verified/password-set lifecycle tags, so
+  // they never get clobbered by a later contact update elsewhere.
+  if (ghlContactId && (formType === "pledge" || formType === "get-involved")) {
+    try {
+      await ghlAddTags(
+        data.email,
+        getInvolvedCategoryTags(formType, data),
+        {
+          firstName: data.fullName?.split(" ")[0] || "",
+          lastName: data.fullName?.split(" ").slice(1).join(" ") || "",
+        },
+        ghlContactId,
+      );
+    } catch (tagError) {
+      console.error("Get Involved category tag sync failed (non-fatal):", tagError);
+    }
+  }
+
   let contactRecordId: string | null = null;
   try {
     const contactRecord = await airtableUpsertContact({
@@ -466,10 +486,13 @@ async function ghlUpsertContact(contact: {
 // fields — unlike ghlUpsertContact, whose PUT replaces the entire tags
 // array. Falls back to creating a bare contact with just these tags if no
 // match is found, so a lifecycle event never gets silently dropped.
+// Pass knownContactId when the caller already resolved one (e.g. right
+// after ghlUpsertContact) to skip the redundant search lookup.
 async function ghlAddTags(
   email: string,
   tags: string[],
   fallbackName: { firstName: string; lastName: string },
+  knownContactId?: string,
 ): Promise<string | undefined> {
   const headers = {
     Authorization: `Bearer ${CONFIG.ghl.apiKey}`,
@@ -477,28 +500,32 @@ async function ghlAddTags(
     Version: "2021-07-28",
   };
 
-  const searchRes = await fetch(
-    `${CONFIG.ghl.baseUrl}/contacts/search?email=${encodeURIComponent(email)}&locationId=${CONFIG.ghl.locationId}`,
-    { headers }
-  );
-  const searchData = await searchRes.json();
-  const existing = searchData.contacts?.[0];
+  let contactId = knownContactId;
+  if (!contactId) {
+    const searchRes = await fetch(
+      `${CONFIG.ghl.baseUrl}/contacts/search?email=${encodeURIComponent(email)}&locationId=${CONFIG.ghl.locationId}`,
+      { headers }
+    );
+    const searchData = await searchRes.json();
+    const existing = searchData.contacts?.[0];
 
-  if (!existing) {
-    return ghlUpsertContact({
-      ...fallbackName,
-      email, phone: "", country: "", city: "", companyName: "",
-      tags, source: "PPL App", customFields: {},
-    });
+    if (!existing) {
+      return ghlUpsertContact({
+        ...fallbackName,
+        email, phone: "", country: "", city: "", companyName: "",
+        tags, source: "PPL App", customFields: {},
+      });
+    }
+    contactId = existing.id;
   }
 
-  const res = await fetch(`${CONFIG.ghl.baseUrl}/contacts/${existing.id}/tags`, {
+  const res = await fetch(`${CONFIG.ghl.baseUrl}/contacts/${contactId}/tags`, {
     method: "POST",
     headers,
     body: JSON.stringify({ tags }),
   });
   if (!res.ok) throw new Error(`GHL add-tags failed: ${await res.text()}`);
-  return existing.id;
+  return contactId;
 }
 
 // GHL expects an ISO 3166-1 alpha-2 country code. Map English country names to
@@ -545,6 +572,39 @@ function buildGHLTags(formType: string, data: Record<string, string>) {
   if (formType === "app-join") tags.push("app-join");
   if (data.participantType) tags.push(data.participantType.toLowerCase().replace(" ", "-"));
   if (data.country === "Puerto Rico" || data.country === "PR") tags.push("puerto-rico");
+  return tags;
+}
+
+// Organization types that map to a distinct GHL segment. "ngo" is folded
+// into "nonprofit" (same audience); "faith" and "other" get no category tag,
+// just the general get-involved-lead tag below.
+const ORG_TYPE_CATEGORY_TAG: Record<string, string> = {
+  school: "get-involved-school",
+  company: "get-involved-company",
+  nonprofit: "get-involved-nonprofit",
+  ngo: "get-involved-nonprofit",
+};
+
+// Category + general lead tags for the two Get Involved forms (the /commit
+// pledge form and the "Join as an Ambassador" modal). Applied additively via
+// ghlAddTags, never through ghlUpsertContact's tags-replacing payload, so
+// they survive whatever else later touches this contact's other tags.
+function getInvolvedCategoryTags(formType: string, data: Record<string, string>): string[] {
+  const tags = ["get-involved-lead"];
+
+  if (formType === "pledge") {
+    if (data.mode === "individual") tags.push("get-involved-individual");
+    if (data.mode === "organization") {
+      const orgTag = ORG_TYPE_CATEGORY_TAG[(data.orgType || "").toLowerCase()];
+      if (orgTag) tags.push(orgTag);
+    }
+    if (data.helpRole === "ambassador") tags.push("get-involved-ambassador");
+  } else if (formType === "get-involved") {
+    const participantType = (data.participantType || "").toLowerCase();
+    if (participantType === "ambassador") tags.push("get-involved-ambassador");
+    if (participantType === "individual") tags.push("get-involved-individual");
+  }
+
   return tags;
 }
 
