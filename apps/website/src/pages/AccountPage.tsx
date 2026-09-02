@@ -145,9 +145,9 @@ const AccountPage = () => {
   if (showOnboarding) {
     return (
       <WelcomeCarousel
-        firstName={profile?.first_name}
-        lastName={profile?.last_name}
-        country={profile?.country}
+        firstName={profile?.first_name || ""}
+        lastName={profile?.last_name || ""}
+        country={profile?.country || ""}
         onFinish={finishOnboarding}
         busy={onboardingBusy}
       />

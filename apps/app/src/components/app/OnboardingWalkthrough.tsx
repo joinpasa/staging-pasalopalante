@@ -17,9 +17,9 @@ export interface OnboardingResult {
 interface OnboardingWalkthroughProps {
   /** Whatever's already on file - e.g. a website signup only ever collects
    *  an email + first name, so lastName/country usually still need asking. */
-  firstName?: string;
-  lastName?: string;
-  country?: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  country?: string | null;
   /** Called once, with the finished profile + chosen pledge count, when the
    *  tour finishes or is skipped. */
   onFinish: (result: OnboardingResult) => void;
@@ -33,12 +33,18 @@ interface OnboardingWalkthroughProps {
  * signup form, so account creation itself stays a single quick step.
  */
 export default function OnboardingWalkthrough({
-  firstName: initialFirstName = "",
-  lastName: initialLastName = "",
-  country: initialCountry = "",
+  firstName: rawFirstName,
+  lastName: rawLastName,
+  country: rawCountry,
   onFinish,
   busy,
 }: OnboardingWalkthroughProps) {
+  // `?? ""` rather than a default param — a caller can pass an explicit
+  // `null` (e.g. a DB column that's genuinely empty), which a default
+  // param does not catch, only `undefined` does.
+  const initialFirstName = rawFirstName ?? "";
+  const initialLastName = rawLastName ?? "";
+  const initialCountry = rawCountry ?? "";
   const needsProfile = !initialLastName.trim() || !initialCountry.trim();
   const [step, setStep] = useState(0);
   const [pledge, setPledge] = useState(DEFAULT_PLEDGE);
