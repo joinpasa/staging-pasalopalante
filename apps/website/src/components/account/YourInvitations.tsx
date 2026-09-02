@@ -7,6 +7,7 @@ import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useReferralCode } from "@/hooks/useReferralCode";
 import { siteOrigin } from "@shared/lib/referral";
 import { Skeleton } from "@shared/components/ui/skeleton";
+import InviteQrCode from "./InviteQrCode";
 
 interface Stats {
   joined_count: number;
@@ -107,6 +108,7 @@ const YourInvitations = ({ userId }: { userId: string }) => {
               <Copy size={16} className="text-foreground/60 shrink-0" />
             )}
           </button>
+          <InviteQrCode value={inviteLink} />
         </div>
       )}
     </section>
