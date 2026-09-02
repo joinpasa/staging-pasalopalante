@@ -34,6 +34,12 @@ const AuthPage = () => {
   const [needsReset, setNeedsReset] = useState<{ email: string; sent: boolean; reason: "migrated" | "forgot" } | null>(null);
   const [firstName, setFirstName] = useState("");
   const signinEmailRef = useRef<HTMLInputElement>(null);
+  // Client-side cooldown so a real, single impatient user going back and
+  // resubmitting can't rapid-fire this and trip Supabase's own OTP rate
+  // limit on themselves — separate from that server-side limit, which
+  // governs actual abuse/scale and isn't something this can substitute for.
+  const lastMagicLinkSentAt = useRef(0);
+  const MAGIC_LINK_COOLDOWN_MS = 30_000;
 
   function selectTab(newTab: AuthTab) {
     setTab(newTab);
@@ -48,12 +54,18 @@ const AuthPage = () => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const email = String(fd.get("email"));
+    const elapsed = Date.now() - lastMagicLinkSentAt.current;
+    if (elapsed < MAGIC_LINK_COOLDOWN_MS) {
+      toast.error(t.auth.magicLinkCooldown.replace("{n}", String(Math.ceil((MAGIC_LINK_COOLDOWN_MS - elapsed) / 1000))));
+      return;
+    }
     setBusy(true);
     const { error } = await signInWithMagicLink(email, tab === "signup" ? firstName.trim() : undefined);
     setBusy(false);
     if (error) {
       toast.error(getAuthErrorMessage(error));
     } else {
+      lastMagicLinkSentAt.current = Date.now();
       // Tag the contact immediately on request, not just after the link is
       // clicked, so signups who never verify still show up in GHL.
       if (tab === "signup") syncGhlTag(email, "website-signup", { firstName });
