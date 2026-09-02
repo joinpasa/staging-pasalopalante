@@ -41,7 +41,7 @@ interface Props {
 
 type Mode = "individual" | "organization";
 type HelpRole = "do_acts" | "champion" | "ambassador" | "civic" | "volunteer";
-type OrgType = "school" | "company" | "nonprofit" | "ngo" | "faith" | "other";
+type OrgType = "school" | "company" | "nonprofit" | "ngo" | "municipality" | "faith" | "other";
 
 const GROUP_PRESETS = [100, 1000, 10000];
 
@@ -178,6 +178,7 @@ export default function CommitFlow({ onSuccess, compact = false, prefilledEmail,
     { value: "company", label: t.commit.orgTypeCompany },
     { value: "nonprofit", label: t.commit.orgTypeNonprofit },
     { value: "ngo", label: t.commit.orgTypeNgo },
+    { value: "municipality", label: t.commit.orgTypeMunicipality },
     { value: "faith", label: t.commit.orgTypeFaith },
     { value: "other", label: t.commit.orgTypeOther },
   ];

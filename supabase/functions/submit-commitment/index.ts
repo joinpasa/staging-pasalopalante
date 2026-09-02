@@ -8,7 +8,7 @@ const corsHeaders = {
 
 const TYPES = ["individual", "organization"] as const;
 const HELP_ROLES = ["do_acts", "champion", "ambassador", "civic", "volunteer"] as const;
-const ORG_TYPES = ["school", "company", "nonprofit", "ngo", "faith", "other"] as const;
+const ORG_TYPES = ["school", "company", "nonprofit", "ngo", "municipality", "faith", "other"] as const;
 
 interface Body {
   type: string;

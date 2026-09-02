@@ -583,6 +583,7 @@ const ORG_TYPE_CATEGORY_TAG: Record<string, string> = {
   company: "get-involved-company",
   nonprofit: "get-involved-nonprofit",
   ngo: "get-involved-nonprofit",
+  municipality: "get-involved-municipality",
 };
 
 // Category + general lead tags for the two Get Involved forms (the /commit
