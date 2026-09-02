@@ -4,6 +4,7 @@ import { useAuth } from "@shared/contexts/AuthContext";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { getAuthErrorMessage } from "@shared/lib/authErrors";
 import { supabase } from "@shared/integrations/supabase/client";
+import { supabasePublic } from "@shared/integrations/supabase/publicClient";
 import { syncGhlTag } from "@shared/lib/ghlSync";
 import { Button } from "@shared/components/ui/button";
 import { Input } from "@shared/components/ui/input";
@@ -86,7 +87,7 @@ const AuthPage = () => {
       // has_password (public profiles read) to tell the two apart instead
       // of showing a generic error to someone who was never going to get in
       // this way no matter what they typed.
-      const { data: profile } = await supabase.from("profiles").select("has_password").ilike("email", email).maybeSingle();
+      const { data: profile } = await supabasePublic.from("profiles").select("has_password").ilike("email", email).maybeSingle();
       if (profile && profile.has_password === false) {
         setBusy(false);
         setNeedsReset({ email, sent: false, reason: "migrated" });

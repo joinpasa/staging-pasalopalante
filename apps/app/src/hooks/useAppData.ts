@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@shared/integrations/supabase/client";
+import { supabasePublic } from "@shared/integrations/supabase/publicClient";
 import { useAuth } from "@shared/contexts/AuthContext";
 
 /**
@@ -118,7 +119,7 @@ export function useWallActs(limit = 20) {
   return useQuery({
     queryKey: ["app", "wall", limit],
     queryFn: async (): Promise<WallAct[]> => {
-      const { data, error } = await supabase
+      const { data, error } = await supabasePublic
         .from("acts_of_kindness")
         .select("id, description, created_at, mode, tags, first_name, photo_paths")
         .eq("status", "published")
@@ -135,7 +136,7 @@ export function useWallActs(limit = 20) {
           tags: row.tags ?? [],
           name: row.first_name?.trim() || "Someone",
           photoUrl: path
-            ? supabase.storage.from("kindness-photos").getPublicUrl(path).data.publicUrl
+            ? supabasePublic.storage.from("kindness-photos").getPublicUrl(path).data.publicUrl
             : null,
         };
       });
@@ -170,7 +171,7 @@ export function useActReactions(actIds: string[]) {
     enabled: actIds.length > 0,
     queryFn: async (): Promise<Record<string, ReactionState>> => {
       const [{ data: countRows }, mineRows] = await Promise.all([
-        supabase.rpc("reaction_counts", { _act_ids: actIds }),
+        supabasePublic.rpc("reaction_counts", { _act_ids: actIds }),
         user
           ? supabase.rpc("my_reactions", { _act_ids: actIds }).then((r) => r.data ?? [])
           : Promise.resolve([]),
@@ -312,7 +313,7 @@ export function useAppBadges() {
   return useQuery({
     queryKey: ["app", "badges", user?.id],
     queryFn: async (): Promise<AppBadge[]> => {
-      const catalogue = await supabase
+      const catalogue = await supabasePublic
         .from("badges")
         .select("id, name, description, sort_order")
         .order("sort_order", { ascending: true });
@@ -361,7 +362,7 @@ export function useKindnessMapCounts() {
   return useQuery({
     queryKey: ["app", "map-counts"],
     queryFn: async (): Promise<CountryCount[]> => {
-      const { data, error } = await supabase.rpc("kindness_map_counts");
+      const { data, error } = await supabasePublic.rpc("kindness_map_counts");
       if (error) throw error;
       return ((data ?? []) as CountryCount[])
         .filter((row) => !!row.country)

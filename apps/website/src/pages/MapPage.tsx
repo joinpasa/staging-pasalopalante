@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
 import ScrollToTop from "@/components/ScrollToTop";
-import { supabase } from "@shared/integrations/supabase/client";
+import { supabasePublic } from "@shared/integrations/supabase/publicClient";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
@@ -68,7 +68,7 @@ const MapPage = () => {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const { data } = await supabase.rpc("kindness_map_counts");
+      const { data } = await supabasePublic.rpc("kindness_map_counts");
       if (!cancelled) {
         setRows(((data as CountRow[]) ?? []).filter((r) => r.country));
         setLoading(false);

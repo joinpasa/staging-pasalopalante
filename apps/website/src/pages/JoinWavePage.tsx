@@ -10,6 +10,7 @@ import KindnessCard from "@shared/components/share/KindnessCard";
 import CommitFlow from "@/components/commit/CommitFlow";
 import CommitRoles from "@/components/commit/CommitRoles";
 import { supabase } from "@shared/integrations/supabase/client";
+import { supabasePublic } from "@shared/integrations/supabase/publicClient";
 import { getStoredReferral } from "@shared/lib/referral";
 
 interface Act {
@@ -39,7 +40,7 @@ function Inner() {
       getStoredReferral();
     if (!code) return;
     (async () => {
-      const { data } = await supabase.rpc("referrer_display_name", { code });
+      const { data } = await supabasePublic.rpc("referrer_display_name", { code });
       if (typeof data === "string" && data.trim()) setInviterName(data.trim());
     })();
   }, []);

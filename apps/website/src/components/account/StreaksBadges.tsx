@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@shared/integrations/supabase/client";
+import { supabasePublic } from "@shared/integrations/supabase/publicClient";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { Skeleton } from "@shared/components/ui/skeleton";
 import { Flame, Check } from "lucide-react";
@@ -48,7 +49,7 @@ const StreaksBadges = ({ userId }: { userId: string }) => {
       if (s && s[0]) setStreak(s[0]);
       else setStreak({ current_streak: 0, longest_streak: 0, total_acts: 0 });
 
-      const { data: b } = await supabase.from("badges").select("*");
+      const { data: b } = await supabasePublic.from("badges").select("*");
       setBadges((b as Badge[]) || []);
 
       const { data: ub } = await supabase

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import { Heart } from "lucide-react";
 import { supabase } from "@shared/integrations/supabase/client";
+import { supabasePublic } from "@shared/integrations/supabase/publicClient";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useActTranslation } from "@/hooks/useActTranslation";
 import { pickCardGradient } from "@shared/lib/cardGradients";
@@ -107,7 +108,7 @@ export default function TopActsStack() {
         const ids = rows.map((r) => r.id);
         let counts: Record<string, number> = {};
         if (ids.length) {
-          const { data: rx } = await supabase.rpc("reaction_counts", {
+          const { data: rx } = await supabasePublic.rpc("reaction_counts", {
             _act_ids: ids,
           });
           (rx ?? []).forEach((r: { act_id: string; count: number }) => {
