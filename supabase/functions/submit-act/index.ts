@@ -307,7 +307,12 @@ Deno.serve(async (req) => {
     }
 
     // flagged_for_review (only reachable when STRICT_MODE is false) → stored but not public.
-    const rowStatus = shouldPublish ? "published" : "pending_review";
+    // "pending" is the only non-published value the status check constraint
+    // allows (acts_of_kindness_status_check) — this used to say
+    // "pending_review", a value that was never actually valid; it just never
+    // got exercised until the AI-unavailable fallback above made this branch
+    // reachable for the first time.
+    const rowStatus = shouldPublish ? "published" : "pending";
 
     const { data, error } = await supabase
       .from("acts_of_kindness")
