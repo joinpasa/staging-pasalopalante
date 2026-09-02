@@ -151,7 +151,10 @@ export default function WelcomeCarousel({
                     <SelectTrigger id="welcome-country">
                       <SelectValue placeholder="Select your country" />
                     </SelectTrigger>
-                    <SelectContent>
+                    {/* This modal sits at z-[70] (above the navbar's z-50), so the
+                        select's portaled dropdown — z-50 by default — needs to be
+                        pushed above that too, or it renders behind the modal. */}
+                    <SelectContent className="z-[80]">
                       {COUNTRIES.map((c) => (
                         <SelectItem key={c} value={c}>{c}</SelectItem>
                       ))}
