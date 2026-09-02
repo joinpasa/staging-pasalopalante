@@ -100,20 +100,10 @@ export default function VerificationBanner() {
 
   if (!user) {
     if (!pendingEmail) {
-      // Never started signing up on this device — Wall is the only screen
-      // they can reach, so make sure there's always a visible way to /join.
-      return (
-        <>
-          <div className="flex items-center gap-2 bg-app-coral-tint px-4 py-2.5 text-xs text-foreground">
-            <Mail className="h-4 w-4 shrink-0 text-app-coral" />
-            <span className="flex-1">Join to unlock the full app.</span>
-            <Link to="/join" className="shrink-0 font-semibold text-app-coral underline">
-              Join or log in →
-            </Link>
-          </div>
-          <JoinPopup />
-        </>
-      );
+      // Never started signing up on this device. The Home dashboard and
+      // Wall both already carry their own "join" prompts, so this only
+      // adds the bottom popup nudge rather than a third banner on top.
+      return <JoinPopup />;
     }
     const resend = async () => {
       setResending(true);
