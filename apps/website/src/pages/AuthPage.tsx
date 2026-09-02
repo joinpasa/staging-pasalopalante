@@ -51,7 +51,7 @@ const AuthPage = () => {
     const { error } = await signInWithMagicLink(email, tab === "signup" ? firstName.trim() : undefined);
     setBusy(false);
     if (error) {
-      toast.error(t.auth.magicError);
+      toast.error(getAuthErrorMessage(error));
     } else {
       // Tag the contact immediately on request, not just after the link is
       // clicked, so signups who never verify still show up in GHL.
