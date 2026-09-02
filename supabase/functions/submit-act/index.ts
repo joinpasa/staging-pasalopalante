@@ -75,94 +75,111 @@ Deno.serve(async (req) => {
     let category = "time_services";
     let language = "en";
 
+    // Whether the moderation call itself could run at all (rate-limited,
+    // out of credits, network failure, ...) — distinct from the model
+    // actually reviewing the content and being uncertain about it. An AI
+    // outage must never mean "everyone's submission just fails"; it holds
+    // the act for manual review instead, same as genuine model uncertainty
+    // does outside STRICT_MODE.
+    let aiUnavailable = false;
+
     if (description && GEMINI_API_KEY) {
-      const aiRes = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${GEMINI_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: MODERATION_MODEL,
-          messages: [
-            {
-              role: "system",
-              content:
-                "You moderate and classify short stories about acts of kindness for a public wall. " +
-                "Reject content that contains hate speech, harassment, threats, sexual content, profanity, " +
-                "personal contact info (phone/email/address), self-harm encouragement, spam, or that is unrelated to kindness. " +
-                "Be strict but fair: positive personal stories about kindness should be approved. " +
-                "Use 'flagged_for_review' only when truly uncertain. Always call moderate_act.",
-            },
-            { role: "user", content: `Mode: ${body.mode}\nStory: ${description}` },
-          ],
-          tools: [
-            {
-              type: "function",
-              function: {
-                name: "moderate_act",
-                description: "Moderate and classify an act of kindness.",
-                parameters: {
-                  type: "object",
-                  properties: {
-                    status: { type: "string", enum: ["approved", "rejected", "flagged_for_review"] },
-                    confidence: { type: "number", description: "0–1 confidence in the status" },
-                    reason_codes: {
-                      type: "array",
-                      items: { type: "string", enum: REASON_CODES },
+      try {
+        const aiRes = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${GEMINI_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: MODERATION_MODEL,
+            messages: [
+              {
+                role: "system",
+                content:
+                  "You moderate and classify short stories about acts of kindness for a public wall. " +
+                  "Reject content that contains hate speech, harassment, threats, sexual content, profanity, " +
+                  "personal contact info (phone/email/address), self-harm encouragement, spam, or that is unrelated to kindness. " +
+                  "Be strict but fair: positive personal stories about kindness should be approved. " +
+                  "Use 'flagged_for_review' only when truly uncertain. Always call moderate_act.",
+              },
+              { role: "user", content: `Mode: ${body.mode}\nStory: ${description}` },
+            ],
+            tools: [
+              {
+                type: "function",
+                function: {
+                  name: "moderate_act",
+                  description: "Moderate and classify an act of kindness.",
+                  parameters: {
+                    type: "object",
+                    properties: {
+                      status: { type: "string", enum: ["approved", "rejected", "flagged_for_review"] },
+                      confidence: { type: "number", description: "0–1 confidence in the status" },
+                      reason_codes: {
+                        type: "array",
+                        items: { type: "string", enum: REASON_CODES },
+                      },
+                      short_reason: { type: "string", description: "Brief human-readable reason" },
+                      type_tag: { type: "string", enum: TYPE_TAGS },
+                      category: { type: "string", enum: CATEGORIES },
+                      language: { type: "string", description: "ISO 639-1 code" },
                     },
-                    short_reason: { type: "string", description: "Brief human-readable reason" },
-                    type_tag: { type: "string", enum: TYPE_TAGS },
-                    category: { type: "string", enum: CATEGORIES },
-                    language: { type: "string", description: "ISO 639-1 code" },
+                    required: ["status", "confidence", "reason_codes", "type_tag", "category", "language"],
+                    additionalProperties: false,
                   },
-                  required: ["status", "confidence", "reason_codes", "type_tag", "category", "language"],
-                  additionalProperties: false,
                 },
               },
-            },
-          ],
-          tool_choice: { type: "function", function: { name: "moderate_act" } },
-        }),
-      });
+            ],
+            tool_choice: { type: "function", function: { name: "moderate_act" } },
+          }),
+        });
 
-      if (aiRes.status === 429) {
-        return new Response(JSON.stringify({ error: "Too many requests, please try again in a moment." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (aiRes.status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits exhausted. Please contact support." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (aiRes.ok) {
-        const data = await aiRes.json();
-        const args = data.choices?.[0]?.message?.tool_calls?.[0]?.function?.arguments;
-        if (args) {
-          try {
-            const parsed = JSON.parse(args);
-            const s = parsed.status;
-            modStatus = (s === "rejected" || s === "flagged_for_review") ? s : "approved";
-            confidence = typeof parsed.confidence === "number"
-              ? Math.max(0, Math.min(1, parsed.confidence))
-              : 0.5;
-            reasonCodes = Array.isArray(parsed.reason_codes)
-              ? parsed.reason_codes.filter((r: unknown) => typeof r === "string" && REASON_CODES.includes(r as string)).slice(0, 8)
-              : [];
-            shortReason = typeof parsed.short_reason === "string" ? parsed.short_reason.slice(0, 300) : null;
-            typeTag = TYPE_TAGS.includes(parsed.type_tag) ? parsed.type_tag : "other";
-            category = CATEGORIES.includes(parsed.category) ? parsed.category : "time_services";
-            language = (parsed.language || "en").toString().slice(0, 8);
-          } catch (_) { /* fall through */ }
+        if (aiRes.status === 429 || aiRes.status === 402 || !aiRes.ok) {
+          console.error("AI gateway unavailable", aiRes.status, await aiRes.text().catch(() => ""));
+          aiUnavailable = true;
+        } else {
+          const data = await aiRes.json();
+          const args = data.choices?.[0]?.message?.tool_calls?.[0]?.function?.arguments;
+          if (args) {
+            try {
+              const parsed = JSON.parse(args);
+              const s = parsed.status;
+              modStatus = (s === "rejected" || s === "flagged_for_review") ? s : "approved";
+              confidence = typeof parsed.confidence === "number"
+                ? Math.max(0, Math.min(1, parsed.confidence))
+                : 0.5;
+              reasonCodes = Array.isArray(parsed.reason_codes)
+                ? parsed.reason_codes.filter((r: unknown) => typeof r === "string" && REASON_CODES.includes(r as string)).slice(0, 8)
+                : [];
+              shortReason = typeof parsed.short_reason === "string" ? parsed.short_reason.slice(0, 300) : null;
+              typeTag = TYPE_TAGS.includes(parsed.type_tag) ? parsed.type_tag : "other";
+              category = CATEGORIES.includes(parsed.category) ? parsed.category : "time_services";
+              language = (parsed.language || "en").toString().slice(0, 8);
+            } catch (_) {
+              // Response didn't parse as expected — treat the same as the
+              // model being unreachable rather than silently auto-approving.
+              aiUnavailable = true;
+            }
+          } else {
+            aiUnavailable = true;
+          }
         }
-      } else {
-        console.error("AI gateway error", aiRes.status, await aiRes.text());
+      } catch (e) {
+        console.error("AI gateway request failed", e);
+        aiUnavailable = true;
       }
     }
 
-    // Reject-on-uncertainty rule.
-    if (STRICT_MODE) {
+    if (aiUnavailable) {
+      modStatus = "flagged_for_review";
+      shortReason = "Automated moderation was unavailable — held for manual review.";
+    }
+
+    // Reject-on-uncertainty rule — doesn't apply when the AI never actually
+    // reviewed the content (an outage, not model uncertainty); that case is
+    // always held for manual review, never auto-rejected.
+    if (STRICT_MODE && !aiUnavailable) {
       if (modStatus === "flagged_for_review") modStatus = "rejected";
       if (modStatus === "approved" && reasonCodes.length > 0 && confidence < CONFIDENCE_THRESHOLD) {
         modStatus = "rejected";
