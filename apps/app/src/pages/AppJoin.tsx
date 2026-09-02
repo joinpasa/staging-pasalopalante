@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { ArrowRight, CheckCircle2, KeyRound, Mail } from "lucide-react";
 
@@ -14,6 +14,7 @@ import { cn } from "@shared/lib/utils";
 import { getAuthErrorMessage } from "@shared/lib/authErrors";
 import { getCanonicalOrigin } from "@shared/lib/canonicalOrigin";
 import { submitPPLForm } from "@shared/lib/pplForm";
+import { storeReferralCode } from "@shared/lib/referral";
 
 /**
  * Sign-up and sign-in for the installed app.
@@ -26,7 +27,18 @@ import { submitPPLForm } from "@shared/lib/pplForm";
 export default function AppJoin() {
   const { user, signIn, signInWithMagicLink, resetPassword } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [tab, setTab] = useState<"join" | "login">("join");
+
+  // A Pass QR hand-off (?ref=<code>, from /wave or Home) redirects unsigned-in
+  // scanners here to sign up — separately from the ?r= share-link path that
+  // captureReferralFromUrl handles. Store it the same way so claim_referral
+  // still attributes the new account back to whoever's code was scanned,
+  // instead of the referral silently never landing.
+  useEffect(() => {
+    const ref = searchParams.get("ref");
+    if (ref) storeReferralCode(ref);
+  }, [searchParams]);
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");

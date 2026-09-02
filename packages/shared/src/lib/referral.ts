@@ -37,6 +37,23 @@ interface Stored {
 }
 
 /**
+ * Stashes a referral code for claim_referral to pick up once an account
+ * exists. Shared by captureReferralFromUrl (the `?r=` share-link path) and
+ * anywhere else — e.g. the app's Pass QR hand-off — that resolves a code
+ * through a different URL param and needs the same attribution to apply.
+ */
+export function storeReferralCode(rawCode: string) {
+  const code = rawCode.trim().slice(0, 64);
+  if (!code) return;
+  try {
+    const payload: Stored = { code, ts: Date.now() };
+    setCookie(KEY, JSON.stringify(payload), TTL_SECONDS);
+  } catch {
+    /* non-fatal */
+  }
+}
+
+/**
  * Reads `?r=` from the current URL, stores it, and strips it from the address
  * bar so the param never leaks into further sharing.
  */
@@ -44,10 +61,9 @@ export function captureReferralFromUrl() {
   if (typeof window === "undefined") return;
   try {
     const url = new URL(window.location.href);
-    const code = (url.searchParams.get("r") || "").trim().slice(0, 64);
-    if (!code) return;
-    const payload: Stored = { code, ts: Date.now() };
-    setCookie(KEY, JSON.stringify(payload), TTL_SECONDS);
+    const code = url.searchParams.get("r") || "";
+    if (!code.trim()) return;
+    storeReferralCode(code);
     url.searchParams.delete("r");
     window.history.replaceState(
       {},

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Camera, Download, Share2, HelpCircle, ChevronDown, Apple, Smartphone } from "lucide-react";
 import PassQrCode from "@/components/app/PassQrCode";
@@ -143,6 +144,7 @@ function MyCode({
 
 
 function ScanPanel() {
+  const navigate = useNavigate();
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [denied, setDenied] = useState(false);
@@ -170,6 +172,13 @@ function ScanPanel() {
       resultRef.current = code;
       setResult(code);
       toast.success(`Pass code scanned: ${code}`);
+      // Go straight to the connect screen rather than waiting on a second
+      // tap on "Open their pass" — a brief pause so the toast/code are
+      // actually visible before the page changes.
+      window.setTimeout(() => {
+        if (cancelled) return;
+        navigate(`/wave?ref=${encodeURIComponent(code)}`);
+      }, 700);
     };
 
     const startLoop = async () => {
