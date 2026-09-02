@@ -9,13 +9,13 @@ import { useUI } from "@shared/contexts/UIContext";
 
 function Inner() {
   const { t } = useLanguage();
-  const { setShareModalOpen } = useUI();
+  const { setLocalShareFlowOpen } = useUI();
   const navigate = useNavigate();
 
   useEffect(() => {
-    setShareModalOpen(true);
-    return () => setShareModalOpen(false);
-  }, [setShareModalOpen]);
+    setLocalShareFlowOpen(true);
+    return () => setLocalShareFlowOpen(false);
+  }, [setLocalShareFlowOpen]);
 
   return (
     <main className="relative min-h-screen bg-warm-cream pt-20 pb-24 section-padding">

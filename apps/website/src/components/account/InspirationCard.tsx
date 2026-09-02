@@ -16,7 +16,7 @@ interface Act {
 
 export default function InspirationCard() {
   const { t, lang } = useLanguage();
-  const { setShareModalOpen } = useUI();
+  const { setLocalShareFlowOpen } = useUI();
   const [acts, setActs] = useState<Act[] | null>(null);
   const [idx, setIdx] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -45,9 +45,9 @@ export default function InspirationCard() {
   useEffect(() => { fetchActs(false); /* eslint-disable-next-line */ }, [lang]);
 
   useEffect(() => {
-    setShareModalOpen(open);
-    return () => setShareModalOpen(false);
-  }, [open, setShareModalOpen]);
+    setLocalShareFlowOpen(open);
+    return () => setLocalShareFlowOpen(false);
+  }, [open, setLocalShareFlowOpen]);
 
   function next() {
     if (!acts || acts.length === 0) return;

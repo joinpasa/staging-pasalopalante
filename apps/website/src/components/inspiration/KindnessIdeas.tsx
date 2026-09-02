@@ -18,7 +18,7 @@ const CATEGORIES: { key: CategoryKey; labelKey: keyof ReturnType<typeof useLangu
 
 export default function KindnessIdeas() {
   const { t } = useLanguage();
-  const { setShareModalOpen } = useUI();
+  const { setLocalShareFlowOpen } = useUI();
   const [active, setActive] = useState<CategoryKey>("words");
   const [openIdea, setOpenIdea] = useState<string | null>(null);
 
@@ -28,9 +28,9 @@ export default function KindnessIdeas() {
   }, [t, active]);
 
   useEffect(() => {
-    setShareModalOpen(openIdea !== null);
-    return () => setShareModalOpen(false);
-  }, [openIdea, setShareModalOpen]);
+    setLocalShareFlowOpen(openIdea !== null);
+    return () => setLocalShareFlowOpen(false);
+  }, [openIdea, setLocalShareFlowOpen]);
 
   return (
     <section id="ideas" className="section-padding pt-6 pb-20 md:pt-10 md:pb-28 lg:pb-36">

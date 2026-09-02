@@ -18,7 +18,7 @@ const STORAGE_KEY = (date: string) => `inspiration:done:${date}`;
 
 export default function DailyActs() {
   const { t, lang } = useLanguage();
-  const { setShareModalOpen } = useUI();
+  const { setLocalShareFlowOpen } = useUI();
   const [acts, setActs] = useState<Act[] | null>(null);
   const [date, setDate] = useState<string>("");
   const [loading, setLoading] = useState(true);
@@ -53,9 +53,9 @@ export default function DailyActs() {
   }, [lang]);
 
   useEffect(() => {
-    setShareModalOpen(openIdx !== null);
-    return () => setShareModalOpen(false);
-  }, [openIdx, setShareModalOpen]);
+    setLocalShareFlowOpen(openIdx !== null);
+    return () => setLocalShareFlowOpen(false);
+  }, [openIdx, setLocalShareFlowOpen]);
 
   function markDone(idx: number) {
     if (done.includes(idx)) return;

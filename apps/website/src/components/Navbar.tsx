@@ -19,7 +19,7 @@ const Navbar = () => {
   const [mobileExploreOpen, setMobileExploreOpen] = useState(false);
   const { t } = useLanguage();
   const { user } = useAuth();
-  const { shareModalOpen, openShareModal, setNavbarMounted } = useUI();
+  const { anyShareFlowOpen, openShareModal, setNavbarMounted } = useUI();
   const [navStats, setNavStats] = useState<{ acts: number; streak: number }>({ acts: 0, streak: 0 });
   const location = useLocation();
   const navigate = useNavigate();
@@ -87,7 +87,7 @@ const Navbar = () => {
     }
   }
 
-  if (shareModalOpen) return null;
+  if (anyShareFlowOpen) return null;
 
   const linkClass = isSolid ? "text-foreground/70 hover:text-foreground" : "text-white/80 hover:text-white";
 

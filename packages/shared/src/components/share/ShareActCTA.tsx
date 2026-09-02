@@ -17,7 +17,7 @@ interface Props {
 
 export default function ShareActCTA({ variant = "modal" }: Props) {
   const { t } = useLanguage();
-  const { setShareModalOpen } = useUI();
+  const { setLocalShareFlowOpen } = useUI();
   const [open, setOpen] = useState(false);
 
   // Only the modal variant hides the navbar while it's open — there's no
@@ -25,9 +25,9 @@ export default function ShareActCTA({ variant = "modal" }: Props) {
   // the navbar while someone scrolls the page.
   useEffect(() => {
     if (variant !== "modal") return;
-    setShareModalOpen(open);
-    return () => setShareModalOpen(false);
-  }, [open, variant, setShareModalOpen]);
+    setLocalShareFlowOpen(open);
+    return () => setLocalShareFlowOpen(false);
+  }, [open, variant, setLocalShareFlowOpen]);
 
   if (variant === "inline") {
     return <ShareActFlow singleStep />;
