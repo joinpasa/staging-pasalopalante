@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { Award, Building2, Download, Flame, Heart, Instagram, MessageCircle, Sparkles, Twitter, Users } from "lucide-react";
+import { Award, Building2, Flame, Heart, Sparkles, Users } from "lucide-react";
 import { toPng } from "html-to-image";
 import { toast } from "sonner";
 import schoolImage from "@/assets/getinvolved-build.jpg";
@@ -12,11 +12,12 @@ import { useUI } from "@shared/contexts/UIContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ShareGraphic from "@shared/components/share/ShareGraphic";
-import ShareDialog from "@shared/components/share/ShareDialog";
 import KindnessCard from "@shared/components/share/KindnessCard";
 import ThanksSummary from "@shared/components/share/ThanksSummary";
 import CheckInboxCard from "@shared/components/share/CheckInboxCard";
 import { useShareActions } from "@shared/components/share/useShareActions";
+import { buildShareOptions } from "@shared/components/share/buildShareOptions";
+import ShareOptionsGrid from "@shared/components/share/ShareOptionsGrid";
 import { Button } from "@shared/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@shared/components/ui/dialog";
 import { supabase } from "@shared/integrations/supabase/client";
@@ -49,7 +50,6 @@ function Inner() {
   const graphicRef = useRef<HTMLDivElement>(null);
   const [postShare, setPostShare] = useState<{ kind: "check_inbox" | "prefill"; email: string } | null>(null);
   const [rewards, setRewards] = useState<{ unlocked_badges?: string[]; type_tag?: string } | null>(null);
-  const [shareOpen, setShareOpen] = useState(false);
   const [showClaim, setShowClaim] = useState(false);
   const [readMoreOpen, setReadMoreOpen] = useState(false);
 
@@ -123,7 +123,7 @@ function Inner() {
   const shareUrl = id ? withReferral(`${siteOrigin()}/wave/${id}`, referralCode) : "";
   const shareText = `${act?.description || t.share.defaultGraphicLine} #PasaloPalante`;
 
-  const { busy, withBusy, downloadImage, shareInstagram, shareTwitter, shareWhatsApp } = useShareActions({
+  const shareActions = useShareActions({
     getImageBlob: generatePng,
     shareUrl,
     shareText,
@@ -132,6 +132,16 @@ function Inner() {
       instagramHint: t.share.shareDialog.instagramHint,
       shareFailed: t.share.shareDialog.shareFailed,
     },
+  });
+  const shareOptions = buildShareOptions(shareActions, {
+    nativeShare: t.share.shareDialog.nativeShare,
+    facebook: t.share.shareDialog.facebook,
+    twitter: t.share.shareDialog.twitter,
+    whatsapp: t.share.shareDialog.whatsapp,
+    linkedin: t.share.shareDialog.linkedin,
+    instagram: t.share.shareDialog.instagram,
+    copyLink: t.share.shareDialog.copyLink,
+    download: t.share.shareDialog.download,
   });
 
   function handleClaimProfile() {
@@ -156,30 +166,6 @@ function Inner() {
 
   return (
     <main className="pt-28 pb-24 section-padding bg-warm-cream min-h-screen">
-      <ShareDialog
-        open={shareOpen}
-        onOpenChange={setShareOpen}
-        getImageBlob={generatePng}
-        shareUrl={shareUrl}
-        shareText={shareText}
-        title={t.share.shareDialog.title}
-        description={t.share.shareDialog.description}
-        helperText={t.share.shareDialog.helper}
-        labels={{
-          nativeShare: t.share.shareDialog.nativeShare,
-          facebook: t.share.shareDialog.facebook,
-          twitter: t.share.shareDialog.twitter,
-          whatsapp: t.share.shareDialog.whatsapp,
-          linkedin: t.share.shareDialog.linkedin,
-          instagram: t.share.shareDialog.instagram,
-          copyLink: t.share.shareDialog.copyLink,
-          download: t.share.shareDialog.download,
-          copied: t.share.copied,
-          instagramHint: t.share.shareDialog.instagramHint,
-          shareFailed: t.share.shareDialog.shareFailed,
-        }}
-      />
-
       <Dialog open={readMoreOpen} onOpenChange={setReadMoreOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
@@ -259,47 +245,7 @@ function Inner() {
           <div>
             <p className="text-sm font-semibold text-foreground/70 mb-2">{t.share.thanksStepTwoEyebrow}</p>
             <p className="text-foreground/80 mb-5">{t.share.thanksStepTwoBody}</p>
-            <div className="flex flex-wrap gap-3">
-              <button
-                type="button"
-                disabled={busy === "whatsapp"}
-                onClick={() => withBusy("whatsapp", shareWhatsApp)}
-                className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-white bg-[#25D366] hover:opacity-90 transition-opacity disabled:opacity-60"
-              >
-                <MessageCircle size={16} /> {t.share.shareDialog.whatsapp}
-              </button>
-              <button
-                type="button"
-                disabled={busy === "instagram"}
-                onClick={() => withBusy("instagram", shareInstagram)}
-                className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-tr from-amber-400 via-pink-500 to-purple-600 hover:opacity-90 transition-opacity disabled:opacity-60"
-              >
-                <Instagram size={16} /> {t.share.shareDialog.instagram}
-              </button>
-              <button
-                type="button"
-                disabled={busy === "twitter"}
-                onClick={() => withBusy("twitter", shareTwitter)}
-                className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-white bg-black hover:opacity-90 transition-opacity disabled:opacity-60"
-              >
-                <Twitter size={16} /> {t.share.shareDialog.twitterShort}
-              </button>
-              <button
-                type="button"
-                disabled={busy === "download"}
-                onClick={() => withBusy("download", downloadImage)}
-                className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary/90 transition-colors disabled:opacity-60"
-              >
-                <Download size={16} /> {t.share.shareDialog.downloadShort}
-              </button>
-            </div>
-            <button
-              type="button"
-              onClick={() => setShareOpen(true)}
-              className="mt-3 text-sm text-muted-foreground hover:text-foreground underline underline-offset-2"
-            >
-              {t.share.thanksMoreOptions}
-            </button>
+            <ShareOptionsGrid options={shareOptions} busy={shareActions.busy} />
           </div>
         </div>
 
