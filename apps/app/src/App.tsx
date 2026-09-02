@@ -20,6 +20,7 @@ import AppAccount from "./pages/AppAccount.tsx";
 import RequireVerified from "@/components/app/RequireVerified";
 import ScrollToTopOnRouteChange from "@shared/components/ScrollToTopOnRouteChange";
 import ReconsentGate from "@shared/components/ReconsentGate";
+import InstallPrompt from "@shared/components/InstallPrompt";
 import { DirectionProvider } from "@radix-ui/react-direction";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { LANGUAGES } from "@shared/i18n/translations";
@@ -65,6 +66,7 @@ const App = () => (
                   anything unmatched back to the app home. */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
+            <InstallPrompt />
           </BrowserRouter>
 
         </TooltipProvider>

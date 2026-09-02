@@ -2,7 +2,7 @@
   "name": "Pásalo Pa'lante",
   "short_name": "Pásalo",
   "description": "A global kindness movement by Te Amo PR — sparking 1 billion acts of kindness worldwide.",
-  "start_url": "/app",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
