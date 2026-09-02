@@ -477,6 +477,9 @@ const translations = {
       sendResetLink: "Send reset link",
       resetLinkSent: "Check {email} for a link to set a new password.",
       tryDifferentEmail: "Try a different email",
+      forgotPassword: "Forgot password?",
+      forgotPasswordBody: "We'll send you a link to set a new password.",
+      forgotPasswordNeedsEmail: "Enter your email first.",
     },
     account: {
       profileTitle: "Your Profile",
@@ -1169,6 +1172,9 @@ const translations = {
       sendResetLink: "Enviar enlace para restablecer",
       resetLinkSent: "Revisa {email} para un enlace y crear una nueva contraseña.",
       tryDifferentEmail: "Probar con otro correo",
+      forgotPassword: "¿Olvidaste tu contraseña?",
+      forgotPasswordBody: "Te enviaremos un enlace para crear una nueva contraseña.",
+      forgotPasswordNeedsEmail: "Ingresa tu correo primero.",
     },
     account: {
       profileTitle: "Tu perfil",
@@ -2585,6 +2591,9 @@ const translations = {
       sendResetLink: "Link zum Zurücksetzen senden",
       resetLinkSent: "Prüfen Sie {email} auf einen Link, um ein neues Passwort festzulegen.",
       tryDifferentEmail: "Andere E-Mail versuchen",
+      forgotPassword: "Passwort vergessen?",
+      forgotPasswordBody: "Wir senden Ihnen einen Link, um ein neues Passwort festzulegen.",
+      forgotPasswordNeedsEmail: "Bitte geben Sie zuerst Ihre E-Mail-Adresse ein.",
     },
     account: {
       profileTitle: "Ihr Profil",

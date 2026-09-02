@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { useLanguage } from "@shared/contexts/LanguageContext";
@@ -31,8 +31,9 @@ const AuthPage = () => {
   const [busy, setBusy] = useState(false);
   const [magicSentTo, setMagicSentTo] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
-  const [needsReset, setNeedsReset] = useState<{ email: string; sent: boolean } | null>(null);
+  const [needsReset, setNeedsReset] = useState<{ email: string; sent: boolean; reason: "migrated" | "forgot" } | null>(null);
   const [firstName, setFirstName] = useState("");
+  const signinEmailRef = useRef<HTMLInputElement>(null);
 
   function selectTab(newTab: AuthTab) {
     setTab(newTab);
@@ -76,7 +77,7 @@ const AuthPage = () => {
       const { data: profile } = await supabase.from("profiles").select("has_password").ilike("email", email).maybeSingle();
       if (profile && profile.has_password === false) {
         setBusy(false);
-        setNeedsReset({ email, sent: false });
+        setNeedsReset({ email, sent: false, reason: "migrated" });
         return;
       }
     }
@@ -84,6 +85,15 @@ const AuthPage = () => {
     if (error) toast.error(getAuthErrorMessage(error));
     else navigate(next);
   };
+
+  function handleForgotPassword() {
+    const email = signinEmailRef.current?.value.trim();
+    if (!email) {
+      toast.error(t.auth.forgotPasswordNeedsEmail);
+      return;
+    }
+    setNeedsReset({ email, sent: false, reason: "forgot" });
+  }
 
   const handleSendReset = async () => {
     if (!needsReset) return;
@@ -151,7 +161,9 @@ const AuthPage = () => {
                 <p className="text-sm text-foreground/70">{t.auth.resetLinkSent.replace("{email}", needsReset.email)}</p>
               ) : (
                 <>
-                  <p className="text-sm text-foreground/70">{t.auth.welcomeBackBody}</p>
+                  <p className="text-sm text-foreground/70">
+                    {needsReset.reason === "migrated" ? t.auth.welcomeBackBody : t.auth.forgotPasswordBody}
+                  </p>
                   <Button type="button" className="w-full" disabled={busy} onClick={handleSendReset}>
                     {busy ? "…" : t.auth.sendResetLink}
                   </Button>
@@ -205,10 +217,19 @@ const AuthPage = () => {
                     <form onSubmit={handleSignIn} className="space-y-4">
                       <div>
                         <Label htmlFor="signin-email">{t.auth.email}</Label>
-                        <Input id="signin-email" name="email" type="email" required autoComplete="email" />
+                        <Input ref={signinEmailRef} id="signin-email" name="email" type="email" required autoComplete="email" />
                       </div>
                       <div>
-                        <Label htmlFor="signin-password">{t.auth.password}</Label>
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="signin-password">{t.auth.password}</Label>
+                          <button
+                            type="button"
+                            onClick={handleForgotPassword}
+                            className="text-xs text-foreground/60 hover:text-foreground underline underline-offset-4"
+                          >
+                            {t.auth.forgotPassword}
+                          </button>
+                        </div>
                         <Input id="signin-password" name="password" type="password" required autoComplete="current-password" autoCapitalize="none" autoCorrect="off" spellCheck={false} />
                       </div>
                       <Button type="submit" variant="outline" className="w-full" disabled={busy}>
