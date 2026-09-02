@@ -590,14 +590,15 @@ function buildGHLTags(formType: string, data: Record<string, string>) {
 }
 
 // Organization types that map to a distinct GHL segment. "ngo" is folded
-// into "nonprofit" (same audience); "faith" and "other" get no category tag,
-// just the general get-involved-lead tag below.
+// into "nonprofit" (same audience).
 const ORG_TYPE_CATEGORY_TAG: Record<string, string> = {
   school: "get-involved-school",
   company: "get-involved-company",
   nonprofit: "get-involved-nonprofit",
   ngo: "get-involved-nonprofit",
   municipality: "get-involved-municipality",
+  faith: "get-involved-faith",
+  other: "get-involved-other",
 };
 
 // Category + general lead tags for the two Get Involved forms (the /commit
@@ -610,6 +611,9 @@ function getInvolvedCategoryTags(formType: string, data: Record<string, string>)
   if (formType === "pledge") {
     if (data.mode === "individual") tags.push("get-involved-individual");
     if (data.mode === "organization") {
+      // General tag so a group/org pledge is always distinguishable from an
+      // individual one, on top of the specific type tag below.
+      tags.push("get-involved-group");
       const orgTag = ORG_TYPE_CATEGORY_TAG[(data.orgType || "").toLowerCase()];
       if (orgTag) tags.push(orgTag);
     }
