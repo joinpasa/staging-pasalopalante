@@ -87,7 +87,16 @@ export default function ReconsentGate() {
   const open = !!needs && !onLegalPage;
   return (
     <Dialog open={open} onOpenChange={() => { /* blocking */ }}>
-      <DialogContent className="max-w-md" onPointerDownOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
+      {/* Mandatory and non-dismissible, so it must sit above the welcome
+          onboarding carousel (z-[70]) too — a re-consent gate blocking
+          nothing but an invisible click-catcher behind that carousel
+          isn't blocking anything at all. */}
+      <DialogContent
+        className="max-w-md z-[90]"
+        overlayClassName="z-[90]"
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>{t.legal?.reconsentTitle ?? "We've updated our policies"}</DialogTitle>
           <DialogDescription className="leading-relaxed pt-2">
