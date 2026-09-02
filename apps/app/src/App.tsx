@@ -48,7 +48,7 @@ const App = () => (
             <ReconsentGate />
             <Routes>
               <Route path="/" element={<AppShell />}>
-                <Route index element={<RequireVerified><AppHome /></RequireVerified>} />
+                <Route index element={<AppHome />} />
                 <Route path="wall" element={<AppWall />} />
                 <Route path="pass" element={<RequireVerified><AppPass /></RequireVerified>} />
                 <Route path="map" element={<RequireVerified><AppMap /></RequireVerified>} />
