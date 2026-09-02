@@ -101,19 +101,17 @@ export default function AppHome() {
     }
   }
 
-  // Someone scanned a pass QR (pasalopalante.com/app?ref=<code>). If the app
-  // is installed (running standalone), stay here. If not, send them to join
-  // so they can sign up / install — preserving the referral code. Only fires
-  // when a `ref` is present (i.e. a scan), so the Home tab still works in-browser.
+  // Someone scanned a pass QR (app.pasalopalante.com?ref=<code>) — including
+  // via the phone's own camera app, which opens the installed PWA straight
+  // to Home rather than going through the in-app scanner. /wave already
+  // handles both cases correctly (logs the hand-off if signed in, forwards
+  // to /join with the code preserved if not), so just hand it off there
+  // instead of duplicating (and previously getting wrong) that branching
+  // here — a standalone visit used to silently drop the code and do nothing.
   useEffect(() => {
     const ref = searchParams.get("ref");
     if (!ref) return;
-    const standalone =
-      window.matchMedia?.("(display-mode: standalone)").matches ||
-      (window.navigator as unknown as { standalone?: boolean }).standalone === true;
-    if (!standalone) {
-      navigate(`/join?ref=${encodeURIComponent(ref)}`, { replace: true });
-    }
+    navigate(`/wave?ref=${encodeURIComponent(ref)}`, { replace: true });
   }, [navigate, searchParams]);
 
 
