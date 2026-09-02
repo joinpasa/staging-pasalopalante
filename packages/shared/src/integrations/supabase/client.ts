@@ -9,7 +9,7 @@ const SUPABASE_URL =
 const SUPABASE_PUBLISHABLE_KEY = 
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 
   import.meta.env.VITE_SUPABASE_ANON_KEY || 
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpcGZibGVsdGpleG9mc2pmZndiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1ODk3ODAsImV4cCI6MjEwMzE2NTc4MH0.tWyXhh5CS85RMvYuRFVPem4Oc-q5CBXcACHvlVYvtY8';
+  'sb_publishable_oxT-cBeoofKTcaUhDBhghQ_Ne-swHDi';
 
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
