@@ -86,6 +86,7 @@ export default function AppHome() {
           message: "Role: do_acts",
           mode: "individual",
           helpRole: "do_acts",
+          pledgeContext: "onboarding",
         });
       } catch {
         // Non-fatal — commitment already succeeded

@@ -25,6 +25,10 @@ export interface PledgeData {
   orgType?: string;
   /** Set when mode is "individual" — do_acts/champion/ambassador/civic/volunteer. */
   helpRole?: string;
+  /** "onboarding" routes pledgeCount to GHL's separate Commitment field
+   *  instead of Pledge, so the post-signup onboarding-carousel number never
+   *  overwrites the one from the original /commit (or app join) pledge. */
+  pledgeContext?: "commit" | "onboarding";
 }
 
 export interface CourseCreatorData {

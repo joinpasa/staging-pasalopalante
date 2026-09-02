@@ -233,6 +233,7 @@ Deno.serve(async (req) => {
         form_source:      formType,
         utm_source:       data.utm_source || "",
         utm_campaign:     data.utm_campaign || "",
+        ...pledgeCustomFields(formType, data),
       },
     });
   } catch (ghlError) {
@@ -625,6 +626,21 @@ function getInvolvedCategoryTags(formType: string, data: Record<string, string>)
   }
 
   return tags;
+}
+
+// GHL's "Pledge" ({{contact.pledge}}) and "Commitment" ({{contact.commitment}})
+// fields are kept separate so one doesn't silently overwrite the other:
+// the initial pledge (the /commit form, or the app's pre-verification join)
+// goes to "pledge"; the number chosen during the post-signup onboarding
+// carousel (AccountPage/AppHome finishOnboarding, formType "pledge" with
+// pledgeContext "onboarding") goes to "commitment" instead.
+function pledgeCustomFields(formType: string, data: Record<string, unknown>) {
+  if (formType !== "pledge" && formType !== "app-join") return {};
+  const count = (data.pledgeCount as string | number | undefined) || "";
+  if (formType === "pledge" && data.pledgeContext === "onboarding") {
+    return { commitment: count };
+  }
+  return { pledge: count };
 }
 
 function json(data: unknown, status = 200) {
