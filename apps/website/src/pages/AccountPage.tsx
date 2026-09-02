@@ -13,6 +13,7 @@ import YourActs from "@/components/account/YourActs";
 import InspirationCard from "@/components/account/InspirationCard";
 import YourCommitment from "@/components/account/YourCommitment";
 import StreaksBadges from "@/components/account/StreaksBadges";
+import MovementStats from "@/components/account/MovementStats";
 import YourGroup from "@/components/account/YourGroup";
 import YourInvitations from "@/components/account/YourInvitations";
 import WelcomeCarousel, { type OnboardingResult } from "@/components/account/WelcomeCarousel";
@@ -179,6 +180,7 @@ const AccountPage = () => {
         )}
 
         <StreaksBadges userId={user.id} />
+        <MovementStats />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">

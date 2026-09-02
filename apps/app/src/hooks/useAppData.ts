@@ -292,35 +292,9 @@ export function useSendThanks() {
   };
 }
 
-/** Public movement totals used by the shared counters. */
-export function useMovementTotals() {
-  return useQuery({
-    queryKey: ["app", "totals"],
-    queryFn: async () => {
-      const startOfDay = new Date();
-      startOfDay.setHours(0, 0, 0, 0);
-
-      const [all, today, pledges] = await Promise.all([
-        supabase
-          .from("acts_of_kindness")
-          .select("id", { count: "exact", head: true })
-          .eq("status", "published"),
-        supabase
-          .from("acts_of_kindness")
-          .select("id", { count: "exact", head: true })
-          .eq("status", "published")
-          .gte("created_at", startOfDay.toISOString()),
-        supabase.from("commitments").select("pledge_count").eq("status", "published"),
-      ]);
-
-      return {
-        actsAllTime: all.count ?? 0,
-        actsToday: today.count ?? 0,
-        pledged: (pledges.data ?? []).reduce((sum, row) => sum + (row.pledge_count ?? 0), 0),
-      };
-    },
-  });
-}
+/** Public movement totals used by the shared counters — moved to
+ *  packages/shared so both platforms use the exact same live query. */
+export { useMovementTotals } from "@shared/hooks/useMovementTotals";
 
 export interface AppBadge {
   id: string;
