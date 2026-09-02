@@ -18,6 +18,7 @@ import YourGroup from "@/components/account/YourGroup";
 import YourInvitations from "@/components/account/YourInvitations";
 import WelcomeCarousel, { type OnboardingResult } from "@/components/account/WelcomeCarousel";
 import { Skeleton } from "@shared/components/ui/skeleton";
+import { submitPPLForm } from "@shared/lib/pplForm";
 
 const AccountPage = () => {
   const { t } = useLanguage();
@@ -83,6 +84,23 @@ const AccountPage = () => {
       const failure = (data as { error?: string } | null)?.error ?? error?.message;
       if (failure) toast.error(failure);
       else setHasCommitment(true);
+      // PPL Integration — sync to Airtable + GHL (tags get-involved-lead /
+      // get-involved-individual). CommitFlow.tsx's individual pledge already
+      // does this; this onboarding-carousel pledge is the same kind of
+      // commitment and was missing this sync entirely.
+      try {
+        await submitPPLForm("pledge", {
+          fullName: `${firstName} ${lastName}`.trim(),
+          email: user.email || "",
+          country: country || undefined,
+          pledgeCount,
+          message: "Role: do_acts",
+          mode: "individual",
+          helpRole: "do_acts",
+        });
+      } catch {
+        // Non-fatal — commitment already succeeded
+      }
     } catch {
       toast.error("Something went wrong saving your pledge. You can set it later below.");
     } finally {

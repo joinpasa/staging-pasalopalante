@@ -12,6 +12,7 @@ export function syncGhlTag(
   email: string | null | undefined,
   tag: GhlLifecycleTag,
   name?: { firstName?: string | null; lastName?: string | null },
+  source?: "PPL Website" | "PPL App",
 ): void {
   if (!email) return;
   supabase.functions
@@ -22,6 +23,7 @@ export function syncGhlTag(
           email,
           firstName: name?.firstName || "",
           lastName: name?.lastName || "",
+          source,
         },
       },
     })

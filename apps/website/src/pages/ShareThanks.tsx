@@ -88,7 +88,10 @@ function Inner() {
     })();
   }, [id]);
 
-  // After magic-link sign-in lands here (?claim=1), attach prior anonymous acts.
+  // After magic-link sign-in lands here (?claim=1), attach prior anonymous
+  // acts, then continue on to the dashboard — that's the actual destination
+  // "claim your profile" was for; staying on this static thank-you page
+  // left people thinking the link had failed.
   useEffect(() => {
     if (!user) return;
     if (searchParams.get("claim") !== "1") return;
@@ -101,13 +104,11 @@ function Inner() {
       } catch (e) {
         console.error("claim_my_acts failed", e);
       } finally {
-        // Drop the query param so refresh doesn't re-run.
-        searchParams.delete("claim");
-        setSearchParams(searchParams, { replace: true });
         if (id) sessionStorage.removeItem(`share_post_${id}`);
+        navigate("/account", { replace: true });
       }
     })();
-  }, [user, searchParams, setSearchParams, t, id]);
+  }, [user, searchParams, t, id, navigate]);
 
   async function generatePng(): Promise<Blob | null> {
     if (!graphicRef.current) return null;

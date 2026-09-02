@@ -21,6 +21,7 @@ import {
   useThanksForActs,
 } from "@/hooks/useAppData";
 import { actEmoji, modeLabel, timeAgo } from "@shared/lib/appActs";
+import { submitPPLForm } from "@shared/lib/pplForm";
 import { cn } from "@shared/lib/utils";
 
 const nf = new Intl.NumberFormat("en-US");
@@ -73,6 +74,22 @@ export default function AppHome() {
       });
       const failure = (data as { error?: string } | null)?.error ?? error?.message;
       if (failure) toast.error(failure);
+      // PPL Integration — sync to Airtable + GHL (tags get-involved-lead /
+      // get-involved-individual). Was missing entirely for this onboarding
+      // pledge, unlike AppJoin's pre-verification pledge which already syncs.
+      try {
+        await submitPPLForm("pledge", {
+          fullName: `${firstName} ${lastName}`.trim(),
+          email: user.email || "",
+          country: country || undefined,
+          pledgeCount,
+          message: "Role: do_acts",
+          mode: "individual",
+          helpRole: "do_acts",
+        });
+      } catch {
+        // Non-fatal — commitment already succeeded
+      }
     } catch {
       toast.error("Something went wrong saving your pledge. You can set it later from your profile.");
     } finally {

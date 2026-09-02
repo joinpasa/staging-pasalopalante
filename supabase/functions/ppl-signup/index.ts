@@ -114,10 +114,16 @@ Deno.serve(async (req) => {
   // no Airtable signup record, and must not touch the contact's other tags.
   if (formType === "password-set" || formType === "email-verified") {
     try {
-      const ghlContactId = await ghlAddTags(data.email, [formType], {
-        firstName: data.firstName || "",
-        lastName: data.lastName || "",
-      });
+      const ghlContactId = await ghlAddTags(
+        data.email,
+        [formType],
+        {
+          firstName: data.firstName || "",
+          lastName: data.lastName || "",
+        },
+        undefined,
+        data.source || "PPL Website",
+      );
       return json({ success: true, ghlContactId });
     } catch (err) {
       console.error(`${formType} GHL sync failed:`, err);
@@ -496,6 +502,7 @@ async function ghlAddTags(
   tags: string[],
   fallbackName: { firstName: string; lastName: string },
   knownContactId?: string,
+  fallbackSource: string = "PPL Website",
 ): Promise<string | undefined> {
   const headers = {
     Authorization: `Bearer ${CONFIG.ghl.apiKey}`,
@@ -513,10 +520,14 @@ async function ghlAddTags(
     const existing = searchData.contacts?.[0];
 
     if (!existing) {
+      // This fallback used to hardcode "PPL App" regardless of which
+      // platform actually triggered it — every email-verified/password-set
+      // sync for a brand-new contact (the common case, since these lifecycle
+      // events are usually the *first* GHL touch for an email) got mislabeled.
       return ghlUpsertContact({
         ...fallbackName,
         email, phone: "", country: "", city: "", companyName: "",
-        tags, source: "PPL App", customFields: {},
+        tags, source: fallbackSource, customFields: {},
       });
     }
     contactId = existing.id;

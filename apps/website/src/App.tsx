@@ -65,7 +65,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
       <RadixDirection>
-      <AuthProvider>
+      <AuthProvider ghlSource="PPL Website">
         <UIProvider>
         <TooltipProvider>
           <Toaster />

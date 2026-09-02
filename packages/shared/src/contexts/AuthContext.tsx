@@ -20,7 +20,17 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+interface AuthProviderProps {
+  children: ReactNode;
+  /** Which platform this provider is mounted in — used only to label the
+   *  contact's source correctly on GHL lifecycle syncs (email-verified)
+   *  that fire from this shared context regardless of platform. Defaults
+   *  to "website" since AuthProvider predates this prop and most existing
+   *  mounts are on the website. */
+  ghlSource?: "PPL Website" | "PPL App";
+}
+
+export const AuthProvider = ({ children, ghlSource = "PPL Website" }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
@@ -66,8 +76,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (!user?.email) return;
     if (localStorage.getItem(GHL_EMAIL_VERIFIED_SYNCED_KEY)) return;
     localStorage.setItem(GHL_EMAIL_VERIFIED_SYNCED_KEY, "1");
-    syncGhlTag(user.email, "email-verified");
-  }, [user]);
+    syncGhlTag(user.email, "email-verified", undefined, ghlSource);
+  }, [user, ghlSource]);
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
