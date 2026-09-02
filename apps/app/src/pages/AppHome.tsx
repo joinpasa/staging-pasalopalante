@@ -179,7 +179,7 @@ export default function AppHome() {
 
       {!user && <JoinGate />}
 
-      <section className="relative overflow-hidden rounded-3xl bg-app-coral p-6 text-app-surface">
+      <section className="relative overflow-hidden rounded-3xl border-4 border-warm-terracotta bg-app-coral p-6 text-app-surface">
         <div className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-app-surface/10" />
         <p className="relative text-[11px] font-semibold uppercase tracking-[0.18em] text-app-surface/80">
           {user ? "Your kindness" : "The movement"}

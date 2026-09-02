@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Download, Share, X, Plus, Smartphone } from "lucide-react";
 import { useLanguage } from "@shared/contexts/LanguageContext";
+import { useUI } from "@shared/contexts/UIContext";
 
 type BIPEvent = Event & {
   prompt: () => Promise<void>;
@@ -13,6 +14,7 @@ const DISMISS_DAYS = 14;
 
 const InstallPrompt = () => {
   const { lang } = useLanguage();
+  const { anyShareFlowOpen } = useUI();
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [deferred, setDeferred] = useState<BIPEvent | null>(null);
@@ -160,7 +162,7 @@ const InstallPrompt = () => {
 
   return (
     <AnimatePresence>
-      {open && (
+      {open && !anyShareFlowOpen && (
         <motion.div
           initial={{ y: 80, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
