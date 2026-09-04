@@ -39,4 +39,6 @@ Vite, TypeScript, React, React Router, shadcn-ui, Tailwind CSS, Supabase, Capaci
 
 ## Deploying
 
-Each app deploys independently. `apps/website/netlify.toml` and `apps/app/netlify.toml` each configure their own Netlify site with `base` pointed at the respective app directory — set each site's production domain (pasalopalante.com / app.pasalopalante.com) in the Netlify dashboard.
+Each app deploys independently to Cloudflare Workers via `wrangler.toml` (`apps/website`, `apps/app`), auto-deploying on push to the tracked branch — `pasalopalante.com` / `app.pasalopalante.com` are set as Custom Domains on each Worker.
+
+Supabase edge functions and migrations are **not** auto-deployed — see `CLAUDE.md` for how those go out.
