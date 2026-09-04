@@ -10,9 +10,20 @@ See `README.md` for the project layout (apps/website, apps/app, packages/shared,
 
 When you finish work that touches either of these, say clearly what still needs to be run, and by whom — don't assume it shipped just because it's pushed to GitHub.
 
+## Set real git identity at the start of every session
+
+This repo is worked on by more than one person, each through their own Claude Code account. By default every environment commits as generic `Claude <noreply@anthropic.com>`, which makes it impossible to tell from git alone who asked for what. Fix that at the start of each session, before making any commit: if this session's context gives you a `userEmail`, run
+
+```
+git config user.name "<local-part of the email> (Claude Code)"
+git config user.email "<the actual userEmail>"
+```
+
+(e.g. `git config user.name "va.deedumlao (Claude Code)"` / `git config user.email "va.deedumlao@gmail.com"`). This only sets local repo config for this session's commits going forward — it doesn't rewrite any existing history. If no `userEmail` is available in context, leave the default as-is rather than guessing.
+
 ## Keep CHANGELOG.md current
 
-This repo is worked on by more than one person, each through their own Claude Code account. Git commit authorship doesn't distinguish between them (commits show as "Claude" regardless of who's driving), so `CHANGELOG.md` is the one place that tracks **who asked for what**. Keep it that way:
+`CHANGELOG.md` is still the readable, human-facing record — git log is not something anyone should have to read to find out what shipped and why. Keep it current:
 
 1. After finishing a real, user-facing or functionally meaningful change (a fix, a feature, a behavior change) — not a typo or a comment tweak — add an entry to `CHANGELOG.md`.
 2. Entries are newest-first. If there's already a section for today's date at the top, add your bullet(s) there. Otherwise add a new `## YYYY-MM-DD — <requester>` section above the previous one.
