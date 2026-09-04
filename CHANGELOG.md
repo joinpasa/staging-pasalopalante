@@ -15,6 +15,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 - **`/tech-form` now redirects to the GHL lead form** (`pasalopalante.com/tech-form` → LeadConnector). A Cloudflare dashboard Page Rule couldn't work for this domain (the site's Worker intercepts requests first), so the redirect now lives in the site's own deploy config instead.
 - Added this changelog and the `CLAUDE.md` team convention that keeps it current.
 - Fixed commits showing generic `Claude <noreply@anthropic.com>` authorship no matter who was actually driving. Every Claude Code session now sets its own git identity from the account's email at the start of the session, so `git log`/`git blame` show who really made a change, not just the changelog.
+- **Supabase edge functions and migrations now auto-deploy too**, via a new GitHub Actions workflow (`.github/workflows/deploy-supabase.yml`) — same idea as Cloudflare already does for the website/app. This means neither of you needs a personal terminal to ship a backend change anymore; it happens on push. Confirmed working with a live test run.
 
 ## 2026-09-02 — va.deedumlao@gmail.com
 
