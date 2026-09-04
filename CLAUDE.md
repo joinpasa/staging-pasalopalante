@@ -2,13 +2,14 @@
 
 See `README.md` for the project layout (apps/website, apps/app, packages/shared, supabase/). This file is operational notes for Claude Code sessions — including teammates' own accounts working on the same repo.
 
-## Deploys are not fully automatic — know which parts are
+## Deploys
 
 - **Frontend (`apps/website`, `apps/app`)**: auto-deploys via Cloudflare on push to the tracked branch. Nothing manual needed after a push.
-- **Supabase edge functions** (`supabase/functions/*`): do **not** auto-deploy. Changes only go live after someone runs `supabase functions deploy <name> --no-verify-jwt` from their own terminal (this can't be done from a sandboxed/remote session — no network path to `*.supabase.co`). Always tell the user exactly which function to deploy.
-- **Supabase migrations** (`supabase/migrations/*.sql`): also don't auto-apply. Someone needs to run `supabase db push` from a terminal with the CLI linked (`supabase link --project-ref tipfbleltjexofsjffwb`) to the project. If a fresh checkout's migration history is out of sync with what's actually live (CLI wants to replay everything from scratch), that's a bookkeeping problem, not a real conflict — see `supabase migration list` / `supabase migration repair --status applied <versions...>` before assuming anything is broken.
+- **Supabase edge functions and migrations**: also auto-deploy now, via `.github/workflows/deploy-supabase.yml` — a push to the tracked branch touching `supabase/**` runs `supabase db push` then `supabase functions deploy` in GitHub Actions. This requires the `SUPABASE_ACCESS_TOKEN` and `SUPABASE_DB_PASSWORD` repo secrets to be set (Settings → Secrets and variables → Actions on GitHub); if they're missing or wrong, the workflow run fails visibly in the Actions tab rather than silently no-op'ing.
+  - **Fallback**: if the Action is failing (bad secret, Supabase outage, whatever) and something needs to go out now, it can still be pushed by hand: `supabase db push` / `supabase functions deploy <name> --no-verify-jwt` from a terminal with the CLI linked (`supabase link --project-ref tipfbleltjexofsjffwb`). This can't be done from a sandboxed/remote Claude Code session — no network path to `*.supabase.co` from there.
+  - If a fresh checkout's migration history is out of sync with what's actually live (CLI wants to replay everything from scratch), that's a bookkeeping problem, not a real conflict — see `supabase migration list` / `supabase migration repair --status applied <versions...>` before assuming anything is broken.
 
-When you finish work that touches either of these, say clearly what still needs to be run, and by whom — don't assume it shipped just because it's pushed to GitHub.
+After pushing a change to `supabase/**`, check the Actions tab (or ask the user to) rather than assuming it deployed — a red run there means it didn't ship.
 
 ## Set real git identity at the start of every session
 
