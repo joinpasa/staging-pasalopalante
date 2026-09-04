@@ -338,11 +338,15 @@ export function useAppBadges() {
 
       return (catalogue.data ?? []).map((badge) => {
         const p = progress.get(badge.id);
+        // Self-heal: a badge whose progress already meets its target counts
+        // as earned even if the user_badges row hasn't landed yet, so the
+        // app never shows a badge as locked that the website shows unlocked.
+        const metByProgress = !!p && p.target > 0 && p.current >= p.target;
         return {
           id: badge.id,
           name: badge.name,
           description: badge.description,
-          earned: earned.has(badge.id),
+          earned: earned.has(badge.id) || metByProgress,
           current: p?.current ?? null,
           target: p?.target ?? null,
         };
