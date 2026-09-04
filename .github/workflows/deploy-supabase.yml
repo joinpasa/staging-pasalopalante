@@ -1,0 +1,39 @@
+name: Deploy Supabase
+
+# Cloudflare already auto-deploys apps/website and apps/app on every push.
+# This is the same thing for the backend half: database migrations and
+# edge functions, which previously only went live if someone ran the
+# Supabase CLI by hand from their own terminal. Now a push to the tracked
+# branch that touches supabase/** ships both automatically, same as the
+# frontend — no terminal required for either half anymore.
+
+on:
+  push:
+    branches:
+      - claude/app-website-separation-lgg5nb
+    paths:
+      - "supabase/**"
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      PROJECT_REF: tipfbleltjexofsjffwb
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Link Supabase project
+        run: supabase link --project-ref "$PROJECT_REF"
+
+      - name: Push database migrations
+        run: supabase db push --yes
+
+      - name: Deploy edge functions
+        run: supabase functions deploy
