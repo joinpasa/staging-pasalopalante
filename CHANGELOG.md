@@ -16,6 +16,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 - Added this changelog and the `CLAUDE.md` team convention that keeps it current.
 - Fixed commits showing generic `Claude <noreply@anthropic.com>` authorship no matter who was actually driving. Every Claude Code session now sets its own git identity from the account's email at the start of the session, so `git log`/`git blame` show who really made a change, not just the changelog.
 - **Supabase edge functions and migrations now auto-deploy too**, via a new GitHub Actions workflow (`.github/workflows/deploy-supabase.yml`) — same idea as Cloudflare already does for the website/app. This means neither of you needs a personal terminal to ship a backend change anymore; it happens on push. Confirmed working with a live test run.
+- **Fixed the app's Install Prompt covering its own Home tab.** On sections like the Pass/QR page, the "Open app" install card could sit directly on top of the bottom tab bar, so tapping Home actually hit that card instead — triggering a full-page reload that looked like getting kicked out to a website. Reproduced and confirmed fixed: the prompt no longer shows that fallback (or overlaps the tab bar at all) while already inside the app.
 
 ## 2026-09-02 — va.deedumlao@gmail.com
 
