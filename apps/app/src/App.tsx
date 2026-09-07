@@ -66,7 +66,7 @@ const App = () => (
                   anything unmatched back to the app home. */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
-            <InstallPrompt />
+            <InstallPrompt variant="app" />
           </BrowserRouter>
 
         </TooltipProvider>

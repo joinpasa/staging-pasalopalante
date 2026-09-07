@@ -12,7 +12,15 @@ type BIPEvent = Event & {
 const DISMISS_KEY = "ppl-install-dismissed-at";
 const DISMISS_DAYS = 14;
 
-const InstallPrompt = () => {
+interface InstallPromptProps {
+  /** "app" is mounted on app.pasalopalante.com itself, where an "Open app"
+   *  fallback makes no sense — you're already using it. Only "website"
+   *  (the default) shows that fallback and sits at the page's own bottom
+   *  edge; "app" skips it entirely and clears the app's fixed tab bar. */
+  variant?: "website" | "app";
+}
+
+const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
   const { lang } = useLanguage();
   const { anyShareFlowOpen } = useUI();
   const [open, setOpen] = useState(false);
@@ -58,9 +66,11 @@ const InstallPrompt = () => {
 
     // Non-iOS: if beforeinstallprompt hasn't fired after a short delay, the
     // app is likely already installed (or the browser can't install it) —
-    // surface an "Open app" shortcut instead of install instructions.
+    // surface an "Open app" shortcut instead of install instructions. Only
+    // meaningful on the website: on the app's own domain there's nowhere
+    // more useful to send someone who's already using it, so stay quiet.
     const installedTimer = window.setTimeout(() => {
-      if (!bipFiredRef.current) {
+      if (!bipFiredRef.current && variant === "website") {
         setInstalled(true);
         setOpen(true);
       }
@@ -70,7 +80,7 @@ const InstallPrompt = () => {
       window.removeEventListener("beforeinstallprompt", onBIP);
       window.clearTimeout(installedTimer);
     };
-  }, []);
+  }, [variant]);
 
   const dismiss = () => {
     localStorage.setItem(DISMISS_KEY, String(Date.now()));
@@ -168,7 +178,11 @@ const InstallPrompt = () => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 80, opacity: 0 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:w-96 z-[60]"
+          className={
+            variant === "app"
+              ? "fixed inset-x-4 z-[60] bottom-[calc(4.75rem+env(safe-area-inset-bottom))]"
+              : "fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:w-96 z-[60]"
+          }
           role="dialog"
           aria-label={installed ? c.openApp : c.title}
         >
