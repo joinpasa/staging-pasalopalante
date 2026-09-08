@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Download, Share, X, Plus, Smartphone } from "lucide-react";
 import { useLanguage } from "@shared/contexts/LanguageContext";
@@ -69,36 +69,9 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
       navigator.serviceWorker.register(`${base}push-sw.js`, { scope: base }).catch(() => undefined);
     }
 
-    // Arrived via the website's "Get the app" link (?install=1): the site
-    // that sent them here can't trigger this domain's install prompt
-    // itself — no origin can trigger another's — but once we're here and
-    // beforeinstallprompt actually fires, skip the extra manual tap and
-    // open the native dialog immediately, so the whole thing is "tap Get
-    // the app, tap Install" instead of "tap Get the app, tap Install app
-    // (again), tap Install." Strip the marker either way so a refresh or
-    // back-navigation doesn't rerun it.
-    const params = new URLSearchParams(window.location.search);
-    const wantsAutoInstall = params.get("install") === "1";
-    // TEMPORARY diagnostic — remove once the auto-install issue is
-    // confirmed fixed. Answers: did this build actually load, and did it
-    // see the ?install=1 marker at all?
-    console.log("[install-prompt]", { variant, wantsAutoInstall, search: window.location.search });
-    if (wantsAutoInstall) {
-      params.delete("install");
-      const rest = params.toString();
-      window.history.replaceState(
-        {},
-        "",
-        window.location.pathname + (rest ? `?${rest}` : "") + window.location.hash,
-      );
-    }
-
-    // Recently dismissed? An explicit "install=1" arrival overrides this —
-    // they just asked for this a moment ago on the website.
+    // Recently dismissed?
     const dismissedAt = Number(localStorage.getItem(DISMISS_KEY) || 0);
-    if (!wantsAutoInstall && dismissedAt && Date.now() - dismissedAt < DISMISS_DAYS * 86400_000) {
-      return;
-    }
+    if (dismissedAt && Date.now() - dismissedAt < DISMISS_DAYS * 86400_000) return;
 
     const ua = window.navigator.userAgent;
     const ios = /iPad|iPhone|iPod/.test(ua) && !(window as any).MSStream;
@@ -106,28 +79,18 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
 
     const onBIP = (e: Event) => {
       // beforeinstallprompt only fires when the app is NOT yet installed.
+      // Calling .prompt() here (or from any code not itself running inside
+      // a fresh click/tap on THIS page) throws NotAllowedError — Chrome
+      // requires a live user gesture at call time, and that doesn't survive
+      // a navigation. Confirmed live: this used to try auto-calling
+      // .prompt() right after arriving from the website's "Get the app"
+      // link, and always failed with exactly that error. There's no way
+      // around it — the soonest this can fire is a real tap on our own
+      // card below.
       e.preventDefault();
       bipFiredRef.current = true;
-      const bip = e as BIPEvent;
-      setDeferred(bip);
-      console.log("[install-prompt] beforeinstallprompt fired", { wantsAutoInstall });
-      // Auto-installing: go straight to the native dialog, skip showing our
-      // own card first — the goal is "Get the app -> native dialog," not
-      // "Get the app -> our card -> native dialog."
-      if (!wantsAutoInstall) setOpen(true);
-      if (wantsAutoInstall) {
-        bip
-          .prompt()
-          .then(() => {
-            console.log("[install-prompt] prompt() succeeded, awaiting userChoice");
-            return bip.userChoice;
-          })
-          .then((choice) => {
-            console.log("[install-prompt] userChoice", choice);
-            dismiss();
-          })
-          .catch((err) => console.error("[install-prompt] prompt() failed", err));
-      }
+      setDeferred(e as BIPEvent);
+      setOpen(true);
     };
     window.addEventListener("beforeinstallprompt", onBIP);
 
@@ -169,14 +132,9 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
   // Full navigation so an installed PWA can take over on supported browsers.
   // __APP_BASE_URL__ is cross-origin (the app's own subdomain) by default,
   // or a same-origin "/app/" once the combined build embeds the app here —
-  // either way this only ever runs from the "website" variant. The
-  // ?install=1 marker tells the app side to skip its own extra "Install
-  // app" tap and open the native dialog the moment it's available (see the
-  // app-variant effect).
+  // either way this only ever runs from the "website" variant.
   const openApp = () => {
-    const dest = `${__APP_BASE_URL__}?install=1`;
-    console.log("[install-prompt] Get the app clicked, navigating to", dest);
-    window.location.assign(dest);
+    window.location.assign(__APP_BASE_URL__);
   };
 
   const copy = {
