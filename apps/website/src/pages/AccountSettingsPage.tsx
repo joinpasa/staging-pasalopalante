@@ -11,6 +11,7 @@ import SetPasswordCard from "@/components/account/SetPasswordCard";
 import RemindersCard from "@/components/account/RemindersCard";
 import { Button } from "@shared/components/ui/button";
 import { Skeleton } from "@shared/components/ui/skeleton";
+import { triggerAppInstall } from "@shared/lib/installTrigger";
 
 /**
  * Account settings: profile, password, notifications, and sign out — split
@@ -101,10 +102,8 @@ const AccountSettingsPage = () => {
               <p className="text-sm text-foreground/60">app.pasalopalante.com</p>
             </div>
           </div>
-          <Button variant="outline" asChild>
-            <a href="https://app.pasalopalante.com" target="_blank" rel="noopener noreferrer">
-              {t.account.downloadApp}
-            </a>
+          <Button variant="outline" onClick={() => triggerAppInstall()}>
+            {t.account.downloadApp}
           </Button>
         </div>
 

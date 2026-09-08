@@ -3,6 +3,7 @@ import { useRef, useCallback, useEffect } from "react";
 import { ArrowUpRight, Check, Heart, ArrowRight, Smartphone, Sparkles } from "lucide-react";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import ShareActCTA from "@shared/components/share/ShareActCTA";
+import { triggerAppInstall } from "@shared/lib/installTrigger";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -151,15 +152,14 @@ const HowItWorks = () => {
               <p className="text-sm text-muted-foreground">{t.howItWorks.appStripBody}</p>
             </div>
           </div>
-          <a
-            href="https://app.pasalopalante.com"
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            onClick={() => triggerAppInstall()}
             className="inline-flex items-center gap-2 rounded-full bg-cyan-900 px-6 py-3.5 text-sm font-semibold text-warm-cream hover:bg-cyan-900/90 transition-colors shrink-0"
           >
             {t.howItWorks.appStripCta}
             <ArrowUpRight size={17} />
-          </a>
+          </button>
         </motion.div>
 
         {/* Inline share form */}

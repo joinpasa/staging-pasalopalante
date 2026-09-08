@@ -28,7 +28,7 @@ export default function GetInvolvedPage() {
         "Lleva Pásalo Pa'lante a tu salón o campus con consignas, actividades y oportunidades de liderazgo estudiantil apropiadas para cada edad."
       ),
       cta: t("Bring it to your school", "Llévalo a tu escuela"),
-      link: "/contact",
+      link: "/get-involved/schools",
     },
     {
       title: t("Nonprofits & Faith Communities", "ONGs y comunidades de fe"),
@@ -37,7 +37,7 @@ export default function GetInvolvedPage() {
         "Co-organiza activaciones, comparte recursos con tu comunidad y amplifica un movimiento global alineado con tu misión de servicio."
       ),
       cta: t("Partner with us", "Sé un socio"),
-      link: "/contact",
+      link: "/get-involved/nonprofits",
     },
     {
       title: t("Companies & Brands", "Empresas y marcas"),
