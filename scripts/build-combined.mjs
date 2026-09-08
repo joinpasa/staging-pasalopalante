@@ -66,20 +66,30 @@ fs.cpSync(appDist, embeddedAppDist, { recursive: true });
 // The fallback target is a duplicate of index.html with NO .html
 // extension at all (not just a different name) — Cloudflare's static
 // asset server auto-redirects .html-suffixed paths to their
-// extension-less form by default, and that redirect re-matches this same
-// /app/* wildcard rule, which serves the .html file again, which
-// redirects again — an actual runtime loop (ERR_TOO_MANY_REDIRECTS), not
-// just something Cloudflare's deploy-time validator was overcautious
-// about. An extension-less file has nothing for that feature to
-// normalize, so a _headers rule sets its Content-Type explicitly since
-// Cloudflare can't infer it from the (absent) extension.
+// extension-less form by default, and that redirect re-matches a wildcard
+// /app/* rule, which serves the .html file again, which redirects again —
+// an actual runtime loop (ERR_TOO_MANY_REDIRECTS), not just something
+// Cloudflare's deploy-time validator was overcautious about. An
+// extension-less file has nothing for that feature to normalize, so a
+// _headers rule sets its Content-Type explicitly since Cloudflare can't
+// infer it from the (absent) extension.
 const appShellPath = path.join(embeddedAppDist, "app-shell");
 fs.copyFileSync(path.join(embeddedAppDist, "index.html"), appShellPath);
 
+// A /app/* wildcard also turned out to shadow real files under /app/ —
+// including the app's own JS/CSS bundles — with the fallback shell, since
+// Cloudflare doesn't reliably prefer an existing file over a matching
+// _redirects rule the way this setup needs. Listing the app's actual
+// client-side routes explicitly (from apps/app/src/App.tsx) instead of a
+// wildcard means only genuinely missing paths ever hit the fallback; a
+// real file always wins because there's no broader pattern to shadow it
+// with. Keep this in sync with that route list.
+const APP_ROUTES = ["wall", "pass", "map", "badges", "join", "log", "wave", "account"];
+const appFallbackRules = APP_ROUTES.map((route) => `/app/${route}  /app/app-shell  200`).join("\n");
+
 const redirectsPath = path.join(websiteDist, "_redirects");
 const existing = fs.existsSync(redirectsPath) ? fs.readFileSync(redirectsPath, "utf8").trimEnd() : "";
-const appFallback = "/app/*  /app/app-shell  200";
-fs.writeFileSync(redirectsPath, existing ? `${existing}\n${appFallback}\n` : `${appFallback}\n`);
+fs.writeFileSync(redirectsPath, existing ? `${existing}\n${appFallbackRules}\n` : `${appFallbackRules}\n`);
 
 const headersPath = path.join(websiteDist, "_headers");
 const existingHeaders = fs.existsSync(headersPath) ? fs.readFileSync(headersPath, "utf8").trimEnd() : "";
