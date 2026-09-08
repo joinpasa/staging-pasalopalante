@@ -11,6 +11,17 @@ See `README.md` for the project layout (apps/website, apps/app, packages/shared,
 
 After pushing a change to `supabase/**`, check the Actions tab (or ask the user to) rather than assuming it deployed — a red run there means it didn't ship.
 
+## Combining the two domains (app under pasalopalante.com/app)
+
+`npm run build:combined` (`scripts/build-combined.mjs`) builds a single deployment with the website at `/` and the app embedded at `/app/*` on the same origin — this is what makes a true one-tap "Get the app → native install dialog" possible (no origin can trigger a *different* origin's install prompt, which is why the current two-domain setup needs a redirect hop first). It's additive and already merged — `build:website`/`build:app` are unaffected, verified byte-for-byte identical to before. It does **not** go live on its own. To actually cut over:
+
+1. In the Cloudflare dashboard, change the `pasalopalante.com` project's build command to `npm run build:combined` (root directory: repo root, output directory: `apps/website/dist`).
+2. Point `app.pasalopalante.com` at a redirect to `pasalopalante.com/app/$1` (the old subdomain needs to keep working for existing bookmarks/printed QR codes — don't just delete it).
+3. Add `https://pasalopalante.com/app/**` to Supabase's Auth → URL Configuration → Redirect URLs allow-list (magic links, password reset, etc. depend on this).
+4. Once confirmed working, the old `app.pasalopalante.com`-only Cloudflare project's build can stop running — traffic is fully served from the `pasalopalante.com` project by then.
+
+Until all of that happens, both domains keep working exactly as they do today, independently, unaffected by this build script's existence.
+
 ## Set real git identity at the start of every session
 
 This repo is worked on by more than one person, each through their own Claude Code account. By default every environment commits as generic `Claude <noreply@anthropic.com>`, which makes it impossible to tell from git alone who asked for what. Fix that at the start of each session, before making any commit: if this session's context gives you a `userEmail`, run
