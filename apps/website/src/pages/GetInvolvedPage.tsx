@@ -64,7 +64,7 @@ export default function GetInvolvedPage() {
         "Líderes comunitarios, creadores y organizadores que impulsan Pásalo Pa'lante en su región, red o plataforma. Reciben un kit y apoyo directo del equipo de Te Amo PR."
       ),
       cta: t("Become an ambassador", "Sé un embajador"),
-      link: "/commit",
+      link: "/get-involved/ambassadors",
     },
   ];
 
