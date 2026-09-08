@@ -37,6 +37,16 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
       (window.navigator as any).standalone === true;
     if (standalone) return;
 
+    // An active service worker is part of how Chrome/Edge decide a site is
+    // installable at all — previously this only registered once someone
+    // opted into push notifications, so beforeinstallprompt could go the
+    // entire first visit without ever firing. Register eagerly (independent
+    // of whether the install card below is dismissed) so "Install app" is
+    // reliably available from the first visit, not just after push opt-in.
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/push-sw.js", { scope: "/" }).catch(() => undefined);
+    }
+
     // Recently dismissed?
     const dismissedAt = Number(localStorage.getItem(DISMISS_KEY) || 0);
     if (dismissedAt && Date.now() - dismissedAt < DISMISS_DAYS * 86400_000) return;
