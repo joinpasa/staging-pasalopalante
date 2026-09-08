@@ -14,17 +14,19 @@ const DISMISS_DAYS = 14;
 
 interface InstallPromptProps {
   /**
-   * "app" is mounted on app.pasalopalante.com itself, which has a real PWA
-   * manifest — beforeinstallprompt can genuinely fire there, so this variant
-   * listens for it and shows the real native "Install" dialog (or, on iOS,
-   * Safari's manual Add-to-Home-Screen steps).
+   * "app" is mounted on app.pasalopalante.com itself. "website" (the
+   * default) is mounted on the marketing site. Historically only the app
+   * had a PWA manifest, so only "app" could ever see beforeinstallprompt
+   * fire — the website variant just always offered a "Get the app" link
+   * to send people there instead.
    *
-   * "website" (the default) is mounted on the marketing site, which has no
-   * manifest of its own — beforeinstallprompt can NEVER fire there, for
-   * anyone, installed or not (a page can't trigger a different origin's
-   * install prompt either). So this variant doesn't wait for it at all: it
-   * always just offers to send someone to the app, where the real install
-   * flow lives.
+   * Once the two are merged onto one origin (see scripts/build-combined.mjs
+   * — widens the app's manifest scope to "/" and gives every website page
+   * a <link rel="manifest"> and access to the app's service worker),
+   * beforeinstallprompt can fire on the website's own pages too. Both
+   * variants now listen for it the same way; "website" just additionally
+   * falls back to navigating to the app when it hasn't fired (still not
+   * merged, iOS, or hasn't fired yet) — see handleInstallClick.
    */
   variant?: "website" | "app";
 }
@@ -37,7 +39,6 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
   const [deferred, setDeferred] = useState<BIPEvent | null>(null);
   const [isIOS, setIsIOS] = useState(false);
   const isWebsite = variant === "website";
-  const bipFiredRef = useRef(false);
 
   useEffect(() => {
     // Already running inside the installed app — nothing to do.
@@ -46,27 +47,22 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
       (window.navigator as any).standalone === true;
     if (standalone) return;
 
-    // Website: no manifest of its own, so there's no real install flow to
-    // wait for or fake — just offer to send them to the app after a short
-    // delay, where the real thing lives.
-    if (variant === "website") {
-      const t = window.setTimeout(() => setOpen(true), 2500);
-      return () => window.clearTimeout(t);
-    }
-
-    // An active service worker is part of how Chrome/Edge decide a site is
-    // installable at all — previously this only registered once someone
-    // opted into push notifications, so beforeinstallprompt could go the
-    // entire first visit without ever firing. Register eagerly (independent
-    // of whether the install card below is dismissed) so "Install app" is
-    // reliably available from the first visit, not just after push opt-in.
+    // An active service worker is part of how Chrome/Edge decide a page is
+    // installable at all. The app registers its own; the website has none
+    // of its own, so it registers the app's — scope "/" instead of the
+    // app's usual /app/ works because of a Service-Worker-Allowed: /
+    // response header (see build-combined.mjs) that widens what that
+    // script is allowed to control. On the standalone (not yet merged)
+    // deployment this is a cross-origin registration attempt, which
+    // browsers reject — caught harmlessly below, same as before this
+    // existed: no install signal there, same as always.
     if ("serviceWorker" in navigator) {
-      // Base-relative so this works whether this bundle is served from its
-      // own domain root (today) or embedded under /app on the combined
-      // deployment (import.meta.env.BASE_URL reflects whatever --base the
-      // build used).
-      const base = import.meta.env.BASE_URL;
-      navigator.serviceWorker.register(`${base}push-sw.js`, { scope: base }).catch(() => undefined);
+      if (variant === "app") {
+        const base = import.meta.env.BASE_URL;
+        navigator.serviceWorker.register(`${base}push-sw.js`, { scope: base }).catch(() => undefined);
+      } else {
+        navigator.serviceWorker.register(`${__APP_BASE_URL__}push-sw.js`, { scope: "/" }).catch(() => undefined);
+      }
     }
 
     // Recently dismissed?
@@ -79,25 +75,21 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
 
     const onBIP = (e: Event) => {
       // beforeinstallprompt only fires when the app is NOT yet installed.
-      // Calling .prompt() here (or from any code not itself running inside
-      // a fresh click/tap on THIS page) throws NotAllowedError — Chrome
-      // requires a live user gesture at call time, and that doesn't survive
-      // a navigation. Confirmed live: this used to try auto-calling
-      // .prompt() right after arriving from the website's "Get the app"
-      // link, and always failed with exactly that error. There's no way
-      // around it — the soonest this can fire is a real tap on our own
-      // card below.
       e.preventDefault();
-      bipFiredRef.current = true;
       setDeferred(e as BIPEvent);
       setOpen(true);
     };
     window.addEventListener("beforeinstallprompt", onBIP);
 
-    if (ios) {
-      // iOS never fires beforeinstallprompt — show the install hint. Real
-      // here (unlike on the website): this domain's manifest is what Add to
-      // Home Screen actually reads, so the resulting icon is a proper PWA.
+    // App on iOS: never fires beforeinstallprompt, but this domain's own
+    // manifest is what Add to Home Screen reads, so show the real
+    // instructions directly.
+    // Website: whether or not beforeinstallprompt ends up firing here,
+    // still show a card after a short delay — handleInstallClick below
+    // picks the right behavior (direct install vs. fall back to the app)
+    // based on whatever's actually true by the time it's clicked, not
+    // which of these two paths opened the card.
+    if ((variant === "app" && ios) || isWebsite) {
       const t = window.setTimeout(() => setOpen(true), 2500);
       return () => {
         window.removeEventListener("beforeinstallprompt", onBIP);
@@ -105,11 +97,10 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
       };
     }
 
-    // Non-iOS, in the app itself: if beforeinstallprompt hasn't fired, we
-    // genuinely don't know why (already installed, criteria not met yet,
-    // browser doesn't support it) — no way to send them anywhere more
-    // useful than where they already are, so just stay quiet rather than
-    // guess.
+    // App, non-iOS: if beforeinstallprompt hasn't fired, we genuinely
+    // don't know why (already installed, criteria not met yet, browser
+    // doesn't support it) — no way to send them anywhere more useful than
+    // where they already are, so just stay quiet rather than guess.
     return () => window.removeEventListener("beforeinstallprompt", onBIP);
   }, [variant]);
 
@@ -119,23 +110,37 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
     setExpanded(false);
   };
 
-  const install = async () => {
+  // Full navigation so an installed PWA can take over on supported browsers.
+  // __APP_BASE_URL__ is cross-origin (the app's own subdomain) by default,
+  // or a same-origin "/app/" once the combined build embeds the app here —
+  // either way this only ever runs from the "website" variant, as a
+  // fallback for whenever a direct install isn't available right here.
+  const openApp = () => {
+    window.location.assign(__APP_BASE_URL__);
+  };
+
+  // A real install is available right here the moment beforeinstallprompt
+  // has fired, on either variant now that the website can see it too.
+  const handleInstallClick = async () => {
     if (deferred) {
       await deferred.prompt();
       await deferred.userChoice;
       dismiss();
-    } else {
-      setExpanded((v) => !v);
+      return;
     }
+    if (isWebsite) {
+      // Not merged yet, iOS, or beforeinstallprompt just hasn't fired here
+      // yet — send them to the app, where install always works.
+      openApp();
+      return;
+    }
+    // App, iOS, no deferred yet: toggle the manual instructions.
+    setExpanded((v) => !v);
   };
 
-  // Full navigation so an installed PWA can take over on supported browsers.
-  // __APP_BASE_URL__ is cross-origin (the app's own subdomain) by default,
-  // or a same-origin "/app/" once the combined build embeds the app here —
-  // either way this only ever runs from the "website" variant.
-  const openApp = () => {
-    window.location.assign(__APP_BASE_URL__);
-  };
+  // True only when there's genuinely nothing to install right here and
+  // the only useful thing left to do is send them to the app instead.
+  const showFallback = isWebsite && !deferred;
 
   const copy = {
     en: {
@@ -215,12 +220,12 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
               : "fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:w-96 z-[60]"
           }
           role="dialog"
-          aria-label={isWebsite ? c.openApp : c.title}
+          aria-label={showFallback ? c.openApp : c.title}
         >
           <div className="bg-warm-cream border border-border shadow-xl rounded-2xl overflow-hidden">
             <div className="flex items-start gap-3 p-4">
               <div className="shrink-0 w-11 h-11 rounded-xl bg-warm-blush flex items-center justify-center">
-                {isWebsite ? (
+                {showFallback ? (
                   <Smartphone size={20} className="text-warm-terracotta" />
                 ) : (
                   <Download size={20} className="text-warm-terracotta" />
@@ -228,17 +233,17 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-foreground text-sm">
-                  {isWebsite ? c.openApp : c.title}
+                  {showFallback ? c.openApp : c.title}
                 </p>
                 <p className="text-xs text-foreground/60 mt-0.5">
-                  {isWebsite ? c.installedSubtitle : c.subtitle}
+                  {showFallback ? c.installedSubtitle : c.subtitle}
                 </p>
                 <div className="mt-3 flex items-center gap-2">
                   <button
-                    onClick={isWebsite ? openApp : install}
+                    onClick={handleInstallClick}
                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-warm-terracotta text-warm-cream hover:opacity-90 transition"
                   >
-                    {isWebsite ? (
+                    {showFallback ? (
                       <>
                         <Smartphone size={13} />
                         {c.openApp}
@@ -268,7 +273,7 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
             </div>
 
             <AnimatePresence>
-              {!isWebsite && isIOS && expanded && (
+              {!showFallback && isIOS && expanded && (
                 <motion.div
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}

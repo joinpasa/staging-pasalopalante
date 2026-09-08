@@ -37,15 +37,19 @@ console.log("== 2/4: building the website (app embedded at /app/) ==");
 // /app/ instead of the cross-origin app.pasalopalante.com default.
 run("npm run build --workspace=@pasalopalante/website", { APP_BASE_URL: "/app/" });
 
-console.log("== 3/4: rescoping the embedded app's manifest to /app/ ==");
+console.log("== 3/4: rescoping the embedded app's manifest to the whole origin ==");
 // The source file (apps/app/public/manifest.webmanifest) stays untouched —
 // it's still correct as-is for the standalone app.pasalopalante.com build.
-// Only this copy, going into the combined output, needs start_url/scope/
-// icon paths rewritten from domain-root to /app/-relative.
+// Only this copy, going into the combined output, needs rewriting: icon
+// paths and start_url move under /app/ (that's still where the installed
+// icon actually opens to), but scope widens to "/" — the whole origin,
+// not just /app/* — so the browser considers the marketing pages
+// installable too, and beforeinstallprompt can fire there directly
+// instead of only once someone has already navigated into /app/.
 const manifestPath = path.join(appDist, "manifest.webmanifest");
 const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
 manifest.start_url = "/app/";
-manifest.scope = "/app/";
+manifest.scope = "/";
 manifest.icons = (manifest.icons ?? []).map((icon) => ({
   ...icon,
   src: icon.src.startsWith("/") ? `/app${icon.src}` : icon.src,
@@ -91,9 +95,50 @@ const redirectsPath = path.join(websiteDist, "_redirects");
 const existing = fs.existsSync(redirectsPath) ? fs.readFileSync(redirectsPath, "utf8").trimEnd() : "";
 fs.writeFileSync(redirectsPath, existing ? `${existing}\n${appFallbackRules}\n` : `${appFallbackRules}\n`);
 
+console.log("== making the marketing pages installable too ==");
+// A service worker registered from a script at /app/push-sw.js can only
+// control /app/* by default — a script can't grant itself a wider scope
+// than its own directory. Service-Worker-Allowed lifts that ceiling to
+// the whole origin, so the website (which has no service worker of its
+// own) can register this same script with scope "/" and have
+// beforeinstallprompt fire on its own pages, not just under /app/.
 const headersPath = path.join(websiteDist, "_headers");
 const existingHeaders = fs.existsSync(headersPath) ? fs.readFileSync(headersPath, "utf8").trimEnd() : "";
 const appShellHeader = "/app/app-shell\n  Content-Type: text/html; charset=utf-8\n";
-fs.writeFileSync(headersPath, existingHeaders ? `${existingHeaders}\n${appShellHeader}` : appShellHeader);
+const swHeader = "/app/push-sw.js\n  Service-Worker-Allowed: /\n";
+fs.writeFileSync(
+  headersPath,
+  existingHeaders ? `${existingHeaders}\n${appShellHeader}\n${swHeader}` : `${appShellHeader}\n${swHeader}`,
+);
+
+// Every website page needs a <link rel="manifest"> so the browser
+// considers it part of the (now origin-wide) installable app — without
+// this, beforeinstallprompt still only fires under /app/*, same as
+// before. Standalone (non-combined) builds don't have this file at all,
+// so this same link there just 404s harmlessly — browsers silently skip
+// installability when the manifest fetch fails, which is exactly
+// today's (unaffected) standalone behavior.
+function findHtmlFiles(dir) {
+  const found = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      if (full === embeddedAppDist) continue; // the app has its own correct manifest link already
+      found.push(...findHtmlFiles(full));
+    } else if (entry.name.endsWith(".html")) {
+      found.push(full);
+    }
+  }
+  return found;
+}
+
+const manifestLink = '<link rel="manifest" href="/app/manifest.webmanifest" />';
+const htmlFiles = findHtmlFiles(websiteDist);
+for (const file of htmlFiles) {
+  const html = fs.readFileSync(file, "utf8");
+  if (html.includes(manifestLink)) continue;
+  fs.writeFileSync(file, html.replace("</head>", `    ${manifestLink}\n  </head>`));
+}
+console.log(`Injected manifest link into ${htmlFiles.length} website page(s).`);
 
 console.log(`\nCombined build ready at ${websiteDist}`);
