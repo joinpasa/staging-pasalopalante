@@ -106,7 +106,10 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
       bipFiredRef.current = true;
       const bip = e as BIPEvent;
       setDeferred(bip);
-      setOpen(true);
+      // Auto-installing: go straight to the native dialog, skip showing our
+      // own card first — the goal is "Get the app -> native dialog," not
+      // "Get the app -> our card -> native dialog."
+      if (!wantsAutoInstall) setOpen(true);
       if (wantsAutoInstall) {
         bip
           .prompt()
