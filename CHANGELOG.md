@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-09-08 — va.deedumlao@gmail.com
+
+- **"Install app" now shows up reliably from the very first visit.** The mechanism was already right — tapping the button opens the browser's own native install confirmation, same as the old Lovable build did — but the service worker it depends on only registered after someone turned on push notifications, so on a fresh visit the button could just fail to appear. It now registers eagerly on page load instead, on both the website and the app. Also fixed the push notification icon pointing at a path that never existed.
+
 ## 2026-09-04 — va.deedumlao@gmail.com
 
 - **Gamification was quietly broken — fixed and back in sync.** Seven badges (Time Giver, Sleeves Up, Open Hand, Good Word, Wave Maker, Grateful Heart, Kindness Spotter) had been computed by the backend since July but were never added to the actual badge list, so they never showed up anywhere and could never be earned. Also fixed a bug where manually approving a held-for-review act (via the Supabase SQL editor) never unlocked that person's badges, and made the app's badge screen self-heal the same way the website's already did, so the two can't disagree on whether someone earned a badge.
