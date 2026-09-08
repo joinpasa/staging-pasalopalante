@@ -9,6 +9,9 @@ export default defineConfig(() => ({
     // should always point, regardless of what domain this build happens to
     // be served from (a preview URL, localhost, etc).
     __CANONICAL_ORIGIN__: JSON.stringify("https://app.pasalopalante.com"),
+    // Unused in this app (InstallPrompt only reads it in its "website"
+    // variant) — defined purely so the shared component still compiles here.
+    __APP_BASE_URL__: JSON.stringify("/"),
   },
   server: {
     host: "::",

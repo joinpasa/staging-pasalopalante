@@ -61,7 +61,12 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
     // of whether the install card below is dismissed) so "Install app" is
     // reliably available from the first visit, not just after push opt-in.
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/push-sw.js", { scope: "/" }).catch(() => undefined);
+      // Base-relative so this works whether this bundle is served from its
+      // own domain root (today) or embedded under /app on the combined
+      // deployment (import.meta.env.BASE_URL reflects whatever --base the
+      // build used).
+      const base = import.meta.env.BASE_URL;
+      navigator.serviceWorker.register(`${base}push-sw.js`, { scope: base }).catch(() => undefined);
     }
 
     // Arrived via the website's "Get the app" link (?install=1): the site
@@ -148,13 +153,14 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
   };
 
   // Full navigation so an installed PWA can take over on supported browsers.
-  // Cross-origin because this component renders on both the website and the
-  // app — "open the app" always means the app's own domain, regardless of
-  // which surface is currently showing this prompt. The ?install=1 marker
-  // tells the app side to skip its own extra "Install app" tap and open the
-  // native dialog the moment it's available (see the app-variant effect).
+  // __APP_BASE_URL__ is cross-origin (the app's own subdomain) by default,
+  // or a same-origin "/app/" once the combined build embeds the app here —
+  // either way this only ever runs from the "website" variant. The
+  // ?install=1 marker tells the app side to skip its own extra "Install
+  // app" tap and open the native dialog the moment it's available (see the
+  // app-variant effect).
   const openApp = () => {
-    window.location.assign(`https://app.pasalopalante.com/${isWebsite ? "?install=1" : ""}`);
+    window.location.assign(`${__APP_BASE_URL__}?install=1`);
   };
 
   const copy = {

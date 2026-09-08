@@ -5,6 +5,7 @@ import path from "path";
 export default defineConfig({
   define: {
     __CANONICAL_ORIGIN__: JSON.stringify("https://pasalopalante.com"),
+    __APP_BASE_URL__: JSON.stringify("https://app.pasalopalante.com/"),
   },
   plugins: [react()],
   test: {

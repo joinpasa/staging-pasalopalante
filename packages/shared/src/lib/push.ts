@@ -22,13 +22,17 @@ const urlBase64ToUint8Array = (base64: string) => {
   return Uint8Array.from([...raw].map((c) => c.charCodeAt(0)));
 };
 
+// Base-relative so this works whether this bundle is served from its own
+// domain root (today) or embedded under /app on the combined deployment.
+const SW_URL = `${import.meta.env.BASE_URL}push-sw.js`;
+
 const registerWorker = () =>
-  navigator.serviceWorker.register("/push-sw.js", { scope: "/" });
+  navigator.serviceWorker.register(SW_URL, { scope: import.meta.env.BASE_URL });
 
 /** Is this device already subscribed (and still permitted)? */
 export const getPushSubscription = async (): Promise<PushSubscription | null> => {
   if (!pushSupported() || Notification.permission !== "granted") return null;
-  const reg = await navigator.serviceWorker.getRegistration("/push-sw.js");
+  const reg = await navigator.serviceWorker.getRegistration(SW_URL);
   return (await reg?.pushManager.getSubscription()) ?? null;
 };
 

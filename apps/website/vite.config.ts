@@ -9,6 +9,11 @@ export default defineConfig(() => ({
     // should always point, regardless of what domain this build happens to
     // be served from (a preview URL, localhost, etc).
     __CANONICAL_ORIGIN__: JSON.stringify("https://pasalopalante.com"),
+    // Where "Get the app" sends people. Cross-origin by default (the app's
+    // current standalone deployment); scripts/build-combined.mjs overrides
+    // this via the APP_BASE_URL env var to a same-origin "/app/" when
+    // building the combined deployment.
+    __APP_BASE_URL__: JSON.stringify(process.env.APP_BASE_URL || "https://app.pasalopalante.com/"),
   },
   server: {
     host: "::",

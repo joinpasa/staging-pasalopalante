@@ -109,7 +109,12 @@ export default function VerificationBanner() {
       setResending(true);
       const { error } = await supabase.auth.signInWithOtp({
         email: pendingEmail,
-        options: { shouldCreateUser: false, emailRedirectTo: `${getCanonicalOrigin()}/` },
+        // BASE_URL (not a bare "/") so this still lands back in the app once
+        // it's embedded under /app on the combined deployment.
+        options: {
+          shouldCreateUser: false,
+          emailRedirectTo: `${getCanonicalOrigin()}${import.meta.env.BASE_URL}`,
+        },
       });
       setResending(false);
       if (error) toast.error("Couldn't resend the link. Please try again shortly.");

@@ -75,9 +75,15 @@ export default function AppJoin() {
 
     setBusy(true);
     try {
-      // "/" lands them on the app's own Home once verified — /account is the
-      // website's page and doesn't exist as a route here.
-      const { error: magicLinkError } = await signInWithMagicLink(email.trim(), firstName.trim(), "/");
+      // BASE_URL lands them on the app's own Home once verified — /account is
+      // the website's page and doesn't exist as a route here. BASE_URL
+      // (not a bare "/") so this still resolves correctly once the app is
+      // embedded under /app on the combined deployment.
+      const { error: magicLinkError } = await signInWithMagicLink(
+        email.trim(),
+        firstName.trim(),
+        import.meta.env.BASE_URL,
+      );
       if (magicLinkError) {
         toast.error(getAuthErrorMessage(magicLinkError));
         return;
@@ -192,7 +198,12 @@ export default function AppJoin() {
     // this, signInWithOtp defaults to creating a new account.
     const { error } = await supabase.auth.signInWithOtp({
       email: loginEmail.trim(),
-      options: { shouldCreateUser: false, emailRedirectTo: `${getCanonicalOrigin()}/` },
+      // BASE_URL (not a bare "/") so this still lands back in the app once
+      // it's embedded under /app on the combined deployment.
+      options: {
+        shouldCreateUser: false,
+        emailRedirectTo: `${getCanonicalOrigin()}${import.meta.env.BASE_URL}`,
+      },
     });
     setBusy(false);
     if (error) {

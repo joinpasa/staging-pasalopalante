@@ -13,6 +13,7 @@
     "build:website": "npm run build --workspace=@pasalopalante/website",
     "build:app": "npm run build --workspace=@pasalopalante/app",
     "build": "npm run build:website && npm run build:app",
+    "build:combined": "node scripts/build-combined.mjs",
     "lint": "eslint .",
     "test": "npm run test --workspace=@pasalopalante/shared && npm run test --workspace=@pasalopalante/website && npm run test --workspace=@pasalopalante/app && npx vitest run --config tests/repo-invariants/vitest.config.ts",
     "test:e2e:website": "npm run test:e2e --workspace=@pasalopalante/website",

@@ -44,7 +44,11 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <BrowserRouter>
+          {/* import.meta.env.BASE_URL is "/" for the standalone deployment
+              (today) or "/app/" when this build is embedded under a path on
+              the combined deployment — react-router treats "/" as no
+              prefix, so this is a no-op for the current live site. */}
+          <BrowserRouter basename={import.meta.env.BASE_URL}>
             <ScrollToTopOnRouteChange />
             <ReconsentGate />
             <Routes>
