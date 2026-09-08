@@ -11,6 +11,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 ## 2026-09-08 — va.deedumlao@gmail.com
 
 - **"Install app" now shows up reliably from the very first visit.** The mechanism was already right — tapping the button opens the browser's own native install confirmation, same as the old Lovable build did — but the service worker it depends on only registered after someone turned on push notifications, so on a fresh visit the button could just fail to appear. It now registers eagerly on page load instead, on both the website and the app. Also fixed the push notification icon pointing at a path that never existed.
+- **Fixed the website claiming the app was already installed when it wasn't.** Root cause: the website has no PWA manifest of its own, so the browser's real "is this already installed" signal could never fire there — every visit, installed or not, fell into a fallback that assumed "already installed." The website now just always offers a "Get the app" link to the actual app, where the real install flow lives (that part already worked correctly and needed no change).
 
 ## 2026-09-04 — va.deedumlao@gmail.com
 
