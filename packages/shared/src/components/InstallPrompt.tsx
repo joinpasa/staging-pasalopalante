@@ -79,6 +79,10 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
     // back-navigation doesn't rerun it.
     const params = new URLSearchParams(window.location.search);
     const wantsAutoInstall = params.get("install") === "1";
+    // TEMPORARY diagnostic — remove once the auto-install issue is
+    // confirmed fixed. Answers: did this build actually load, and did it
+    // see the ?install=1 marker at all?
+    console.log("[install-prompt]", { variant, wantsAutoInstall, search: window.location.search });
     if (wantsAutoInstall) {
       params.delete("install");
       const rest = params.toString();
@@ -106,6 +110,7 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
       bipFiredRef.current = true;
       const bip = e as BIPEvent;
       setDeferred(bip);
+      console.log("[install-prompt] beforeinstallprompt fired", { wantsAutoInstall });
       // Auto-installing: go straight to the native dialog, skip showing our
       // own card first — the goal is "Get the app -> native dialog," not
       // "Get the app -> our card -> native dialog."
@@ -113,9 +118,15 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
       if (wantsAutoInstall) {
         bip
           .prompt()
-          .then(() => bip.userChoice)
-          .then(() => dismiss())
-          .catch(() => undefined);
+          .then(() => {
+            console.log("[install-prompt] prompt() succeeded, awaiting userChoice");
+            return bip.userChoice;
+          })
+          .then((choice) => {
+            console.log("[install-prompt] userChoice", choice);
+            dismiss();
+          })
+          .catch((err) => console.error("[install-prompt] prompt() failed", err));
       }
     };
     window.addEventListener("beforeinstallprompt", onBIP);
@@ -163,7 +174,9 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
   // app" tap and open the native dialog the moment it's available (see the
   // app-variant effect).
   const openApp = () => {
-    window.location.assign(`${__APP_BASE_URL__}?install=1`);
+    const dest = `${__APP_BASE_URL__}?install=1`;
+    console.log("[install-prompt] Get the app clicked, navigating to", dest);
+    window.location.assign(dest);
   };
 
   const copy = {
