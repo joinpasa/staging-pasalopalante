@@ -13,10 +13,19 @@ const DISMISS_KEY = "ppl-install-dismissed-at";
 const DISMISS_DAYS = 14;
 
 interface InstallPromptProps {
-  /** "app" is mounted on app.pasalopalante.com itself, where an "Open app"
-   *  fallback makes no sense — you're already using it. Only "website"
-   *  (the default) shows that fallback and sits at the page's own bottom
-   *  edge; "app" skips it entirely and clears the app's fixed tab bar. */
+  /**
+   * "app" is mounted on app.pasalopalante.com itself, which has a real PWA
+   * manifest — beforeinstallprompt can genuinely fire there, so this variant
+   * listens for it and shows the real native "Install" dialog (or, on iOS,
+   * Safari's manual Add-to-Home-Screen steps).
+   *
+   * "website" (the default) is mounted on the marketing site, which has no
+   * manifest of its own — beforeinstallprompt can NEVER fire there, for
+   * anyone, installed or not (a page can't trigger a different origin's
+   * install prompt either). So this variant doesn't wait for it at all: it
+   * always just offers to send someone to the app, where the real install
+   * flow lives.
+   */
   variant?: "website" | "app";
 }
 
@@ -27,7 +36,7 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
   const [expanded, setExpanded] = useState(false);
   const [deferred, setDeferred] = useState<BIPEvent | null>(null);
   const [isIOS, setIsIOS] = useState(false);
-  const [installed, setInstalled] = useState(false);
+  const isWebsite = variant === "website";
   const bipFiredRef = useRef(false);
 
   useEffect(() => {
@@ -36,6 +45,14 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
       window.matchMedia?.("(display-mode: standalone)").matches ||
       (window.navigator as any).standalone === true;
     if (standalone) return;
+
+    // Website: no manifest of its own, so there's no real install flow to
+    // wait for or fake — just offer to send them to the app after a short
+    // delay, where the real thing lives.
+    if (variant === "website") {
+      const t = window.setTimeout(() => setOpen(true), 2500);
+      return () => window.clearTimeout(t);
+    }
 
     // An active service worker is part of how Chrome/Edge decide a site is
     // installable at all — previously this only registered once someone
@@ -59,14 +76,15 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
       // beforeinstallprompt only fires when the app is NOT yet installed.
       e.preventDefault();
       bipFiredRef.current = true;
-      setInstalled(false);
       setDeferred(e as BIPEvent);
       setOpen(true);
     };
     window.addEventListener("beforeinstallprompt", onBIP);
 
     if (ios) {
-      // iOS never fires beforeinstallprompt — show the install hint.
+      // iOS never fires beforeinstallprompt — show the install hint. Real
+      // here (unlike on the website): this domain's manifest is what Add to
+      // Home Screen actually reads, so the resulting icon is a proper PWA.
       const t = window.setTimeout(() => setOpen(true), 2500);
       return () => {
         window.removeEventListener("beforeinstallprompt", onBIP);
@@ -74,22 +92,12 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
       };
     }
 
-    // Non-iOS: if beforeinstallprompt hasn't fired after a short delay, the
-    // app is likely already installed (or the browser can't install it) —
-    // surface an "Open app" shortcut instead of install instructions. Only
-    // meaningful on the website: on the app's own domain there's nowhere
-    // more useful to send someone who's already using it, so stay quiet.
-    const installedTimer = window.setTimeout(() => {
-      if (!bipFiredRef.current && variant === "website") {
-        setInstalled(true);
-        setOpen(true);
-      }
-    }, 3000);
-
-    return () => {
-      window.removeEventListener("beforeinstallprompt", onBIP);
-      window.clearTimeout(installedTimer);
-    };
+    // Non-iOS, in the app itself: if beforeinstallprompt hasn't fired, we
+    // genuinely don't know why (already installed, criteria not met yet,
+    // browser doesn't support it) — no way to send them anywhere more
+    // useful than where they already are, so just stay quiet rather than
+    // guess.
+    return () => window.removeEventListener("beforeinstallprompt", onBIP);
   }, [variant]);
 
   const dismiss = () => {
@@ -123,8 +131,8 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
       install: "Install app",
       show: "How to install",
       dismiss: "Dismiss",
-      openApp: "Open app",
-      installedSubtitle: "You're all set — jump straight into the app.",
+      openApp: "Get the app",
+      installedSubtitle: "Continue to the app, where you can add it to your home screen.",
       iosStep1: "Tap the",
       iosStep1b: "Share button",
       iosStep2: "in Safari's toolbar.",
@@ -138,8 +146,8 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
       install: "Instalar app",
       show: "Cómo instalar",
       dismiss: "Cerrar",
-      openApp: "Abrir app",
-      installedSubtitle: "Ya está todo listo — entra directo a la app.",
+      openApp: "Obtener la app",
+      installedSubtitle: "Continúa a la app, donde podrás añadirla a tu pantalla de inicio.",
       iosStep1: "Toca el",
       iosStep1b: "botón Compartir",
       iosStep2: "en la barra de Safari.",
@@ -153,8 +161,8 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
       install: "Installer l'app",
       show: "Comment installer",
       dismiss: "Fermer",
-      openApp: "Ouvrir l'app",
-      installedSubtitle: "Tout est prêt — lancez directement l'application.",
+      openApp: "Obtenir l'app",
+      installedSubtitle: "Continuez vers l'app, où vous pourrez l'ajouter à votre écran d'accueil.",
       iosStep1: "Touchez le",
       iosStep1b: "bouton Partager",
       iosStep2: "dans Safari.",
@@ -168,8 +176,8 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
       install: "App installieren",
       show: "So installieren",
       dismiss: "Schließen",
-      openApp: "App öffnen",
-      installedSubtitle: "Alles bereit — öffne die App direkt.",
+      openApp: "App holen",
+      installedSubtitle: "Weiter zur App, wo du sie zum Startbildschirm hinzufügen kannst.",
       iosStep1: "Tippe auf den",
       iosStep1b: "Teilen-Button",
       iosStep2: "in Safari.",
@@ -194,12 +202,12 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
               : "fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:w-96 z-[60]"
           }
           role="dialog"
-          aria-label={installed ? c.openApp : c.title}
+          aria-label={isWebsite ? c.openApp : c.title}
         >
           <div className="bg-warm-cream border border-border shadow-xl rounded-2xl overflow-hidden">
             <div className="flex items-start gap-3 p-4">
               <div className="shrink-0 w-11 h-11 rounded-xl bg-warm-blush flex items-center justify-center">
-                {installed ? (
+                {isWebsite ? (
                   <Smartphone size={20} className="text-warm-terracotta" />
                 ) : (
                   <Download size={20} className="text-warm-terracotta" />
@@ -207,17 +215,17 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-foreground text-sm">
-                  {installed ? c.openApp : c.title}
+                  {isWebsite ? c.openApp : c.title}
                 </p>
                 <p className="text-xs text-foreground/60 mt-0.5">
-                  {installed ? c.installedSubtitle : c.subtitle}
+                  {isWebsite ? c.installedSubtitle : c.subtitle}
                 </p>
                 <div className="mt-3 flex items-center gap-2">
                   <button
-                    onClick={installed ? openApp : install}
+                    onClick={isWebsite ? openApp : install}
                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-warm-terracotta text-warm-cream hover:opacity-90 transition"
                   >
-                    {installed ? (
+                    {isWebsite ? (
                       <>
                         <Smartphone size={13} />
                         {c.openApp}
@@ -247,7 +255,7 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
             </div>
 
             <AnimatePresence>
-              {!installed && isIOS && expanded && (
+              {!isWebsite && isIOS && expanded && (
                 <motion.div
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
