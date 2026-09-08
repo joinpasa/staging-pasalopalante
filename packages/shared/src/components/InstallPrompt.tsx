@@ -64,9 +64,32 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
       navigator.serviceWorker.register("/push-sw.js", { scope: "/" }).catch(() => undefined);
     }
 
-    // Recently dismissed?
+    // Arrived via the website's "Get the app" link (?install=1): the site
+    // that sent them here can't trigger this domain's install prompt
+    // itself — no origin can trigger another's — but once we're here and
+    // beforeinstallprompt actually fires, skip the extra manual tap and
+    // open the native dialog immediately, so the whole thing is "tap Get
+    // the app, tap Install" instead of "tap Get the app, tap Install app
+    // (again), tap Install." Strip the marker either way so a refresh or
+    // back-navigation doesn't rerun it.
+    const params = new URLSearchParams(window.location.search);
+    const wantsAutoInstall = params.get("install") === "1";
+    if (wantsAutoInstall) {
+      params.delete("install");
+      const rest = params.toString();
+      window.history.replaceState(
+        {},
+        "",
+        window.location.pathname + (rest ? `?${rest}` : "") + window.location.hash,
+      );
+    }
+
+    // Recently dismissed? An explicit "install=1" arrival overrides this —
+    // they just asked for this a moment ago on the website.
     const dismissedAt = Number(localStorage.getItem(DISMISS_KEY) || 0);
-    if (dismissedAt && Date.now() - dismissedAt < DISMISS_DAYS * 86400_000) return;
+    if (!wantsAutoInstall && dismissedAt && Date.now() - dismissedAt < DISMISS_DAYS * 86400_000) {
+      return;
+    }
 
     const ua = window.navigator.userAgent;
     const ios = /iPad|iPhone|iPod/.test(ua) && !(window as any).MSStream;
@@ -76,8 +99,16 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
       // beforeinstallprompt only fires when the app is NOT yet installed.
       e.preventDefault();
       bipFiredRef.current = true;
-      setDeferred(e as BIPEvent);
+      const bip = e as BIPEvent;
+      setDeferred(bip);
       setOpen(true);
+      if (wantsAutoInstall) {
+        bip
+          .prompt()
+          .then(() => bip.userChoice)
+          .then(() => dismiss())
+          .catch(() => undefined);
+      }
     };
     window.addEventListener("beforeinstallprompt", onBIP);
 
@@ -119,9 +150,11 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
   // Full navigation so an installed PWA can take over on supported browsers.
   // Cross-origin because this component renders on both the website and the
   // app — "open the app" always means the app's own domain, regardless of
-  // which surface is currently showing this prompt.
+  // which surface is currently showing this prompt. The ?install=1 marker
+  // tells the app side to skip its own extra "Install app" tap and open the
+  // native dialog the moment it's available (see the app-variant effect).
   const openApp = () => {
-    window.location.assign("https://app.pasalopalante.com/");
+    window.location.assign(`https://app.pasalopalante.com/${isWebsite ? "?install=1" : ""}`);
   };
 
   const copy = {
