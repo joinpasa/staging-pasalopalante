@@ -46,8 +46,16 @@ console.log("== 3/4: rescoping the embedded app's manifest to the whole origin =
 // not just /app/* — so the browser considers the marketing pages
 // installable too, and beforeinstallprompt can fire there directly
 // instead of only once someone has already navigated into /app/.
+// Explicit id, rather than leaving Chrome to infer identity from
+// start_url — Chrome's own DevTools Manifest panel flags this directly
+// ("id is not specified... set the id field to /app/ to specify an App ID
+// that matches the current identity"). Without it, an install triggered
+// from a page whose own URL isn't /app/ (any marketing page, now that
+// they're all installable too) has been observed launching to that page
+// instead of start_url — a pinned id removes the ambiguity.
 const manifestPath = path.join(appDist, "manifest.webmanifest");
 const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+manifest.id = "/app/";
 manifest.start_url = "/app/";
 manifest.scope = "/";
 manifest.icons = (manifest.icons ?? []).map((icon) => ({
