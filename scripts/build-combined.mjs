@@ -62,9 +62,19 @@ fs.cpSync(appDist, embeddedAppDist, { recursive: true });
 // covers the top-level dist/index.html, not this nested one — hence a
 // _redirects rule instead, appended to whatever the website already ships
 // (e.g. the /tech-form redirect) rather than overwriting it.
+//
+// The fallback target is a duplicate of index.html under a different name
+// (not "/app/index.html" itself) — Cloudflare's _redirects validator
+// treats a literal "index.html" destination as self-normalizing back to
+// "/app/", which then re-matches this same /app/* rule and gets rejected
+// at deploy time as an infinite loop. Same content, different filename
+// sidesteps that special-casing entirely.
+const appShellPath = path.join(embeddedAppDist, "app-shell.html");
+fs.copyFileSync(path.join(embeddedAppDist, "index.html"), appShellPath);
+
 const redirectsPath = path.join(websiteDist, "_redirects");
 const existing = fs.existsSync(redirectsPath) ? fs.readFileSync(redirectsPath, "utf8").trimEnd() : "";
-const appFallback = "/app/*  /app/index.html  200";
+const appFallback = "/app/*  /app/app-shell.html  200";
 fs.writeFileSync(redirectsPath, existing ? `${existing}\n${appFallback}\n` : `${appFallback}\n`);
 
 console.log(`\nCombined build ready at ${websiteDist}`);
