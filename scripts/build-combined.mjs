@@ -63,18 +63,27 @@ fs.cpSync(appDist, embeddedAppDist, { recursive: true });
 // _redirects rule instead, appended to whatever the website already ships
 // (e.g. the /tech-form redirect) rather than overwriting it.
 //
-// The fallback target is a duplicate of index.html under a different name
-// (not "/app/index.html" itself) — Cloudflare's _redirects validator
-// treats a literal "index.html" destination as self-normalizing back to
-// "/app/", which then re-matches this same /app/* rule and gets rejected
-// at deploy time as an infinite loop. Same content, different filename
-// sidesteps that special-casing entirely.
-const appShellPath = path.join(embeddedAppDist, "app-shell.html");
+// The fallback target is a duplicate of index.html with NO .html
+// extension at all (not just a different name) — Cloudflare's static
+// asset server auto-redirects .html-suffixed paths to their
+// extension-less form by default, and that redirect re-matches this same
+// /app/* wildcard rule, which serves the .html file again, which
+// redirects again — an actual runtime loop (ERR_TOO_MANY_REDIRECTS), not
+// just something Cloudflare's deploy-time validator was overcautious
+// about. An extension-less file has nothing for that feature to
+// normalize, so a _headers rule sets its Content-Type explicitly since
+// Cloudflare can't infer it from the (absent) extension.
+const appShellPath = path.join(embeddedAppDist, "app-shell");
 fs.copyFileSync(path.join(embeddedAppDist, "index.html"), appShellPath);
 
 const redirectsPath = path.join(websiteDist, "_redirects");
 const existing = fs.existsSync(redirectsPath) ? fs.readFileSync(redirectsPath, "utf8").trimEnd() : "";
-const appFallback = "/app/*  /app/app-shell.html  200";
+const appFallback = "/app/*  /app/app-shell  200";
 fs.writeFileSync(redirectsPath, existing ? `${existing}\n${appFallback}\n` : `${appFallback}\n`);
+
+const headersPath = path.join(websiteDist, "_headers");
+const existingHeaders = fs.existsSync(headersPath) ? fs.readFileSync(headersPath, "utf8").trimEnd() : "";
+const appShellHeader = "/app/app-shell\n  Content-Type: text/html; charset=utf-8\n";
+fs.writeFileSync(headersPath, existingHeaders ? `${existingHeaders}\n${appShellHeader}` : appShellHeader);
 
 console.log(`\nCombined build ready at ${websiteDist}`);
