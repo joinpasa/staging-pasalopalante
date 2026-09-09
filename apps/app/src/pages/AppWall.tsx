@@ -4,10 +4,11 @@ import { toast } from "sonner";
 
 import ReactionButton from "@/components/app/ReactionButton";
 import { useAuth } from "@shared/contexts/AuthContext";
-import { useActReactions, useMyRecentActs, useWallActs } from "@/hooks/useAppData";
+import { useActReactions, useMovementTotals, useMyRecentActs, useWallActs } from "@/hooks/useAppData";
 import { actEmoji, modeLabel, timeAgo } from "@shared/lib/appActs";
 import { cn } from "@shared/lib/utils";
 
+const nf = new Intl.NumberFormat("en-US");
 const FILTERS = ["Worldwide", "My chain"] as const;
 type Filter = (typeof FILTERS)[number];
 
@@ -25,6 +26,7 @@ export default function AppWall() {
 
   const worldwide = useWallActs();
   const mine = useMyRecentActs(20);
+  const { data: totals } = useMovementTotals();
 
   const showingMine = filter === "My chain";
   const posts = showingMine
@@ -47,6 +49,25 @@ export default function AppWall() {
         Wall of Kindness
       </h1>
       <p className="mt-1 text-sm text-muted-foreground">Every act shared, from everywhere.</p>
+
+      {/* The worldwide movement totals — otherwise only visible on Home to
+          a signed-out visitor, and replaced there by personal stats once
+          someone's signed in. The Wall is where anyone, logged in or not,
+          comes to see the movement as a whole, so it belongs here too. */}
+      <section className="mt-5 grid grid-cols-3 gap-3">
+        {[
+          { value: totals?.pledged ?? 0, label: "Acts pledged" },
+          { value: totals?.actsToday ?? 0, label: "Logged today" },
+          { value: totals?.actsAllTime ?? 0, label: "Acts all time" },
+        ].map((stat) => (
+          <div key={stat.label} className="rounded-2xl bg-app-surface p-4">
+            <p className="font-sans text-2xl font-bold leading-none text-foreground">
+              {nf.format(stat.value)}
+            </p>
+            <p className="mt-2 text-xs leading-snug text-muted-foreground">{stat.label}</p>
+          </div>
+        ))}
+      </section>
 
       <div className="mt-5 flex gap-2" role="tablist" aria-label="Wall filter">
         {FILTERS.map((option) => {

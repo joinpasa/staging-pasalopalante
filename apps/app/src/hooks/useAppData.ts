@@ -299,14 +299,24 @@ export { useMovementTotals } from "@shared/hooks/useMovementTotals";
 
 export interface AppBadge {
   id: string;
+  kind: string | null;
   name: string;
+  name_es: string | null;
+  name_fr: string | null;
+  name_de: string | null;
   description: string | null;
+  description_es: string | null;
+  description_fr: string | null;
+  description_de: string | null;
+  icon: string | null;
   earned: boolean;
   current: number | null;
   target: number | null;
 }
 
-/** Badge catalogue joined with what the signed-in user has earned. */
+/** Badge catalogue joined with what the signed-in user has earned. Mirrors
+ *  the website's StreaksBadges query (same table, same columns) so the two
+ *  never show different badges, icons, or names for the same person. */
 export function useAppBadges() {
   const { user } = useAuth();
 
@@ -315,7 +325,9 @@ export function useAppBadges() {
     queryFn: async (): Promise<AppBadge[]> => {
       const catalogue = await supabasePublic
         .from("badges")
-        .select("id, name, description, sort_order")
+        .select(
+          "id, kind, name, name_es, name_fr, name_de, description, description_es, description_fr, description_de, icon, sort_order",
+        )
         .order("sort_order", { ascending: true });
       if (catalogue.error) throw catalogue.error;
 
@@ -344,8 +356,16 @@ export function useAppBadges() {
         const metByProgress = !!p && p.target > 0 && p.current >= p.target;
         return {
           id: badge.id,
+          kind: badge.kind,
           name: badge.name,
+          name_es: badge.name_es,
+          name_fr: badge.name_fr,
+          name_de: badge.name_de,
           description: badge.description,
+          description_es: badge.description_es,
+          description_fr: badge.description_fr,
+          description_de: badge.description_de,
+          icon: badge.icon,
           earned: earned.has(badge.id) || metByProgress,
           current: p?.current ?? null,
           target: p?.target ?? null,

@@ -237,8 +237,8 @@ export default function AppHome() {
           <div className="-mx-5 flex gap-3 overflow-x-auto px-5 pb-1">
             {earned.map((badge) => (
               <div key={badge.id} className="w-[5.5rem] shrink-0 text-center">
-                <div className="flex h-16 w-full items-center justify-center rounded-2xl bg-app-gold-tint font-sans text-xl font-bold text-app-gold">
-                  {badge.name.slice(0, 1).toUpperCase()}
+                <div className="flex h-16 w-full items-center justify-center rounded-2xl bg-app-gold-tint text-2xl">
+                  {badge.icon || "🏅"}
                 </div>
                 <p className="mt-2 text-[11px] font-medium leading-tight text-foreground">
                   {badge.name}
