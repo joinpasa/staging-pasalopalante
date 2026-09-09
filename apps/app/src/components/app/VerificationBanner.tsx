@@ -80,6 +80,8 @@ export default function VerificationBanner() {
   const [resending, setResending] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const [otpCode, setOtpCode] = useState("");
+  const [verifyingCode, setVerifyingCode] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -120,18 +122,56 @@ export default function VerificationBanner() {
       if (error) toast.error("Couldn't resend the link. Please try again shortly.");
       else toast.success("Sign-in link resent — check your email.");
     };
+    // Verifying here (instead of tapping the link) skips the browser hop
+    // entirely — on iPhone, Safari and this already-installed app don't
+    // share sign-in even on the same domain, so the link alone can strand
+    // someone in a loop. The code sent in that same email finishes it here.
+    const verifyCode = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (otpCode.trim().length < 6) return;
+      setVerifyingCode(true);
+      const { error } = await supabase.auth.verifyOtp({
+        email: pendingEmail,
+        token: otpCode.trim(),
+        type: "email",
+      });
+      setVerifyingCode(false);
+      if (error) toast.error("That code didn't work — check it and try again.");
+    };
     return (
-      <div className="flex items-center gap-2 bg-app-coral-tint px-4 py-2.5 text-xs text-foreground">
-        <Mail className="h-4 w-4 shrink-0 text-app-coral" />
-        <span className="flex-1">Verify your email to unlock the full app.</span>
-        <button
-          type="button"
-          onClick={resend}
-          disabled={resending}
-          className="shrink-0 font-semibold text-app-coral underline disabled:opacity-60"
-        >
-          {resending ? "Sending…" : "Resend link"}
-        </button>
+      <div className="flex flex-col gap-2 bg-app-coral-tint px-4 py-2.5 text-xs text-foreground">
+        <div className="flex items-center gap-2">
+          <Mail className="h-4 w-4 shrink-0 text-app-coral" />
+          <span className="flex-1">Verify your email to unlock the full app.</span>
+          <button
+            type="button"
+            onClick={resend}
+            disabled={resending}
+            className="shrink-0 font-semibold text-app-coral underline disabled:opacity-60"
+          >
+            {resending ? "Sending…" : "Resend link"}
+          </button>
+        </div>
+        <form onSubmit={verifyCode} className="flex items-center gap-2 pl-6">
+          <span className="shrink-0 text-muted-foreground">Or enter the code:</span>
+          <input
+            required
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            maxLength={6}
+            placeholder="123456"
+            value={otpCode}
+            onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+            className="w-24 rounded-lg border border-app-coral/30 bg-app-surface px-2 py-1 text-center font-semibold tracking-[0.2em] text-foreground outline-none focus:border-app-coral"
+          />
+          <button
+            type="submit"
+            disabled={verifyingCode || otpCode.length < 6}
+            className="shrink-0 font-semibold text-app-coral underline disabled:opacity-60"
+          >
+            {verifyingCode ? "…" : "Verify"}
+          </button>
+        </form>
       </div>
     );
   }

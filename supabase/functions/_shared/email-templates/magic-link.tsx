@@ -5,16 +5,17 @@ import {
   Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Text,
 } from 'npm:@react-email/components@0.0.22'
 import {
-  BRAND_NAME, LOGO_URL, accentRule, button, buttonWrap, container, footer,
-  h1, logoImg, main, signature, text, textEs,
+  BRAND_NAME, LOGO_URL, accentRule, button, buttonWrap, code, container,
+  footer, h1, logoImg, main, signature, text, textEs,
 } from './_styles.ts'
 
 interface MagicLinkEmailProps {
   siteName: string
   confirmationUrl: string
+  token: string
 }
 
-export const MagicLinkEmail = ({ confirmationUrl }: MagicLinkEmailProps) => (
+export const MagicLinkEmail = ({ confirmationUrl, token }: MagicLinkEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
     <Preview>Your sign-in link for {BRAND_NAME}</Preview>
@@ -30,6 +31,12 @@ export const MagicLinkEmail = ({ confirmationUrl }: MagicLinkEmailProps) => (
         <div style={buttonWrap}>
           <Button style={button} href={confirmationUrl}>Sign in</Button>
         </div>
+        {/* Same reasoning as the signup email: the button opens your regular
+            browser, which on iPhone can't share sign-in with an
+            already-installed home-screen app. This code, typed directly
+            into the app, avoids that. */}
+        <Text style={text}>Already have the app open? Enter this code there instead:</Text>
+        <Text style={code}>{token}</Text>
         <Text style={textEs}>
           Haz clic en el botón para iniciar sesión en {BRAND_NAME}. Este enlace
           caduca pronto por seguridad.

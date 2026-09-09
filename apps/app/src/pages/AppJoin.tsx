@@ -53,6 +53,8 @@ export default function AppJoin() {
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [needsReset, setNeedsReset] = useState<{ email: string; sent: boolean } | null>(null);
+  const [otpCode, setOtpCode] = useState("");
+  const [verifyingCode, setVerifyingCode] = useState(false);
 
   // Client-side cooldown so an impatient tap on "email me a link" can't
   // rapid-fire this and trip Supabase's own OTP rate limit — mirrors the
@@ -222,6 +224,33 @@ export default function AppJoin() {
     setSentTo(loginEmail.trim());
   }
 
+  // Typing the code (also in that same email, next to the link) finishes
+  // sign-in right here in the already-open app — the link instead opens
+  // whatever the phone's default browser is, which on iPhone specifically
+  // can never hand a session to an already-installed home-screen app
+  // (Safari and a home-screen app are separate storage silos there, even
+  // on the same origin). This sidesteps that entirely.
+  async function handleVerifyCode(e: React.FormEvent) {
+    e.preventDefault();
+    if (!sentTo || otpCode.trim().length < 6) return;
+    setVerifyingCode(true);
+    const { error } = await supabase.auth.verifyOtp({
+      email: sentTo,
+      token: otpCode.trim(),
+      type: "email",
+    });
+    setVerifyingCode(false);
+    if (error) {
+      toast.error(getAuthErrorMessage(error));
+      return;
+    }
+    if (isNewSignup && !localStorage.getItem(ONBOARDING_SEEN_KEY)) {
+      setShowOnboarding(true);
+    } else {
+      navigate("/", { replace: true });
+    }
+  }
+
   if (showOnboarding) {
     return (
       <OnboardingWalkthrough
@@ -282,11 +311,39 @@ export default function AppJoin() {
           We sent a sign-in link to <span className="font-semibold text-foreground">{sentTo}</span>.
           Open it on this phone and the app will be signed in.
         </p>
+
+        {/* The link opens the phone's regular browser, which — especially on
+            iPhone — can't hand a session back to this already-installed
+            app. Typing the 6-digit code from that same email finishes
+            sign-in right here instead, with no browser hop at all. */}
+        <form onSubmit={handleVerifyCode} className="w-full max-w-xs space-y-2 pt-1">
+          <p className="text-xs font-semibold text-muted-foreground">
+            Or enter the code from that email
+          </p>
+          <input
+            required
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            maxLength={6}
+            placeholder="123456"
+            value={otpCode}
+            onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+            className="w-full rounded-xl border border-border bg-app-surface px-3 py-3 text-center text-lg font-semibold tracking-[0.3em] text-foreground outline-none focus:border-app-coral"
+          />
+          <button
+            type="submit"
+            disabled={verifyingCode || otpCode.length < 6}
+            className="flex h-12 w-full items-center justify-center rounded-2xl bg-app-coral font-semibold text-app-surface disabled:opacity-60"
+          >
+            {verifyingCode ? "…" : "Verify code"}
+          </button>
+        </form>
+
         {isNewSignup && !localStorage.getItem(ONBOARDING_SEEN_KEY) && (
           <button
             type="button"
             onClick={() => setShowOnboarding(true)}
-            className="flex h-12 w-full max-w-xs items-center justify-center gap-2 rounded-2xl bg-app-coral font-semibold text-app-surface"
+            className="flex h-12 w-full max-w-xs items-center justify-center gap-2 rounded-2xl border border-border bg-app-surface font-semibold text-foreground"
           >
             Proceed to Next Step
             <ArrowRight className="h-4 w-4" />
