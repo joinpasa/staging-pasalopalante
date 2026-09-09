@@ -251,6 +251,33 @@ export default function AppJoin() {
     }
   }
 
+  // A fresh code/link for the same email already on the "check your email"
+  // screen — same underlying request handleJoin/handleMagicLogin already
+  // make, just re-fired without asking for the form again. Shares their
+  // cooldown, so this can't be used to spam Supabase's OTP rate limit.
+  async function resendCode() {
+    if (!sentTo) return;
+    if (magicLinkOnCooldown()) return;
+    setBusy(true);
+    const { error } = isNewSignup
+      ? await signInWithMagicLink(sentTo, firstName.trim(), import.meta.env.BASE_URL)
+      : await supabase.auth.signInWithOtp({
+          email: sentTo,
+          options: {
+            shouldCreateUser: false,
+            emailRedirectTo: `${getCanonicalOrigin()}${import.meta.env.BASE_URL}`,
+          },
+        });
+    setBusy(false);
+    if (error) {
+      toast.error(getAuthErrorMessage(error));
+      return;
+    }
+    lastMagicLinkSentAt.current = Date.now();
+    setOtpCode("");
+    toast.success("Sent — check your email for the new link and code.");
+  }
+
   if (showOnboarding) {
     return (
       <OnboardingWalkthrough
@@ -352,13 +379,23 @@ export default function AppJoin() {
             <ArrowRight className="h-4 w-4" />
           </button>
         )}
-        <button
-          type="button"
-          onClick={() => setSentTo(null)}
-          className="text-sm font-semibold text-app-coral underline"
-        >
-          Use a different email
-        </button>
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={resendCode}
+            disabled={busy}
+            className="text-sm font-semibold text-app-coral underline disabled:opacity-60"
+          >
+            {busy ? "…" : "Resend code"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setSentTo(null)}
+            className="text-sm font-semibold text-app-coral underline"
+          >
+            Use a different email
+          </button>
+        </div>
       </div>
     );
   }

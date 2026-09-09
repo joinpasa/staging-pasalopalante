@@ -40,6 +40,7 @@ import StandaloneHomeRedirect from "./components/StandaloneHomeRedirect";
 import ReconsentGate from "@shared/components/ReconsentGate";
 import LanguageSwitcher from "@shared/components/LanguageSwitcher";
 import InstallPrompt from "@shared/components/InstallPrompt";
+import EmailConfirmGate from "@shared/components/EmailConfirmGate";
 import GlobalShareModal from "@shared/components/share/GlobalShareModal";
 import { DirectionProvider } from "@radix-ui/react-direction";
 import { useLanguage } from "@shared/contexts/LanguageContext";
@@ -77,6 +78,7 @@ const App = () => (
           <BrowserRouter>
             <ScrollToTopOnRouteChange />
             <StandaloneHomeRedirect />
+            <EmailConfirmGate />
             <ReconsentGate />
             <Routes>
               <Route path="/" element={<Index />} />
