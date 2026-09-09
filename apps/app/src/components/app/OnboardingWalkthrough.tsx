@@ -99,7 +99,7 @@ export default function OnboardingWalkthrough({
             disabled={busy || profileIncomplete}
             className="text-xs font-semibold text-muted-foreground underline disabled:opacity-60"
           >
-            Skip for now
+            {busy ? "…" : "Skip for now"}
           </button>
         </div>
 
