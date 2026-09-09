@@ -314,8 +314,11 @@ export default function AppJoin() {
 
         {/* The link opens the phone's regular browser, which — especially on
             iPhone — can't hand a session back to this already-installed
-            app. Typing the 6-digit code from that same email finishes
-            sign-in right here instead, with no browser hop at all. */}
+            app. Typing the code from that same email finishes sign-in
+            right here instead, with no browser hop at all. Supabase's
+            code length is configurable (6-10 digits, currently 8 on this
+            project) — don't hardcode a specific length here since it can
+            change on Supabase's side independently of this code. */}
         <form onSubmit={handleVerifyCode} className="w-full max-w-xs space-y-2 pt-1">
           <p className="text-xs font-semibold text-muted-foreground">
             Or enter the code from that email
@@ -324,11 +327,11 @@ export default function AppJoin() {
             required
             inputMode="numeric"
             autoComplete="one-time-code"
-            maxLength={6}
-            placeholder="123456"
+            maxLength={10}
+            placeholder="12345678"
             value={otpCode}
-            onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-            className="w-full rounded-xl border border-border bg-app-surface px-3 py-3 text-center text-lg font-semibold tracking-[0.3em] text-foreground outline-none focus:border-app-coral"
+            onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 10))}
+            className="w-full rounded-xl border border-border bg-app-surface px-3 py-3 text-center text-lg font-semibold tracking-[0.2em] text-foreground outline-none focus:border-app-coral"
           />
           <button
             type="submit"

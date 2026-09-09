@@ -202,10 +202,26 @@ async function handleWebhook(req: Request): Promise<Response> {
   // - not handled here, since that setting isn't currently enabled.
   const sendToEmail = emailType === 'email_change' ? payload.user.new_email! : recipientEmail
 
+  // signup/magiclink point straight at our own app instead of Supabase's raw
+  // /auth/v1/verify endpoint, which verifies (and permanently consumes) the
+  // token on a plain GET - exactly what an email security scanner routinely
+  // does while prefetching a link to check it's safe, silently burning it
+  // before the recipient ever opens the email ("expired" on first real use).
+  // The app's own AuthContext only ever calls verifyOtp from real page JS,
+  // which a scanner's plain fetch can't trigger - see AuthContext.tsx.
+  // recovery/invite/email_change are left on Supabase's own link for now,
+  // unchanged and not reported broken.
   const confirmationUrl =
-    `${supabaseUrl}/auth/v1/verify?token=${payload.email_data.token_hash}` +
-    `&type=${payload.email_data.email_action_type}` +
-    `&redirect_to=${encodeURIComponent(payload.email_data.redirect_to)}`
+    emailType === 'signup' || emailType === 'magiclink'
+      ? (() => {
+          const url = new URL(payload.email_data.redirect_to)
+          url.searchParams.set('confirm_token_hash', payload.email_data.token_hash)
+          url.searchParams.set('confirm_type', payload.email_data.email_action_type)
+          return url.toString()
+        })()
+      : `${supabaseUrl}/auth/v1/verify?token=${payload.email_data.token_hash}` +
+        `&type=${payload.email_data.email_action_type}` +
+        `&redirect_to=${encodeURIComponent(payload.email_data.redirect_to)}`
 
   const templateProps = {
     siteName: SITE_NAME,

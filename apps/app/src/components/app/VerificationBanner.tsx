@@ -158,11 +158,11 @@ export default function VerificationBanner() {
             required
             inputMode="numeric"
             autoComplete="one-time-code"
-            maxLength={6}
-            placeholder="123456"
+            maxLength={10}
+            placeholder="12345678"
             value={otpCode}
-            onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-            className="w-24 rounded-lg border border-app-coral/30 bg-app-surface px-2 py-1 text-center font-semibold tracking-[0.2em] text-foreground outline-none focus:border-app-coral"
+            onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 10))}
+            className="w-28 rounded-lg border border-app-coral/30 bg-app-surface px-2 py-1 text-center font-semibold tracking-[0.15em] text-foreground outline-none focus:border-app-coral"
           />
           <button
             type="submit"

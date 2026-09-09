@@ -49,6 +49,35 @@ export const AuthProvider = ({ children, ghlSource = "PPL Website" }: AuthProvid
     return () => subscription.unsubscribe();
   }, []);
 
+  // Auth emails point their button at this app's own domain (see
+  // auth-email-hook/index.ts) instead of straight at Supabase's raw
+  // /auth/v1/verify endpoint. That endpoint verifies — and permanently
+  // consumes — the token on a plain GET, which email security scanners
+  // (Gmail, Outlook, corporate gateways) routinely prefetch to check a
+  // link is safe, silently burning it before the person ever opens the
+  // email. A scanner's plain HTTP fetch never runs this page's JS, so it
+  // can't reach this call — only an actual visit can, which is exactly
+  // what "the code says expired the instant I used it" was.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tokenHash = params.get("confirm_token_hash");
+    const type = params.get("confirm_type");
+    if (!tokenHash || !type) return;
+
+    // Strip immediately so a reload or back-navigation can't retry an
+    // already-consumed token and show a confusing second error.
+    params.delete("confirm_token_hash");
+    params.delete("confirm_type");
+    const query = params.toString();
+    window.history.replaceState(
+      {},
+      "",
+      `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`,
+    );
+
+    supabase.auth.verifyOtp({ token_hash: tokenHash, type });
+  }, []);
+
   // Same-visit referral attribution: once a session exists, attach the stored
   // invite code to this (new) account. The DB ignores it for older accounts.
   const claimedRef = useRef(false);
