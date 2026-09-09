@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-09-09 — va.deedumlao@gmail.com
+
+- **Fixed the homepage's install button on iOS (Safari and Chrome — both are Apple-mandated WebKit under the hood, so both behave identically here).** No browser on iOS ever supports the one-tap native install dialog — that's an Apple platform restriction, not something any site can change; the correct experience there has always been the manual "tap Share → Add to Home Screen" steps. But the homepage's install card didn't know it was on iOS, so tapping "Get the app" was sending iOS users into `/app/` first and only showing the real instructions after that second stop — an unnecessary extra hop, and a different (worse) experience than what Android/desktop Chrome now get directly on the homepage. It now shows the real Add to Home Screen steps right on the homepage, in place, for both Safari and Chrome on iOS. Verified locally against a Cloudflare-equivalent build (service worker, manifest, and header behavior all match production) — Android Chrome and desktop are unaffected by this change.
+
 ## 2026-09-08 — va.deedumlao@gmail.com
 
 - **Added three new "Get Involved" landing pages with embedded sign-up forms**: `/get-involved/schools` (Schools & Educators), `/get-involved/nonprofits` (Nonprofits & Faith Communities), and `/get-involved/ambassadors` (Ambassadors), each embedding the GoHighLevel form for that audience. The matching cards on `/get-involved` now link to these instead of the generic Contact/Commit pages.

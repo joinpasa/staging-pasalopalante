@@ -128,19 +128,27 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
       dismiss();
       return;
     }
+    if (isIOS) {
+      // No browser on iOS ever fires beforeinstallprompt — Safari and
+      // Chrome-on-iOS both run on WebKit, and Apple doesn't expose that
+      // API to either. Show the real "Add to Home Screen" steps right
+      // here instead of routing them through the app first, on both
+      // variants — there's nothing a trip to /app/ would gain them.
+      setExpanded((v) => !v);
+      return;
+    }
     if (isWebsite) {
-      // Not merged yet, iOS, or beforeinstallprompt just hasn't fired here
+      // Not merged yet, or beforeinstallprompt just hasn't fired here
       // yet — send them to the app, where install always works.
       openApp();
       return;
     }
-    // App, iOS, no deferred yet: toggle the manual instructions.
-    setExpanded((v) => !v);
   };
 
   // True only when there's genuinely nothing to install right here and
   // the only useful thing left to do is send them to the app instead.
-  const showFallback = isWebsite && !deferred;
+  // iOS is carved out even on the website variant — see handleInstallClick.
+  const showFallback = isWebsite && !deferred && !isIOS;
 
   const copy = {
     en: {
