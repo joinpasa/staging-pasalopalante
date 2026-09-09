@@ -165,6 +165,7 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
       iosStep3: "Choose",
       iosStep3b: "Add to Home Screen",
       iosStep4: "then tap Add.",
+      iosOpenAppHint: "Prefer a simpler screen?",
     },
     es: {
       title: "Instala Pásalo Pa'lante",
@@ -180,6 +181,7 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
       iosStep3: "Elige",
       iosStep3b: "Añadir a pantalla de inicio",
       iosStep4: "y luego toca Añadir.",
+      iosOpenAppHint: "¿Prefieres una pantalla más simple?",
     },
     fr: {
       title: "Installer Pásalo Pa'lante",
@@ -195,6 +197,7 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
       iosStep3: "Choisissez",
       iosStep3b: "Sur l'écran d'accueil",
       iosStep4: "puis Ajouter.",
+      iosOpenAppHint: "Vous préférez un écran plus simple ?",
     },
     de: {
       title: "Pásalo Pa'lante installieren",
@@ -210,6 +213,7 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
       iosStep3: "Wähle",
       iosStep3b: "Zum Home-Bildschirm",
       iosStep4: "und dann Hinzufügen.",
+      iosOpenAppHint: "Lieber einen einfacheren Bildschirm?",
     },
   } as const;
   const c = (copy as any)[lang] || copy.en;
@@ -288,20 +292,57 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
                   exit={{ height: 0, opacity: 0 }}
                   className="border-t border-border bg-warm-sand/40 overflow-hidden"
                 >
-                  <ol className="p-4 space-y-2 text-xs text-foreground/80 list-decimal list-inside">
-                    <li className="flex items-center gap-1.5 flex-wrap">
-                      {c.iosStep1}
-                      <Share size={13} className="inline text-warm-terracotta" />
-                      <span className="font-medium">{c.iosStep1b}</span>
-                      {c.iosStep2}
-                    </li>
-                    <li className="flex items-center gap-1.5 flex-wrap">
-                      {c.iosStep3}
-                      <Plus size={13} className="inline text-warm-terracotta" />
-                      <span className="font-medium">{c.iosStep3b}</span>
-                      — {c.iosStep4}
-                    </li>
-                  </ol>
+                  {/* Big icon + number + short bold label first, so someone
+                      who won't read the fine print can still just follow
+                      the pictures; the muted caption underneath is there
+                      for anyone who wants the detail. */}
+                  <div className="p-4 space-y-4">
+                    <div className="flex items-center gap-3">
+                      <span className="shrink-0 w-6 h-6 rounded-full bg-warm-terracotta text-warm-cream text-xs font-bold flex items-center justify-center">
+                        1
+                      </span>
+                      <motion.div
+                        animate={{ scale: [1, 1.18, 1] }}
+                        transition={{ duration: 1.2, repeat: Infinity, repeatDelay: 0.6 }}
+                        className="shrink-0 w-10 h-10 rounded-xl bg-warm-blush flex items-center justify-center"
+                      >
+                        <Share size={20} className="text-warm-terracotta" />
+                      </motion.div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-foreground leading-tight">
+                          {c.iosStep1} {c.iosStep1b}
+                        </p>
+                        <p className="text-xs text-foreground/60">{c.iosStep2}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="shrink-0 w-6 h-6 rounded-full bg-warm-terracotta text-warm-cream text-xs font-bold flex items-center justify-center">
+                        2
+                      </span>
+                      <div className="shrink-0 w-10 h-10 rounded-xl bg-warm-blush flex items-center justify-center">
+                        <Plus size={20} className="text-warm-terracotta" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-foreground leading-tight">
+                          {c.iosStep3} {c.iosStep3b}
+                        </p>
+                        <p className="text-xs text-foreground/60">{c.iosStep4}</p>
+                      </div>
+                    </div>
+
+                    {isWebsite && (
+                      <div className="pt-3 border-t border-border/60">
+                        <p className="text-xs text-foreground/60 mb-1.5">{c.iosOpenAppHint}</p>
+                        <button
+                          type="button"
+                          onClick={openApp}
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-warm-terracotta underline underline-offset-2"
+                        >
+                          {c.openApp} →
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
