@@ -241,6 +241,17 @@ function ScanPanel() {
         stream = s;
         if (videoRef.current) {
           videoRef.current.srcObject = s;
+          // The `autoplay` attribute alone doesn't reliably start playback
+          // for a srcObject assigned programmatically after mount — most
+          // notably on iOS Safari, where this is a known gap. Without this,
+          // the permission prompt succeeds, the stream is live, and the
+          // video element just never actually plays: a black frame with no
+          // error, indistinguishable from "camera isn't working."
+          videoRef.current.play().catch(() => {
+            /* Autoplay can still be blocked in rare cases; scanning simply
+             * won't start rather than throwing — nothing else to recover
+             * with here since this stream came from a user-initiated scan. */
+          });
           void startLoop();
         }
       })
