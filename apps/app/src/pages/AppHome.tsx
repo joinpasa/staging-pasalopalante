@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import PasaMark from "@/components/app/PasaMark";
 import JoinGate from "@/components/app/JoinGate";
 import ReactionButton from "@/components/app/ReactionButton";
+import MyCommitment from "@/components/app/MyCommitment";
 import OnboardingWalkthrough, { type OnboardingResult } from "@/components/app/OnboardingWalkthrough";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { supabase } from "@shared/integrations/supabase/client";
@@ -225,6 +226,8 @@ export default function AppHome() {
           </div>
         ))}
       </section>
+
+      {user && <MyCommitment userId={user.id} email={user.email ?? ""} />}
 
       {user && earned.length > 0 && (
         <section>

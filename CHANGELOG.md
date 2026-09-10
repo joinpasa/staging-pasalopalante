@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-09-10 — va.deedumlao@gmail.com
 
+- **"My Personal Commitment" now shows on the app dashboard too — pledge count, countdown to Global Kindness Season, progress once it starts, and the ability to edit the pledge — previously website-only.** Someone who set a pledge in onboarding had no way to see or change it again once they left that one-time screen, unless they happened to open the website. Same data, same edit behavior, just styled to match the app.
 - **Fixed the Pass QR code linking to the dead `app.pasalopalante.com` subdomain.** It was hardcoded into what the QR encodes, the link shown under it, and the "Share my link" button — so anyone scanning someone else's pass with their phone's camera (not the in-app scanner, which never hit this since it reads the code directly) landed on the 522 error. Now built from the same same-origin app URL used everywhere else, so it correctly points at `pasalopalante.com/app/...`.
 
 ## 2026-09-09 — va.deedumlao@gmail.com
