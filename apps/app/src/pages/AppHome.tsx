@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { LayoutGrid, HeartHandshake } from "lucide-react";
+import { LayoutGrid, HeartHandshake, Users } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -231,13 +231,18 @@ export default function AppHome() {
           scan/get scanned, so an always-visible "0 connections" card would
           just be clutter for them. */}
       {user && !!me?.connections && (
-        <section className="rounded-2xl bg-app-surface p-4">
-          <p className="font-sans text-2xl font-bold leading-none text-foreground">
-            {nf.format(me.connections)}
-          </p>
-          <p className="mt-2 text-xs leading-snug text-muted-foreground">
-            {me.connections === 1 ? "Connection made in person" : "Connections made in person"}
-          </p>
+        <section className="flex items-center gap-3 rounded-2xl bg-app-surface p-4">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-app-coral-tint">
+            <Users size={22} className="text-app-coral" />
+          </div>
+          <div>
+            <p className="font-sans text-2xl font-bold leading-none text-foreground">
+              {nf.format(me.connections)}
+            </p>
+            <p className="mt-2 text-xs leading-snug text-muted-foreground">
+              {me.connections === 1 ? "Connection made in person" : "Connections made in person"}
+            </p>
+          </div>
         </section>
       )}
 
