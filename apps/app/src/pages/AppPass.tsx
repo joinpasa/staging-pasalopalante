@@ -6,6 +6,7 @@ import PassQrCode, { type PassQrCodeHandle } from "@/components/app/PassQrCode";
 import JoinGate from "@/components/app/JoinGate";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { useAppMe } from "@/hooks/useAppData";
+import { getCanonicalOrigin } from "@shared/lib/canonicalOrigin";
 import { cn } from "@shared/lib/utils";
 
 type PassTab = "code" | "scan";
@@ -21,7 +22,13 @@ export default function AppPass() {
   // anything that mutates the case here breaks every scan/redemption of
   // this code. Uppercase is purely a CSS treatment on the display text.
   const code = me?.referralCode ?? "";
-  const passUrl = code ? `app.pasalopalante.com?ref=${code}` : "app.pasalopalante.com";
+  // getCanonicalOrigin() + BASE_URL resolves to same-origin "pasalopalante.com/app/"
+  // on the combined deployment, or the standalone app's own domain otherwise —
+  // never the retired app.pasalopalante.com subdomain this used to hardcode,
+  // which is now dead (522) and was silently baked into every printed/shared
+  // pass code until this fixed it at the source.
+  const appUrl = `${getCanonicalOrigin()}${import.meta.env.BASE_URL}`;
+  const passUrl = code ? `${appUrl}?ref=${code}` : appUrl;
 
   return (
     <div className="flex-1 bg-app-coral px-5 pt-5 text-app-surface">
@@ -91,7 +98,7 @@ function MyCode({
       </p>
 
       <div className="mt-5 rounded-3xl bg-app-surface p-5">
-        <PassQrCode ref={qrRef} value={`https://${passUrl}`} />
+        <PassQrCode ref={qrRef} value={passUrl} />
         <p className="mt-3 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
           Your pass code
         </p>
@@ -100,14 +107,16 @@ function MyCode({
             {code || "…"}
           </p>
         </div>
-        <p className="mt-1 text-center text-xs text-muted-foreground">{passUrl}</p>
+        <p className="mt-1 text-center text-xs text-muted-foreground">
+          {passUrl.replace(/^https?:\/\//, "")}
+        </p>
       </div>
 
       <div className="mt-4 flex items-center gap-3">
         <button
           type="button"
           onClick={async () => {
-            const url = `https://${passUrl}`;
+            const url = passUrl;
             try {
               if (navigator.share) await navigator.share({ url, title: "Pásalo Pa'lante" });
               else {

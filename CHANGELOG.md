@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-09-10 — va.deedumlao@gmail.com
+
+- **Fixed the Pass QR code linking to the dead `app.pasalopalante.com` subdomain.** It was hardcoded into what the QR encodes, the link shown under it, and the "Share my link" button — so anyone scanning someone else's pass with their phone's camera (not the in-app scanner, which never hit this since it reads the code directly) landed on the 522 error. Now built from the same same-origin app URL used everywhere else, so it correctly points at `pasalopalante.com/app/...`.
+
 ## 2026-09-09 — va.deedumlao@gmail.com
 
 - **Fixed the Portuguese translation's word for "kindness."** The DeepL machine translation had inconsistently used "Bondade" (a literal but not how Brazilian Portuguese speakers actually say it) in some places and the natural "Gentileza" in others — including the hero headline, which is what got flagged. Replaced every "Bondade"/"bondade" with "Gentileza"/"gentileza" throughout (69 instances), so the wording is consistent everywhere in Portuguese, not just the headline.
