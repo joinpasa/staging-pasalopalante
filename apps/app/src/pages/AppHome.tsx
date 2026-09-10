@@ -227,6 +227,20 @@ export default function AppHome() {
         ))}
       </section>
 
+      {/* Only appears once a real connection exists — most people never
+          scan/get scanned, so an always-visible "0 connections" card would
+          just be clutter for them. */}
+      {user && !!me?.connections && (
+        <section className="rounded-2xl bg-app-surface p-4">
+          <p className="font-sans text-2xl font-bold leading-none text-foreground">
+            {nf.format(me.connections)}
+          </p>
+          <p className="mt-2 text-xs leading-snug text-muted-foreground">
+            {me.connections === 1 ? "Connection made in person" : "Connections made in person"}
+          </p>
+        </section>
+      )}
+
       {user && <MyCommitment userId={user.id} email={user.email ?? ""} />}
 
       {user && earned.length > 0 && (

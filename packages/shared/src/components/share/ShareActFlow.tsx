@@ -553,14 +553,22 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
             </button>
 
             {mode && (
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+              // A button, not static text — tapping it goes back to step 1
+              // to pick a different one (e.g. "I Did" vs "I Gave" when the
+              // act was specifically for someone you just connected with),
+              // without needing to notice the separate Back link above it.
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary transition-colors hover:border-primary hover:bg-primary/20"
+              >
                 <Heart size={12} className="fill-current" />
                 {mode === "performed"
                   ? t.share.modePerformed
                   : mode === "received"
                   ? t.share.modeReceived
                   : t.share.modeWitnessed}
-              </div>
+              </button>
             )}
 
             <h2 className="headline-md text-foreground">{t.share.detailsHeading}</h2>

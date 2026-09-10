@@ -24,6 +24,13 @@ export interface AppMe {
   pledged: number;
   peoplePassedTo: number;
   rippleActs: number;
+  /** Distinct people connected with in person via Pass (either direction —
+   *  scanning someone's code or having your own scanned both count), from
+   *  pass_handoffs. Separate from peoplePassedTo, which is specifically
+   *  people who joined the platform using your referral code — connecting
+   *  with an existing member in person is a different event and wasn't
+   *  reflected anywhere until this. */
+  connections: number;
   onboardingSeen: boolean;
   hasCommitment: boolean;
 }
@@ -37,7 +44,7 @@ export function useAppMe() {
     queryFn: async (): Promise<AppMe> => {
       const uid = user!.id;
 
-      const [profileRes, streakRes, pledgeRes, referralRes] = await Promise.all([
+      const [profileRes, streakRes, pledgeRes, referralRes, connectionsRes] = await Promise.all([
         supabase
           .from("profiles")
           .select("display_name, first_name, last_name, country, referral_code, onboarding_seen")
@@ -46,6 +53,7 @@ export function useAppMe() {
         supabase.rpc("user_streak", { _user_id: uid }),
         supabase.from("commitments").select("pledge_count").eq("user_id", uid),
         supabase.rpc("my_referral_stats"),
+        supabase.rpc("my_connections_count"),
       ]);
 
       const profile = profileRes.data;
@@ -67,6 +75,7 @@ export function useAppMe() {
         pledged: (pledgeRes.data ?? []).reduce((sum, row) => sum + (row.pledge_count ?? 0), 0),
         peoplePassedTo: Number(referral?.joined_count ?? 0),
         rippleActs: Number(referral?.acts_count ?? 0),
+        connections: Number(connectionsRes.data ?? 0),
         onboardingSeen: !!profile?.onboarding_seen,
         hasCommitment: (pledgeRes.data ?? []).length > 0,
       };
