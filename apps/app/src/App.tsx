@@ -13,6 +13,7 @@ import AppWall from "./pages/AppWall.tsx";
 import AppPass from "./pages/AppPass.tsx";
 import AppMap from "./pages/AppMap.tsx";
 import AppBadges from "./pages/AppBadges.tsx";
+import AppConnections from "./pages/AppConnections.tsx";
 import AppJoin from "./pages/AppJoin.tsx";
 import AppLog from "./pages/AppLog.tsx";
 import AppWave from "./pages/AppWave.tsx";
@@ -60,6 +61,7 @@ const App = () => (
                 <Route path="pass" element={<RequireVerified><AppPass /></RequireVerified>} />
                 <Route path="map" element={<RequireVerified><AppMap /></RequireVerified>} />
                 <Route path="badges" element={<RequireVerified><AppBadges /></RequireVerified>} />
+                <Route path="connections" element={<RequireVerified><AppConnections /></RequireVerified>} />
                 <Route path="join" element={<AppJoin />} />
                 <Route path="log" element={<RequireVerified><AppLog /></RequireVerified>} />
                 {/* Handles its own auth branching (redirects to /join with

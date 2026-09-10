@@ -384,6 +384,32 @@ export function useAppBadges() {
   });
 }
 
+export interface Connection {
+  userId: string;
+  name: string;
+  connectedAt: string;
+}
+
+/** The list behind me.connections — one row per distinct person connected
+ *  with via Pass, most recent first. */
+export function useMyConnections() {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ["app", "connections", user?.id],
+    enabled: !!user,
+    queryFn: async (): Promise<Connection[]> => {
+      const { data, error } = await supabase.rpc("my_connections");
+      if (error) throw error;
+      return (data ?? []).map((row) => ({
+        userId: row.user_id,
+        name: row.name,
+        connectedAt: row.connected_at,
+      }));
+    },
+  });
+}
+
 export interface CountryCount {
   country: string;
   acts: number;
