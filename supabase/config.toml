@@ -21,5 +21,7 @@ project_id = "tipfbleltjexofsjffwb"
     verify_jwt = false
   [functions.send-push]
     verify_jwt = false
+  [functions.pending-review-digest]
+    verify_jwt = false
 
 
