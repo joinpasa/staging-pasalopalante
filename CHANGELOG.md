@@ -10,6 +10,8 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-09-11 — va.deedumlao@gmail.com
 
+- **Found and fixed the same English/Spanish-only bug on the main "Get Involved" page too** (its 6 audience cards — Individuals, Schools, Nonprofits, Companies, Municipalities, Ambassadors — plus the page's own heading and intro), and fully translated everything from both fixes into all 11 languages the site supports, including the 7 that previously had no coverage here at all (Chinese, Hindi, Arabic, Bengali, Portuguese, Russian, Slovenian). Verified Arabic renders correctly right-to-left along with the rest.
+
 - **Fixed the Schools/Ambassadors/Nonprofits "Get Involved" pages only ever showing English or Spanish, never any other language.** They had their own separate, English/Spanish-only translation logic instead of using the site's real translation system — so a French (or German, Chinese, etc.) visitor always saw English there even though the rest of the site was correctly in their language. Now wired into the same system as everywhere else, with real French and German copy added (other languages fall back to English on this content for now, same as some other pages).
 
 - **"Where It Started" section's closing line now names Pass Kindness Forward instead of Pásalo Pa'lante** ("Pass Kindness Forward isn't asking you to fix everything..."), updated across all 11 languages the site supports.
