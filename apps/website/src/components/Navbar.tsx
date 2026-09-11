@@ -101,11 +101,19 @@ const Navbar = () => {
       }`}
     >
       <div className="section-padding flex items-center justify-between h-20 gap-4">
-        <Link to="/" className="shrink-0 flex items-center gap-2.5">
+        <Link to="/" className="shrink-0 flex items-center gap-2 md:gap-2.5">
           <img
             src="/logo-PPL.png"
             alt="Pásalo Pa'lante"
             className={`h-10 transition-all duration-300 ${isSolid ? "" : "brightness-0 invert"}`}
+          />
+          <span className={`text-lg font-extralight ${isSolid ? "text-foreground/30" : "text-white/40"}`} aria-hidden="true">×</span>
+          <img
+            src="/logo-PKF-icon.png"
+            srcSet="/logo-PKF-icon.png 1x, /logo-PKF-icon@2x.png 2x"
+            alt="Pass Kindness Forward"
+            title="Pass Kindness Forward"
+            className={`h-8 w-8 object-contain transition-all duration-300 ${isSolid ? "" : "brightness-0 invert"}`}
           />
           {isPassKindnessForward && (
             <span className={`text-base md:text-lg font-semibold tracking-tight transition-colors duration-300 ${isSolid ? "text-foreground" : "text-white"}`}>

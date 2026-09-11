@@ -406,6 +406,7 @@ const translations = {
     },
     footer: {
       brand: "The world's largest coordinated kindness movement. Born in Puerto Rico. Growing across 200+ countries.",
+      passKindnessForward: "From Pásalo Pa'lante, we're now building Pass Kindness Forward — a global movement working toward 1 Billion Acts of Kindness.",
       poweredBy: "Powered by",
       teAmoPR: "Te Amo PR",
       joinHeader: "Join",
@@ -1108,6 +1109,7 @@ const translations = {
     },
     footer: {
       brand: "El movimiento coordinado de bondad más grande del mundo. Nacido en Puerto Rico. Creciendo en más de 200 países.",
+      passKindnessForward: "Desde Pásalo Pa'lante, ahora estamos construyendo Pass Kindness Forward — un movimiento global hacia 1,000 millones de Actos de Bondad.",
       poweredBy: "Impulsado por",
       teAmoPR: "Te Amo PR",
       joinHeader: "Únete",
@@ -1745,6 +1747,7 @@ const translations = {
     },
     "footer": {
       "brand": "Le plus grand mouvement de gentillesse coordonnée au monde. Né à Porto Rico. Se développant dans plus de 200 pays.",
+      "passKindnessForward": "Depuis Pásalo Pa'lante, nous construisons maintenant Pass Kindness Forward — un mouvement mondial vers 1 milliard d'actes de gentillesse.",
       "poweredBy": "Propulsé par",
       "teAmoPR": "Te Amo PR",
       "joinHeader": "Rejoignez",
@@ -2534,6 +2537,7 @@ const translations = {
     },
     footer: {
       brand: "Die weltweit größte koordinierte Bewegung der Freundlichkeit. In Puerto Rico geboren. Wächst in über 200 Ländern.",
+      passKindnessForward: "Von Pásalo Pa'lante aus bauen wir jetzt Pass Kindness Forward auf — eine globale Bewegung hin zu 1 Milliarde Akten der Freundlichkeit.",
       poweredBy: "Betrieben von",
       teAmoPR: "Te Amo PR",
       joinHeader: "Beitreten",

@@ -23,8 +23,19 @@ const Footer = () => {
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
           <div className="md:col-span-1">
-            <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
-              <img src="/logo-PPL.png" alt="Pásalo Pa'lante" className="h-10 brightness-0 invert mb-3 cursor-pointer" />
+            <a
+              href="#"
+              onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+              className="flex items-center gap-2 mb-3"
+            >
+              <img src="/logo-PPL.png" alt="Pásalo Pa'lante" className="h-10 brightness-0 invert cursor-pointer" />
+              <span className="text-lg font-extralight text-warm-cream/30" aria-hidden="true">×</span>
+              <img
+                src="/logo-PKF-icon.png"
+                srcSet="/logo-PKF-icon.png 1x, /logo-PKF-icon@2x.png 2x"
+                alt="Pass Kindness Forward"
+                className="h-8 w-8 object-contain brightness-0 invert cursor-pointer"
+              />
             </a>
             <p className="text-warm-cream/50 text-sm leading-relaxed">
               {t.footer.brand}{" "}
@@ -40,6 +51,9 @@ const Footer = () => {
                 </a>
                 .
               </span>
+            </p>
+            <p className="text-warm-cream/50 text-sm leading-relaxed mt-3">
+              {t.footer.passKindnessForward}
             </p>
             <p className="text-warm-cream/40 text-xs leading-relaxed mt-3">
               Pásalo Pa'lante is a sister initiative of Te Amo PR, a U.S.

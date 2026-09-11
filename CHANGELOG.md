@@ -10,6 +10,8 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-09-11 — va.deedumlao@gmail.com
 
+- **Added the new Pass Kindness Forward logo to the website**, beside the Pásalo Pa'lante logo in the header and footer, plus a line in the footer explaining that Pásalo Pa'lante is now growing Pass Kindness Forward into a global movement toward 1 Billion Acts of Kindness (translated into Spanish, French and German too). App splash screen and further in-app PKF branding still to come.
+
 - **Synced total acts submitted and total pledges committed into GoHighLevel as per-contact custom fields** (`{{contact.total_acts_of_kindness_submitted}}` and `{{contact.total_of_committed_pledge}}`), so GHL automations can key off someone's real lifetime activity instead of just the count from their most recent form submission. These update automatically every time someone logs a published act or makes a pledge (website or app, signed-in or guest). Existing contacts still need a one-time backfill to get their historical totals in — see the reply for the one-time step.
 
 ## 2026-09-10 — va.deedumlao@gmail.com
