@@ -113,7 +113,7 @@ const Navbar = () => {
             srcSet="/logo-PKF-white-horizontal.png 1x, /logo-PKF-white-horizontal@2x.png 2x"
             alt="Pass Kindness Forward"
             title="Pass Kindness Forward"
-            className={`h-8 w-auto object-contain transition-all duration-300 ${isSolid ? "invert" : ""}`}
+            className={`h-12 w-auto object-contain transition-all duration-300 ${isSolid ? "invert" : ""}`}
           />
           {isPassKindnessForward && (
             <span className={`text-base md:text-lg font-semibold tracking-tight transition-colors duration-300 ${isSolid ? "text-foreground" : "text-white"}`}>
