@@ -10,6 +10,8 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-09-11 — va.deedumlao@gmail.com
 
+- **"Where It Started" section's closing line now names Pass Kindness Forward instead of Pásalo Pa'lante** ("Pass Kindness Forward isn't asking you to fix everything..."), updated across all 11 languages the site supports.
+
 - **Header now uses the full-color Pass Kindness Forward logo** (the horizontal one uploaded earlier, with its white background removed) sized to match the Pásalo Pa'lante logo exactly, so it's no longer noticeably smaller. Still switches to the dedicated white version once the header goes transparent over the hero image, but as a proper crisp white asset now instead of a CSS filter that was flattening the heart icon's line detail into a blob.
 
 - **Swapped which Pass Kindness Forward logo shows where on the website**: the header now uses the new white horizontal lockup (with the "PASS KINDNESS FORWARD" name, not just the icon) — white against the hero, auto-inverted to dark once the header goes solid on scroll — and the footer now uses the full vertical lockup with the name spelled out, instead of the plain icon used before.

@@ -285,7 +285,7 @@ const translations = {
       body2: "Pásalo Pa'lante (\"Pass It Forward\") channels the instinct that already lives in every community — the impulse to help, to connect, to show up — into something structured, visible, and contagious. Three steps. No cost. No prerequisites. Just the decision to do one kind thing and pass it on.",
       body3: "In 2025, Puerto Rico put this to the test. Over a million acts of kindness in five days. All 78 municipalities united. A certified world record. And something harder to quantify: a shift in how an entire population felt about each other and about themselves.",
       body4: "One in four adults worldwide report feeling lonely. Communities everywhere are fraying. But the data shows that coordinated kindness isn't just a nice idea — it's a measurable intervention. And it's ready to scale.",
-      closing: "Pásalo Pa'lante isn't asking you to fix everything. It's inviting you into a wave of people who show up for each other. Your single act joins a billion others.",
+      closing: "Pass Kindness Forward isn't asking you to fix everything. It's inviting you into a wave of people who show up for each other. Your single act joins a billion others.",
     },
     howItWorks: {
       eyebrow: "How It Works",
@@ -988,7 +988,7 @@ const translations = {
       body2: "Pásalo Pa'lante canaliza el instinto que ya vive en cada comunidad — el impulso de ayudar, de conectar, de estar presente — en algo estructurado, visible y contagioso. Tres pasos. Sin costo. Sin requisitos. Solo la decisión de hacer algo bueno y pasarlo adelante.",
       body3: "En 2025, Puerto Rico puso esto a prueba. Más de un millón de actos de bondad en cinco días. Los 78 municipios unidos. Un récord mundial certificado. Y algo más difícil de cuantificar: un cambio en cómo toda una población se sentía entre sí y consigo misma.",
       body4: "Uno de cada cuatro adultos en el mundo dice sentirse solo. Las comunidades en todas partes se están fragmentando. Pero los datos demuestran que la bondad coordinada no es solo una buena idea — es una intervención medible. Y está lista para escalar.",
-      closing: "Pásalo Pa'lante no te pide que arregles todo. Te invita a ser parte de una ola de personas que se presentan las unas por las otras. Tu acto se une a un millón más.",
+      closing: "Pass Kindness Forward no te pide que arregles todo. Te invita a ser parte de una ola de personas que se presentan las unas por las otras. Tu acto se une a un millón más.",
     },
     howItWorks: {
       eyebrow: "Cómo Funciona",
@@ -1636,7 +1636,7 @@ const translations = {
       "body2": "Pásalo Pa'lante (« Passe-le en avant ») canalise l'instinct qui réside déjà dans chaque communauté – l'impulsion d'aider, de se connecter, de se manifester – en quelque chose de structuré, visible et contagieux. Trois étapes. Aucun coût. Aucune condition préalable. Juste la décision de faire une bonne action et de la transmettre.",
       "body3": "En 2025, Porto Rico a mis cela à l'épreuve. Plus d'un million d'actes de bienveillance en cinq jours. Les 78 municipalités unies. Un record du monde certifié. Et quelque chose de plus difficile à quantifier : un changement dans la façon dont une population entière se sentait les uns envers les autres et envers elle-même.",
       "body4": "Un adulte sur quatre dans le monde déclare se sentir seul. Les communautés du monde entier s'effritent. Mais les données montrent qu'une bienveillance coordonnée n'est pas seulement une belle idée – c'est une intervention mesurable. Et elle est prête à être étendue.",
-      "closing": "Pásalo Pa'lante ne vous demande pas de tout réparer. Cela vous invite à rejoindre une vague de personnes qui se soutiennent mutuellement. Votre seul acte se joint à un milliard d'autres."
+      "closing": "Pass Kindness Forward ne vous demande pas de tout réparer. Cela vous invite à rejoindre une vague de personnes qui se soutiennent mutuellement. Votre seul acte se joint à un milliard d'autres."
     },
     "howItWorks": {
       "eyebrow": "Comment ça marche",
@@ -2416,7 +2416,7 @@ const translations = {
       body2: "Pásalo Pa'lante („Gib es weiter“) kanalisiert den Instinkt, der bereits in jeder Gemeinschaft lebt – den Impuls zu helfen, sich zu verbinden, da zu sein – in etwas Strukturiertes, Sichtbares und Ansteckendes. Drei Schritte. Keine Kosten. Keine Voraussetzungen. Nur die Entscheidung, eine gute Tat zu vollbringen und sie weiterzugeben.",
       body3: "2025 stellte Puerto Rico dies auf die Probe. Über eine Million Akte der Freundlichkeit in fünf Tagen. Alle 78 Gemeinden vereint. Ein zertifizierter Weltrekord. Und etwas, das schwerer zu quantifizieren ist: ein Wandel darin, wie eine ganze Bevölkerung übereinander und über sich selbst dachte.",
       body4: "Jeder vierte Erwachsene weltweit berichtet, sich einsam zu fühlen. Überall zerbrechen Gemeinschaften. Aber die Daten zeigen, dass koordinierte Freundlichkeit nicht nur eine schöne Idee ist – sie ist eine messbare Intervention. Und sie ist bereit zu wachsen.",
-      closing: "Pásalo Pa'lante verlangt nicht, dass Sie alles reparieren. Es lädt Sie ein in eine Welle von Menschen, die füreinander da sind. Ihr einziger Akt schließt sich einer Milliarde anderer an.",
+      closing: "Pass Kindness Forward verlangt nicht, dass Sie alles reparieren. Es lädt Sie ein in eine Welle von Menschen, die füreinander da sind. Ihr einziger Akt schließt sich einer Milliarde anderer an.",
     },
     howItWorks: {
       eyebrow: "So funktioniert's",
