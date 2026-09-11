@@ -1512,6 +1512,8 @@ const translations = {
       "getInvolved": "Participer",
       "ourStory": "Notre Histoire",
       "howItWorks": "Comment Ça Marche",
+      "explore": "Explorer",
+      "about": "À propos",
       "anthem": "Hymne",
       "proof": "Preuve",
       "joinMovement": "Rejoignez le Mouvement",
