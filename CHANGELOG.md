@@ -10,6 +10,8 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-09-11 — va.deedumlao@gmail.com
 
+- **Fixed the Schools/Ambassadors/Nonprofits "Get Involved" pages only ever showing English or Spanish, never any other language.** They had their own separate, English/Spanish-only translation logic instead of using the site's real translation system — so a French (or German, Chinese, etc.) visitor always saw English there even though the rest of the site was correctly in their language. Now wired into the same system as everywhere else, with real French and German copy added (other languages fall back to English on this content for now, same as some other pages).
+
 - **"Where It Started" section's closing line now names Pass Kindness Forward instead of Pásalo Pa'lante** ("Pass Kindness Forward isn't asking you to fix everything..."), updated across all 11 languages the site supports.
 
 - **Header now uses the full-color Pass Kindness Forward logo** (the horizontal one uploaded earlier, with its white background removed) sized to match the Pásalo Pa'lante logo exactly, so it's no longer noticeably smaller. Still switches to the dedicated white version once the header goes transparent over the hero image, but as a proper crisp white asset now instead of a CSS filter that was flattening the heart icon's line detail into a blob.
