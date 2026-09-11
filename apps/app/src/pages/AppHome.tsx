@@ -181,7 +181,7 @@ export default function AppHome() {
       <section className="relative overflow-hidden rounded-3xl border-4 border-warm-terracotta bg-app-coral p-6 text-app-surface">
         <div className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-app-surface/10" />
         <p className="relative text-[11px] font-semibold uppercase tracking-[0.18em] text-app-surface/80">
-          {user ? "Your kindness" : "The movement"}
+          {user ? "Your kindness" : "Pass Kindness Forward"}
         </p>
         <div className="relative mt-1 flex items-end gap-3">
           <span className="font-sans text-6xl font-extrabold leading-none tracking-tight">

@@ -54,7 +54,18 @@ export default function AppWall() {
           a signed-out visitor, and replaced there by personal stats once
           someone's signed in. The Wall is where anyone, logged in or not,
           comes to see the movement as a whole, so it belongs here too. */}
-      <section className="mt-5 grid grid-cols-3 gap-3">
+      <div className="mt-5 flex items-center gap-1.5">
+        <img
+          src="/logo-PKF-icon.png"
+          srcSet="/logo-PKF-icon.png 1x, /logo-PKF-icon@2x.png 2x"
+          alt=""
+          className="h-4 w-4 object-contain"
+        />
+        <p className="text-xs font-semibold tracking-wide text-muted-foreground">
+          Pass Kindness Forward — the global movement
+        </p>
+      </div>
+      <section className="mt-2 grid grid-cols-3 gap-3">
         {[
           { value: totals?.pledged ?? 0, label: "Acts pledged" },
           { value: totals?.actsToday ?? 0, label: "Logged today" },
