@@ -109,11 +109,15 @@ const Navbar = () => {
           />
           <span className={`text-lg font-extralight ${isSolid ? "text-foreground/30" : "text-white/40"}`} aria-hidden="true">×</span>
           <img
-            src="/logo-PKF-white-horizontal.png"
-            srcSet="/logo-PKF-white-horizontal.png 1x, /logo-PKF-white-horizontal@2x.png 2x"
+            src={isSolid ? "/logo-PKF-horizontal-color.png" : "/logo-PKF-white-horizontal.png"}
+            srcSet={
+              isSolid
+                ? "/logo-PKF-horizontal-color.png 1x, /logo-PKF-horizontal-color@2x.png 2x"
+                : "/logo-PKF-white-horizontal.png 1x, /logo-PKF-white-horizontal@2x.png 2x"
+            }
             alt="Pass Kindness Forward"
             title="Pass Kindness Forward"
-            className={`h-12 w-auto object-contain transition-all duration-300 ${isSolid ? "invert" : ""}`}
+            className="h-10 w-auto object-contain"
           />
           {isPassKindnessForward && (
             <span className={`text-base md:text-lg font-semibold tracking-tight transition-colors duration-300 ${isSolid ? "text-foreground" : "text-white"}`}>
