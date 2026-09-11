@@ -10,6 +10,8 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-09-11 — va.deedumlao@gmail.com
 
+- **Swapped which Pass Kindness Forward logo shows where on the website**: the header now uses the new white horizontal lockup (with the "PASS KINDNESS FORWARD" name, not just the icon) — white against the hero, auto-inverted to dark once the header goes solid on scroll — and the footer now uses the full vertical lockup with the name spelled out, instead of the plain icon used before.
+
 - **Added the new Pass Kindness Forward logo to the app too**: the loading screen now shows the PKF mark, a small "×", and the Pásalo Pa'lante logo stacked together — signifying the collaboration — instead of just the Pásalo Pa'lante logo alone. Also leaned the "Pass Kindness Forward" name into the app itself: it's now the label on Home's big movement-stats card (for signed-out visitors) and on the Wall page's worldwide totals, instead of just generic "The movement" text.
 
 - **Added the new Pass Kindness Forward logo to the website**, beside the Pásalo Pa'lante logo in the header and footer, plus a line in the footer explaining that Pásalo Pa'lante is now growing Pass Kindness Forward into a global movement toward 1 Billion Acts of Kindness (translated into Spanish, French and German too).
