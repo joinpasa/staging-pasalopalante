@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-09-11 — va.deedumlao@gmail.com
+
+- **Synced total acts submitted and total pledges committed into GoHighLevel as per-contact custom fields** (`{{contact.total_acts_of_kindness_submitted}}` and `{{contact.total_of_committed_pledge}}`), so GHL automations can key off someone's real lifetime activity instead of just the count from their most recent form submission. These update automatically every time someone logs a published act or makes a pledge (website or app, signed-in or guest). Existing contacts still need a one-time backfill to get their historical totals in — see the reply for the one-time step.
+
 ## 2026-09-10 — va.deedumlao@gmail.com
 
 - **Added a daily email digest of acts awaiting manual review**, sent to kindnessforward.26@gmail.com, so this no longer requires manually checking SQL to know something needs a look. Skips sending entirely on days with nothing pending, rather than an empty email every day. New `pending-review-digest` function — needs a one-time schedule set up in the Supabase dashboard (Integrations → Cron Jobs) since that's not something a migration should embed credentials to automate; see the reply for exact steps and the UTC time to use for 5pm Pacific.

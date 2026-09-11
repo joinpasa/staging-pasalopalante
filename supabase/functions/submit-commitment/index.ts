@@ -232,6 +232,23 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Refresh this contact's GHL totals (acts + pledges) fire-and-forget —
+    // same non-blocking dispatch pattern used in submit-act.
+    try {
+      const task = fetch(`${SUPABASE_URL}/functions/v1/ghl-sync-totals`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${SERVICE_ROLE}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ mode: "user", email }),
+      }).catch((e) => console.error("ghl-sync-totals dispatch failed", e));
+      // @ts-ignore EdgeRuntime is available in Supabase Edge Functions
+      if (typeof EdgeRuntime !== "undefined") EdgeRuntime.waitUntil(task);
+    } catch (e) {
+      console.error("ghl-sync-totals dispatch error", e);
+    }
+
     // Return updated totals
     const { data: totals } = await supabase
       .from("pledge_totals")

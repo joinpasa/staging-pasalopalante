@@ -23,5 +23,7 @@ project_id = "tipfbleltjexofsjffwb"
     verify_jwt = false
   [functions.pending-review-digest]
     verify_jwt = false
+  [functions.ghl-sync-totals]
+    verify_jwt = false
 
 
