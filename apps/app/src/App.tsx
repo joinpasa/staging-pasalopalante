@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
+import ErrorBoundary from "@shared/components/ErrorBoundary";
 import { Toaster as Sonner } from "@shared/components/ui/sonner";
 import { Toaster } from "@shared/components/ui/toaster";
 import { TooltipProvider } from "@shared/components/ui/tooltip";
@@ -38,51 +39,53 @@ const RadixDirection = ({ children }: { children: ReactNode }) => {
 };
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <LanguageProvider>
-      <RadixDirection>
-      <AuthProvider ghlSource="PPL App">
-        <UIProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          {/* import.meta.env.BASE_URL is "/" for the standalone deployment
-              (today) or "/app/" when this build is embedded under a path on
-              the combined deployment — react-router treats "/" as no
-              prefix, so this is a no-op for the current live site. */}
-          <BrowserRouter basename={import.meta.env.BASE_URL}>
-            <ScrollToTopOnRouteChange />
-            <ReconsentGate />
-            <EmailConfirmGate />
-            <Routes>
-              <Route path="/" element={<AppShell />}>
-                <Route index element={<AppHome />} />
-                <Route path="wall" element={<AppWall />} />
-                <Route path="pass" element={<RequireVerified><AppPass /></RequireVerified>} />
-                <Route path="map" element={<RequireVerified><AppMap /></RequireVerified>} />
-                <Route path="badges" element={<RequireVerified><AppBadges /></RequireVerified>} />
-                <Route path="connections" element={<RequireVerified><AppConnections /></RequireVerified>} />
-                <Route path="join" element={<AppJoin />} />
-                <Route path="log" element={<RequireVerified><AppLog /></RequireVerified>} />
-                {/* Handles its own auth branching (redirects to /join with
-                    the code intact if not signed in), so not wrapped in
-                    RequireVerified like the routes above. */}
-                <Route path="wave" element={<AppWave />} />
-                <Route path="account" element={<RequireVerified><AppAccount /></RequireVerified>} />
-              </Route>
-              {/* No standalone 404 screen in the phone-shaped shell — send
-                  anything unmatched back to the app home. */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-            <InstallPrompt variant="app" />
-          </BrowserRouter>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <LanguageProvider>
+        <RadixDirection>
+        <AuthProvider ghlSource="PPL App">
+          <UIProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            {/* import.meta.env.BASE_URL is "/" for the standalone deployment
+                (today) or "/app/" when this build is embedded under a path on
+                the combined deployment — react-router treats "/" as no
+                prefix, so this is a no-op for the current live site. */}
+            <BrowserRouter basename={import.meta.env.BASE_URL}>
+              <ScrollToTopOnRouteChange />
+              <ReconsentGate />
+              <EmailConfirmGate />
+              <Routes>
+                <Route path="/" element={<AppShell />}>
+                  <Route index element={<AppHome />} />
+                  <Route path="wall" element={<AppWall />} />
+                  <Route path="pass" element={<RequireVerified><AppPass /></RequireVerified>} />
+                  <Route path="map" element={<RequireVerified><AppMap /></RequireVerified>} />
+                  <Route path="badges" element={<RequireVerified><AppBadges /></RequireVerified>} />
+                  <Route path="connections" element={<RequireVerified><AppConnections /></RequireVerified>} />
+                  <Route path="join" element={<AppJoin />} />
+                  <Route path="log" element={<RequireVerified><AppLog /></RequireVerified>} />
+                  {/* Handles its own auth branching (redirects to /join with
+                      the code intact if not signed in), so not wrapped in
+                      RequireVerified like the routes above. */}
+                  <Route path="wave" element={<AppWave />} />
+                  <Route path="account" element={<RequireVerified><AppAccount /></RequireVerified>} />
+                </Route>
+                {/* No standalone 404 screen in the phone-shaped shell — send
+                    anything unmatched back to the app home. */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+              <InstallPrompt variant="app" />
+            </BrowserRouter>
 
-        </TooltipProvider>
-        </UIProvider>
-      </AuthProvider>
-      </RadixDirection>
-    </LanguageProvider>
-  </QueryClientProvider>
+          </TooltipProvider>
+          </UIProvider>
+        </AuthProvider>
+        </RadixDirection>
+      </LanguageProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;

@@ -8,6 +8,11 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-09-14 — va.deedumlao@gmail.com
+
+- **Fixed reports of "can't access my QR code" and other blank-screen crashes.** Neither app had any error handling around its page content — a single unexpected error anywhere (a bad value, a device-specific quirk) blanked the *entire* app to a white screen with no way back. Added a safety net so a crash now shows "Something went wrong, reload" instead of nothing.
+- **Fixed password reset / sign-in emails sometimes taking several minutes to arrive.** The email sender tracked one shared "back off" timer for both password-reset-type emails and everything else (digests, CRM syncs). If anything on the "everything else" side got rate-limited by our email provider, it silently froze *all* email sending — including password resets — for a minute at a time, repeatedly, even though the reset email itself wasn't the problem. Split into two independent timers so a slowdown on one side can no longer delay the other.
+
 ## 2026-09-11 — va.deedumlao@gmail.com
 
 - **Fixed the navbar's "Explore" dropdown (and its "About" item) showing in English no matter what language was selected**, for every language except English, Spanish, and German — French included, plus all 7 of the JSON-based languages. Those two labels were simply never added when the rest of the navbar was translated; every other navbar item was already fine.

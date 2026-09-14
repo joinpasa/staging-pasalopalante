@@ -118,17 +118,20 @@ Deno.serve(async (req) => {
   const supabase = createClient(supabaseUrl, supabaseServiceKey)
   const resend = new Resend(apiKey)
 
-  // 1. Check rate-limit cooldown and read queue config
+  // 1. Read cooldowns (tracked per queue — see rate-limit handling below for
+  // why a transactional-side 429 must never delay auth_emails) and queue config
   const { data: state } = await supabase
     .from('email_send_state')
-    .select('retry_after_until, batch_size, send_delay_ms, auth_email_ttl_minutes, transactional_email_ttl_minutes')
+    .select('auth_retry_after_until, transactional_retry_after_until, batch_size, send_delay_ms, auth_email_ttl_minutes, transactional_email_ttl_minutes')
     .single()
 
-  if (state?.retry_after_until && new Date(state.retry_after_until) > new Date()) {
-    return new Response(
-      JSON.stringify({ skipped: true, reason: 'rate_limited' }),
-      { headers: { 'Content-Type': 'application/json' } }
-    )
+  const retryAfterByQueue: Record<string, string | null> = {
+    auth_emails: state?.auth_retry_after_until ?? null,
+    transactional_emails: state?.transactional_retry_after_until ?? null,
+  }
+  const retryColumnByQueue: Record<string, string> = {
+    auth_emails: 'auth_retry_after_until',
+    transactional_emails: 'transactional_retry_after_until',
   }
 
   const batchSize = state?.batch_size ?? DEFAULT_BATCH_SIZE
@@ -139,9 +142,18 @@ Deno.serve(async (req) => {
   }
 
   let totalProcessed = 0
+  const skipped: string[] = []
 
-  // 2. Process auth_emails first (priority), then transactional_emails
+  // 2. Process auth_emails first (priority), then transactional_emails —
+  // each queue's own cooldown is independent, so a transactional_emails
+  // rate limit can never hold up auth_emails (or vice versa).
   for (const queue of ['auth_emails', 'transactional_emails']) {
+    const cooldownUntil = retryAfterByQueue[queue]
+    if (cooldownUntil && new Date(cooldownUntil) > new Date()) {
+      skipped.push(queue)
+      continue
+    }
+
     const { data: messages, error: readError } = await supabase.rpc('read_email_batch', {
       queue_name: queue,
       batch_size: batchSize,
@@ -302,18 +314,18 @@ Deno.serve(async (req) => {
           await supabase
             .from('email_send_state')
             .update({
-              retry_after_until: new Date(
+              [retryColumnByQueue[queue]]: new Date(
                 Date.now() + retryAfterSecs * 1000
               ).toISOString(),
               updated_at: new Date().toISOString(),
             })
             .eq('id', 1)
 
-          // Stop processing — remaining messages stay in queue (VT expires, retried next cycle)
-          return new Response(
-            JSON.stringify({ processed: totalProcessed, stopped: 'rate_limited' }),
-            { headers: { 'Content-Type': 'application/json' } }
-          )
+          // Stop processing this queue only — remaining messages stay
+          // queued (VT expires, retried next cycle). The other queue's own
+          // cooldown is untouched, so it still gets processed this run.
+          skipped.push(`${queue}:rate_limited`)
+          break
         }
 
         // 403s are permanent configuration or authorization failures for this
@@ -349,7 +361,7 @@ Deno.serve(async (req) => {
   }
 
   return new Response(
-    JSON.stringify({ processed: totalProcessed }),
+    JSON.stringify({ processed: totalProcessed, skipped }),
     { headers: { 'Content-Type': 'application/json' } }
   )
 })

@@ -5,6 +5,7 @@ function WaveRedirect() {
   const { id } = useParams();
   return <Navigate to={`/wave/${id ?? ""}`} replace />;
 }
+import ErrorBoundary from "@shared/components/ErrorBoundary";
 import { Toaster as Sonner } from "@shared/components/ui/sonner";
 import { Toaster } from "@shared/components/ui/toaster";
 import { TooltipProvider } from "@shared/components/ui/tooltip";
@@ -67,15 +68,16 @@ const SiteWidgets = () => (
 
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <LanguageProvider>
-      <RadixDirection>
-      <AuthProvider ghlSource="PPL Website">
-        <UIProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <LanguageProvider>
+        <RadixDirection>
+        <AuthProvider ghlSource="PPL Website">
+          <UIProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
             <ScrollToTopOnRouteChange />
             <StandaloneHomeRedirect />
             <EmailConfirmGate />
@@ -122,6 +124,7 @@ const App = () => (
       </RadixDirection>
     </LanguageProvider>
   </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;
