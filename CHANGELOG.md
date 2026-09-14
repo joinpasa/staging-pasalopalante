@@ -10,6 +10,8 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-09-14 — va.deedumlao@gmail.com
 
+- **Fixed a real QR-code dead end, from a live report.** Opening your own pass link (e.g. re-tapping a link you'd shared or tested earlier) correctly refuses to "connect" you with yourself, but showed the same generic "That pass code isn't valid" as a genuinely broken code — and worse, nothing ever cleared the code out of the page's address, so refreshing (the obvious thing to try) replayed the exact same failure every single time with no way out except manually navigating back to Pass. Now says plainly "That's your own pass code — share it with someone else," and the address always clears itself once resolved, so a refresh can't get stuck in that loop again.
+
 - **Full bug sweep across the app, website, and backend** after the crash/email-delay fixes below, requested to check "the other areas" too. Found and fixed:
   - **Security: any signed-in user could read every published act's submitter email**, including guests who never agreed to that — an old grant that was only ever meant to lock down IP address and browser info left `email` readable by mistake. Revoked.
   - **Security: the photo-upload endpoint had no limit on how many times it could be called** — since it's open to guests (no account needed to share an act with a photo), a script could have looped it to run up storage costs and host unmoderated images. Added a rate limit.
