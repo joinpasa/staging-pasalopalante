@@ -10,6 +10,8 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-09-14 — va.deedumlao@gmail.com
 
+- **Fixed contacts landing in GHL with the wrong tags (missing PPL2026/ppl-website/ppl-app).** Root cause: the "password set" and "email verified" lifecycle events — which fire for every user on every platform, often before any other CRM sync — were only ever sending GHL that one tag by itself, with none of the base campaign tags. So a contact whose first GHL touch happened to be one of those two events ended up permanently missing PPL2026 and the website/app tag, exactly as reported. Fixed going forward, and added a one-time backfill function (`ghl-backfill-tags`) that scans every existing GHL contact and patches in whichever base tags they're missing — never touching or removing any tag that's already there. Needs to be triggered manually once deployed (it's not on a schedule); ask if you want it run.
+
 - **Fixed a real QR-code dead end, from a live report.** Opening your own pass link (e.g. re-tapping a link you'd shared or tested earlier) correctly refuses to "connect" you with yourself, but showed the same generic "That pass code isn't valid" as a genuinely broken code — and worse, nothing ever cleared the code out of the page's address, so refreshing (the obvious thing to try) replayed the exact same failure every single time with no way out except manually navigating back to Pass. Now says plainly "That's your own pass code — share it with someone else," and the address always clears itself once resolved, so a refresh can't get stuck in that loop again.
 
 - **Full bug sweep across the app, website, and backend** after the crash/email-delay fixes below, requested to check "the other areas" too. Found and fixed:

@@ -112,11 +112,24 @@ Deno.serve(async (req) => {
 
   // Lifecycle milestones (password set, email verified): tag-only, GHL-only —
   // no Airtable signup record, and must not touch the contact's other tags.
+  //
+  // These fire on every platform for every user (email-verified fires from
+  // AuthContext on the very first verified session, on both website and
+  // app), which makes this the *first* GHL touch for a lot of contacts —
+  // more often than the "real" signup forms below. Previously this sent
+  // only [formType] as the tag list, so a contact created here (the
+  // ghlAddTags fallback path, when no existing contact is found) got just
+  // "password-set" or "email-verified" and NOTHING else: no PPL2026, no
+  // ppl-website/ppl-app. Always including the base tags here — harmless
+  // no-ops via ghlAddTags' additive POST when the contact already has them —
+  // means every contact ends up with the full PPL2026 + platform tag set
+  // no matter which event happens to touch GHL first.
   if (formType === "password-set" || formType === "email-verified") {
     try {
+      const platformTag = data.source === "PPL App" ? "ppl-app" : "ppl-website";
       const ghlContactId = await ghlAddTags(
         data.email,
-        [formType],
+        ["PPL2026", platformTag, formType],
         {
           firstName: data.firstName || "",
           lastName: data.lastName || "",
