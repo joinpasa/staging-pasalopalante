@@ -15,7 +15,9 @@ export default function PushToggle() {
   useEffect(() => {
     if (!pushSupported()) return;
     setSupported(true);
-    getPushSubscription().then((sub) => setOn(!!sub));
+    getPushSubscription()
+      .then((sub) => setOn(!!sub))
+      .catch((err) => console.error("getPushSubscription failed", err));
   }, []);
 
   if (!supported) return null;

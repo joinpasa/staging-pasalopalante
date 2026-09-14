@@ -73,15 +73,23 @@ export default function WallOfKindness() {
 
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
+  // Bumped every time tab/sort/user changes so an in-flight loadMore() from
+  // the *previous* selection (its while-loop for "liked" sort especially
+  // can span several awaited round-trips) can tell it's stale once it
+  // resolves, instead of appending wrong-mode results into the now-reset
+  // items and mutating the refs the new selection is also using.
+  const genRef = useRef(0);
+
   // Reset state whenever tab or sort changes
   useEffect(() => {
+    genRef.current += 1;
     setItems([]);
     setHasMore(true);
     recentOffsetRef.current = 0;
     likedBufferRef.current = [];
     likedFetchedOffsetRef.current = 0;
     likedDoneRef.current = false;
-    loadMore(true);
+    loadMore(true, genRef.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, sort, user]);
 
@@ -114,7 +122,7 @@ export default function WallOfKindness() {
     }));
   }
 
-  async function loadMore(initial = false) {
+  async function loadMore(initial = false, gen = genRef.current) {
     if (initial) {
       setLoading(true);
     } else {
@@ -136,7 +144,9 @@ export default function WallOfKindness() {
           .order("created_at", { ascending: false })
           .range(from, to);
         if (error) throw error;
+        if (gen !== genRef.current) return; // stale — tab/sort/user changed while this was in flight
         const merged = await attachCounts((data as ActRow[]) ?? []);
+        if (gen !== genRef.current) return;
         recentOffsetRef.current += merged.length;
         setItems((prev) => dedupe([...prev, ...merged]));
         if (!data || data.length < PAGE_SIZE) setHasMore(false);
@@ -156,10 +166,12 @@ export default function WallOfKindness() {
             .order("created_at", { ascending: false })
             .range(from, to);
           if (error) throw error;
+          if (gen !== genRef.current) return; // stale — abandon before touching the new selection's refs
           const rows = (data as ActRow[]) ?? [];
+          const merged = await attachCounts(rows);
+          if (gen !== genRef.current) return;
           likedFetchedOffsetRef.current += rows.length;
           if (rows.length < LIKED_CANDIDATE_BATCH) likedDoneRef.current = true;
-          const merged = await attachCounts(rows);
           likedBufferRef.current = [...likedBufferRef.current, ...merged];
         }
         // Sort full buffer by hearts desc, then recent desc
@@ -175,8 +187,10 @@ export default function WallOfKindness() {
     } catch (e) {
       console.error(e);
     } finally {
-      setLoading(false);
-      setLoadingMore(false);
+      if (gen === genRef.current) {
+        setLoading(false);
+        setLoadingMore(false);
+      }
     }
   }
 

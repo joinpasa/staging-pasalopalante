@@ -109,9 +109,24 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
   }
 
   function removeFile(i: number) {
-    setFiles((prev) => prev.filter((_, idx) => idx !== i));
+    setFiles((prev) => {
+      URL.revokeObjectURL(prev[i]?.preview);
+      return prev.filter((_, idx) => idx !== i);
+    });
     setPhotoConsent(false);
   }
+
+  // Object URLs otherwise live for the life of the tab. Tracked via ref
+  // (rather than depending on `files` directly) so this only revokes once,
+  // on unmount, against whatever the latest set actually was — a dependency
+  // on `files` here would instead fire on every add/remove.
+  const filesRef = useRef(files);
+  filesRef.current = files;
+  useEffect(() => {
+    return () => {
+      for (const f of filesRef.current) URL.revokeObjectURL(f.preview);
+    };
+  }, []);
 
   async function uploadPhoto(file: File): Promise<string | null> {
     const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
@@ -151,9 +166,22 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
     setSubmitting(true);
     try {
       const photoPaths: string[] = [];
+      let failedUploads = 0;
       for (const f of files) {
         const path = await uploadPhoto(f.file);
         if (path) photoPaths.push(path);
+        else failedUploads++;
+      }
+      // The act still submits without a failed photo (a network blip mid-
+      // upload shouldn't block someone's act of kindness) — but silently
+      // dropping it with no indication is its own bug: they'd have no idea
+      // it's missing until they later notice it on the Wall.
+      if (failedUploads > 0) {
+        toast.error(
+          failedUploads === 1
+            ? "One photo couldn't be uploaded, but your act will still be shared."
+            : `${failedUploads} photos couldn't be uploaded, but your act will still be shared.`,
+        );
       }
 
       const trimmedFirstName = firstName.trim();
@@ -209,7 +237,8 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
           .eq("user_id", user.id)
           .then(({ error }) => {
             if (error) console.error("profile update failed", error);
-          });
+          })
+          .catch((err) => console.error("profile update failed", err));
       }
 
       // Log a consent record for this submission (audit trail).
@@ -248,7 +277,8 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
           })
           .then(({ error }) => {
             if (error) toast.error(getAuthErrorMessage(error));
-          });
+          })
+          .catch((err) => console.error("magic link send failed", err));
         postShare = { kind: "check_inbox", email: trimmedEmail };
       }
       if (postShare) {

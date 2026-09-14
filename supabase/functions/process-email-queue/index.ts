@@ -7,6 +7,20 @@ const DEFAULT_SEND_DELAY_MS = 200
 const DEFAULT_AUTH_TTL_MINUTES = 15
 const DEFAULT_TRANSACTIONAL_TTL_MINUTES = 60
 
+// Hashing both sides first means the actual compare is always over two
+// fixed-length 32-byte digests, so there's no early-exit timing signal
+// tied to the secret's real content the way a plain === comparison has.
+async function secretsMatch(a: string, b: string): Promise<boolean> {
+  const [da, db] = await Promise.all([sha256(a), sha256(b)])
+  let diff = 0
+  for (let i = 0; i < da.length; i++) diff |= da[i] ^ db[i]
+  return diff === 0
+}
+async function sha256(s: string): Promise<Uint8Array> {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s))
+  return new Uint8Array(buf)
+}
+
 // Resend returns { data, error } rather than throwing for API-level failures
 // (rate limits, bad from-address, etc.), so sendViaResend below throws the
 // error object itself when present - that lets the try/catch and retry/DLQ
@@ -99,18 +113,13 @@ Deno.serve(async (req) => {
   // Functions), so this exact-match comparison against the function's own
   // known service key is the only auth gate - only the caller who already
   // holds that key (the pg_cron job, via Vault) can trigger queue processing.
+  // Hashes both sides first (see secretsMatch below) rather than comparing
+  // the raw strings, so response time can't leak how many leading bytes
+  // of the presented token matched.
   const token = authHeader.slice('Bearer '.length).trim()
-  if (token !== supabaseServiceKey) {
-    // TEMPORARY diagnostic (safe: JWTs share a constant "eyJhbG..." prefix,
-    // so this leaks no secret entropy) - remove once the mismatch is found.
+  if (!(await secretsMatch(token, supabaseServiceKey))) {
     return new Response(
-      JSON.stringify({
-        error: 'Forbidden',
-        gotLen: token.length,
-        gotPrefix: token.slice(0, 8),
-        expectedLen: supabaseServiceKey.length,
-        expectedPrefix: supabaseServiceKey.slice(0, 8),
-      }),
+      JSON.stringify({ error: 'Forbidden' }),
       { status: 403, headers: { 'Content-Type': 'application/json' } }
     )
   }

@@ -97,12 +97,18 @@ function Inner() {
     if (searchParams.get("claim") !== "1") return;
     (async () => {
       try {
-        const { data } = await supabase.rpc("claim_my_acts");
+        const { data, error } = await supabase.rpc("claim_my_acts");
+        if (error) throw error;
         if (typeof data === "number" && data > 0) {
           toast.success(t.share.claimedToast);
         }
       } catch (e) {
+        // supabase-js resolves with { error } rather than rejecting on a
+        // DB-level failure — without checking it explicitly, a genuine
+        // claim failure looked identical to "nothing to claim" and the
+        // person was silently sent on with their act never attached.
         console.error("claim_my_acts failed", e);
+        toast.error("Couldn't link that act to your account — it's still saved, just not attached yet.");
       } finally {
         if (id) sessionStorage.removeItem(`share_post_${id}`);
         navigate("/account", { replace: true });

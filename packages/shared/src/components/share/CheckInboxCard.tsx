@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Mail, Loader2, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -22,6 +22,19 @@ export default function CheckInboxCard({ email, actId }: { email: string; actId:
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sentToNew, setSentToNew] = useState<string | null>(null);
+  const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current);
+    };
+  }, []);
+
+  function startCooldown() {
+    setCooldown(true);
+    if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current);
+    cooldownTimerRef.current = setTimeout(() => setCooldown(false), 30000);
+  }
 
   async function sendLink(target: string) {
     const { error } = await supabase.auth.signInWithOtp({
@@ -44,8 +57,7 @@ export default function CheckInboxCard({ email, actId }: { email: string; actId:
         return;
       }
       toast.success(t.share.checkInboxResent);
-      setCooldown(true);
-      setTimeout(() => setCooldown(false), 30000);
+      startCooldown();
     } catch (e) {
       console.error(e);
       toast.error(getAuthErrorMessage(null));
@@ -85,8 +97,7 @@ export default function CheckInboxCard({ email, actId }: { email: string; actId:
       setSentToNew(target);
       setEditOpen(false);
       toast.success(t.share.checkInboxResent);
-      setCooldown(true);
-      setTimeout(() => setCooldown(false), 30000);
+      startCooldown();
     } catch (err) {
       console.error(err);
       setError(t.share.checkInboxInvalidEmail);

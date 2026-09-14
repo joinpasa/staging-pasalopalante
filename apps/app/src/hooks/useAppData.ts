@@ -56,6 +56,13 @@ export function useAppMe() {
         supabase.rpc("my_connections_count"),
       ]);
 
+      // A failed query here must not silently render as "0 of everything" —
+      // that's indistinguishable from a real new/empty account. Throwing
+      // lets react-query surface an actual error state instead.
+      const firstError =
+        profileRes.error || streakRes.error || pledgeRes.error || referralRes.error || connectionsRes.error;
+      if (firstError) throw firstError;
+
       const profile = profileRes.data;
       const streak = Array.isArray(streakRes.data) ? streakRes.data[0] : streakRes.data;
       const referral = Array.isArray(referralRes.data) ? referralRes.data[0] : referralRes.data;
@@ -348,6 +355,8 @@ export function useAppBadges() {
           supabase.from("user_badges").select("badge_id").eq("user_id", user.id),
           supabase.rpc("act_badge_progress", { _user_id: user.id }),
         ]);
+        if (mine.error) throw mine.error;
+        if (prog.error) throw prog.error;
         earned = new Set((mine.data ?? []).map((row) => row.badge_id));
         progress = new Map(
           (prog.data ?? []).map((row) => [

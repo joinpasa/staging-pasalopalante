@@ -36,12 +36,14 @@ export default function AppAccount() {
 
   useEffect(() => {
     if (!user) return;
+    let cancelled = false;
     (async () => {
       const { data } = await supabase
         .from("profiles")
         .select("first_name, last_name, country, has_password, custom_display_name")
         .eq("user_id", user.id)
         .maybeSingle();
+      if (cancelled) return;
       setFirstName(data?.first_name ?? "");
       setLastName(data?.last_name ?? "");
       setCountry(data?.country ?? "");
@@ -50,6 +52,7 @@ export default function AppAccount() {
       setSavedNickname(data?.custom_display_name ?? "");
       setLoading(false);
     })();
+    return () => { cancelled = true; };
   }, [user]);
 
   const trimmedNickname = nickname.trim();

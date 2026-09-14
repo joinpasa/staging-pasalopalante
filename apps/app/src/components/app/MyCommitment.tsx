@@ -52,6 +52,7 @@ export default function MyCommitment({ userId, email }: { userId: string; email:
   const [newCount, setNewCount] = useState(10);
   const [newCountText, setNewCountText] = useState("10");
   const [submitting, setSubmitting] = useState(false);
+  const [savingPledge, setSavingPledge] = useState(false);
   const [timeLeft, setTimeLeft] = useState(getSeasonTimeLeft);
   const seasonStarted = Date.now() >= SEASON_START.getTime();
 
@@ -84,15 +85,20 @@ export default function MyCommitment({ userId, email }: { userId: string; email:
   }, [userId, email]);
 
   const save = async (id: string) => {
-    if (draft < 1) return;
-    const { error } = await supabase.from("commitments").update({ pledge_count: draft }).eq("id", id);
-    if (error) {
-      toast.error(error.message);
-      return;
+    if (draft < 1 || savingPledge) return;
+    setSavingPledge(true);
+    try {
+      const { error } = await supabase.from("commitments").update({ pledge_count: draft }).eq("id", id);
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      toast.success(t.account.saved);
+      setEditing(null);
+      load();
+    } finally {
+      setSavingPledge(false);
     }
-    toast.success(t.account.saved);
-    setEditing(null);
-    load();
   };
 
   const submitNew = async () => {
@@ -255,10 +261,10 @@ export default function MyCommitment({ userId, email }: { userId: string; email:
                   }}
                   className={inputClass}
                 />
-                <button type="button" onClick={() => save(active.id)} className={primaryBtn}>
+                <button type="button" onClick={() => save(active.id)} disabled={savingPledge} className={primaryBtn}>
                   {t.account.save}
                 </button>
-                <button type="button" onClick={() => setEditing(null)} className={ghostBtn}>
+                <button type="button" onClick={() => setEditing(null)} disabled={savingPledge} className={ghostBtn}>
                   {t.account.cancel}
                 </button>
               </div>

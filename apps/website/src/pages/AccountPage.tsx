@@ -105,7 +105,15 @@ const AccountPage = () => {
     } catch {
       toast.error("Something went wrong saving your pledge. You can set it later below.");
     } finally {
-      await supabase.from("profiles").update({ onboarding_seen: true }).eq("user_id", user.id);
+      // Not checked previously — a failed update here meant the carousel
+      // dismissed in the UI while onboarding_seen never actually persisted,
+      // so it could silently reappear on the next visit even though the
+      // pledge itself had already saved fine.
+      const { error: seenError } = await supabase
+        .from("profiles")
+        .update({ onboarding_seen: true })
+        .eq("user_id", user.id);
+      if (seenError) console.error("onboarding_seen update failed", seenError);
       setProfile((prev: any) => (prev ? { ...prev, onboarding_seen: true } : prev));
       setOnboardingBusy(false);
       setShowOnboarding(false);

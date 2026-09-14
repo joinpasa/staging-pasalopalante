@@ -10,6 +10,14 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-09-14 — va.deedumlao@gmail.com
 
+- **Full bug sweep across the app, website, and backend** after the crash/email-delay fixes below, requested to check "the other areas" too. Found and fixed:
+  - **Security: any signed-in user could read every published act's submitter email**, including guests who never agreed to that — an old grant that was only ever meant to lock down IP address and browser info left `email` readable by mistake. Revoked.
+  - **Security: the photo-upload endpoint had no limit on how many times it could be called** — since it's open to guests (no account needed to share an act with a photo), a script could have looped it to run up storage costs and host unmoderated images. Added a rate limit.
+  - **The app's Home/Badges/Account screens went silently blank (all zeros) instead of showing an error** whenever a background data request failed — indistinguishable from "you have no history yet." Now surfaces as a real error state instead.
+  - **A failed photo upload during act submission posted the act anyway with no warning** that the photo never made it — now tells you.
+  - **Rapidly switching tabs/sort on the Wall of Kindness could mix results from the previous tab into the one you're looking at.** Fixed a race condition in how it loads more posts.
+  - Smaller fixes: memory leaks from unreleased photo previews, a few screens that could apply stale data after you'd already navigated away, an unbounded-duplicate-rows issue when scanning the same Pass code twice, timing-safe comparisons on a few internal-only endpoints, and a couple of missing loading-state guards that allowed double-submitting a form.
+
 - **Fixed reports of "can't access my QR code" and other blank-screen crashes.** Neither app had any error handling around its page content — a single unexpected error anywhere (a bad value, a device-specific quirk) blanked the *entire* app to a white screen with no way back. Added a safety net so a crash now shows "Something went wrong, reload" instead of nothing.
 - **Fixed password reset / sign-in emails sometimes taking several minutes to arrive.** The email sender tracked one shared "back off" timer for both password-reset-type emails and everything else (digests, CRM syncs). If anything on the "everything else" side got rate-limited by our email provider, it silently froze *all* email sending — including password resets — for a minute at a time, repeatedly, even though the reset email itself wasn't the problem. Split into two independent timers so a slowdown on one side can no longer delay the other.
 

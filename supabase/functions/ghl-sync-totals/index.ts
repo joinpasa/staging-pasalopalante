@@ -83,6 +83,21 @@ async function pushTotals(email: string, actsCount: number, pledgeTotal: number)
   return true;
 }
 
+// Plain !== leaks how many leading bytes matched via response-time
+// differences. Hashing both sides first means the actual compare is always
+// over two fixed-length 32-byte digests, so there's no early-exit signal
+// tied to the secret's real content either way.
+async function secretsMatch(a: string, b: string): Promise<boolean> {
+  const [da, db] = await Promise.all([sha256(a), sha256(b)]);
+  let diff = 0;
+  for (let i = 0; i < da.length; i++) diff |= da[i] ^ db[i];
+  return diff === 0;
+}
+async function sha256(s: string): Promise<Uint8Array> {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+  return new Uint8Array(buf);
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -95,7 +110,7 @@ Deno.serve(async (req) => {
 
   const authHeader = req.headers.get("Authorization");
   const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7).trim() : "";
-  if (token !== SERVICE_ROLE) {
+  if (!(await secretsMatch(token, SERVICE_ROLE))) {
     return json({ error: "Forbidden" }, 403);
   }
 
