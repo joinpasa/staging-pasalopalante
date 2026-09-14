@@ -211,6 +211,8 @@
   "magicSent": "Verifique seu e-mail!",
   "magicSentBody": "Enviamos um link de login para {email}. Clique nele para finalizar o login.",
   "magicError": "Não foi possível enviar o link. Por favor, tente novamente.",
+  "continueWithGoogle": "Continuar com o Google",
+  "orContinueWithEmail": "ou continue com o e-mail",
   "orPassword": "ou faça login com uma senha",
   "signInTab": "Entrar",
   "signUpTab": "Criar conta",

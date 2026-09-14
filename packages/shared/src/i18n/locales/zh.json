@@ -26,6 +26,8 @@
   "magicSent": "检查您的电子邮件！",
   "magicSentBody": "我们已向{email}发送了登录链接。点击它以完成登录。",
   "magicError": "无法发送链接。请重试。",
+  "continueWithGoogle": "继续使用 Google 账号",
+  "orContinueWithEmail": "或继续使用电子邮箱",
   "orPassword": "或使用密码登录",
   "signInTab": "登录",
   "signUpTab": "创建账户",
