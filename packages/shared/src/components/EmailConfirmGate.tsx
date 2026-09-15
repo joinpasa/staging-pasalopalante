@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { CheckCircle2 } from "lucide-react";
 import { supabase } from "@shared/integrations/supabase/client";
 
 /**
@@ -16,6 +17,14 @@ import { supabase } from "@shared/integrations/supabase/client";
  * confirm" step and only calls verifyOtp on an explicit click — something
  * no scanner simulates, automated or not. A genuine visit costs one extra
  * tap; a scanner's visit costs nothing (and burns nothing).
+ *
+ * Full-screen rather than a small corner card, and with an explicit "done"
+ * state instead of just vanishing on success — a beta tester reported the
+ * magic link "doesn't sign you in" when what had actually happened (this
+ * was pre a separate scanner-burn fix) was that the confirm step was too
+ * easy to miss and gave no feedback that it had worked. Nothing here
+ * subverts the security property: it's still a real tap on a real button,
+ * just one that's now impossible to overlook.
  */
 export default function EmailConfirmGate() {
   const [pending, setPending] = useState<{ tokenHash: string; type: string } | null>(null);
@@ -40,7 +49,17 @@ export default function EmailConfirmGate() {
     );
   }, []);
 
-  if (!pending || state === "done") return null;
+  // Auto-dismiss the success state after a beat — long enough to register
+  // as real confirmation, short enough not to block the app underneath
+  // (which has already updated to the signed-in view via AuthContext's own
+  // onAuthStateChange listener by the time this fires).
+  useEffect(() => {
+    if (state !== "done") return;
+    const id = setTimeout(() => setPending(null), 1600);
+    return () => clearTimeout(id);
+  }, [state]);
+
+  if (!pending) return null;
 
   const confirm = async () => {
     setState("verifying");
@@ -50,22 +69,40 @@ export default function EmailConfirmGate() {
 
   return (
     <div
-      className="fixed inset-x-4 top-4 z-[80] mx-auto max-w-sm rounded-2xl border border-neutral-200 bg-white p-4 shadow-xl"
+      className="fixed inset-0 z-[80] flex flex-col items-center justify-center gap-4 bg-warm-cream px-6 text-center"
       role="dialog"
       aria-label="Finish signing in"
     >
       {state === "error" ? (
-        <p className="text-sm text-neutral-800">
-          That link expired or was already used. Request a new one to continue.
-        </p>
+        <>
+          <p className="text-base font-semibold text-foreground">That link expired or was already used.</p>
+          <p className="max-w-xs text-sm text-muted-foreground">
+            Go back and request a new sign-in link (or code) to continue.
+          </p>
+          <button
+            type="button"
+            onClick={() => setPending(null)}
+            className="mt-2 rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-foreground"
+          >
+            Dismiss
+          </button>
+        </>
+      ) : state === "done" ? (
+        <>
+          <CheckCircle2 className="h-12 w-12 text-app-coral" />
+          <p className="text-base font-semibold text-foreground">You're signed in!</p>
+        </>
       ) : (
         <>
-          <p className="text-sm font-semibold text-neutral-900">Tap to finish signing in</p>
+          <p className="text-lg font-semibold text-foreground">Tap to finish signing in</p>
+          <p className="max-w-xs text-sm text-muted-foreground">
+            One more tap confirms it's really you opening this link.
+          </p>
           <button
             type="button"
             onClick={confirm}
             disabled={state === "verifying"}
-            className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-4 py-2 text-xs font-semibold text-white disabled:opacity-60"
+            className="mt-2 rounded-full bg-app-coral px-8 py-3 text-sm font-semibold text-app-surface disabled:opacity-60"
           >
             {state === "verifying" ? "…" : "Confirm"}
           </button>

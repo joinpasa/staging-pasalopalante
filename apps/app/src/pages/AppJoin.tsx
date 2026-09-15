@@ -338,6 +338,9 @@ export default function AppJoin() {
           We sent a sign-in link to <span className="font-semibold text-foreground">{sentTo}</span>.
           Open it on this phone and the app will be signed in.
         </p>
+        <p className="text-xs leading-relaxed text-muted-foreground">
+          On iPhone, the link may open in Safari instead of this app — if that happens, just type the code below instead.
+        </p>
 
         {/* The link opens the phone's regular browser, which — especially on
             iPhone — can't hand a session back to this already-installed
@@ -347,8 +350,8 @@ export default function AppJoin() {
             project) — don't hardcode a specific length here since it can
             change on Supabase's side independently of this code. */}
         <form onSubmit={handleVerifyCode} className="w-full max-w-xs space-y-2 pt-1">
-          <p className="text-xs font-semibold text-muted-foreground">
-            Or enter the code from that email
+          <p className="text-sm font-semibold text-foreground">
+            Enter the code from that email
           </p>
           <input
             required
@@ -494,7 +497,7 @@ export default function AppJoin() {
               type="checkbox"
               checked={agreed}
               onChange={(e) => setAgreed(e.target.checked)}
-              className="mt-0.5 h-4 w-4 accent-app-coral"
+              className="mt-0.5 h-4 w-4 rounded border-2 border-foreground/50 accent-app-coral"
             />
             <span>
               I agree to the{" "}
