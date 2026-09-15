@@ -6,6 +6,11 @@ const DEFAULT_BATCH_SIZE = 10
 const DEFAULT_SEND_DELAY_MS = 200
 const DEFAULT_AUTH_TTL_MINUTES = 15
 const DEFAULT_TRANSACTIONAL_TTL_MINUTES = 60
+// At most one "we're rate-limited" alert per this window, regardless of how
+// many 429s land in it — a sustained spike would otherwise re-trigger the
+// cooldown roughly every 60s and flood the ops inbox with the same alert.
+const ALERT_THROTTLE_MINUTES = 30
+const OPS_SENDER_DOMAIN = 'ntf.pasalopalante.com'
 
 // Hashing both sides first means the actual compare is always over two
 // fixed-length 32-byte digests, so there's no early-exit timing signal
@@ -73,6 +78,42 @@ async function moveToDlq(
   }
 }
 
+// Best-effort ops alert when Resend itself starts rejecting sends. Sent
+// directly (not through the pgmq queues this function drains — those are
+// exactly what's currently rate-limited, and looping the alert through the
+// same blocked pipe would just delay it until the cooldown clears anyway).
+// A failure here is caught and logged, never thrown — an alert we couldn't
+// send must not interrupt the actual queue-processing this function exists
+// to do. OPS_ALERT_EMAIL must be set as a Supabase Edge Function secret;
+// silently no-ops if it isn't configured.
+async function sendRateLimitAlert(resend: Resend, queue: string, cooldownUntil: string): Promise<void> {
+  const alertTo = Deno.env.get('OPS_ALERT_EMAIL')
+  if (!alertTo) {
+    console.warn('OPS_ALERT_EMAIL not configured — skipping rate-limit alert')
+    return
+  }
+  try {
+    const { error } = await resend.emails.send({
+      from: `Pásalo Pa'lante Ops <noreply@${OPS_SENDER_DOMAIN}>`,
+      to: [alertTo],
+      subject: `⚠️ Email sending is rate-limited (${queue})`,
+      text:
+        `Resend just rejected a send from the "${queue}" queue with a 429 (rate limit exceeded).\n\n` +
+        `That queue is now cooling down until ${cooldownUntil} before retrying.\n\n` +
+        `If this keeps happening, check Resend's Usage page (resend.com) — you may be hitting the ` +
+        `plan's requests-per-second or daily/monthly cap and need to upgrade.`,
+      html:
+        `<p>Resend just rejected a send from the <strong>${queue}</strong> queue with a 429 (rate limit exceeded).</p>` +
+        `<p>That queue is now cooling down until <strong>${cooldownUntil}</strong> before retrying.</p>` +
+        `<p>If this keeps happening, check <a href="https://resend.com/emails">Resend's Usage page</a> — ` +
+        `you may be hitting the plan's requests-per-second or daily/monthly cap and need to upgrade.</p>`,
+    })
+    if (error) console.error('Rate-limit alert email failed to send', error)
+  } catch (e) {
+    console.error('Rate-limit alert email threw', e)
+  }
+}
+
 async function sendViaResend(
   resend: Resend,
   payload: { to: string; from: string; subject: string; html: string; text: string }
@@ -131,8 +172,10 @@ Deno.serve(async (req) => {
   // why a transactional-side 429 must never delay auth_emails) and queue config
   const { data: state } = await supabase
     .from('email_send_state')
-    .select('auth_retry_after_until, transactional_retry_after_until, batch_size, send_delay_ms, auth_email_ttl_minutes, transactional_email_ttl_minutes')
+    .select('auth_retry_after_until, transactional_retry_after_until, batch_size, send_delay_ms, auth_email_ttl_minutes, transactional_email_ttl_minutes, last_rate_limit_alert_at')
     .single()
+
+  let lastAlertAt = state?.last_rate_limit_alert_at ? new Date(state.last_rate_limit_alert_at) : null
 
   const retryAfterByQueue: Record<string, string | null> = {
     auth_emails: state?.auth_retry_after_until ?? null,
@@ -320,15 +363,23 @@ Deno.serve(async (req) => {
           })
 
           const retryAfterSecs = getRetryAfterSeconds(error)
-          await supabase
-            .from('email_send_state')
-            .update({
-              [retryColumnByQueue[queue]]: new Date(
-                Date.now() + retryAfterSecs * 1000
-              ).toISOString(),
-              updated_at: new Date().toISOString(),
-            })
-            .eq('id', 1)
+          const cooldownUntil = new Date(Date.now() + retryAfterSecs * 1000)
+          const now = new Date()
+          const shouldAlert =
+            !lastAlertAt || now.getTime() - lastAlertAt.getTime() > ALERT_THROTTLE_MINUTES * 60 * 1000
+
+          const stateUpdate: Record<string, string> = {
+            [retryColumnByQueue[queue]]: cooldownUntil.toISOString(),
+            updated_at: now.toISOString(),
+          }
+          if (shouldAlert) stateUpdate.last_rate_limit_alert_at = now.toISOString()
+
+          await supabase.from('email_send_state').update(stateUpdate).eq('id', 1)
+
+          if (shouldAlert) {
+            lastAlertAt = now
+            await sendRateLimitAlert(resend, queue, cooldownUntil.toISOString())
+          }
 
           // Stop processing this queue only — remaining messages stay
           // queued (VT expires, retried next cycle). The other queue's own

@@ -12,6 +12,8 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 - **Polished the "finish signing in" step after tapping a sign-in email link.** From reviewing an app tester's bug report: the confirm step was a small floating card easy to miss, and gave no feedback at all once it succeeded — it just silently disappeared, so a real sign-in could look identical to nothing happening. Now it's a full-screen step that's hard to overlook, and shows a clear "You're signed in!" confirmation before dismissing itself. Also made the "enter the code from that email" fallback (for when the link opens Safari instead of the installed app, an iPhone-only limitation) read as a real option instead of fine print, and fixed a low-contrast checkbox on the app's join screen the same tester flagged.
 
+- **Added a self-alert for when email sending hits Resend's rate limit**, from a "what happens over the weekend" conversation about crash monitoring. The email queue processor already detects and cools down on a 429 from Resend — it now also sends one alert email (throttled to at most once per 30 minutes, so a sustained spike doesn't flood the inbox) pointing at Resend's Usage page. **Needs one thing before it's live: add an `OPS_ALERT_EMAIL` secret** (the address to alert) in Supabase's Edge Function secrets — it silently no-ops without it, since this session has no way to set that secret itself.
+
 ---
 
 ## 2026-09-14 — va.deedumlao@gmail.com
