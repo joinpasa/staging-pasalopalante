@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Download, Share, X, Plus, Smartphone } from "lucide-react";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useUI } from "@shared/contexts/UIContext";
+import { getAppBaseUrl, isSatelliteDomain } from "@shared/lib/canonicalDomain";
 
 type BIPEvent = Event & {
   prompt: () => Promise<void>;
@@ -56,7 +57,16 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
     // deployment this is a cross-origin registration attempt, which
     // browsers reject — caught harmlessly below, same as before this
     // existed: no install signal there, same as always.
-    if ("serviceWorker" in navigator) {
+    //
+    // Skipped entirely on a satellite domain (a co-brand marketing domain
+    // sharing this combined build via a Cloudflare route, e.g.
+    // passkindnessforward.com): registering it there would make those
+    // marketing pages themselves installable, offering the browser's real
+    // native "Install app" dialog for a separate, origin-scoped copy of
+    // the app — exactly the second identity CanonicalAppDomainGate exists
+    // to prevent. "Get the app" there falls back to a plain cross-origin
+    // navigation instead (see openApp below).
+    if ("serviceWorker" in navigator && !(isWebsite && isSatelliteDomain())) {
       if (variant === "app") {
         const base = import.meta.env.BASE_URL;
         navigator.serviceWorker.register(`${base}push-sw.js`, { scope: base }).catch(() => undefined);
@@ -111,12 +121,14 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
   };
 
   // Full navigation so an installed PWA can take over on supported browsers.
-  // __APP_BASE_URL__ is cross-origin (the app's own subdomain) by default,
-  // or a same-origin "/app/" once the combined build embeds the app here —
-  // either way this only ever runs from the "website" variant, as a
-  // fallback for whenever a direct install isn't available right here.
+  // getAppBaseUrl() is cross-origin (the app's own subdomain) by default,
+  // or a same-origin "/app/" once the combined build embeds the app here on
+  // the canonical domain — either way this only ever runs from the
+  // "website" variant, as a fallback for whenever a direct install isn't
+  // available right here. Forced cross-origin on a satellite domain (see
+  // canonicalDomain.ts) so this never resolves to that domain's own /app/.
   const openApp = () => {
-    window.location.assign(__APP_BASE_URL__);
+    window.location.assign(getAppBaseUrl());
   };
 
   // A real install is available right here the moment beforeinstallprompt

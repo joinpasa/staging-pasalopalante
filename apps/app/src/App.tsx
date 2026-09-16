@@ -24,6 +24,7 @@ import ScrollToTopOnRouteChange from "@shared/components/ScrollToTopOnRouteChang
 import ReconsentGate from "@shared/components/ReconsentGate";
 import InstallPrompt from "@shared/components/InstallPrompt";
 import EmailConfirmGate from "@shared/components/EmailConfirmGate";
+import CanonicalAppDomainGate from "@/components/app/CanonicalAppDomainGate";
 import { DirectionProvider } from "@radix-ui/react-direction";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { LANGUAGES } from "@shared/i18n/translations";
@@ -55,6 +56,7 @@ const App = () => (
             <BrowserRouter basename={import.meta.env.BASE_URL}>
               <ScrollToTopOnRouteChange />
               <ReconsentGate />
+              <CanonicalAppDomainGate />
               <EmailConfirmGate />
               <Routes>
                 <Route path="/" element={<AppShell />}>

@@ -38,6 +38,7 @@ import NonprofitsFaithPage from "./pages/NonprofitsFaithPage.tsx";
 import AmbassadorsPage from "./pages/AmbassadorsPage.tsx";
 import ScrollToTopOnRouteChange from "@shared/components/ScrollToTopOnRouteChange";
 import StandaloneHomeRedirect from "./components/StandaloneHomeRedirect";
+import CanonicalDomainGate from "./components/CanonicalDomainGate";
 import ReconsentGate from "@shared/components/ReconsentGate";
 import LanguageSwitcher from "@shared/components/LanguageSwitcher";
 import InstallPrompt from "@shared/components/InstallPrompt";
@@ -80,6 +81,7 @@ const App = () => (
             <BrowserRouter>
             <ScrollToTopOnRouteChange />
             <StandaloneHomeRedirect />
+            <CanonicalDomainGate />
             <EmailConfirmGate />
             <ReconsentGate />
             <Routes>

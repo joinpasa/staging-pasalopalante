@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { getAppBaseUrl } from "@shared/lib/canonicalDomain";
 
 /**
  * Two groups land here in standalone (installed-app) display mode, on the
@@ -27,9 +28,11 @@ import { useLocation } from "react-router-dom";
  *
  * Either way, the fix is the same: if this origin is ever running
  * standalone on "/", that's never actually where anyone wants to be —
- * send them into the real app immediately, silently. __APP_BASE_URL__ is
- * same-origin ("/app/") once the combined build embeds the app here, or
- * the app's own subdomain (a full cross-origin redirect) otherwise.
+ * send them into the real app immediately, silently. getAppBaseUrl() is
+ * same-origin ("/app/") once the combined build embeds the app here on the
+ * canonical domain, or the app's own subdomain (a full cross-origin
+ * redirect) otherwise — forced cross-origin on a satellite domain so this
+ * never resolves to that domain's own /app/ instead.
  */
 export default function StandaloneHomeRedirect() {
   const { pathname, search } = useLocation();
@@ -41,7 +44,7 @@ export default function StandaloneHomeRedirect() {
       window.matchMedia?.("(display-mode: standalone)").matches ||
       (window.navigator as unknown as { standalone?: boolean }).standalone === true;
 
-    const redirect = () => window.location.replace(`${__APP_BASE_URL__}${search}`);
+    const redirect = () => window.location.replace(`${getAppBaseUrl()}${search}`);
 
     if (isStandalone()) {
       redirect();

@@ -12,6 +12,8 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 - **Gave passkindnessforward.com its own Google Analytics tracking, separate from pasalopalante.com.** Now that passkindnessforward.com is routed through the same Cloudflare Worker as pasalopalante.com (same build, same site), the two domains needed separate GA4 IDs without one polluting the other's numbers. The page now picks which tracking ID to use based on the actual domain a visitor is on, instead of firing both — PKF traffic goes to PKF's property, PPL traffic goes to PPL's.
 
+- **Fixed passkindnessforward.com quietly spinning up its own separate sign-in and app, instead of using the real one.** Turned out the site currently deployed to that domain is the "combined" build (website + installable app on one origin) — which was only ever meant for pasalopalante.com itself, but a co-brand domain sharing the same Cloudflare Worker got the exact same behavior along with it: its own installable copy of the app, its own separate account/sign-in pages, all origin-scoped and disconnected from the real app.pasalopalante.com. Now passkindnessforward.com's sign-in and account pages redirect to the canonical pasalopalante.com, and its "Get the app" / install path always points at app.pasalopalante.com instead of installing a second, separate copy. Covered by a new automated test (`canonicalDomain.test.ts`) so this can't silently regress.
+
 ---
 
 ## 2026-09-15 — va.deedumlao@gmail.com

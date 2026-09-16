@@ -11,6 +11,8 @@
 // conflict; whichever button the user actually taps calls .prompt() on
 // its own captured reference.
 
+import { getAppBaseUrl } from "./canonicalDomain";
+
 type BIPEvent = Event & {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
@@ -45,5 +47,5 @@ export async function triggerAppInstall() {
       // through to the direct-navigation fallback below.
     }
   }
-  window.location.assign(__APP_BASE_URL__);
+  window.location.assign(getAppBaseUrl());
 }
