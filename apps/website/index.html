@@ -7,14 +7,35 @@
     <meta name="description" content="Pásalo Pa'lante is a global kindness movement by Te Amo PR, a 501(c)(3) nonprofit. Join us to spark 1 billion acts of kindness from November 1 to January 31." />
     <meta name="author" content="Te Amo PR" />
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1Z2QVNXRW0"></script>
+    <!-- Google tag (gtag.js) — measurement ID picked at runtime by hostname.
+         passkindnessforward.com is routed to this exact same build (same
+         Cloudflare Worker) as pasalopalante.com, so a static pair of
+         gtag('config', ...) calls would fire BOTH tags for every visitor on
+         either domain, mixing each site's traffic into the other's GA4
+         property. Loading gtag.js dynamically and configuring only the ID
+         that matches the current hostname keeps each domain's analytics
+         separate. Anything not explicitly PKF (including localhost/preview
+         URLs) falls back to Pásalo Pa'lante's own ID. -->
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+      (function () {
+        var GA_IDS_BY_HOST = {
+          'passkindnessforward.com': 'G-W9L6MQK6B9',
+          'www.passkindnessforward.com': 'G-W9L6MQK6B9',
+        };
+        var PPL_GA_ID = 'G-1Z2QVNXRW0';
+        var id = GA_IDS_BY_HOST[window.location.hostname] || PPL_GA_ID;
 
-      gtag('config', 'G-1Z2QVNXRW0');
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + id;
+        document.head.appendChild(s);
+
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', id);
+      })();
     </script>
 
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

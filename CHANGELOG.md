@@ -8,6 +8,12 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-09-16 — va.deedumlao@gmail.com
+
+- **Gave passkindnessforward.com its own Google Analytics tracking, separate from pasalopalante.com.** Now that passkindnessforward.com is routed through the same Cloudflare Worker as pasalopalante.com (same build, same site), the two domains needed separate GA4 IDs without one polluting the other's numbers. The page now picks which tracking ID to use based on the actual domain a visitor is on, instead of firing both — PKF traffic goes to PKF's property, PPL traffic goes to PPL's.
+
+---
+
 ## 2026-09-15 — va.deedumlao@gmail.com
 
 - **Polished the "finish signing in" step after tapping a sign-in email link.** From reviewing an app tester's bug report: the confirm step was a small floating card easy to miss, and gave no feedback at all once it succeeded — it just silently disappeared, so a real sign-in could look identical to nothing happening. Now it's a full-screen step that's hard to overlook, and shows a clear "You're signed in!" confirmation before dismissing itself. Also made the "enter the code from that email" fallback (for when the link opens Safari instead of the installed app, an iPhone-only limitation) read as a real option instead of fine print, and fixed a low-contrast checkbox on the app's join screen the same tester flagged.
