@@ -8,6 +8,12 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-09-18 — va.deedumlao@gmail.com
+
+- **Fixed the app's slow-3G/offline test suite, which had been silently broken and unable to run at all.** While checking whether the app had ever actually been tested under slow-connection conditions, found a syntax error in `network.spec.ts` (a stray duplicated fragment) that meant the whole file failed to even parse — so this coverage existed but nobody could have been running it. Fixed the one-line typo and ran it for real: 5 of 6 pass, including both throttled-network cases (a ~400kbps "slow link" and a ~1.5Mbps "regular 3G" profile) — the app does become interactive and navigable under both. The one failure is a gap in the test itself (it navigates to an unauthenticated `/pass`, which correctly redirects to `/wall` by design — not a real app bug), not something fixed here.
+
+---
+
 ## 2026-09-16 — va.deedumlao@gmail.com
 
 - **Gave passkindnessforward.com its own Google Analytics tracking, separate from pasalopalante.com.** Now that passkindnessforward.com is routed through the same Cloudflare Worker as pasalopalante.com (same build, same site), the two domains needed separate GA4 IDs without one polluting the other's numbers. The page now picks which tracking ID to use based on the actual domain a visitor is on, instead of firing both — PKF traffic goes to PKF's property, PPL traffic goes to PPL's.

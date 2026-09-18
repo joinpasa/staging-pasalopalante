@@ -17,7 +17,7 @@ const TABS = [
   { path: "/wall", heading: /wall of kindness/i },
   { path: "/pass", heading: /pass it forward/i },
   { path: "/map", heading: /kindness/i },
-  { path: "/badges", heading: /badge|milestone/i }|milestone/i },
+  { path: "/badges", heading: /badge|milestone/i },
 ] as const;
 
 /** Dev-only React/Vite noise plus the network failures offline mode causes. */
