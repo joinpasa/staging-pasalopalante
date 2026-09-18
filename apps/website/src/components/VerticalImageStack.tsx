@@ -1,26 +1,26 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { motion, type PanInfo } from "framer-motion";
 import { useLanguage } from "@shared/contexts/LanguageContext";
-import pplGroup from "@/assets/ppl-group.png";
-import pplNoticentro from "@/assets/ppl-noticentro.png";
-import pplGary from "@/assets/ppl-gary.png";
-import pplMascot from "@/assets/ppl-mascot.png";
-import pplReporter from "@/assets/ppl-reporter.png";
-import pplUprm from "@/assets/ppl-uprm.png";
+import pplGroup from "@/assets/ppl-group.jpg";
+import pplNoticentro from "@/assets/ppl-noticentro.jpg";
+import pplGary from "@/assets/ppl-gary.jpg";
+import pplMascot from "@/assets/ppl-mascot.jpg";
+import pplReporter from "@/assets/ppl-reporter.jpg";
+import pplUprm from "@/assets/ppl-uprm.jpg";
 import pplBalkmania from "@/assets/ppl-balkmania.jpeg";
 import pplFlagship from "@/assets/ppl-flagship.jpeg";
 import pplTeamo from "@/assets/ppl-teamo.jpeg";
 import pplDouglas from "@/assets/ppl-douglas.jpeg";
 import pplPresenter from "@/assets/ppl-presenter.jpeg";
 import pplPalanteGuy from "@/assets/ppl-palante-guy.jpeg";
-import pplMayorCard from "@/assets/ppl-mayor-card.png";
-import pplInterview from "@/assets/ppl-interview.png";
-import pplMuevetuchi from "@/assets/ppl-muevetuchi.png";
-import pplAndrewwong from "@/assets/ppl-andrewwong.png";
-import pplAdamonzon from "@/assets/ppl-adamonzon.png";
-import pplAthletes from "@/assets/ppl-athletes.png";
-import pplAlcalde from "@/assets/ppl-alcalde.png";
-import pplCollage from "@/assets/ppl-collage.png";
+import pplMayorCard from "@/assets/ppl-mayor-card.jpg";
+import pplInterview from "@/assets/ppl-interview.jpg";
+import pplMuevetuchi from "@/assets/ppl-muevetuchi.jpg";
+import pplAndrewwong from "@/assets/ppl-andrewwong.jpg";
+import pplAdamonzon from "@/assets/ppl-adamonzon.jpg";
+import pplAthletes from "@/assets/ppl-athletes.jpg";
+import pplAlcalde from "@/assets/ppl-alcalde.jpg";
+import pplCollage from "@/assets/ppl-collage.jpg";
 
 const images = [
   { id: 1, src: pplGroup, alt: "Pásalo Pa'lante community group gathering" },
@@ -88,10 +88,18 @@ export function VerticalImageStack() {
     [navigate]
   );
 
+  // Only the current card plus its immediate neighbors — the ones actually
+  // reachable by one swipe — need to be ready ahead of time. Preloading all
+  // 20 full images on mount regardless of whether anyone ever swipes past
+  // the first one meant this component alone forced ~20MB+ onto every
+  // visitor's very first page load, before compression (see CHANGELOG).
   useEffect(() => {
-    const preloadedImages = images.map((image) => {
+    const preloadIndexes = new Set(
+      [-2, -1, 0, 1, 2].map((offset) => (currentIndex + offset + images.length) % images.length),
+    );
+    const preloadedImages = [...preloadIndexes].map((i) => {
       const img = new Image();
-      img.src = image.src;
+      img.src = images[i].src;
       return img;
     });
 
@@ -100,7 +108,7 @@ export function VerticalImageStack() {
         img.src = "";
       });
     };
-  }, []);
+  }, [currentIndex]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -134,6 +142,14 @@ export function VerticalImageStack() {
         {images.map((image, index) => {
           const style = getCardStyle(index);
           const isCurrent = index === currentIndex;
+          // Cards beyond one swipe away are parked off-position with
+          // opacity 0 (see getCardStyle) but were still mounting a real
+          // <img src>, which makes the browser fetch it immediately
+          // regardless of whether it's ever seen — all 20 cards exist in
+          // the same fixed-size stack, so loading="lazy" can't help (its
+          // viewport check has nothing to go on here). Only give the ones
+          // actually reachable by a swipe a real src.
+          const inLoadWindow = Math.abs(getRelativeDiff(index)) <= 2;
 
           return (
             <motion.div
@@ -149,12 +165,14 @@ export function VerticalImageStack() {
             >
               <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-xl">
                 <div className="absolute inset-0 rounded-2xl ring-1 ring-foreground/10 z-10" />
-                <img
-                  src={image.src}
-                  alt={image.alt}
-                  className="w-full h-full object-cover"
-                  draggable={false}
-                />
+                {inLoadWindow && (
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    className="w-full h-full object-cover"
+                    draggable={false}
+                  />
+                )}
                 <div
                   className="absolute bottom-0 left-0 right-0 h-1/3 z-10"
                   style={{ background: "linear-gradient(to top, hsl(var(--background) / 0.4), transparent)" }}

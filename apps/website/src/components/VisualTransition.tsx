@@ -20,22 +20,22 @@ import kindnessHug from "@/assets/kindness-hug.jpg";
 import kindnessJoy from "@/assets/kindness-joy.jpg";
 import kindnessBabyHat from "@/assets/kindness-baby-hat.jpg";
 import kindnessCompassion from "@/assets/kindness-compassion.jpg";
-import trailKindnessFoodShare from "@/assets/trail-kindness-food-share.png";
-import trailKindnessStreetHelp from "@/assets/trail-kindness-street-help.png";
-import trailKindnessDogWalk from "@/assets/trail-kindness-dog-walk.png";
-import trailKindnessCommunityGarden from "@/assets/trail-kindness-community-garden.png";
-import trailKindnessPvcWork from "@/assets/trail-kindness-pvc-work.png";
-import trailKindnessTarp from "@/assets/trail-kindness-tarp.png";
-import trailKindnessRoofRepair from "@/assets/trail-kindness-roof-repair.png";
-import trailKindnessCoffeeServe from "@/assets/trail-kindness-coffee-serve.png";
-import trailKindnessDriveThru from "@/assets/trail-kindness-drive-thru.png";
-import trailKindnessSign from "@/assets/trail-kindness-sign.png";
-import trail2KindnessHelados from "@/assets/trail2-kindness-helados.png";
-import trail2KindnessCraftWorkshop from "@/assets/trail2-kindness-craft-workshop.png";
-import trail2KindnessMiniHouse from "@/assets/trail2-kindness-mini-house.png";
-import trail2KindnessHospitalVisit from "@/assets/trail2-kindness-hospital-visit.png";
-import trail2KindnessBloodDonation from "@/assets/trail2-kindness-blood-donation.png";
-import trail2KindnessFootCare from "@/assets/trail2-kindness-foot-care.png";
+import trailKindnessFoodShare from "@/assets/trail-kindness-food-share.jpg";
+import trailKindnessStreetHelp from "@/assets/trail-kindness-street-help.jpg";
+import trailKindnessDogWalk from "@/assets/trail-kindness-dog-walk.jpg";
+import trailKindnessCommunityGarden from "@/assets/trail-kindness-community-garden.jpg";
+import trailKindnessPvcWork from "@/assets/trail-kindness-pvc-work.jpg";
+import trailKindnessTarp from "@/assets/trail-kindness-tarp.jpg";
+import trailKindnessRoofRepair from "@/assets/trail-kindness-roof-repair.jpg";
+import trailKindnessCoffeeServe from "@/assets/trail-kindness-coffee-serve.jpg";
+import trailKindnessDriveThru from "@/assets/trail-kindness-drive-thru.jpg";
+import trailKindnessSign from "@/assets/trail-kindness-sign.jpg";
+import trail2KindnessHelados from "@/assets/trail2-kindness-helados.jpg";
+import trail2KindnessCraftWorkshop from "@/assets/trail2-kindness-craft-workshop.jpg";
+import trail2KindnessMiniHouse from "@/assets/trail2-kindness-mini-house.jpg";
+import trail2KindnessHospitalVisit from "@/assets/trail2-kindness-hospital-visit.jpg";
+import trail2KindnessBloodDonation from "@/assets/trail2-kindness-blood-donation.jpg";
+import trail2KindnessFootCare from "@/assets/trail2-kindness-foot-care.jpg";
 import trail2KindnessKidsCrafts from "@/assets/trail2-kindness-kids-crafts.jpg";
 import trail2KindnessYouthCards from "@/assets/trail2-kindness-youth-cards.jpg";
 import trail2KindnessWaterDelivery from "@/assets/trail2-kindness-water-delivery.jpg";
@@ -141,27 +141,42 @@ const VisualTransition = () => {
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const { t } = useLanguage();
 
+  const text = (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 1 }}
+      className="text-center pointer-events-none select-none relative z-[1] px-6"
+    >
+      <span className="block headline-xl text-foreground/10 leading-[1.1]">{t.visualTransition.line1}</span>
+      <span className="block headline-xl text-foreground/10 leading-[1.1]">{t.visualTransition.line2}</span>
+      <span className="block headline-xl text-foreground/10 leading-[1.1]">{t.visualTransition.line3}</span>
+    </motion.div>
+  );
+
   return (
     <div ref={ref}>
-      <ImageCursorTrail
-        items={allImages}
-        className="h-screen w-full cursor-crosshair"
-        imgClass="w-40 h-48"
-        maxNumberOfImages={5}
-        distance={20}
-        fadeAnimation
-      >
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 1 }}
-          className="text-center pointer-events-none select-none relative z-[1] px-6"
+      {inView ? (
+        // ImageCursorTrail mounts ~37 real <img> tags (one per available
+        // photo) up front so the cursor-follow effect has no popping the
+        // first time it activates — fine once this section is actually in
+        // view, but rendering it before that forced every visitor to fetch
+        // all of them immediately on page load, for an effect most people
+        // scrolling past never even trigger. Deferring the whole component
+        // (not just the images inside it) until inView fixes that.
+        <ImageCursorTrail
+          items={allImages}
+          className="h-screen w-full cursor-crosshair"
+          imgClass="w-40 h-48"
+          maxNumberOfImages={5}
+          distance={20}
+          fadeAnimation
         >
-          <span className="block headline-xl text-foreground/10 leading-[1.1]">{t.visualTransition.line1}</span>
-          <span className="block headline-xl text-foreground/10 leading-[1.1]">{t.visualTransition.line2}</span>
-          <span className="block headline-xl text-foreground/10 leading-[1.1]">{t.visualTransition.line3}</span>
-        </motion.div>
-      </ImageCursorTrail>
+          {text}
+        </ImageCursorTrail>
+      ) : (
+        <div className="h-screen w-full grid place-content-center">{text}</div>
+      )}
     </div>
   );
 };
