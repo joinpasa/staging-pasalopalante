@@ -27,11 +27,12 @@ const Navbar = () => {
   const isHome = location.pathname === "/";
   const hasSubNav = isHome || location.pathname === "/ideas";
   const isSolid = !isHome || scrolled;
-  // Alternate-domain branding: passforwardkindness.com shows "Pass Kindness
-  // Forward" beside the logo. Requires that domain to be routed to this same
-  // site at the host level (Cloudflare custom domain) - a separate infra step.
+  // Alternate-domain branding: passkindnessforward.com shows "Pass Kindness
+  // Forward" beside the logo. That domain is now actually routed to this
+  // same site (Cloudflare Workers Route) - was written before that existed,
+  // with the domain's words in the wrong order, so this never matched.
   const hostname = typeof window !== "undefined" ? window.location.hostname.replace(/^www\./, "") : "";
-  const isPassKindnessForward = hostname === "passforwardkindness.com";
+  const isPassKindnessForward = hostname === "passkindnessforward.com";
 
   const exploreItems = [
     { label: t.navbar.ideas, href: "/ideas" },

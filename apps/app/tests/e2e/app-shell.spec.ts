@@ -24,7 +24,7 @@ const SCREENS = [
   { path: "/wall", heading: /wall of kindness/i },
   { path: "/pass", heading: /pass it forward/i },
   { path: "/map", heading: /kindness/i },
-  { path: "/badges", heading: /badge|milestone/i }|milestone/i },
+  { path: "/badges", heading: /badge|milestone/i },
 ] as const;
 
 /** Max allowed dead space, in CSS px, between content end and the tab bar. */
