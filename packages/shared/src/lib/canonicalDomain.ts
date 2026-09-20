@@ -7,11 +7,20 @@
 // /account) and the installable app (/app/*) — a second identity, a second
 // installed PWA, a second Supabase browser session, none of it intended.
 //
-// pasalopalante.com is the one canonical property. Everything else real
-// (not localhost/preview) is a "satellite" — welcome to serve the marketing
-// pages, but sign-in, account pages, and the installable app must always
-// funnel back to the canonical domain instead of spinning up their own.
-const CANONICAL_HOSTS = new Set(["pasalopalante.com", "www.pasalopalante.com"]);
+// Any pasalopalante.com subdomain is canonical — this used to be an
+// enumerated list of exact hostnames, which is how app.pasalopalante.com
+// itself ended up NOT on it: CanonicalAppDomainGate (mounted in every build
+// of the app, including the real standalone app.pasalopalante.com) then
+// treated its own production domain as a satellite and called
+// location.replace() to its own URL on every navigation — a self-inflicted
+// reload loop that broke login (interrupting the magic-link confirm step
+// mid-flow) and QR sharing (the page never settled long enough to use) on
+// the live app. A suffix check can't omit a subdomain by accident the way
+// an enumerated set can, so any future first-party subdomain is safe by
+// construction instead of needing to remember to add it here.
+function isCanonicalHost(hostname: string): boolean {
+  return hostname === "pasalopalante.com" || hostname.endsWith(".pasalopalante.com");
+}
 
 function isInternalHost(hostname: string): boolean {
   return (
@@ -25,7 +34,7 @@ function isInternalHost(hostname: string): boolean {
 
 /** True for any real domain other than the canonical pasalopalante.com property. */
 export function isSatelliteDomain(hostname: string = window.location.hostname): boolean {
-  return !CANONICAL_HOSTS.has(hostname) && !isInternalHost(hostname);
+  return !isCanonicalHost(hostname) && !isInternalHost(hostname);
 }
 
 /**

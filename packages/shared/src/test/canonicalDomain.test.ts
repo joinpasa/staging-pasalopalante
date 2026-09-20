@@ -22,12 +22,19 @@ describe("isSatelliteDomain", () => {
   });
 
   it("is false on the app subdomain — that IS the canonical app property", () => {
-    // app.pasalopalante.com isn't in CANONICAL_HOSTS, but nothing in this
-    // repo ever calls isSatelliteDomain() from that deployment — it's the
-    // standalone app build, which has no combined-build install/account
-    // gating to suppress in the first place. Documented here so a future
-    // reader isn't surprised this isn't explicitly listed.
-    expect(isSatelliteDomain("app.pasalopalante.com")).toBe(true);
+    // Regression test: an earlier version of this check used an enumerated
+    // set of exact hostnames that didn't include app.pasalopalante.com.
+    // CanonicalAppDomainGate is mounted in every build of the app,
+    // including the real standalone app.pasalopalante.com — with that bug,
+    // it treated its own production domain as a satellite and called
+    // location.replace() to its own URL on every navigation, breaking
+    // login and QR sharing on the live app. Must never regress.
+    expect(isSatelliteDomain("app.pasalopalante.com")).toBe(false);
+  });
+
+  it("is false on any other pasalopalante.com subdomain, present or future", () => {
+    expect(isSatelliteDomain("staging.pasalopalante.com")).toBe(false);
+    expect(isSatelliteDomain("beta.pasalopalante.com")).toBe(false);
   });
 
   it("is true on a co-brand marketing domain", () => {

@@ -8,6 +8,12 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-09-20 — va.deedumlao@gmail.com
+
+- **Fixed a critical bug breaking login and QR sharing on the live app.** Reported as "people can't login or share their QRs." Root cause: a guard added two sessions ago (to stop passkindnessforward.com from spinning up its own separate copy of the app) never recognized app.pasalopalante.com — the real app — as safe. On the actual live app, that meant every single screen change silently redirected the page back to itself in a loop, which could interrupt someone mid-login or make the Pass screen never settle long enough to share a QR code. It went unnoticed because every test run happened on a local address that was explicitly exempt from the bug — it only ever showed up on the real domain. Fixed the underlying check so it can't miss a pasalopalante.com address like this again, and verified this time against the real hostname (not a local one) with no more loop. Added a regression test so this specific bug can never come back unnoticed.
+
+---
+
 ## 2026-09-18 — va.deedumlao@gmail.com
 
 - **Fixed the app's slow-3G/offline test suite, which had been silently broken and unable to run at all.** While checking whether the app had ever actually been tested under slow-connection conditions, found a syntax error in `network.spec.ts` (a stray duplicated fragment) that meant the whole file failed to even parse — so this coverage existed but nobody could have been running it. Fixed the one-line typo and ran it for real: 5 of 6 pass, including both throttled-network cases (a ~400kbps "slow link" and a ~1.5Mbps "regular 3G" profile) — the app does become interactive and navigable under both. The one failure is a gap in the test itself (it navigates to an unauthenticated `/pass`, which correctly redirects to `/wall` by design — not a real app bug), not something fixed here.
