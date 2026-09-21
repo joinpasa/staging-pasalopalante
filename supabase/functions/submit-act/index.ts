@@ -375,7 +375,11 @@ Deno.serve(async (req) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ act_id: data.id }),
-      }).catch((e) => console.error("classify-act dispatch failed", e));
+      })
+        .then(async (res) => {
+          if (!res.ok) console.error("classify-act dispatch failed", res.status, await res.text());
+        })
+        .catch((e) => console.error("classify-act dispatch failed", e));
       // @ts-ignore EdgeRuntime is available in Supabase Edge Functions
       if (typeof EdgeRuntime !== "undefined") EdgeRuntime.waitUntil(task);
     } catch (e) {
@@ -393,7 +397,18 @@ Deno.serve(async (req) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ mode: "user", email }),
-        }).catch((e) => console.error("ghl-sync-totals dispatch failed", e));
+        })
+          // fetch() only rejects on a network-level failure (DNS, connection
+          // refused) - a non-2xx response (missing GHL secrets, a rejected
+          // custom field, an auth mismatch) resolves normally and was
+          // previously invisible here, since nothing checked response.ok.
+          // That silence is exactly why totals could go unsynced for every
+          // contact with no trace anywhere - log the body on failure so a
+          // real cause shows up in this function's logs going forward.
+          .then(async (res) => {
+            if (!res.ok) console.error("ghl-sync-totals dispatch failed", res.status, await res.text());
+          })
+          .catch((e) => console.error("ghl-sync-totals dispatch error", e));
         // @ts-ignore EdgeRuntime is available in Supabase Edge Functions
         if (typeof EdgeRuntime !== "undefined") EdgeRuntime.waitUntil(task);
       } catch (e) {

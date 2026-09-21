@@ -27,5 +27,15 @@ export function syncGhlTag(
         },
       },
     })
+    // supabase.functions.invoke() resolves normally with { error } set on a
+    // non-2xx response from the function — it does NOT reject/throw for
+    // that case, only for an actual network-level failure. A bare .catch()
+    // here (the previous code) never once caught a real ppl-signup/GHL
+    // failure — only a total network outage — meaning every failed
+    // password-set/email-verified/website-signup tag sync has been
+    // completely silent, with no trace anywhere. Check .error explicitly.
+    .then(({ error }) => {
+      if (error) console.error(`GHL ${tag} sync failed (non-fatal)`, error);
+    })
     .catch((e) => console.error(`GHL ${tag} sync failed (non-fatal)`, e));
 }

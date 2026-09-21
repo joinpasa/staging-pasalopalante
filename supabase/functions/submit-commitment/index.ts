@@ -242,7 +242,16 @@ Deno.serve(async (req) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ mode: "user", email }),
-      }).catch((e) => console.error("ghl-sync-totals dispatch failed", e));
+      })
+        // fetch() only rejects on a network-level failure - a non-2xx
+        // response (missing GHL secrets, a rejected custom field, an auth
+        // mismatch) resolved normally and was previously invisible here,
+        // since nothing checked response.ok. Log the body on failure so a
+        // real cause shows up in this function's logs going forward.
+        .then(async (res) => {
+          if (!res.ok) console.error("ghl-sync-totals dispatch failed", res.status, await res.text());
+        })
+        .catch((e) => console.error("ghl-sync-totals dispatch error", e));
       // @ts-ignore EdgeRuntime is available in Supabase Edge Functions
       if (typeof EdgeRuntime !== "undefined") EdgeRuntime.waitUntil(task);
     } catch (e) {
