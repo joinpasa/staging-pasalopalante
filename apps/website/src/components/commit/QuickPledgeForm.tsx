@@ -32,7 +32,7 @@ import { getAuthErrorMessage } from "@shared/lib/authErrors";
 
 type HelpRole = "do_acts" | "champion" | "ambassador" | "civic" | "volunteer";
 
-const PLEDGE_PRESETS = [5, 10, 25, 50];
+const PLEDGE_PRESETS = [50, 100, 200, 500];
 
 // Quick, single-step pledge form — the homepage's primary CTA target. Unlike
 // CommitFlow (the full /commit page: Individual/Group tabs, org fields), this
@@ -50,8 +50,8 @@ export default function QuickPledgeForm() {
   const [country, setCountry] = useState("");
   const [countryOpen, setCountryOpen] = useState(false);
   const [helpRole, setHelpRole] = useState<HelpRole | "">("");
-  const [pledgeCount, setPledgeCount] = useState(10);
-  const [pledgeText, setPledgeText] = useState("10");
+  const [pledgeCount, setPledgeCount] = useState(200);
+  const [pledgeText, setPledgeText] = useState("200");
   const setPledge = (n: number) => {
     setPledgeCount(n);
     setPledgeText(String(n));
@@ -280,7 +280,7 @@ export default function QuickPledgeForm() {
             className="w-28"
           />
         </div>
-        <p className="text-xs text-muted-foreground">{t.commit.pledgeHint}</p>
+        <p className="text-xs text-muted-foreground">{t.commit.individualPledgeHint}</p>
       </div>
 
       {!user && (
