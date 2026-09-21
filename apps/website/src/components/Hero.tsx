@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useLanguage } from "@shared/contexts/LanguageContext";
-import { useUI } from "@shared/contexts/UIContext";
 import { RippleCanvas } from "@shared/components/ui/ripple-canvas";
 import { smoothScrollTo } from "@shared/lib/smoothScrollTo";
 import HeroVideo from "@/components/hero/HeroVideo";
@@ -21,7 +20,6 @@ function getTimeLeft() {
 
 const Hero = () => {
   const { t } = useLanguage();
-  const { openShareModal } = useUI();
   const [time, setTime] = useState(getTimeLeft);
 
   useEffect(() => {
@@ -137,12 +135,12 @@ const Hero = () => {
                 type="button"
                 onClick={() => {
                   const onHome = window.location.pathname === "/";
-                  if (onHome) smoothScrollTo("share-inline");
-                  else window.location.href = "/#share-inline";
+                  if (onHome) smoothScrollTo("get-involved-inline");
+                  else window.location.href = "/#get-involved-inline";
                 }}
                 className="rounded-full bg-primary px-8 py-5 text-base md:text-lg font-semibold uppercase tracking-[0.06em] text-primary-foreground shadow-[0_14px_34px_rgba(0,0,0,0.28)] transition-transform hover:scale-[1.04]"
               >
-                {t.share.sectionCta}
+                {t.hero.cta}
               </button>
               <a
                 href="/wall"

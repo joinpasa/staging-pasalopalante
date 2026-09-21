@@ -190,6 +190,7 @@ export type Database = {
           org_name: string | null
           org_type: string | null
           org_website: string | null
+          phone: string | null
           pledge_count: number
           status: string
           type: string
@@ -209,6 +210,7 @@ export type Database = {
           org_name?: string | null
           org_type?: string | null
           org_website?: string | null
+          phone?: string | null
           pledge_count?: number
           status?: string
           type: string
@@ -228,6 +230,7 @@ export type Database = {
           org_name?: string | null
           org_type?: string | null
           org_website?: string | null
+          phone?: string | null
           pledge_count?: number
           status?: string
           type?: string

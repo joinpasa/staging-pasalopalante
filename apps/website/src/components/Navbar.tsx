@@ -35,6 +35,7 @@ const Navbar = () => {
   const isPassKindnessForward = hostname === "passkindnessforward.com";
 
   const exploreItems = [
+    { label: t.share.sectionCta, onClick: () => openShareModal() },
     { label: t.navbar.ideas, href: "/ideas" },
     { label: t.mapPage.title, href: "/map" },
     { label: t.navbar.about, href: "/about" },
@@ -158,7 +159,16 @@ const Navbar = () => {
               }`}
             >
               {exploreItems.map((item) => (
-                item.anchor ? (
+                item.onClick ? (
+                  <button
+                    key={item.label}
+                    type="button"
+                    onClick={() => { setExploreOpen(false); item.onClick(); }}
+                    className="block w-full text-left rounded-lg px-4 py-2.5 text-sm text-foreground/80 hover:bg-warm-sand transition-colors"
+                  >
+                    {item.label}
+                  </button>
+                ) : item.anchor ? (
                   <button
                     key={item.label}
                     type="button"
@@ -207,10 +217,10 @@ const Navbar = () => {
 
           <button
             type="button"
-            onClick={() => openShareModal()}
+            onClick={() => goToAnchor("get-involved-inline")}
             className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.04]"
           >
-            {t.share.sectionCta}
+            {t.navbar.getInvolved}
           </button>
         </div>
 
@@ -268,7 +278,16 @@ const Navbar = () => {
                     >
                       <div className="flex flex-col gap-4 pl-4 pt-4">
                         {exploreItems.map((item) => (
-                          item.anchor ? (
+                          item.onClick ? (
+                            <button
+                              key={item.label}
+                              type="button"
+                              onClick={() => { setMobileOpen(false); item.onClick(); }}
+                              className="text-base font-medium text-foreground/70 text-left"
+                            >
+                              {item.label}
+                            </button>
+                          ) : item.anchor ? (
                             <button
                               key={item.label}
                               type="button"
@@ -295,10 +314,10 @@ const Navbar = () => {
               </div>
               <button
                 type="button"
-                onClick={() => { setMobileOpen(false); openShareModal(); }}
+                onClick={() => { setMobileOpen(false); goToAnchor("get-involved-inline"); }}
                 className="btn-primary text-center mt-2"
               >
-                {t.share.sectionCta}
+                {t.navbar.getInvolved}
               </button>
               {user ? (
                 <Link to="/account" onClick={() => setMobileOpen(false)} className="text-center text-foreground/70 text-sm flex items-center justify-center gap-2">

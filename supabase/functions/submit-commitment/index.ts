@@ -15,6 +15,7 @@ interface Body {
   first_name?: string;
   last_name?: string;
   email?: string;
+  phone?: string;
   org_name?: string;
   chapter?: string;
   org_website?: string;
@@ -47,6 +48,7 @@ Deno.serve(async (req) => {
     const firstName = (body.first_name ?? "").toString().trim().slice(0, 60);
     const lastName = (body.last_name ?? "").toString().trim().slice(0, 60);
     const email = (body.email ?? "").toString().trim().slice(0, 200);
+    const phone = (body.phone ?? "").toString().trim().slice(0, 40);
     const orgNameRaw = (body.org_name ?? "").toString().trim().slice(0, 120);
     const chapter = (body.chapter ?? "").toString().trim().slice(0, 120);
     const orgName = chapter ? `${orgNameRaw} — ${chapter}`.slice(0, 240) : orgNameRaw;
@@ -158,6 +160,7 @@ Deno.serve(async (req) => {
         first_name: firstName || null,
         last_name: lastName || null,
         email: email || null,
+        phone: phone || null,
         org_name: orgName || null,
         org_website: orgWebsite || null,
         pledge_count: pledgeCount,

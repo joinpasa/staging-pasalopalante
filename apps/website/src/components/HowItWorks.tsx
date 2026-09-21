@@ -2,7 +2,8 @@ import { motion, useInView, useAnimation } from "framer-motion";
 import { useRef, useCallback, useEffect } from "react";
 import { ArrowUpRight, Check, Heart, ArrowRight, Smartphone, Sparkles } from "lucide-react";
 import { useLanguage } from "@shared/contexts/LanguageContext";
-import ShareActCTA from "@shared/components/share/ShareActCTA";
+import QuickPledgeForm from "@/components/commit/QuickPledgeForm";
+import PledgeCounter from "@/components/commit/PledgeCounter";
 import { triggerAppInstall } from "@shared/lib/installTrigger";
 
 const fadeUp = {
@@ -162,9 +163,9 @@ const HowItWorks = () => {
           </button>
         </motion.div>
 
-        {/* Inline share form */}
+        {/* Inline pledge form — the primary CTA's scroll target */}
         <motion.div
-          id="share-inline"
+          id="get-involved-inline"
           custom={7}
           variants={fadeUp}
           initial="hidden"
@@ -179,7 +180,7 @@ const HowItWorks = () => {
               {t.howItWorks.inlineFormHeading}
             </h3>
             <p className="text-warm-cream/80 mb-7 leading-relaxed">{t.howItWorks.inlineFormBody}</p>
-            <div className="space-y-3">
+            <div className="space-y-3 mb-8">
               {checks.map((c) => (
                 <div key={c} className="flex items-start gap-2.5">
                   <Check size={18} className="text-warm-gold shrink-0 mt-0.5" />
@@ -187,9 +188,12 @@ const HowItWorks = () => {
                 </div>
               ))}
             </div>
+            <div className="pt-6 border-t border-warm-cream/15">
+              <PledgeCounter className="!justify-start !gap-10 [&_.text-primary]:!text-warm-gold [&_.text-muted-foreground]:!text-warm-cream/70" />
+            </div>
           </div>
           <div className="bg-warm-cream px-6 py-8 md:px-12 md:py-13">
-            <ShareActCTA variant="inline" />
+            <QuickPledgeForm />
           </div>
         </motion.div>
       </div>

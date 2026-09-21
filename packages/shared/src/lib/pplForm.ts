@@ -16,6 +16,7 @@ export interface GetInvolvedData {
 export interface PledgeData {
   fullName: string;
   email: string;
+  phone?: string;
   country?: string;
   pledgeCount?: number;
   message?: string;
