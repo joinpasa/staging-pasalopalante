@@ -4,7 +4,7 @@ import { Handshake, Users } from "lucide-react";
 import community4 from "@/assets/community-4.jpg";
 import community5 from "@/assets/community-5.jpg";
 import { useLanguage } from "@shared/contexts/LanguageContext";
-import { useUI } from "@shared/contexts/UIContext";
+import { smoothScrollTo } from "@shared/lib/smoothScrollTo";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -19,7 +19,6 @@ const TwoPaths = () => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const { t } = useLanguage();
-  const { openShareModal } = useUI();
 
   return (
     <section id="join" ref={ref} className="bg-warm-sand section-padding section-spacing">
@@ -37,11 +36,11 @@ const TwoPaths = () => {
         </motion.p>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <motion.div custom={3} variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"} className="bg-background rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-            <div className="h-64 overflow-hidden">
+          <motion.div custom={3} variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"} className="bg-background rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col">
+            <div className="h-64 overflow-hidden shrink-0">
               <img src={community4} alt="Individual acts of kindness" className="w-full h-full object-cover" style={{ objectPosition: '50% 57%' }} loading="lazy" />
             </div>
-            <div className="p-8 md:p-10">
+            <div className="p-8 md:p-10 flex flex-col flex-1">
               <div className="w-12 h-12 rounded-full bg-warm-blush flex items-center justify-center mb-4">
                 <Handshake className="w-5 h-5 text-warm-terracotta" />
               </div>
@@ -56,17 +55,21 @@ const TwoPaths = () => {
                 <li>{t.twoPaths.indBullet4}</li>
                 <li>{t.twoPaths.indBullet5}</li>
               </ul>
-              <button type="button" onClick={() => openShareModal()} className="btn-primary w-full text-center">
+              <button
+                type="button"
+                onClick={() => smoothScrollTo("get-involved-inline")}
+                className="btn-primary w-full text-center mt-auto"
+              >
                 {t.twoPaths.indCta}
               </button>
             </div>
           </motion.div>
 
-          <motion.div custom={4} variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"} className="bg-background rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-            <div className="h-64 overflow-hidden">
+          <motion.div custom={4} variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"} className="bg-background rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col">
+            <div className="h-64 overflow-hidden shrink-0">
               <img src={community5} alt="Community organizations" className="w-full h-full object-cover object-top" loading="lazy" />
             </div>
-            <div className="p-8 md:p-10">
+            <div className="p-8 md:p-10 flex flex-col flex-1">
               <div className="w-12 h-12 rounded-full bg-warm-blush flex items-center justify-center mb-4">
                 <Users className="w-5 h-5 text-warm-terracotta" />
               </div>
@@ -80,7 +83,7 @@ const TwoPaths = () => {
                 <li>{t.twoPaths.ambBullet3}</li>
                 <li>{t.twoPaths.ambBullet4}</li>
               </ul>
-              <a href="/commit" className="btn-secondary w-full text-center">
+              <a href="/commit" className="btn-secondary w-full text-center mt-auto">
                 {t.twoPaths.ambCta}
               </a>
             </div>
