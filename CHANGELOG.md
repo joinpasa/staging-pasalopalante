@@ -8,6 +8,12 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-09-21 — va.deedumlao@gmail.com
+
+- **Fixed people getting signed out every time they closed the app or site**, reported as "he keeps logging in, wants to stay logged in." Root cause: when the app and website were split apart a few weeks ago, keeping someone signed in on both required switching from the browser's normal storage to cookies — necessary for that split, but the code splitting a large session across multiple cookies sized each piece by raw character count, not by how big it actually becomes once safely encoded for a cookie. Proved it directly: a realistically-sized piece encoded to nearly 4,900 bytes against a real ~4,093-byte browser limit per cookie — so for anyone whose account had grown enough saved info to need a second piece, that piece would silently fail to save, corrupting their session the moment they came back. Fixed the sizing to account for that encoding, and added a safety net so a corrupted session cleanly asks someone to sign in again instead of behaving unpredictably. Added tests that specifically catch this class of bug so it can't quietly return.
+
+---
+
 ## 2026-09-20 — va.deedumlao@gmail.com
 
 - **Fixed a critical bug breaking login and QR sharing on the live app.** Reported as "people can't login or share their QRs." Root cause: a guard added two sessions ago (to stop passkindnessforward.com from spinning up its own separate copy of the app) never recognized app.pasalopalante.com — the real app — as safe. On the actual live app, that meant every single screen change silently redirected the page back to itself in a loop, which could interrupt someone mid-login or make the Pass screen never settle long enough to share a QR code. It went unnoticed because every test run happened on a local address that was explicitly exempt from the bug — it only ever showed up on the real domain. Fixed the underlying check so it can't miss a pasalopalante.com address like this again, and verified this time against the real hostname (not a local one) with no more loop. Added a regression test so this specific bug can never come back unnoticed.

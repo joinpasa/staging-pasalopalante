@@ -99,13 +99,46 @@ describe("domainAuthStorage — Supabase session cookie adapter", () => {
   });
 
   it("chunks and reassembles a value larger than one cookie", () => {
-    const big = "x".repeat(10000);
+    // A real chunked value is always the (JSON) session object - a bare
+    // repeated character isn't valid JSON, and getItem's reassembly now
+    // validates that (see domainAuthStorage.ts) to catch a genuinely
+    // corrupted chunk write, so the fixture here needs to be valid JSON too.
+    const big = JSON.stringify({ token: "x".repeat(10000) });
     domainAuthStorage.setItem("sb-big-auth-token", big);
     // Should not fit in a single cookie under the key itself.
     expect(getCookie("sb-big-auth-token")).toBeUndefined();
     expect(getCookie("sb-big-auth-token.0")).toBeDefined();
     expect(getCookie("sb-big-auth-token.1")).toBeDefined();
     expect(domainAuthStorage.getItem("sb-big-auth-token")).toBe(big);
+  });
+
+  it("chunk boundaries account for percent-encoding expansion, not just raw length", () => {
+    // JSON-heavy content (lots of {, }, ", :, ,) and unicode can expand
+    // significantly once encodeURIComponent'd - a chunk sized by raw
+    // character count alone could still overflow a real cookie's ~4093-byte
+    // ceiling once encoded. Build content that's dense with exactly that
+    // (repeated small JSON objects with an accented name) and confirm every
+    // single chunk actually written stays under that real ceiling.
+    const unit = JSON.stringify({ name: "María José Rodríguez-Peña", ok: true });
+    const dense = JSON.stringify({ items: Array(40).fill(unit) });
+    domainAuthStorage.setItem("sb-dense-auth-token", dense);
+    const chunks = [];
+    for (let i = 0; getCookie(`sb-dense-auth-token.${i}`) !== undefined; i++) {
+      chunks.push(getCookie(`sb-dense-auth-token.${i}`)!);
+    }
+    expect(chunks.length).toBeGreaterThan(1);
+    for (const chunk of chunks) {
+      expect(encodeURIComponent(chunk).length).toBeLessThanOrEqual(4093);
+    }
+    expect(domainAuthStorage.getItem("sb-dense-auth-token")).toBe(dense);
+  });
+
+  it("returns null (not corrupted data) when a chunk is missing, instead of throwing", () => {
+    const value = JSON.stringify({ token: "y".repeat(10000) });
+    domainAuthStorage.setItem("sb-partial-auth-token", value);
+    // Simulate a chunk write that silently failed by deleting one piece.
+    deleteCookie("sb-partial-auth-token.1");
+    expect(domainAuthStorage.getItem("sb-partial-auth-token")).toBeNull();
   });
 
   it("removes both single-cookie and chunked forms", () => {
