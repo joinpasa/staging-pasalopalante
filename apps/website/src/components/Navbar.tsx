@@ -27,12 +27,6 @@ const Navbar = () => {
   const isHome = location.pathname === "/";
   const hasSubNav = isHome || location.pathname === "/ideas";
   const isSolid = !isHome || scrolled;
-  // Alternate-domain branding: passkindnessforward.com shows "Pass Kindness
-  // Forward" beside the logo. That domain is now actually routed to this
-  // same site (Cloudflare Workers Route) - was written before that existed,
-  // with the domain's words in the wrong order, so this never matched.
-  const hostname = typeof window !== "undefined" ? window.location.hostname.replace(/^www\./, "") : "";
-  const isPassKindnessForward = hostname === "passkindnessforward.com";
 
   const exploreItems = [
     { label: t.share.sectionCta, onClick: () => openShareModal() },
@@ -121,11 +115,6 @@ const Navbar = () => {
             title="Pass Kindness Forward"
             className="h-10 w-auto object-contain"
           />
-          {isPassKindnessForward && (
-            <span className={`text-base md:text-lg font-semibold tracking-tight transition-colors duration-300 ${isSolid ? "text-foreground" : "text-white"}`}>
-              Pass Kindness Forward
-            </span>
-          )}
         </Link>
 
         <div className="hidden md:flex items-center gap-6">

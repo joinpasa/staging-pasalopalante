@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-09-22 — va.deedumlao@gmail.com
+
+- **Removed the "Pass Kindness Forward" text next to the logo in the header on passkindnessforward.com.** It's logo-only now, matching the request — the text was only ever showing on that one domain to begin with.
+
 ## 2026-09-21 — va.deedumlao@gmail.com
 
 - **Raised the pledge form's suggested numbers and nudged people toward "2 a day."** The quick pledge form's preset buttons were 5/10/25/50 — bumped to 50/100/200/500, with 200 now the pre-selected default (the open number field is still there for any other amount). Added a line under the pledge-count field doing the math for people: "Just 2 acts of kindness a day gets you past 180 by January 31" — since Global Kindness Season is ~92 days, that's the actual number 2-a-day adds up to.
