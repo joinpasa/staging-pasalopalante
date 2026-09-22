@@ -172,8 +172,8 @@ const HowItWorks = () => {
           animate={inView ? "visible" : "hidden"}
           className="grid grid-cols-1 lg:grid-cols-2 rounded-3xl overflow-hidden shadow-[0_24px_60px_rgba(0,0,0,0.08)]"
         >
-          <div className="bg-[hsl(20_35%_30%)] px-6 py-10 md:px-11 md:py-14 flex flex-col justify-center">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-warm-gold mb-3">
+          <div className="bg-[#0E234B] px-6 py-10 md:px-11 md:py-14 flex flex-col justify-center">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-warm-sky mb-3">
               {t.howItWorks.inlineFormEyebrow}
             </p>
             <h3 className="headline-lg !text-3xl md:!text-4xl text-warm-cream mb-4">
@@ -183,7 +183,7 @@ const HowItWorks = () => {
             <div className="space-y-3 mb-8">
               {checks.map((c) => (
                 <div key={c} className="flex items-start gap-2.5">
-                  <Check size={18} className="text-warm-gold shrink-0 mt-0.5" />
+                  <Check size={18} className="text-warm-sky shrink-0 mt-0.5" />
                   <span className="text-[15.5px] text-warm-cream/90">{c}</span>
                 </div>
               ))}
