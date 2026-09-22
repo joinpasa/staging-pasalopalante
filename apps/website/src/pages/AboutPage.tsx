@@ -33,7 +33,7 @@ export default function AboutPage() {
                 : "Pásalo Pa'lante (PPL) is a global kindness movement created by Te Amo PR, a U.S. 501(c)(3) nonprofit organization based in Puerto Rico. Our mission is to spark 1 billion acts of kindness worldwide during the Kindness Season — November 1 through January 31."}
             </p>
 
-            <h2 className="font-serif text-2xl text-warm-earth mt-10 mb-3">
+            <h2 className="font-serif text-2xl text-foreground mt-10 mb-3">
               {isEs ? "Quiénes somos" : "Who we are"}
             </h2>
             <p>
@@ -41,7 +41,7 @@ export default function AboutPage() {
                 ? "Te Amo PR es una organización sin fines de lucro reconocida por el IRS bajo la sección 501(c)(3). Las donaciones son deducibles de impuestos hasta donde permite la ley. Operamos desde Puerto Rico y servimos a comunidades en todo el mundo. Pásalo Pa'lante es una iniciativa hermana de Te Amo PR."
                 : "Te Amo PR is an IRS-recognized 501(c)(3) public charity. Donations are tax-deductible to the fullest extent allowed by law. We operate from Puerto Rico and serve communities around the world. Pásalo Pa'lante is a sister initiative of Te Amo PR."}
             </p>
-            <ul className="list-none pl-0 space-y-1 text-sm bg-warm-cream/60 border border-warm-earth/10 rounded-lg p-4">
+            <ul className="list-none pl-0 space-y-1 text-sm bg-warm-cream/60 border border-border rounded-lg p-4">
               <li><strong>{isEs ? "Organización legal:" : "Legal organization:"}</strong> Te Amo PR</li>
               <li><strong>{isEs ? "Estatus:" : "Status:"}</strong> {isEs ? "501(c)(3) reconocida por el IRS de EE.UU." : "U.S. IRS-recognized 501(c)(3) public charity"}</li>
               <li><strong>EIN:</strong> 66-0975633</li>
@@ -49,7 +49,7 @@ export default function AboutPage() {
               <li><strong>{isEs ? "Sitio:" : "Website:"}</strong> <a href="https://teamopr.org" target="_blank" rel="noopener noreferrer" className="text-warm-sky underline">teamopr.org</a></li>
             </ul>
 
-            <h2 className="font-serif text-2xl text-warm-earth mt-10 mb-3">
+            <h2 className="font-serif text-2xl text-foreground mt-10 mb-3">
               {isEs ? "Lo que hacemos" : "What we do"}
             </h2>
             <p>
@@ -58,7 +58,7 @@ export default function AboutPage() {
                 : "Each season, we mobilize ambassadors, volunteers, and communities to perform, log, and share acts of kindness. We are working toward a Guinness World Record for the largest documented wave of kindness — a movement that passes from one person to the next, one country to the next."}
             </p>
 
-            <h2 className="font-serif text-2xl text-warm-earth mt-10 mb-3">
+            <h2 className="font-serif text-2xl text-foreground mt-10 mb-3">
               {isEs ? "Cómo participar" : "How to get involved"}
             </h2>
             <ul className="list-disc pl-6 space-y-2">
@@ -89,7 +89,7 @@ export default function AboutPage() {
               </li>
             </ul>
 
-            <h2 className="font-serif text-2xl text-warm-earth mt-10 mb-3">
+            <h2 className="font-serif text-2xl text-foreground mt-10 mb-3">
               {isEs ? "Contacto" : "Contact"}
             </h2>
             <p>

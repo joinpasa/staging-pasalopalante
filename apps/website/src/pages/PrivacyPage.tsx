@@ -12,7 +12,7 @@ export default function PrivacyPage() {
 
   const Section = ({ n, title, children }: { n: number; title: string; children: React.ReactNode }) => (
     <>
-      <h2 className="font-display text-2xl text-warm-earth mt-10">
+      <h2 className="font-display text-2xl text-foreground mt-10">
         {n}. {title}
       </h2>
       <div className="space-y-4">{children}</div>
@@ -81,7 +81,7 @@ export default function PrivacyPage() {
                   "Juntos, Te Amo PR y Pásalo Pa'lante comparten un propósito común: inspirar a personas, instituciones, escuelas, empresas, comunidades y naciones a hacer la bondad visible, práctica y contagiosa."
                 )}
               </p>
-              <ul className="list-none pl-0 space-y-1 text-sm bg-warm-cream/60 border border-warm-earth/10 rounded-lg p-4">
+              <ul className="list-none pl-0 space-y-1 text-sm bg-warm-cream/60 border border-border rounded-lg p-4">
                 <li><strong>{t("Legal nonprofit organization:", "Organización legal sin fines de lucro:")}</strong> Te Amo PR</li>
                 <li><strong>{t("Sister initiative / movement platform:", "Iniciativa hermana / plataforma del movimiento:")}</strong> Pásalo Pa'lante</li>
                 <li><strong>{t("Primary organization website:", "Sitio principal de la organización:")}</strong> teamopr.org</li>
@@ -300,7 +300,7 @@ export default function PrivacyPage() {
 
             <Section n={25} title={t("Contact Information", "Información de contacto")}>
               <p>{t("For privacy, legal, nonprofit, donation, partnership, media, or general inquiries, please contact:", "Para asuntos de privacidad, legales, sin fines de lucro, donaciones, alianzas, medios o consultas generales, contacta:")}</p>
-              <div className="bg-warm-cream/60 border border-warm-earth/10 rounded-lg p-4 text-sm space-y-1">
+              <div className="bg-warm-cream/60 border border-border rounded-lg p-4 text-sm space-y-1">
                 <p><strong>Te Amo PR / Pásalo Pa'lante</strong></p>
                 <p>{t("Website:", "Sitio:")} <a href="https://teamopr.org" target="_blank" rel="noopener noreferrer" className="text-warm-sky underline">teamopr.org</a></p>
                 <p>{t("Movement Website:", "Sitio del movimiento:")} <a href="https://pasalopalante.com" className="text-warm-sky underline">pasalopalante.com</a></p>

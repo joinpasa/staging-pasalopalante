@@ -255,10 +255,10 @@ export default function CourseCreatorForm() {
     return (
       <section
         id="course-creator"
-        className="bg-white/70 border border-warm-earth/10 rounded-2xl p-8 md:p-10 text-center"
+        className="bg-white/70 border border-border rounded-2xl p-8 md:p-10 text-center"
       >
         <p className="eyebrow">{c.eyebrow}</p>
-        <h2 className="font-display text-3xl md:text-4xl text-warm-earth mt-3 mb-4">
+        <h2 className="font-display text-3xl md:text-4xl text-foreground mt-3 mb-4">
           {c.heading}
         </h2>
         <p className="text-foreground/80 leading-relaxed max-w-xl mx-auto">
@@ -271,11 +271,11 @@ export default function CourseCreatorForm() {
   return (
     <section
       id="course-creator"
-      className="bg-white/70 border border-warm-earth/10 rounded-2xl p-6 md:p-10"
+      className="bg-white/70 border border-border rounded-2xl p-6 md:p-10"
     >
       <div className="mb-8 text-center max-w-2xl mx-auto">
         <p className="eyebrow">{c.eyebrow}</p>
-        <h2 className="font-display text-3xl md:text-4xl text-warm-earth mt-3 mb-3">
+        <h2 className="font-display text-3xl md:text-4xl text-foreground mt-3 mb-3">
           {c.heading}
         </h2>
         <p className="text-foreground/75 leading-relaxed">{c.subheading}</p>

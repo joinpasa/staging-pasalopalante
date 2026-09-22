@@ -31,7 +31,7 @@ function timeAgo(iso: string, t: ReturnType<typeof useLanguage>["t"]): string {
 // Subtle, distinct tints pulled from the existing warm.* palette - no new colors.
 const MODE_STYLES: Record<string, string> = {
   performed: "bg-warm-terracotta/15 text-warm-terracotta",
-  received: "bg-warm-gold/20 text-warm-earth",
+  received: "bg-warm-gold/20 text-foreground",
   witnessed: "bg-warm-sage/20 text-warm-sage",
 };
 

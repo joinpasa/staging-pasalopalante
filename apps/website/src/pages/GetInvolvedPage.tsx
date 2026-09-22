@@ -35,8 +35,8 @@ export default function GetInvolvedPage() {
 
           <div className="grid md:grid-cols-2 gap-6">
             {groups.map((g) => (
-              <article key={g.title} className="bg-white/70 border border-warm-earth/10 rounded-2xl p-6">
-                <h2 className="font-display text-2xl text-warm-earth mb-2">{g.title}</h2>
+              <article key={g.title} className="bg-white/70 border border-border rounded-2xl p-6">
+                <h2 className="font-display text-2xl text-foreground mb-2">{g.title}</h2>
                 <p className="text-foreground/80 leading-relaxed mb-4">{g.body}</p>
                 <Link to={g.link} className="text-warm-sky font-medium underline-offset-2 hover:underline">
                   {g.cta} →

@@ -35,7 +35,7 @@ export default function CommunityGuidelinesPage() {
                 : "Pásalo Pa'lante is a space to celebrate kindness. These guidelines keep the community warm, safe, and centered on what matters."}
             </p>
 
-            <h2 className="font-display text-2xl text-warm-earth mt-8">
+            <h2 className="font-display text-2xl text-foreground mt-8">
               {isEs ? "Sé real" : "Be real"}
             </h2>
             <p>
@@ -44,7 +44,7 @@ export default function CommunityGuidelinesPage() {
                 : "Share genuine acts of kindness — performed, witnessed, or received. Don't submit invented, exaggerated, or copied content without attribution."}
             </p>
 
-            <h2 className="font-display text-2xl text-warm-earth mt-8">
+            <h2 className="font-display text-2xl text-foreground mt-8">
               {isEs ? "Sé respetuoso" : "Be respectful"}
             </h2>
             <p>
@@ -53,7 +53,7 @@ export default function CommunityGuidelinesPage() {
                 : "Don't post content that is hateful, harassing, sexually explicit, violent, or discriminatory. Treat everyone with the kindness you're celebrating."}
             </p>
 
-            <h2 className="font-display text-2xl text-warm-earth mt-8">
+            <h2 className="font-display text-2xl text-foreground mt-8">
               {isEs ? "Protege la privacidad de otros" : "Protect others' privacy"}
             </h2>
             <p>
@@ -62,7 +62,7 @@ export default function CommunityGuidelinesPage() {
                 : "If someone is identifiable in your photo or video, you must have their permission (or their parent's permission if they're under 18). Don't post another person's contact information, address, phone number, or other personal data."}
             </p>
 
-            <h2 className="font-display text-2xl text-warm-earth mt-8">
+            <h2 className="font-display text-2xl text-foreground mt-8">
               {isEs ? "Mantente en tema" : "Stay on topic"}
             </h2>
             <p>
@@ -71,7 +71,7 @@ export default function CommunityGuidelinesPage() {
                 : "This platform is for kindness stories. It's not a place for advertising, promotions, unrelated fundraising, partisan political content, or spam."}
             </p>
 
-            <h2 className="font-display text-2xl text-warm-earth mt-8">
+            <h2 className="font-display text-2xl text-foreground mt-8">
               {isEs ? "Edad mínima" : "Minimum age"}
             </h2>
             <p>
@@ -80,7 +80,7 @@ export default function CommunityGuidelinesPage() {
                 : "You must be at least 13 years old to use this platform. Users aged 13-17 get additional visibility protections by default."}
             </p>
 
-            <h2 className="font-display text-2xl text-warm-earth mt-8">
+            <h2 className="font-display text-2xl text-foreground mt-8">
               {isEs ? "Cumplimiento" : "Enforcement"}
             </h2>
             <p>
@@ -90,7 +90,7 @@ export default function CommunityGuidelinesPage() {
               <a href="mailto:info@teamopr.org" className="text-warm-sky underline">info@teamopr.org</a>.
             </p>
 
-            <h2 className="font-display text-2xl text-warm-earth mt-8">
+            <h2 className="font-display text-2xl text-foreground mt-8">
               {isEs ? "Reportar contenido" : "Report content"}
             </h2>
             <p>

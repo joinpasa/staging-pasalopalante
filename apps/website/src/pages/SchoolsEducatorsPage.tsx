@@ -27,7 +27,7 @@ export default function SchoolsEducatorsPage() {
             {f.schoolsBody}
           </p>
 
-          <div className="bg-white/70 border border-warm-earth/10 rounded-2xl p-4 md:p-6">
+          <div className="bg-white/70 border border-border rounded-2xl p-4 md:p-6">
             <GHLFormEmbed formId="2ptAgeJjPZAbA3OWWbY9" title={f.schoolsFormTitle} />
           </div>
         </div>

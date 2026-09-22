@@ -102,9 +102,9 @@ export default function ProgramsPage() {
             {programs.map((p) => (
               <section
                 key={p.title}
-                className="bg-white/70 border border-warm-earth/10 rounded-2xl p-6 md:p-8"
+                className="bg-white/70 border border-border rounded-2xl p-6 md:p-8"
               >
-                <h2 className="font-display text-2xl text-warm-earth mb-3">{p.title}</h2>
+                <h2 className="font-display text-2xl text-foreground mb-3">{p.title}</h2>
                 <p className="text-foreground/80 leading-relaxed mb-4">{p.body}</p>
                 {p.link === "/share" ? (
                   <button
@@ -123,8 +123,8 @@ export default function ProgramsPage() {
             ))}
           </div>
 
-          <section className="mt-16 text-center bg-warm-earth/5 border border-warm-earth/10 rounded-2xl p-8">
-            <h2 className="font-display text-2xl text-warm-earth mb-3">
+          <section className="mt-16 text-center bg-muted border border-border rounded-2xl p-8">
+            <h2 className="font-display text-2xl text-foreground mb-3">
               {t("The Kindness Season", "La Temporada de Bondad")}
             </h2>
             <p className="text-foreground/80 leading-relaxed max-w-2xl mx-auto">

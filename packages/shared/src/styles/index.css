@@ -6,38 +6,42 @@
 
 @layer base {
   :root {
-    --background: 36 33% 97%;
-    --foreground: 20 15% 15%;
+    --background: 0 0% 100%;
+    --foreground: 217 33% 17%;
 
-    --card: 36 30% 95%;
-    --card-foreground: 20 15% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 217 33% 17%;
 
-    --popover: 36 33% 97%;
-    --popover-foreground: 20 15% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 217 33% 17%;
 
     --primary: 22 90% 55%;
-    --primary-foreground: 36 33% 97%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 165 35% 45%;
-    --secondary-foreground: 36 33% 97%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 36 20% 90%;
-    --muted-foreground: 20 10% 45%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 19% 35%;
 
     --accent: 42 98% 53%;
-    --accent-foreground: 20 15% 15%;
+    --accent-foreground: 217 33% 17%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 30 15% 85%;
-    --input: 30 15% 85%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
     --ring: 22 90% 55%;
 
     --radius: 0.75rem;
 
-    --warm-cream: 36 33% 97%;
-    --warm-sand: 36 25% 90%;
+    /* warm-cream/warm-sand keep their names (used as bg-warm-cream/
+       bg-warm-sand utility classes throughout) but are no longer warm —
+       retired the beige/tan values for a white + ultra-light cool tint
+       pair, per the neutral-background overhaul. */
+    --warm-cream: 0 0% 100%;
+    --warm-sand: 210 36% 96%;
     --warm-terracotta: 22 90% 55%;
     --warm-sage: 165 35% 45%;
     --warm-gold: 42 98% 53%;

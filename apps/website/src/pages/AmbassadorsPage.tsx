@@ -27,7 +27,7 @@ export default function AmbassadorsPage() {
             {f.ambassadorsBody}
           </p>
 
-          <div className="bg-white/70 border border-warm-earth/10 rounded-2xl p-4 md:p-6">
+          <div className="bg-white/70 border border-border rounded-2xl p-4 md:p-6">
             <GHLFormEmbed formId="xJ4tStNKJBn0QgQZb896" title={f.ambassadorsFormTitle} />
           </div>
         </div>

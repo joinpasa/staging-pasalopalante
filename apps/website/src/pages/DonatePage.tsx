@@ -33,8 +33,8 @@ const DonatePage = () => {
             </p>
           </header>
 
-          <div className="bg-white/70 border border-warm-earth/10 rounded-2xl p-6 md:p-8 space-y-4">
-            <h2 className="font-display text-2xl text-warm-earth">
+          <div className="bg-white/70 border border-border rounded-2xl p-6 md:p-8 space-y-4">
+            <h2 className="font-display text-2xl text-foreground">
               {t("How to donate securely", "Cómo donar de forma segura")}
             </h2>
             <ol className="list-decimal pl-6 space-y-3 text-foreground/85 leading-relaxed">
@@ -70,7 +70,7 @@ const DonatePage = () => {
               </li>
             </ol>
 
-            <div className="border-t border-warm-earth/10 pt-4 text-sm text-foreground/70 space-y-1">
+            <div className="border-t border-border pt-4 text-sm text-foreground/70 space-y-1">
               <p>
                 <strong>{t("Tax receipts:", "Recibos de impuestos:")}</strong>{" "}
                 {t(
