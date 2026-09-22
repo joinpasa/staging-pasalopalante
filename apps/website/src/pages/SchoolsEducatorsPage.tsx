@@ -20,7 +20,7 @@ export default function SchoolsEducatorsPage() {
       <main className="pt-32 pb-20 section-padding">
         <div className="max-w-3xl mx-auto">
           <p className="eyebrow">Pásalo Pa'lante</p>
-          <h1 className="headline-xl text-warm-earth mt-3 mb-4">
+          <h1 className="headline-xl text-foreground mt-3 mb-4">
             {f.schoolsHeading}
           </h1>
           <p className="text-base md:text-lg text-foreground/75 leading-relaxed mb-10 max-w-2xl">

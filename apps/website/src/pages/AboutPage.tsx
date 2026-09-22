@@ -22,7 +22,7 @@ export default function AboutPage() {
       <main className="pt-32 pb-20 section-padding">
         <article className="max-w-3xl mx-auto">
           <p className="eyebrow">Pásalo Pa'lante</p>
-          <h1 className="headline-xl text-warm-earth mt-3 mb-6">
+          <h1 className="headline-xl text-foreground mt-3 mb-6">
             {isEs ? "Sobre Pásalo Pa'lante" : "About Pásalo Pa'lante"}
           </h1>
 

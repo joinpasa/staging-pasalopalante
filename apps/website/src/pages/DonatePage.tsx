@@ -22,7 +22,7 @@ const DonatePage = () => {
         <section className="section-padding pb-12 max-w-3xl mx-auto">
           <header className="text-center mb-10">
             <p className="eyebrow">Pásalo Pa'lante</p>
-            <h1 className="headline-xl text-warm-earth mt-3 mb-4">
+            <h1 className="headline-xl text-foreground mt-3 mb-4">
               {t("Donate", "Dona")}
             </h1>
             <p className="text-base md:text-lg text-foreground/75 leading-relaxed">

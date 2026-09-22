@@ -37,7 +37,7 @@ export default function PrivacyPage() {
         <article className="max-w-3xl mx-auto">
           <header className="mb-10 text-center">
             <p className="eyebrow">Pásalo Pa'lante</p>
-            <h1 className="headline-xl text-warm-earth mt-3">
+            <h1 className="headline-xl text-foreground mt-3">
               {t("Privacy Policy & Legal Information", "Política de Privacidad e Información Legal")}
             </h1>
             <p className="text-sm text-foreground/60 mt-3">

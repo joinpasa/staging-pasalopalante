@@ -87,7 +87,7 @@ export default function ProgramsPage() {
         <article className="max-w-4xl mx-auto">
           <header className="mb-12 text-center">
             <p className="eyebrow">Pásalo Pa'lante</p>
-            <h1 className="headline-xl text-warm-earth mt-3 mb-4">
+            <h1 className="headline-xl text-foreground mt-3 mb-4">
               {t("Programs & How It Works", "Programas y Cómo Funciona")}
             </h1>
             <p className="text-base md:text-lg text-foreground/75 leading-relaxed max-w-2xl mx-auto">

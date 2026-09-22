@@ -26,7 +26,7 @@ export default function GetInvolvedPage() {
       <main className="pt-32 pb-20 section-padding">
         <div className="max-w-4xl mx-auto">
           <p className="eyebrow">Pásalo Pa'lante</p>
-          <h1 className="headline-xl text-warm-earth mt-3 mb-4">
+          <h1 className="headline-xl text-foreground mt-3 mb-4">
             {p.heading}
           </h1>
           <p className="text-base md:text-lg text-foreground/75 leading-relaxed mb-10 max-w-2xl">

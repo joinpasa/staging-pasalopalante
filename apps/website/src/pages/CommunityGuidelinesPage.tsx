@@ -20,7 +20,7 @@ export default function CommunityGuidelinesPage() {
         <article className="max-w-3xl mx-auto">
           <header className="mb-10 text-center">
             <p className="eyebrow">Pásalo Pa'lante</p>
-            <h1 className="headline-xl text-warm-earth mt-3">
+            <h1 className="headline-xl text-foreground mt-3">
               {isEs ? "Normas de la Comunidad" : "Community Guidelines"}
             </h1>
             <p className="text-sm text-foreground/60 mt-3">
