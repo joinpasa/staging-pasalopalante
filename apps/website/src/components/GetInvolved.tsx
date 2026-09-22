@@ -58,7 +58,7 @@ const DonateDialog = ({ open, onOpenChange }: { open: boolean; onOpenChange: (v:
           <a href="https://www.paypal.com/ncp/payment/LQT3G3GLS8SWS" target="_blank" rel="noopener noreferrer" className="btn-primary inline-block px-8 py-3 text-center">Donate Now</a>
         </div>
         <p>For checks, wire transfers, ACH deposits, money orders or other alternative methods, please write to us at:{" "}
-          <a href="mailto:info@teamopr.org" className="text-warm-terracotta font-medium underline">info@teamopr.org</a>
+          <a href="mailto:info@teamopr.org" className="text-warm-sky font-medium underline">info@teamopr.org</a>
         </p>
         <p>Thank you very much for your generous donation.</p>
         <p className="italic">Sincerely,<br />Te Amo PR Team</p>
@@ -120,7 +120,7 @@ const GetInvolved = () => {
                 className={`flex flex-col rounded-2xl overflow-hidden transition-shadow duration-300 ${col.mobileOrder} ${col.desktopOrder} ${
                   col.highlighted ? "shadow-2xl md:scale-105 md:-my-4 z-10" : "bg-card shadow-md"
                 }`}
-                style={col.highlighted ? { backgroundColor: '#F5E6E0' } : undefined}
+                style={col.highlighted ? { backgroundColor: '#f6dfe8' } : undefined}
               >
                 <div className="w-full h-52 overflow-hidden">
                   <AutoCarousel images={col.images} alt={col.heading} interval={col.interval} />

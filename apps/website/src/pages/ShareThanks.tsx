@@ -262,14 +262,14 @@ function Inner() {
             <Button onClick={() => openShareModal()}>{t.share.shareAnother}</Button>
             {!showClaim && (
               user ? (
-                <Link to="/account" className="text-sm font-bold text-primary hover:underline">
+                <Link to="/account" className="text-sm font-bold text-warm-sky hover:underline">
                   {t.share.viewProfileCta}
                 </Link>
               ) : (
                 <button
                   type="button"
                   onClick={handleClaimProfile}
-                  className="text-sm font-bold text-primary hover:underline"
+                  className="text-sm font-bold text-warm-sky hover:underline"
                 >
                   {t.share.claimProfilePrompt} {t.share.claimProfileCta}
                 </button>

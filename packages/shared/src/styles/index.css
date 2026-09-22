@@ -15,7 +15,7 @@
     --popover: 36 33% 97%;
     --popover-foreground: 20 15% 15%;
 
-    --primary: 15 72% 55%;
+    --primary: 22 90% 55%;
     --primary-foreground: 36 33% 97%;
 
     --secondary: 165 35% 45%;
@@ -24,7 +24,7 @@
     --muted: 36 20% 90%;
     --muted-foreground: 20 10% 45%;
 
-    --accent: 42 85% 62%;
+    --accent: 42 98% 53%;
     --accent-foreground: 20 15% 15%;
 
     --destructive: 0 84.2% 60.2%;
@@ -32,17 +32,18 @@
 
     --border: 30 15% 85%;
     --input: 30 15% 85%;
-    --ring: 15 72% 55%;
+    --ring: 22 90% 55%;
 
     --radius: 0.75rem;
 
     --warm-cream: 36 33% 97%;
     --warm-sand: 36 25% 90%;
-    --warm-terracotta: 15 72% 55%;
+    --warm-terracotta: 22 90% 55%;
     --warm-sage: 165 35% 45%;
-    --warm-gold: 42 85% 62%;
+    --warm-gold: 42 98% 53%;
     --warm-earth: 20 35% 30%;
-    --warm-blush: 15 50% 92%;
+    --warm-blush: 338 55% 92%;
+    --warm-sky: 196 100% 44%;
 
     /* Mobile app (Pásalo beta) palette — coral-led, from the PWA prototype */
     --app-coral: 8 92% 61%;
@@ -76,19 +77,19 @@
     --card-foreground: 36 33% 97%;
     --popover: 20 15% 10%;
     --popover-foreground: 36 33% 97%;
-    --primary: 15 72% 55%;
+    --primary: 22 90% 55%;
     --primary-foreground: 36 33% 97%;
     --secondary: 165 35% 45%;
     --secondary-foreground: 36 33% 97%;
     --muted: 20 15% 20%;
     --muted-foreground: 36 15% 65%;
-    --accent: 42 85% 62%;
+    --accent: 42 98% 53%;
     --accent-foreground: 20 15% 10%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
     --border: 20 15% 20%;
     --input: 20 15% 20%;
-    --ring: 15 72% 55%;
+    --ring: 22 90% 55%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;

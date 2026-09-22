@@ -99,7 +99,7 @@ export default function InspirationCard() {
             </button>
             <Link
               to="/inspiration"
-              className="inline-flex items-center gap-1 text-sm text-terracotta hover:underline"
+              className="inline-flex items-center gap-1 text-sm text-warm-sky hover:underline"
             >
               {t.account.moreInspiration} <ArrowRight size={14} />
             </Link>

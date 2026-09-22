@@ -108,7 +108,7 @@ const YourActs = ({ userId }: { userId: string }) => {
         <h2 className="font-serif text-2xl">
           {t.account.actsHeading.replace("{count}", String(total))}
         </h2>
-        <button type="button" onClick={() => openShareModal()} className="text-sm text-terracotta hover:underline">
+        <button type="button" onClick={() => openShareModal()} className="text-sm text-warm-sky hover:underline">
           + {t.account.logAnother}
         </button>
       </div>

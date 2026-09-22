@@ -153,7 +153,7 @@ export default function CheckInboxCard({ email, actId }: { email: string; actId:
                   setNewEmail(currentEmail);
                   setError(null);
                 }}
-                className="text-sm text-primary font-medium hover:underline"
+                className="text-sm text-warm-sky font-medium hover:underline"
               >
                 {t.share.checkInboxUsePersonal}
               </button>

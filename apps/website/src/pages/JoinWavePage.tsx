@@ -142,7 +142,7 @@ function Inner() {
 
             <p className="text-sm text-muted-foreground mb-4">
               {t.joinWave.orShare}{" "}
-              <button type="button" onClick={() => openShareModal()} className="text-primary font-bold hover:underline">
+              <button type="button" onClick={() => openShareModal()} className="text-warm-sky font-bold hover:underline">
                 {t.joinWave.shareCta} →
               </button>
             </p>

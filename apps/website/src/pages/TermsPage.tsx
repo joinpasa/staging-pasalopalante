@@ -112,7 +112,7 @@ export default function TermsPage() {
               {lang === "es"
                 ? "Manejamos tus datos según nuestra "
                 : "We handle your data under our "}
-              <a href="/privacy" className="text-primary underline">{lang === "es" ? "Política de Privacidad" : "Privacy Policy"}</a>.
+              <a href="/privacy" className="text-warm-sky underline">{lang === "es" ? "Política de Privacidad" : "Privacy Policy"}</a>.
             </p>
 
             <h2 className="font-display text-2xl text-warm-earth mt-8">
@@ -120,7 +120,7 @@ export default function TermsPage() {
             </h2>
             <p>
               Te Amo PR · 550 Av. de la Constitución #905, San Juan, PR · EIN 66-0975633 ·{" "}
-              <a href="mailto:info@teamopr.org" className="text-primary underline">info@teamopr.org</a> · (787) 705-0778
+              <a href="mailto:info@teamopr.org" className="text-warm-sky underline">info@teamopr.org</a> · (787) 705-0778
             </p>
           </section>
         </article>

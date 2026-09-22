@@ -257,7 +257,7 @@ const AuthPage = () => {
 
           <p className="mt-6 pt-6 border-t border-border text-sm text-center text-foreground/70">
             {t.auth.newHerePrompt}{" "}
-            <Link to="/commit" className="text-primary underline underline-offset-4 font-medium">
+            <Link to="/commit" className="text-warm-sky underline underline-offset-4 font-medium">
               {t.auth.newHereCta}
             </Link>
           </p>

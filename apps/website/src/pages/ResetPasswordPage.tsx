@@ -89,7 +89,7 @@ export default function ResetPasswordPage() {
                 Password reset links only work once and expire after a while. Request a new one to
                 continue.
               </p>
-              <Link to="/auth" className="text-primary font-medium underline-offset-2 hover:underline">
+              <Link to="/auth" className="text-warm-sky font-medium underline-offset-2 hover:underline">
                 Back to sign in →
               </Link>
             </div>

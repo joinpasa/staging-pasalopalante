@@ -62,7 +62,7 @@ const DonatePage = () => {
                   "Email ",
                   "Escribe a "
                 )}
-                <a href="mailto:info@teamopr.org" className="text-primary underline">info@teamopr.org</a>
+                <a href="mailto:info@teamopr.org" className="text-warm-sky underline">info@teamopr.org</a>
                 {t(
                   " and our team will send banking instructions and a sponsorship deck.",
                   " y nuestro equipo te enviará instrucciones bancarias y un dossier de patrocinio."
@@ -87,7 +87,7 @@ const DonatePage = () => {
               </p>
               <p>
                 <strong>{t("Questions:", "Preguntas:")}</strong>{" "}
-                <a href="mailto:info@teamopr.org" className="text-primary underline">info@teamopr.org</a> · (787) 705-0778
+                <a href="mailto:info@teamopr.org" className="text-warm-sky underline">info@teamopr.org</a> · (787) 705-0778
               </p>
             </div>
           </div>

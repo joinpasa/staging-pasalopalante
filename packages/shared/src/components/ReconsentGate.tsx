@@ -108,7 +108,7 @@ export default function ReconsentGate() {
           {needs?.terms && (
             <li>
               •{" "}
-              <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-primary underline">
+              <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-warm-sky underline">
                 {t.legal?.terms ?? "Terms of Service"}
               </a>
             </li>
@@ -116,7 +116,7 @@ export default function ReconsentGate() {
           {needs?.privacy && (
             <li>
               •{" "}
-              <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-primary underline">
+              <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-warm-sky underline">
                 {t.legal?.privacy ?? "Privacy Policy"}
               </a>
             </li>

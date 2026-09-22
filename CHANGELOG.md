@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-09-22 — va.deedumlao@gmail.com
 
+- **Refreshed the site's brand colors sitewide, via the design tokens** — no layout or component changes, colors only. Updated the primary orange (terracotta) to a brighter rust `#f37023`, the gold used for stat/countdown numbers to a punchier mustard `#fdb813`, the dark navy sections (hero, footer, science-proof band) to a deeper `#0e234b`, and the soft card-highlight tint to a pink-leaning blush instead of the old peach. Added a new sky-blue `#00a3e0` accent and moved every plain inline text link sitewide (Terms, Privacy, Donate, About, the share/pledge flows, "browse files," etc. — about 40 places) onto it, so links now read as visually distinct from orange CTA buttons instead of sharing the exact same color. Everything routes through the shared color-token file and the Tailwind config, so it applies consistently across every page (home, ideas, about, donate, map, share modal) and both the website and the embedded app — confirmed via a build-diff and screenshots of each.
 - **Removed the "Pass Kindness Forward" text next to the logo in the header on passkindnessforward.com.** It's logo-only now, matching the request — the text was only ever showing on that one domain to begin with.
 
 ## 2026-09-21 — va.deedumlao@gmail.com

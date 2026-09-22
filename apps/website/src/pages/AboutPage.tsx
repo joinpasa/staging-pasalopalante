@@ -46,7 +46,7 @@ export default function AboutPage() {
               <li><strong>{isEs ? "Estatus:" : "Status:"}</strong> {isEs ? "501(c)(3) reconocida por el IRS de EE.UU." : "U.S. IRS-recognized 501(c)(3) public charity"}</li>
               <li><strong>EIN:</strong> 66-0975633</li>
               <li><strong>{isEs ? "Dirección:" : "Address:"}</strong> 550 Av. de la Constitución #905, San Juan, PR</li>
-              <li><strong>{isEs ? "Sitio:" : "Website:"}</strong> <a href="https://teamopr.org" target="_blank" rel="noopener noreferrer" className="text-primary underline">teamopr.org</a></li>
+              <li><strong>{isEs ? "Sitio:" : "Website:"}</strong> <a href="https://teamopr.org" target="_blank" rel="noopener noreferrer" className="text-warm-sky underline">teamopr.org</a></li>
             </ul>
 
             <h2 className="font-serif text-2xl text-warm-earth mt-10 mb-3">
@@ -63,27 +63,27 @@ export default function AboutPage() {
             </h2>
             <ul className="list-disc pl-6 space-y-2">
               <li>
-                <Link to="/commit" className="text-primary hover:underline">
+                <Link to="/commit" className="text-warm-sky hover:underline">
                   {isEs ? "Comprométete o regístrate como voluntario" : "Commit or register as a volunteer"}
                 </Link>
               </li>
               <li>
-                <button type="button" onClick={() => openShareModal()} className="text-primary hover:underline">
+                <button type="button" onClick={() => openShareModal()} className="text-warm-sky hover:underline">
                   {isEs ? "Comparte un acto de bondad" : "Share an act of kindness"}
                 </button>
               </li>
               <li>
-                <Link to="/wall" className="text-primary hover:underline">
+                <Link to="/wall" className="text-warm-sky hover:underline">
                   {isEs ? "Visita el Muro de Bondad" : "Visit the Wall of Kindness"}
                 </Link>
               </li>
               <li>
-                <Link to="/donate" className="text-primary hover:underline">
+                <Link to="/donate" className="text-warm-sky hover:underline">
                   {isEs ? "Dona para apoyar la misión" : "Donate to support the mission"}
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-primary hover:underline">
+                <Link to="/contact" className="text-warm-sky hover:underline">
                   {isEs ? "Contáctanos" : "Contact us"}
                 </Link>
               </li>
@@ -93,8 +93,8 @@ export default function AboutPage() {
               {isEs ? "Contacto" : "Contact"}
             </h2>
             <p>
-              Te Amo PR · <a className="text-primary hover:underline" href="mailto:info@teamopr.org">info@teamopr.org</a> · (787) 705-0778 ·{" "}
-              <a className="text-primary hover:underline" href="https://teamopr.org" target="_blank" rel="noopener noreferrer">teamopr.org</a>
+              Te Amo PR · <a className="text-warm-sky hover:underline" href="mailto:info@teamopr.org">info@teamopr.org</a> · (787) 705-0778 ·{" "}
+              <a className="text-warm-sky hover:underline" href="https://teamopr.org" target="_blank" rel="noopener noreferrer">teamopr.org</a>
             </p>
           </div>
         </article>

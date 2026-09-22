@@ -422,7 +422,7 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
             <Upload size={26} className="text-primary mb-2" />
             <p className="text-sm text-foreground">
               {t.share.dropzonePrefix}{" "}
-              <span className="text-primary underline underline-offset-2">{t.share.dropzoneBrowse}</span>
+              <span className="text-warm-sky underline underline-offset-2">{t.share.dropzoneBrowse}</span>
             </p>
             <p className="text-xs text-muted-foreground mt-1">{t.share.dropzoneHint}</p>
             <input
@@ -454,18 +454,18 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
           {t.legal.anonDisclosure
             .split("{terms}").flatMap((seg, i, arr) =>
               i < arr.length - 1
-                ? [seg, <a key={`t${i}`} href="/terms" target="_blank" rel="noopener noreferrer" className="underline text-primary">{t.legal.terms}</a>]
+                ? [seg, <a key={`t${i}`} href="/terms" target="_blank" rel="noopener noreferrer" className="underline text-warm-sky">{t.legal.terms}</a>]
                 : [seg])
             .flatMap((node, i) => typeof node === "string"
               ? node.split("{privacy}").flatMap((seg, j, arr) =>
                   j < arr.length - 1
-                    ? [seg, <a key={`p${i}-${j}`} href="/privacy" target="_blank" rel="noopener noreferrer" className="underline text-primary">{t.legal.privacy}</a>]
+                    ? [seg, <a key={`p${i}-${j}`} href="/privacy" target="_blank" rel="noopener noreferrer" className="underline text-warm-sky">{t.legal.privacy}</a>]
                     : [seg])
               : [node])
             .flatMap((node, i) => typeof node === "string"
               ? node.split("{community}").flatMap((seg, j, arr) =>
                   j < arr.length - 1
-                    ? [seg, <a key={`c${i}-${j}`} href="/community-guidelines" target="_blank" rel="noopener noreferrer" className="underline text-primary">{t.legal.community}</a>]
+                    ? [seg, <a key={`c${i}-${j}`} href="/community-guidelines" target="_blank" rel="noopener noreferrer" className="underline text-warm-sky">{t.legal.community}</a>]
                     : [seg])
               : [node])}
         </p>

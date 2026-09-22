@@ -139,7 +139,7 @@ const HowItWorks = () => {
           initial="hidden"
           animate={inView ? "visible" : "hidden"}
           className="flex items-center justify-between flex-wrap gap-7 bg-warm-cream border border-border rounded-2xl px-8 py-6 mb-10"
-          style={{ borderLeft: "4px solid #164e63" }}
+          style={{ borderLeft: "4px solid #0d2249" }}
         >
           <div className="flex items-center gap-5">
             <div className="shrink-0 w-[46px] h-[46px] rounded-xl bg-cyan-900/10 flex items-center justify-center">

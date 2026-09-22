@@ -110,12 +110,12 @@ export default function ProgramsPage() {
                   <button
                     type="button"
                     onClick={() => openShareModal()}
-                    className="text-primary hover:underline font-medium"
+                    className="text-warm-sky hover:underline font-medium"
                   >
                     {p.cta} →
                   </button>
                 ) : (
-                  <Link to={p.link} className="text-primary hover:underline font-medium">
+                  <Link to={p.link} className="text-warm-sky hover:underline font-medium">
                     {p.cta} →
                   </Link>
                 )}

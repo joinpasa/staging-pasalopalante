@@ -38,7 +38,7 @@ export default function GetInvolvedPage() {
               <article key={g.title} className="bg-white/70 border border-warm-earth/10 rounded-2xl p-6">
                 <h2 className="font-display text-2xl text-warm-earth mb-2">{g.title}</h2>
                 <p className="text-foreground/80 leading-relaxed mb-4">{g.body}</p>
-                <Link to={g.link} className="text-primary font-medium underline-offset-2 hover:underline">
+                <Link to={g.link} className="text-warm-sky font-medium underline-offset-2 hover:underline">
                   {g.cta} →
                 </Link>
               </article>

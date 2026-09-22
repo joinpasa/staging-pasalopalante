@@ -278,7 +278,7 @@ export default function CommitFlow({ onSuccess, compact = false, prefilledEmail,
         <button
           type="button"
           onClick={() => { onClearPrefilledEmail(); setEmail(""); }}
-          className="text-xs text-terracotta hover:underline"
+          className="text-xs text-warm-sky hover:underline"
         >
           {t.share.notYou}
         </button>
@@ -486,7 +486,7 @@ export default function CommitFlow({ onSuccess, compact = false, prefilledEmail,
             />
             <span>
               {t.share.termsAgreePrefix}{" "}
-              <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline text-primary">
+              <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline text-warm-sky">
                 {t.share.termsLink}
               </a>
               .

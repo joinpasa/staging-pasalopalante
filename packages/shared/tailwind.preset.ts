@@ -59,6 +59,22 @@ const preset: Pick<Config, "darkMode" | "theme" | "plugins"> = {
           gold: "hsl(var(--warm-gold))",
           earth: "hsl(var(--warm-earth))",
           blush: "hsl(var(--warm-blush))",
+          sky: "hsl(var(--warm-sky))",
+        },
+        // Partial override of Tailwind's built-in cyan scale — only the
+        // shades actually used site-wide as the brand's dark navy (Hero,
+        // Footer, ScienceProof section backgrounds, HowItWorks/ShareThanks
+        // icon accents, LanguageSwitcher dropdown). Not a CSS custom
+        // property like the tokens above because these are literal
+        // `bg-cyan-900`/`text-cyan-100`/etc. utility classes throughout the
+        // components — overriding the shade values here keeps the fix
+        // centralized in the design tokens without touching every
+        // component's className strings. Shades 50/200-800/etc. are left as
+        // Tailwind defaults since nothing in the codebase references them.
+        cyan: {
+          100: "#cedef3",
+          900: "#0d2249",
+          950: "#06132d",
         },
         app: {
           coral: "hsl(var(--app-coral))",

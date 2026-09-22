@@ -293,7 +293,7 @@ export default function QuickPledgeForm() {
           />
           <span>
             {t.share.termsAgreePrefix}{" "}
-            <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline text-primary">
+            <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline text-warm-sky">
               {t.share.termsLink}
             </a>
             .

@@ -87,7 +87,7 @@ export default function CommunityGuidelinesPage() {
               {isEs
                 ? "Podemos eliminar contenido o suspender cuentas que violen estas normas. Si crees que algo se eliminó por error, escríbenos a "
                 : "We may remove content or suspend accounts that break these rules. If you think something was removed by mistake, email "}
-              <a href="mailto:info@teamopr.org" className="text-primary underline">info@teamopr.org</a>.
+              <a href="mailto:info@teamopr.org" className="text-warm-sky underline">info@teamopr.org</a>.
             </p>
 
             <h2 className="font-display text-2xl text-warm-earth mt-8">
@@ -97,7 +97,7 @@ export default function CommunityGuidelinesPage() {
               {isEs
                 ? "Si ves algo que viola estas normas, escríbenos a "
                 : "If you see something that violates these guidelines, email "}
-              <a href="mailto:info@teamopr.org" className="text-primary underline">info@teamopr.org</a>
+              <a href="mailto:info@teamopr.org" className="text-warm-sky underline">info@teamopr.org</a>
               {isEs ? " con un enlace y una breve descripción." : " with a link and brief description."}
             </p>
 

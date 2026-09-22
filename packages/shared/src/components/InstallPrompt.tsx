@@ -348,7 +348,7 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
                         <button
                           type="button"
                           onClick={openApp}
-                          className="inline-flex items-center gap-1 text-xs font-semibold text-warm-terracotta underline underline-offset-2"
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-warm-sky underline underline-offset-2"
                         >
                           {c.openApp} →
                         </button>
