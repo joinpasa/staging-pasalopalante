@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { ArrowRight, CheckCircle2, KeyRound, Mail } from "lucide-react";
 
 import PasaMark from "@/components/app/PasaMark";
+import GoogleIcon from "@shared/components/icons/GoogleIcon";
 import OnboardingWalkthrough, { type OnboardingResult } from "@/components/app/OnboardingWalkthrough";
 import { PENDING_EMAIL_KEY, PENDING_PROFILE_KEY, ONBOARDING_SEEN_KEY } from "@/lib/pendingSignup";
 import { useAuth } from "@shared/contexts/AuthContext";
@@ -25,10 +26,11 @@ import { storeReferralCode } from "@shared/lib/referral";
  * log in with a password or ask for a fresh link.
  */
 export default function AppJoin() {
-  const { user, signIn, signInWithMagicLink, resetPassword } = useAuth();
+  const { user, signIn, signInWithMagicLink, signInWithGoogle, resetPassword } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [tab, setTab] = useState<"join" | "login">("join");
+  const [googleBusy, setGoogleBusy] = useState(false);
 
   // A Pass QR hand-off (?ref=<code>, from /wave or Home) redirects unsigned-in
   // scanners here to sign up — separately from the ?r= share-link path that
@@ -143,6 +145,22 @@ export default function AppJoin() {
       // them to the Wall (open to everyone) rather than Home, which is
       // gated behind a verified session.
       navigate(user ? "/" : "/wall", { replace: true });
+    }
+  }
+
+  // Works for both tabs (join and login) — Google sign-in creates the
+  // account if it doesn't exist yet, same as any other OAuth provider.
+  // Lands back on Home (BASE_URL) rather than /account, which is the
+  // website's page and doesn't exist as a route here; AppHome's own
+  // onboarding check (profiles.onboarding_seen / hasCommitment) picks up
+  // a brand-new account from there without needing anything set client-side
+  // ahead of the redirect, unlike the magic-link flow above.
+  async function handleGoogleSignIn() {
+    setGoogleBusy(true);
+    const { error } = await signInWithGoogle(import.meta.env.BASE_URL);
+    if (error) {
+      setGoogleBusy(false);
+      toast.error(getAuthErrorMessage(error));
     }
   }
 
@@ -419,7 +437,23 @@ export default function AppJoin() {
         </div>
       </div>
 
-      <div className="mt-5 grid grid-cols-2 gap-2 rounded-full bg-app-surface p-1">
+      <button
+        type="button"
+        onClick={handleGoogleSignIn}
+        disabled={googleBusy}
+        className="mt-5 flex h-14 w-full items-center justify-center gap-2 rounded-2xl border border-border bg-app-surface font-semibold text-foreground disabled:opacity-60"
+      >
+        <GoogleIcon size={18} />
+        {googleBusy ? "…" : "Continue with Google"}
+      </button>
+
+      <div className="my-4 flex items-center gap-3">
+        <div className="h-px flex-1 bg-border" />
+        <span className="text-xs text-muted-foreground">or continue with email</span>
+        <div className="h-px flex-1 bg-border" />
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 rounded-full bg-app-surface p-1">
         {([
           ["join", "I'm new"],
           ["login", "I have an account"],
