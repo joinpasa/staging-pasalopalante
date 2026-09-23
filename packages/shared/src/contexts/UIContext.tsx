@@ -29,6 +29,13 @@ interface UIContextType {
   /** True while a page's own Navbar (with its inline language switcher) is mounted. */
   navbarMounted: boolean;
   setNavbarMounted: (mounted: boolean) => void;
+  /** True while the app's signed-out "Join the chain" bottom popup
+   *  (VerificationBanner's JoinPopup) is visible. InstallPrompt reads this
+   *  to avoid opening on top of it — both are fixed bottom banners that
+   *  can otherwise auto-trigger within seconds of each other for the same
+   *  first-time visitor. */
+  joinPopupOpen: boolean;
+  setJoinPopupOpen: (open: boolean) => void;
 }
 
 const noop = () => {};
@@ -40,6 +47,7 @@ export const UIProvider = ({ children }: { children: ReactNode }) => {
   const [shareModalOptions, setShareModalOptions] = useState<ShareModalOptions>({});
   const [localShareFlowOpen, setLocalShareFlowOpen] = useState(false);
   const [navbarMounted, setNavbarMounted] = useState(false);
+  const [joinPopupOpen, setJoinPopupOpen] = useState(false);
 
   const openShareModal = (opts: ShareModalOptions = {}) => {
     setShareModalOptions(opts);
@@ -58,6 +66,8 @@ export const UIProvider = ({ children }: { children: ReactNode }) => {
         setLocalShareFlowOpen,
         navbarMounted,
         setNavbarMounted,
+        joinPopupOpen,
+        setJoinPopupOpen,
       }}
     >
       {children}
@@ -77,6 +87,8 @@ export const useUI = () => {
       setLocalShareFlowOpen: noop,
       navbarMounted: false,
       setNavbarMounted: noop,
+      joinPopupOpen: false,
+      setJoinPopupOpen: noop,
     };
   }
   return ctx;
