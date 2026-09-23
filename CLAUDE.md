@@ -24,6 +24,7 @@ Until all of that happens, both domains keep working exactly as they do today, i
 
 ## Set real git identity at the start of every session
 
+
 This repo is worked on by more than one person, each through their own Claude Code account. By default every environment commits as generic `Claude <noreply@anthropic.com>`, which makes it impossible to tell from git alone who asked for what. Fix that at the start of each session, before making any commit: if this session's context gives you a `userEmail`, run
 
 ```
@@ -42,3 +43,35 @@ git config user.email "<the actual userEmail>"
 3. `<requester>` is whoever asked for the change this session — use the `userEmail` given in this session's own context. If genuinely unclear (e.g. a self-initiated cleanup), use `team`.
 4. Write the bullet in plain, non-technical language — what changed and why it matters, not a restatement of the diff. One or two sentences is usually enough; group multiple related commits from the same piece of work into one bullet rather than listing each commit.
 5. Don't edit or renumber older entries. This is a log, not a living doc.
+
+## Auth flows are fragile — verify before marking any shared-code task done
+
+Login, signup, account creation, and forgot-password break easily from changes 
+that had nothing to do with auth — a layout tweak, a color/theme token swap, a 
+shared component edit, a routing change. This has happened repeatedly and is 
+the main source of "the app isn't working" reports from the team.
+
+**Rule:** before marking a task complete, if the session touched any of the 
+following, verify the four auth flows still work:
+- Shared layout components (headers, footers, nav, modals, form wrappers)
+- Global CSS / theme / color tokens / design system files
+- Routing config
+- Anything in `packages/shared`
+
+**Verification, in order of cost:**
+1. Cheapest — read the diff and reason about whether it could plausibly touch 
+   auth-rendering paths. If clearly unrelated (e.g. a copy-only change to the 
+   Donate page), skip the rest.
+2. If plausibly affected — actually load `/login`, `/signup`, and the 
+   forgot-password page in a browser/preview and confirm they render and the 
+   forms submit. Don't just check that the build didn't error; a page can 
+   build fine and still render broken (missing theme variable, broken import).
+3. If something's broken — fix it as part of the same task, before considering 
+   the task done. Don't hand back a task that silently broke auth even if that 
+   wasn't what was asked.
+
+If you can't verify live rendering in this session (e.g. sandboxed with no 
+browser), say so explicitly in your summary to the user instead of assuming 
+it's fine — "I changed shared layout files but could not verify login/signup 
+still render; please check before considering this done" is the honest and 
+correct thing to say.
