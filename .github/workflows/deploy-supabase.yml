@@ -36,4 +36,8 @@ jobs:
         run: supabase db push --yes
 
       - name: Deploy edge functions
-        run: supabase functions deploy
+        # --use-api bundles server-side instead of pulling the edge-runtime
+        # Docker image locally — that pull was hitting ghcr.io's anonymous
+        # rate limit intermittently and failing this step even when nothing
+        # about the functions themselves had changed.
+        run: supabase functions deploy --use-api
