@@ -7,6 +7,7 @@ import { supabase } from "@shared/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProfileSettingsCard from "@/components/account/ProfileSettingsCard";
+import ChangeEmailCard from "@/components/account/ChangeEmailCard";
 import SetPasswordCard from "@/components/account/SetPasswordCard";
 import RemindersCard from "@/components/account/RemindersCard";
 import { Button } from "@shared/components/ui/button";
@@ -89,6 +90,8 @@ const AccountSettingsPage = () => {
             onSaved={() => setProfileRefresh((n) => n + 1)}
           />
         )}
+
+        <ChangeEmailCard />
 
         <SetPasswordCard />
 
