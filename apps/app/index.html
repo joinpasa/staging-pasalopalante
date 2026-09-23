@@ -19,20 +19,24 @@
     </script>
 
     <link rel="manifest" href="/manifest.webmanifest" />
-    <meta name="theme-color" content="#faf8f4" />
+    <meta name="theme-color" content="#FAF7F2" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Pásalo" />
 
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" />
+
     <style>
       /* Critical inline CSS: brand-correct first paint, no unstyled flash. */
       html, body {
         margin: 0;
-        background-color: #faf8f4; /* warm cream */
-        color: #292420;
-        font-family: "DM Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+        background-color: #FAF7F2; /* brand warm off-white */
+        color: #0E234B; /* brand navy */
+        font-family: "Montserrat", ui-sans-serif, system-ui, -apple-system, sans-serif;
         -webkit-font-smoothing: antialiased;
       }
       #ppl-splash {
@@ -42,7 +46,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: #faf8f4;
+        background-color: #FAF7F2;
         transition: opacity 260ms ease, visibility 260ms ease;
       }
       #ppl-splash-lockup {
@@ -63,7 +67,7 @@
         font-size: 15px;
         font-weight: 300;
         line-height: 1;
-        color: #292420;
+        color: #0E234B;
         opacity: 0.3;
       }
       #ppl-splash-lockup img:last-child {

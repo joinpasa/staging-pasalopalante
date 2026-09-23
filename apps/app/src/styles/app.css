@@ -1,0 +1,14 @@
+@import "@shared/styles/index.css";
+
+/* App-only font override. The shared stylesheet's `body`/`h1-h6` rules
+   reference DM Sans/DM Serif Display for the website — this file is only
+   ever imported by the app's own main.tsx, so overriding here can't leak
+   into the website's build. Montserrat is the brand-kit typeface for the
+   app's 2026-09 redesign. */
+body {
+  font-family: "Montserrat", ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Montserrat", ui-sans-serif, system-ui, -apple-system, sans-serif;
+}

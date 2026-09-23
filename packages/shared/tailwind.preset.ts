@@ -86,6 +86,8 @@ const preset: Pick<Config, "darkMode" | "theme" | "plugins"> = {
           "gold-tint": "hsl(var(--app-gold-tint))",
           surface: "hsl(var(--app-surface))",
           canvas: "hsl(var(--app-canvas))",
+          sky: "hsl(var(--app-sky))",
+          magenta: "hsl(var(--app-magenta))",
           water: "hsl(var(--app-water))",
           land: "hsl(var(--app-land))",
           hush: "hsl(var(--app-hush))",
