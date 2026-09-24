@@ -17,7 +17,7 @@ export default function AppBottomNav() {
   return (
     <nav
       aria-label="App sections"
-      className="fixed inset-x-0 bottom-0 z-40 mx-auto flex max-w-md items-end justify-around border-t border-border bg-app-surface/95 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur"
+      className="fixed inset-x-0 bottom-0 z-40 mx-auto flex w-full items-end justify-around border-t border-border bg-app-surface/95 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur 2xl:max-w-3xl"
     >
       {TABS.slice(0, 2).map(({ to, label, Icon, end }) => (
         <Tab key={to} to={to} label={label} Icon={Icon} end={end} />

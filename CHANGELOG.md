@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-09-24 — va.deedumlao@gmail.com
+
+- **Fixed the app looking broken on a desktop browser (big empty margins on the sides, most obvious on the top and bottom bars) and the support chat widget getting stuck on screen.** The app was built mobile-first with a fixed-width column meant to look like a phone — correct on an actual phone, but it left large unused gaps on either side whenever viewed in an ordinary desktop browser window, which read as a bug rather than a deliberate phone-shaped frame. It now fills the available width properly (still capped at a sensible size on very large monitors so it doesn't stretch edge-to-edge on an ultrawide screen). Separately, the live-support chat button (added yesterday) had no way to fully dismiss it — its own X only minimized the conversation, leaving its circular icon permanently stuck over the bottom navigation with no way to remove it. It now disappears completely once the chat is closed, the same way it wasn't there before "Get Support" was tapped.
+
 ## 2026-09-23 — va.deedumlao@gmail.com
 
 - **Rebuilt the app's Dashboard (phase 3 of the redesign)**, addressing the recurring "can't find my QR code," "can't find where to log an act," and "too hard for non-technical users" feedback:

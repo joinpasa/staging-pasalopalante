@@ -4,13 +4,18 @@ import VerificationBanner from "@/components/app/VerificationBanner";
 import ProfileBackfill from "@/components/app/ProfileBackfill";
 
 /**
- * Phone-shaped shell for the Pásalo beta app screens: a centred column with a
- * fixed tab bar, so the experience matches the installed home-screen app.
+ * Shell for the Pásalo beta app screens: full-width so it fills the actual
+ * viewport (a real phone screen is already narrower than the old fixed
+ * 448px cap ever was, so nothing changes there) — only capped again at a
+ * generous width on very large desktop monitors so it doesn't stretch to
+ * an unreadable ~2000px. A fixed 448px cap used to leave a big empty gap
+ * on either side any time this was viewed in an ordinary desktop browser
+ * window, which read as broken rather than intentional.
  */
 export default function AppShell() {
   return (
     <div className="min-h-screen bg-app-canvas">
-      <div className="mx-auto flex min-h-screen max-w-md flex-col bg-app-canvas pb-[calc(4.25rem+env(safe-area-inset-bottom))]">
+      <div className="mx-auto flex min-h-screen w-full flex-col bg-app-canvas pb-[calc(4.25rem+env(safe-area-inset-bottom))] 2xl:max-w-3xl">
         <ProfileBackfill />
         <VerificationBanner />
         <main className="flex flex-1 flex-col">
