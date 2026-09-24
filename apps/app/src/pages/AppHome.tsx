@@ -14,7 +14,6 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import PasaMark from "@/components/app/PasaMark";
 import AccountMenu from "@/components/app/AccountMenu";
 import JoinGate from "@/components/app/JoinGate";
 import ReactionButton from "@/components/app/ReactionButton";
@@ -244,9 +243,12 @@ export default function AppHome() {
     <>
     <div className="space-y-5 px-5 pt-5">
       <header className="flex items-center justify-between">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-app-coral-tint">
-          <PasaMark className="h-6 w-6" tile={false} />
-        </div>
+        <img
+          src="/logo-PKF-horizontal-color.png"
+          srcSet="/logo-PKF-horizontal-color.png 1x, /logo-PKF-horizontal-color@2x.png 2x"
+          alt="Pass Kindness Forward"
+          className="h-7 w-auto shrink-0 object-contain"
+        />
         <div className="flex items-center gap-2.5">
           {user && (
             <Link
@@ -615,8 +617,8 @@ export default function AppHome() {
 
       <p className="pb-2 text-center text-xs text-muted-foreground">
         Part of the movement at{" "}
-        <a href="https://pasalopalante.com" className="underline">
-          pasalopalante.com
+        <a href="https://passkindnessforward.com" className="underline">
+          passkindnessforward.com
         </a>
       </p>
     </div>
