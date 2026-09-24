@@ -33,6 +33,7 @@ export interface AppMe {
   connections: number;
   onboardingSeen: boolean;
   hasCommitment: boolean;
+  tourSeen: boolean;
 }
 
 export function useAppMe() {
@@ -47,7 +48,7 @@ export function useAppMe() {
       const [profileRes, streakRes, pledgeRes, referralRes, connectionsRes] = await Promise.all([
         supabase
           .from("profiles")
-          .select("display_name, first_name, last_name, country, referral_code, onboarding_seen")
+          .select("display_name, first_name, last_name, country, referral_code, onboarding_seen, tour_seen")
           .eq("user_id", uid)
           .maybeSingle(),
         supabase.rpc("user_streak", { _user_id: uid }),
@@ -85,6 +86,7 @@ export function useAppMe() {
         connections: Number(connectionsRes.data ?? 0),
         onboardingSeen: !!profile?.onboarding_seen,
         hasCommitment: (pledgeRes.data ?? []).length > 0,
+        tourSeen: !!profile?.tour_seen,
       };
     },
   });

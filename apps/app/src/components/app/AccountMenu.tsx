@@ -17,7 +17,7 @@ const itemClass =
  * the old bare "Account" text link. Signed-out visitors still just get a
  * "Join" pill, unchanged.
  */
-export default function AccountMenu() {
+export default function AccountMenu({ highlighted = false }: { highlighted?: boolean }) {
   const { user, signOut } = useAuth();
   const { data: me } = useAppMe();
   const navigate = useNavigate();
@@ -58,7 +58,10 @@ export default function AccountMenu() {
         onClick={() => setOpen((v) => !v)}
         aria-label="Account menu"
         aria-expanded={open}
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-app-ink text-sm font-bold text-app-surface"
+        className={cn(
+          "relative flex h-10 w-10 items-center justify-center rounded-full bg-app-ink text-sm font-bold text-app-surface",
+          highlighted && "z-50 ring-4 ring-app-coral/40",
+        )}
       >
         {initial}
       </button>

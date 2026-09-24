@@ -534,6 +534,7 @@ export type Database = {
           terms_major_accepted: number | null
           terms_version_accepted: string | null
           timezone: string | null
+          tour_seen: boolean
           updated_at: string
           user_id: string
         }
@@ -563,6 +564,7 @@ export type Database = {
           terms_major_accepted?: number | null
           terms_version_accepted?: string | null
           timezone?: string | null
+          tour_seen?: boolean
           updated_at?: string
           user_id: string
         }
@@ -592,6 +594,7 @@ export type Database = {
           terms_major_accepted?: number | null
           terms_version_accepted?: string | null
           timezone?: string | null
+          tour_seen?: boolean
           updated_at?: string
           user_id?: string
         }

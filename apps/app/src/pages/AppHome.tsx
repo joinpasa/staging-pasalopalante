@@ -20,6 +20,7 @@ import JoinGate from "@/components/app/JoinGate";
 import ReactionButton from "@/components/app/ReactionButton";
 import MyCommitment from "@/components/app/MyCommitment";
 import SeasonCountdown from "@/components/app/SeasonCountdown";
+import FirstTimeTour from "@/components/app/FirstTimeTour";
 import OnboardingWalkthrough, { type OnboardingResult } from "@/components/app/OnboardingWalkthrough";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { supabase } from "@shared/integrations/supabase/client";
@@ -86,6 +87,25 @@ export default function AppHome() {
   useEffect(() => {
     if (me && !me.onboardingSeen && !me.hasCommitment) setShowOnboarding(true);
   }, [me]);
+
+  // First-Time Tour: a second, lighter coach-mark layer for in-app
+  // navigation (account menu, Share QR, quick-log) — separate from the
+  // Welcome carousel above and never shown at the same time as it, since
+  // onboardingSeen only flips true once that carousel is done. Server-side
+  // flag for the same reason onboardingSeen is: reachable from any device,
+  // not just the one the tour first played on.
+  const [tourStep, setTourStep] = useState<number | null>(null);
+  const [tourDontShow, setTourDontShow] = useState(true);
+  useEffect(() => {
+    if (me && me.onboardingSeen && !me.tourSeen) setTourStep(0);
+  }, [me]);
+
+  async function exitTour() {
+    setTourStep(null);
+    if (!user || me?.tourSeen) return;
+    const { error } = await supabase.from("profiles").update({ tour_seen: true }).eq("user_id", user.id);
+    if (!error) queryClient.invalidateQueries({ queryKey: ["app", "me"] });
+  }
 
   async function finishOnboarding({ pledgeCount, firstName, lastName, country }: OnboardingResult) {
     if (!user) return;
@@ -221,6 +241,7 @@ export default function AppHome() {
   }
 
   return (
+    <>
     <div className="space-y-5 px-5 pt-5">
       <header className="flex items-center justify-between">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-app-coral-tint">
@@ -231,29 +252,48 @@ export default function AppHome() {
             <Link
               to="/pass"
               aria-label="Share my Kindness QR code"
-              className="flex h-9 items-center gap-1.5 rounded-full bg-app-sky/10 px-3.5"
+              className={cn(
+                "relative flex h-9 items-center gap-1.5 rounded-full bg-app-sky/10 px-3.5",
+                tourStep === 1 && "z-50 ring-4 ring-app-coral/40",
+              )}
             >
               <QrCode className="h-[15px] w-[15px] text-app-sky" strokeWidth={1.9} />
               <span className="text-xs font-bold text-app-sky">Share QR</span>
             </Link>
           )}
-          <AccountMenu />
+          <AccountMenu highlighted={tourStep === 0} />
         </div>
       </header>
 
-      <div>
-        <p className="text-[11.5px] font-bold uppercase tracking-[0.07em] text-muted-foreground">
-          {timeOfDayGreeting()}
-        </p>
-        <p className="mt-0.5 truncate text-[21px] font-bold leading-tight text-foreground">
-          Hola, {greetingName}
-        </p>
+      <div className="flex items-start justify-between gap-2.5">
+        <div>
+          <p className="text-[11.5px] font-bold uppercase tracking-[0.07em] text-muted-foreground">
+            {timeOfDayGreeting()}
+          </p>
+          <p className="mt-0.5 truncate text-[21px] font-bold leading-tight text-foreground">
+            Hola, {greetingName}
+          </p>
+        </div>
+        {user && me?.tourSeen && (
+          <button
+            type="button"
+            onClick={() => setTourStep(0)}
+            className="mt-1 shrink-0 text-[11.5px] font-bold text-app-sky underline underline-offset-2"
+          >
+            Take the tour
+          </button>
+        )}
       </div>
 
       {!user && <JoinGate />}
 
       {user ? (
-        <section className="relative overflow-hidden rounded-[20px] bg-app-coral p-4 text-app-surface shadow-[0_12px_26px_rgba(243,112,35,0.35)]">
+        <section
+          className={cn(
+            "relative overflow-hidden rounded-[20px] bg-app-coral p-4 text-app-surface shadow-[0_12px_26px_rgba(243,112,35,0.35)]",
+            tourStep === 2 && "z-50 outline outline-4 outline-app-coral/50 outline-offset-4",
+          )}
+        >
           <div className="flex items-center gap-2.5">
             <div className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[11px] bg-app-surface/20">
               <HeartHandshake className="h-[18px] w-[18px]" />
@@ -580,5 +620,16 @@ export default function AppHome() {
         </a>
       </p>
     </div>
+
+    {user && tourStep !== null && (
+      <FirstTimeTour
+        step={tourStep}
+        dontShow={tourDontShow}
+        onToggleDontShow={() => setTourDontShow((v) => !v)}
+        onNext={() => setTourStep((s) => Math.min((s ?? 0) + 1, 2))}
+        onExit={exitTour}
+      />
+    )}
+    </>
   );
 }
