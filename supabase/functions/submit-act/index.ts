@@ -31,6 +31,8 @@ interface SubmitBody {
   video_url?: string;
   photo_paths?: string[];
   to_user_id?: string;
+  act_type?: string;
+  share_on_wall?: boolean;
 }
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -59,6 +61,11 @@ Deno.serve(async (req) => {
     const photoPaths = Array.isArray(body.photo_paths)
       ? body.photo_paths.filter((p) => typeof p === "string").slice(0, 3)
       : [];
+    const actType = (body.act_type ?? "").toString().trim().slice(0, 60) || null;
+    // Defaults to true (matches the Log an Act screen's own toggle default)
+    // when the caller doesn't send it at all — only an explicit `false`
+    // opts an act out of the public Wall.
+    const shareOnWall = body.share_on_wall !== false;
 
     if (videoUrl && !/^https?:\/\//i.test(videoUrl)) return badRequest("Invalid video URL");
 
@@ -326,6 +333,8 @@ Deno.serve(async (req) => {
         type_tag: typeTag,
         category,
         language,
+        act_type: actType,
+        share_on_wall: shareOnWall,
         status: rowStatus,
         moderation_reason: shortReason,
         user_id: userId,

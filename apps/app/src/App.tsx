@@ -17,6 +17,7 @@ import AppBadges from "./pages/AppBadges.tsx";
 import AppConnections from "./pages/AppConnections.tsx";
 import AppJoin from "./pages/AppJoin.tsx";
 import AppLog from "./pages/AppLog.tsx";
+import AppLogAct from "./pages/AppLogAct.tsx";
 import AppWave from "./pages/AppWave.tsx";
 import AppAccount from "./pages/AppAccount.tsx";
 import RequireVerified from "@/components/app/RequireVerified";
@@ -67,7 +68,11 @@ const App = () => (
                   <Route path="badges" element={<RequireVerified><AppBadges /></RequireVerified>} />
                   <Route path="connections" element={<RequireVerified><AppConnections /></RequireVerified>} />
                   <Route path="join" element={<AppJoin />} />
-                  <Route path="log" element={<RequireVerified><AppLog /></RequireVerified>} />
+                  <Route path="log" element={<RequireVerified><AppLogAct /></RequireVerified>} />
+                  {/* The previous mode-picker/multi-photo flow — still
+                      reachable as "more detail" from the new chip-based
+                      /log screen, not replaced. */}
+                  <Route path="log/detailed" element={<RequireVerified><AppLog /></RequireVerified>} />
                   {/* Handles its own auth branching (redirects to /join with
                       the code intact if not signed in), so not wrapped in
                       RequireVerified like the routes above. */}
