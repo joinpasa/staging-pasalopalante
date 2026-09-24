@@ -15,7 +15,12 @@ import ProfileBackfill from "@/components/app/ProfileBackfill";
 export default function AppShell() {
   return (
     <div className="min-h-screen bg-app-canvas">
-      <div className="mx-auto flex min-h-screen w-full flex-col bg-app-canvas pb-[calc(4.25rem+env(safe-area-inset-bottom))] 2xl:max-w-3xl">
+      {/* 7rem clears the bottom nav's own height PLUS the raised center
+          "Share and Scan" button, which pokes ~20px above the flat bar via
+          a negative margin — a plain nav-height-sized reservation left the
+          last bit of page content (e.g. AppHome's "Part of the movement"
+          footer line) hidden behind that raised button on max scroll. */}
+      <div className="mx-auto flex min-h-screen w-full flex-col bg-app-canvas pb-[calc(7rem+env(safe-area-inset-bottom))] 2xl:max-w-3xl">
         <ProfileBackfill />
         <VerificationBanner />
         <main className="flex flex-1 flex-col">
