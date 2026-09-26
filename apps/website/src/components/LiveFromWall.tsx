@@ -108,7 +108,7 @@ const LiveFromWall = () => {
     : null;
 
   return (
-    <section className="bg-white section-padding py-14 md:py-20">
+    <section className="bg-white section-padding py-14 md:py-20 min-h-[488px] h-[96dvh] md:h-[48vh]">
       <div className="max-w-6xl mx-auto">
         {todayCount !== null && todayCount > 0 && (
           <p className="text-sm text-foreground/60 mb-2">
