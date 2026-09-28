@@ -40,6 +40,8 @@ import GetInvolvedPage from "./pages/GetInvolvedPage.tsx";
 import SchoolsEducatorsPage from "./pages/SchoolsEducatorsPage.tsx";
 import NonprofitsFaithPage from "./pages/NonprofitsFaithPage.tsx";
 import AmbassadorsPage from "./pages/AmbassadorsPage.tsx";
+import MunicipalitiesPage from "./pages/MunicipalitiesPage.tsx";
+import CompaniesPage from "./pages/CompaniesPage.tsx";
 import ScrollToTopOnRouteChange from "@shared/components/ScrollToTopOnRouteChange";
 import StandaloneHomeRedirect from "./components/StandaloneHomeRedirect";
 import CanonicalDomainGate from "./components/CanonicalDomainGate";
@@ -122,6 +124,8 @@ const App = () => (
               <Route path="/get-involved/schools" element={<SchoolsEducatorsPage />} />
               <Route path="/get-involved/nonprofits" element={<NonprofitsFaithPage />} />
               <Route path="/get-involved/ambassadors" element={<AmbassadorsPage />} />
+              <Route path="/get-involved/municipalities" element={<MunicipalitiesPage />} />
+              <Route path="/get-involved/companies" element={<CompaniesPage />} />
               <Route path="/register" element={<Navigate to="/commit" replace />} />
               <Route path="/volunteer" element={<Navigate to="/commit" replace />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

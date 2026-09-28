@@ -14,8 +14,8 @@ export default function GetInvolvedPage() {
     { title: p.groupIndividualsTitle, body: p.groupIndividualsBody, cta: p.groupIndividualsCta, link: "/commit" },
     { title: p.groupSchoolsTitle, body: p.groupSchoolsBody, cta: p.groupSchoolsCta, link: "/get-involved/schools" },
     { title: p.groupNonprofitsTitle, body: p.groupNonprofitsBody, cta: p.groupNonprofitsCta, link: "/get-involved/nonprofits" },
-    { title: p.groupCompaniesTitle, body: p.groupCompaniesBody, cta: p.groupCompaniesCta, link: "/contact" },
-    { title: p.groupMunicipalitiesTitle, body: p.groupMunicipalitiesBody, cta: p.groupMunicipalitiesCta, link: "/contact" },
+    { title: p.groupCompaniesTitle, body: p.groupCompaniesBody, cta: p.groupCompaniesCta, link: "/get-involved/companies" },
+    { title: p.groupMunicipalitiesTitle, body: p.groupMunicipalitiesBody, cta: p.groupMunicipalitiesCta, link: "/get-involved/municipalities" },
     { title: p.groupAmbassadorsTitle, body: p.groupAmbassadorsBody, cta: p.groupAmbassadorsCta, link: "/get-involved/ambassadors" },
   ];
 
