@@ -33,7 +33,7 @@ const Navbar = () => {
     { label: t.navbar.ideas, href: "/ideas" },
     { label: t.mapPage.title, href: "/map" },
     { label: t.navbar.about, href: "/about" },
-    { label: t.navbar.partners, href: "/partners" },
+    // Partners page is in draft — not linked from nav until it's approved to go live.
     { label: t.navbar.ourStory, anchor: "story" },
     { label: t.navbar.getInvolved, href: "/get-involved" },
     { label: t.navbar.donateNow, href: "/donate" },
