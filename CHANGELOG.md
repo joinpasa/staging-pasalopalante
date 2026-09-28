@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-09-28 — va.deedumlao@gmail.com
+
+- **Added an "Our Partners" page to the website**, listing corporate, faith-based, government, nonprofit, and education partners across five sections, linked from the Explore menu and the footer. This recreates a page that already existed on passkindnessforward.com — that domain had gotten disconnected from this codebase's deployment (pointed at a separate Lovable-hosted copy instead of the Cloudflare site this repo actually builds), discovered while looking into why the domain was showing a "Made with Lovable" badge. The domain is being reconnected to Cloudflare separately; this page needed to exist here first so nothing breaks once that's done.
+
 ## 2026-09-22 — va.deedumlao@gmail.com
 
 - **Converted the "Make your pledge" panel from brown to navy, per a follow-up brief.** This was the one thing flagged as intentionally left alone in the neutral-color overhaul just before this — turned out it was wanted too. The dark left panel is now navy (`#0E234B`), its "Step 1" label and checkmarks are cyan instead of gold (stat numbers stay gold — already correct), and the form's field labels on the white right panel are navy instead of dark grey, matching an exact brief for both sides of this one box. Everything else (white form background, cool input borders, orange selected-pledge button) was already correct from the earlier passes.
