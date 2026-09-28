@@ -32,6 +32,7 @@ import CommunityGuidelinesPage from "./pages/CommunityGuidelinesPage.tsx";
 import ContactPage from "./pages/ContactPage.tsx";
 import AboutPage from "./pages/AboutPage.tsx";
 import PartnersPage from "./pages/PartnersPage.tsx";
+import PartnersApplyPage from "./pages/PartnersApplyPage.tsx";
 import ProgramsPage from "./pages/ProgramsPage.tsx";
 import GetInvolvedPage from "./pages/GetInvolvedPage.tsx";
 import SchoolsEducatorsPage from "./pages/SchoolsEducatorsPage.tsx";
@@ -108,6 +109,7 @@ const App = () => (
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/partners" element={<PartnersPage />} />
+              <Route path="/partners/apply" element={<PartnersApplyPage />} />
               <Route path="/programs" element={<ProgramsPage />} />
               <Route path="/how-it-works" element={<ProgramsPage />} />
               <Route path="/get-involved" element={<GetInvolvedPage />} />

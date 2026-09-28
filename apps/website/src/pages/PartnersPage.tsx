@@ -190,7 +190,7 @@ export default function PartnersPage() {
                 : "Join the movement and help us pass kindness forward. Tell us about your organization and we'll follow up with next steps."}
             </p>
             <a
-              href="/contact"
+              href="/partners/apply"
               className="inline-flex items-center justify-center rounded-full bg-warm-cream px-8 py-3 text-sm font-semibold text-warm-earth transition-transform duration-200 hover:scale-105"
             >
               {isEs ? "Contáctanos" : "Get in touch"}

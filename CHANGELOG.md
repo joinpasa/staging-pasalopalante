@@ -11,6 +11,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 ## 2026-09-28 — va.deedumlao@gmail.com
 
 - **Added an "Our Partners" page to the website**, listing corporate, faith-based, government, nonprofit, and education partners across five sections, linked from the Explore menu and the footer. This recreates a page that already existed on passkindnessforward.com — that domain had gotten disconnected from this codebase's deployment (pointed at a separate Lovable-hosted copy instead of the Cloudflare site this repo actually builds), discovered while looking into why the domain was showing a "Made with Lovable" badge. The domain is being reconnected to Cloudflare separately; this page needed to exist here first so nothing breaks once that's done.
+- **Added a "Become a Partner" application page**, linked from the Partners page's "Get in touch" button, matching the same pattern as the existing Get Involved sub-pages (Schools, Ambassadors, Nonprofits) — a short intro plus an embedded form. passkindnessforward.com is also confirmed reconnected to Cloudflare now (the DNS/routing issue mentioned above is resolved).
 
 ## 2026-09-24 — va.deedumlao@gmail.com
 

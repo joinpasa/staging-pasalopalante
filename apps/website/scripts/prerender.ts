@@ -288,7 +288,7 @@ const routes: Route[] = [
       <h2>Education</h2>
       <p>Schools, campuses, and educators who bring kindness into classrooms with age-appropriate prompts, activities, and student-led projects: Departamento de Educación PR, MECYS.</p>
       <h2>Become a partner</h2>
-      <p>Join the movement and help us pass kindness forward. Tell us about your organization at <a href="/contact">/contact</a> and we'll follow up with next steps.</p>
+      <p>Join the movement and help us pass kindness forward. Tell us about your organization at <a href="/partners/apply">/partners/apply</a> and we'll follow up with next steps.</p>
     `,
   },
 ];
