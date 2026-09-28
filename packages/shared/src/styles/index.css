@@ -49,16 +49,23 @@
     --warm-blush: 338 55% 92%;
     --warm-sky: 196 100% 44%;
 
-    /* Mobile app (Pásalo beta) palette — coral-led, from the PWA prototype */
-    --app-coral: 8 92% 61%;
-    --app-coral-tint: 8 74% 93%;
-    --app-ink: 16 22% 10%;
-    --app-teal: 171 68% 28%;
+    /* Mobile app (Pásalo beta) palette — official Pass Kindness Forward
+       brand kit as of the 2026-09 dashboard/onboarding redesign. Names kept
+       (app-coral etc.) even though the hues changed, so all ~200 existing
+       bg-app-coral/text-app-ink/etc. usages across the app pick up the new
+       brand colors immediately without a rename sweep — screens get
+       renamed to match as they're individually rebuilt. */
+    --app-coral: 22 90% 55%;       /* was coral-red 8 92% 61% — now brand Orange #F37023 (primary CTA) */
+    --app-coral-tint: 22 74% 93%;
+    --app-ink: 219 69% 17%;        /* was near-black 16 22% 10% — now brand Navy #0E234B */
+    --app-teal: 171 68% 28%;       /* unchanged — success/validation state, not a brand-kit color */
     --app-teal-tint: 164 27% 89%;
-    --app-gold: 42 63% 48%;
-    --app-gold-tint: 41 71% 93%;
-    --app-surface: 0 0% 100%;
-    --app-canvas: 36 33% 97%;
+    --app-gold: 42 98% 53%;        /* was 42 63% 48% — now brand Yellow #FDB813 */
+    --app-gold-tint: 42 71% 93%;
+    --app-surface: 0 0% 100%;      /* unchanged — already the "white cards" the brand kit asks for */
+    --app-canvas: 37 44% 96%;      /* was 36 33% 97% — now brand warm off-white #FAF7F2 */
+    --app-sky: 196 100% 44%;       /* new — brand Sky Blue #00A3E0 */
+    --app-magenta: 338 78% 48%;    /* new — brand Magenta #D81B60 (secondary accent) */
     --app-water: 166 28% 85%;
     --app-land: 32 53% 89%;
     --app-hush: 30 12% 62%;

@@ -11,6 +11,7 @@ import { Input } from "@shared/components/ui/input";
 import { Label } from "@shared/components/ui/label";
 import { toast } from "sonner";
 import { CheckCircle2, KeyRound } from "lucide-react";
+import GoogleIcon from "@shared/components/icons/GoogleIcon";
 import Footer from "@/components/Footer";
 
 function safeNext(raw: string | null): string {
@@ -24,12 +25,13 @@ type AuthTab = "signin" | "signup";
 
 const AuthPage = () => {
   const { t } = useLanguage();
-  const { signIn, signInWithMagicLink, resetPassword, user, loading } = useAuth();
+  const { signIn, signInWithMagicLink, signInWithGoogle, resetPassword, user, loading } = useAuth();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const next = safeNext(params.get("next"));
   const [tab, setTab] = useState<AuthTab>(params.get("tab") === "signup" ? "signup" : "signin");
   const [busy, setBusy] = useState(false);
+  const [googleBusy, setGoogleBusy] = useState(false);
   const [magicSentTo, setMagicSentTo] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [needsReset, setNeedsReset] = useState<{ email: string; sent: boolean; reason: "migrated" | "forgot" } | null>(null);
@@ -97,6 +99,18 @@ const AuthPage = () => {
     setBusy(false);
     if (error) toast.error(getAuthErrorMessage(error));
     else navigate(next);
+  };
+
+  const handleGoogleSignIn = async () => {
+    setGoogleBusy(true);
+    const { error } = await signInWithGoogle(next);
+    if (error) {
+      // Only reached if the redirect itself failed to start (e.g. the
+      // provider isn't enabled on the Supabase project) — a successful call
+      // navigates the whole page away to Google before this line runs.
+      setGoogleBusy(false);
+      toast.error(getAuthErrorMessage(error));
+    }
   };
 
   function handleForgotPassword() {
@@ -192,6 +206,23 @@ const AuthPage = () => {
             </div>
           ) : (
             <>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full gap-2"
+                disabled={googleBusy}
+                onClick={handleGoogleSignIn}
+              >
+                <GoogleIcon size={18} />
+                {googleBusy ? "…" : t.auth.continueWithGoogle}
+              </Button>
+
+              <div className="flex items-center gap-3 my-5">
+                <div className="h-px flex-1 bg-border" />
+                <span className="text-xs text-foreground/50">{t.auth.orContinueWithEmail}</span>
+                <div className="h-px flex-1 bg-border" />
+              </div>
+
               <form onSubmit={handleMagicLink} className="space-y-4">
                 {tab === "signup" && (
                   <div>

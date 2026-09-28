@@ -34,7 +34,7 @@ interface InstallPromptProps {
 
 const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
   const { lang } = useLanguage();
-  const { anyShareFlowOpen } = useUI();
+  const { anyShareFlowOpen, joinPopupOpen } = useUI();
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [deferred, setDeferred] = useState<BIPEvent | null>(null);
@@ -232,7 +232,7 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
 
   return (
     <AnimatePresence>
-      {open && !anyShareFlowOpen && (
+      {open && !anyShareFlowOpen && !joinPopupOpen && (
         <motion.div
           initial={{ y: 80, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}

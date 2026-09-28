@@ -7,16 +7,32 @@ import { KeyRound, Mail, X } from "lucide-react";
 import PasswordForm from "@/components/app/PasswordForm";
 import { PENDING_EMAIL_KEY } from "@/lib/pendingSignup";
 import { useAuth } from "@shared/contexts/AuthContext";
+import { useUI } from "@shared/contexts/UIContext";
 import { getCanonicalOrigin } from "@shared/lib/canonicalOrigin";
 import { supabase } from "@shared/integrations/supabase/client";
 
+const JOIN_POPUP_DISMISS_KEY = "ppl-join-popup-dismissed-at";
+const JOIN_POPUP_DISMISS_DAYS = 14;
+
 /** Extra, harder-to-miss nudge for a fully anonymous visitor: shows after a
  *  short delay or on first scroll, whichever comes first — the thin top
- *  banner alone was easy to skim past. */
+ *  banner alone was easy to skim past.
+ *
+ *  Registers itself into the shared joinPopupOpen flag so InstallPrompt (a
+ *  second, near-identical fixed bottom banner mounted globally) knows to
+ *  wait rather than opening on top of it — previously both could trigger
+ *  within seconds of each other for the same first-time visitor. Also
+ *  remembers a dismissal for 14 days, matching InstallPrompt's own
+ *  snooze — this used to have no persistence at all and would reappear on
+ *  every single visit even after being closed. */
 function JoinPopup() {
+  const { setJoinPopupOpen } = useUI();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
+    const dismissedAt = Number(localStorage.getItem(JOIN_POPUP_DISMISS_KEY) || 0);
+    if (dismissedAt && Date.now() - dismissedAt < JOIN_POPUP_DISMISS_DAYS * 86400_000) return;
+
     const timer = window.setTimeout(() => setOpen(true), 3000);
     const onScroll = () => setOpen(true);
     window.addEventListener("scroll", onScroll, { once: true, passive: true });
@@ -25,6 +41,16 @@ function JoinPopup() {
       window.removeEventListener("scroll", onScroll);
     };
   }, []);
+
+  useEffect(() => {
+    setJoinPopupOpen(open);
+    return () => setJoinPopupOpen(false);
+  }, [open, setJoinPopupOpen]);
+
+  const dismiss = () => {
+    localStorage.setItem(JOIN_POPUP_DISMISS_KEY, String(Date.now()));
+    setOpen(false);
+  };
 
   return (
     <AnimatePresence>
@@ -53,7 +79,7 @@ function JoinPopup() {
             </Link>
             <button
               type="button"
-              onClick={() => setOpen(false)}
+              onClick={dismiss}
               aria-label="Dismiss"
               className="shrink-0 text-foreground/40 hover:text-foreground/70"
             >

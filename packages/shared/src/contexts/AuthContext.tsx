@@ -14,6 +14,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string, displayName?: string, redirectPath?: string) => Promise<{ error: Error | null }>;
   signInWithMagicLink: (email: string, displayName?: string, redirectPath?: string) => Promise<{ error: Error | null }>;
+  signInWithGoogle: (redirectPath?: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: Error | null }>;
 }
@@ -111,6 +112,20 @@ export const AuthProvider = ({ children, ghlSource = "PPL Website" }: AuthProvid
     return { error };
   };
 
+  // Redirects the browser away immediately (no confirmation email involved,
+  // unlike signIn/signUp/signInWithMagicLink above) — the returned error
+  // only ever reflects a failure to *start* that redirect, e.g. Google
+  // sign-in not enabled on the Supabase project.
+  const signInWithGoogle = async (redirectPath = "/account") => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${getCanonicalOrigin()}${redirectPath}`,
+      },
+    });
+    return { error };
+  };
+
   const resetPassword = async (email: string) => {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${getCanonicalOrigin()}/reset-password`,
@@ -119,7 +134,7 @@ export const AuthProvider = ({ children, ghlSource = "PPL Website" }: AuthProvid
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signIn, signUp, signInWithMagicLink, signOut, resetPassword }}>
+    <AuthContext.Provider value={{ user, session, loading, signIn, signUp, signInWithMagicLink, signInWithGoogle, signOut, resetPassword }}>
       {children}
     </AuthContext.Provider>
   );

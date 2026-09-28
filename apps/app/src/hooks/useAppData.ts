@@ -33,6 +33,7 @@ export interface AppMe {
   connections: number;
   onboardingSeen: boolean;
   hasCommitment: boolean;
+  tourSeen: boolean;
 }
 
 export function useAppMe() {
@@ -47,7 +48,7 @@ export function useAppMe() {
       const [profileRes, streakRes, pledgeRes, referralRes, connectionsRes] = await Promise.all([
         supabase
           .from("profiles")
-          .select("display_name, first_name, last_name, country, referral_code, onboarding_seen")
+          .select("display_name, first_name, last_name, country, referral_code, onboarding_seen, tour_seen")
           .eq("user_id", uid)
           .maybeSingle(),
         supabase.rpc("user_streak", { _user_id: uid }),
@@ -85,6 +86,7 @@ export function useAppMe() {
         connections: Number(connectionsRes.data ?? 0),
         onboardingSeen: !!profile?.onboarding_seen,
         hasCommitment: (pledgeRes.data ?? []).length > 0,
+        tourSeen: !!profile?.tour_seen,
       };
     },
   });
@@ -393,10 +395,17 @@ export function useAppBadges() {
   });
 }
 
+export type ConnectionDirection = "passed_to" | "received_from" | "both";
+
 export interface Connection {
   userId: string;
   name: string;
   connectedAt: string;
+  country: string | null;
+  /** Relative to the signed-in user: "passed_to" (their code was scanned,
+   *  passing kindness onward), "received_from" (they scanned someone
+   *  else's code), or "both" if hand-offs happened in each direction. */
+  direction: ConnectionDirection;
 }
 
 /** The list behind me.connections — one row per distinct person connected
@@ -414,7 +423,26 @@ export function useMyConnections() {
         userId: row.user_id,
         name: row.name,
         connectedAt: row.connected_at,
+        country: row.country ?? null,
+        direction: (row.direction ?? "passed_to") as ConnectionDirection,
       }));
+    },
+  });
+}
+
+/** How many hops of hand-offs the signed-in user sits within — hand-offs
+ *  leading up to them plus hand-offs leading onward from them, counted as
+ *  one continuous chain via pass_handoffs graph traversal server-side. */
+export function useLongestChain() {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ["app", "longest-chain", user?.id],
+    enabled: !!user,
+    queryFn: async (): Promise<number> => {
+      const { data, error } = await supabase.rpc("my_longest_chain");
+      if (error) throw error;
+      return Number(data ?? 0);
     },
   });
 }

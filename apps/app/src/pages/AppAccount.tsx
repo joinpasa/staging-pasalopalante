@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { ArrowLeft, KeyRound, Loader2, LogOut } from "lucide-react";
+import { ArrowLeft, KeyRound, Loader2, LogOut, Mail } from "lucide-react";
 
 import PasswordForm from "@/components/app/PasswordForm";
+import EmailForm from "@/components/app/EmailForm";
 import PushToggle from "@/components/app/PushToggle";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { supabase } from "@shared/integrations/supabase/client";
@@ -33,6 +34,7 @@ export default function AppAccount() {
   const [saving, setSaving] = useState(false);
   const [hasPassword, setHasPassword] = useState(true);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [showEmailForm, setShowEmailForm] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -199,6 +201,32 @@ export default function AppAccount() {
                 {saving ? "Saving…" : "Save profile"}
               </button>
             </form>
+          </section>
+
+          <section>
+            <h2 className="mb-3 font-sans text-sm font-bold text-foreground">Email</h2>
+            <div className="rounded-2xl bg-app-surface p-4">
+              {!showEmailForm ? (
+                <button
+                  type="button"
+                  onClick={() => setShowEmailForm(true)}
+                  className="flex w-full items-center gap-3 text-start"
+                >
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-app-coral-tint text-app-coral">
+                    <Mail className="h-4 w-4" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-bold text-foreground">Change email</span>
+                    <span className="block truncate text-xs text-muted-foreground">{user.email}</span>
+                  </span>
+                </button>
+              ) : (
+                <EmailForm
+                  onSaved={() => setShowEmailForm(false)}
+                  onCancel={() => setShowEmailForm(false)}
+                />
+              )}
+            </div>
           </section>
 
           <section>

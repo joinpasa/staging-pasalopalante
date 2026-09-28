@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { Camera, Download, Share2, HelpCircle, ChevronDown, Apple, Smartphone } from "lucide-react";
+import { ArrowLeft, Camera, Download, Share2, HelpCircle, ChevronDown, Info, Apple, Smartphone } from "lucide-react";
 import PassQrCode, { type PassQrCodeHandle } from "@/components/app/PassQrCode";
 import JoinGate from "@/components/app/JoinGate";
 import { useAuth } from "@shared/contexts/AuthContext";
@@ -11,10 +11,13 @@ import { cn } from "@shared/lib/utils";
 
 type PassTab = "code" | "scan";
 
+const memberSinceFormatter = new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" });
+
 export default function AppPass() {
   const [tab, setTab] = useState<PassTab>("code");
   const { user } = useAuth();
   const { data: me } = useAppMe();
+  const navigate = useNavigate();
 
   // Your invite code comes from your profile, so the chain it builds is
   // real. Keep the actual value exactly as stored (lowercase hex) — both
@@ -31,129 +34,162 @@ export default function AppPass() {
   const passUrl = code ? `${appUrl}?ref=${code}` : appUrl;
 
   return (
-    <div className="flex-1 bg-app-coral px-5 pt-5 text-app-surface">
-      <div className="flex rounded-full bg-app-surface/20 p-1" role="tablist" aria-label="Pass mode">
-        {(
-          [
-            { id: "code", label: "My code" },
-            { id: "scan", label: "Scan" },
-          ] as const
-        ).map(({ id, label }) => (
-          <button
-            key={id}
-            type="button"
-            role="tab"
-            aria-selected={tab === id}
-            onClick={() => setTab(id)}
-            className={cn(
-              "flex-1 rounded-full py-2.5 text-sm font-bold transition-colors",
-              tab === id ? "bg-app-surface text-app-coral" : "text-app-surface",
-            )}
-          >
-            {label}
-          </button>
-        ))}
+    <div className="flex flex-1 flex-col bg-app-canvas">
+      <div className="flex h-16 shrink-0 items-center gap-1.5 border-b border-border bg-app-surface px-2">
+        <button
+          type="button"
+          onClick={() => navigate("/")}
+          aria-label="Back to dashboard"
+          className="flex h-10 w-10 items-center justify-center rounded-xl"
+        >
+          <ArrowLeft className="h-5 w-5 text-foreground" />
+        </button>
+        <p className="text-[15.5px] font-bold text-foreground">Share or Scan</p>
       </div>
 
-      {tab === "code" ? (
-        !user ? (
-          <div className="pt-6">
-            <h1 className="text-center font-sans text-2xl font-extrabold">Pass it forward</h1>
-            <p className="mx-auto mt-2 mb-5 max-w-xs text-center text-sm leading-relaxed text-app-surface/85">
-              Join to get your own code — everyone who joins with it becomes part of your chain.
-            </p>
-            <JoinGate
-              title="Get your pass code"
-              body="Commit to acts of kindness, then share your code so the people you pass it to join your chain."
+      <div className="flex flex-1 flex-col gap-5 px-6 py-5">
+        <div className="flex rounded-full bg-app-ink/[0.06] p-1" role="tablist" aria-label="Pass mode">
+          {(
+            [
+              { id: "code", label: "My Code" },
+              { id: "scan", label: "Scan" },
+            ] as const
+          ).map(({ id, label }) => (
+            <button
+              key={id}
+              type="button"
+              role="tab"
+              aria-selected={tab === id}
+              onClick={() => setTab(id)}
+              className={cn(
+                "flex-1 rounded-full py-2.5 text-sm font-bold transition-colors",
+                tab === id ? "bg-app-coral text-app-surface" : "text-app-ink/55",
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {tab === "code" ? (
+          !user ? (
+            <div className="flex flex-col gap-3 pt-2 text-center">
+              <h1 className="font-sans text-2xl font-extrabold text-foreground">Pass it forward</h1>
+              <p className="mx-auto max-w-xs text-sm leading-relaxed text-muted-foreground">
+                Join to get your own code — everyone who joins with it becomes part of your chain.
+              </p>
+              <JoinGate
+                title="Get your pass code"
+                body="Commit to acts of kindness, then share your code so the people you pass it to join your chain."
+              />
+            </div>
+          ) : (
+            <MyCode
+              code={code}
+              passUrl={passUrl}
+              carried={me?.peoplePassedTo ?? 0}
+              displayName={me?.displayName ?? "Friend"}
+              memberSince={user.created_at ? memberSinceFormatter.format(new Date(user.created_at)) : null}
             />
-          </div>
+          )
         ) : (
-          <MyCode code={code} passUrl={passUrl} carried={me?.peoplePassedTo ?? 0} />
-        )
-      ) : (
-        <ScanPanel />
-      )}
+          <ScanPanel />
+        )}
+      </div>
     </div>
   );
 }
-
 
 function MyCode({
   code,
   passUrl,
   carried,
+  displayName,
+  memberSince,
 }: {
   code: string;
   passUrl: string;
   carried: number;
+  displayName: string;
+  memberSince: string | null;
 }) {
   const qrRef = useRef<PassQrCodeHandle>(null);
 
   return (
-    <div className="pt-6">
-      <h1 className="text-center font-sans text-2xl font-extrabold">Pass it forward</h1>
-      <p className="mx-auto mt-2 max-w-xs text-center text-sm leading-relaxed text-app-surface/85">
-        Let them scan this. No app yet? It takes them to join. Already in? The hand-off is logged and
-        they join your chain.
-      </p>
-
-      <div className="mt-5 rounded-3xl bg-app-surface p-5">
-        <PassQrCode ref={qrRef} value={passUrl} />
-        <p className="mt-3 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          Your pass code
+    <div className="flex flex-col items-center gap-4">
+      <div className="text-center">
+        <p className="text-xs font-bold uppercase tracking-[0.07em] text-app-ink/50">Share the chain</p>
+        <p className="mt-1 text-[19px] font-bold text-foreground">
+          Let someone scan this to pass kindness your way
         </p>
-        <div className="mt-1 flex items-center justify-center gap-3">
-          <p className="font-sans text-2xl font-extrabold uppercase tracking-[0.15em] text-foreground">
+      </div>
+
+      <div className="flex w-full flex-col items-center gap-4 rounded-3xl border border-border bg-app-surface p-6 shadow-sm">
+        <div className="w-[220px] max-w-full rounded-[18px] bg-app-ink p-3.5">
+          <PassQrCode ref={qrRef} value={passUrl} />
+        </div>
+
+        <div className="text-center">
+          <p className="text-base font-bold text-foreground">{displayName}</p>
+          {memberSince && (
+            <p className="mt-0.5 text-xs text-muted-foreground">Member since {memberSince}</p>
+          )}
+          <p className="mt-1 text-[11px] uppercase tracking-[0.1em] text-muted-foreground">
             {code || "…"}
           </p>
         </div>
-        <p className="mt-1 text-center text-xs text-muted-foreground">
-          {passUrl.replace(/^https?:\/\//, "")}
-        </p>
-      </div>
 
-      <div className="mt-4 flex items-center gap-3">
-        <button
-          type="button"
-          onClick={async () => {
-            const url = passUrl;
-            try {
-              if (navigator.share) await navigator.share({ url, title: "Pásalo Pa'lante" });
-              else {
-                await navigator.clipboard.writeText(url);
-                toast.success("Link copied.");
+        <div className="flex w-full gap-2.5">
+          <button
+            type="button"
+            onClick={async () => {
+              const url = passUrl;
+              try {
+                if (navigator.share) await navigator.share({ url, title: "Pásalo Pa'lante" });
+                else {
+                  await navigator.clipboard.writeText(url);
+                  toast.success("Link copied.");
+                }
+              } catch {
+                /* dismissed */
               }
-            } catch {
-              /* dismissed */
-            }
-          }}
-          className="flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-app-ink font-semibold text-app-surface"
-        >
-          <Share2 className="h-4 w-4" />
-          Share my link
-        </button>
-        <button
-          type="button"
-          onClick={async () => {
-            try {
-              await qrRef.current?.download();
-            } catch {
-              toast.error("Couldn't save the code image — please try again.");
-            }
-          }}
-          aria-label="Save pass code image"
-          className="flex h-14 w-14 items-center justify-center rounded-2xl border border-app-surface/40"
-        >
-          <Download className="h-5 w-5" />
-        </button>
+            }}
+            className="flex h-[52px] flex-1 items-center justify-center gap-2 rounded-2xl bg-app-coral font-bold text-app-surface"
+          >
+            <Share2 className="h-4 w-4" />
+            Share
+          </button>
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                await qrRef.current?.download();
+              } catch {
+                toast.error("Couldn't save the code image — please try again.");
+              }
+            }}
+            aria-label="Save pass code image"
+            className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-2xl border border-border bg-app-surface"
+          >
+            <Download className="h-5 w-5 text-foreground" />
+          </button>
+        </div>
       </div>
 
-      <div className="mt-4 rounded-2xl bg-app-surface/15 p-4">
-        <p className="flex items-baseline gap-2.5">
-          <span className="font-sans text-xl font-extrabold">{carried}</span>
-          <span className="text-sm text-app-surface/90">people have joined with your code</span>
+      <div className="flex w-full items-start gap-2.5 rounded-2xl bg-app-sky/[0.08] p-4">
+        <Info className="mt-0.5 h-[18px] w-[18px] shrink-0 text-app-sky" strokeWidth={1.8} />
+        <p className="text-xs leading-relaxed text-foreground">
+          This code never expires. Anyone who scans it can pass an act of kindness straight to you —
+          find it here anytime from the Share QR button in your dashboard.
         </p>
-        <p className="mt-3 border-t border-app-surface/20 pt-3 text-xs leading-relaxed text-app-surface/75">
+      </div>
+
+      <div className="w-full rounded-2xl border border-border bg-app-surface p-4">
+        <p className="flex items-baseline gap-2.5">
+          <span className="text-xl font-extrabold text-foreground">{carried}</span>
+          <span className="text-sm text-muted-foreground">people have joined with your code</span>
+        </p>
+        <p className="mt-3 border-t border-border pt-3 text-xs leading-relaxed text-muted-foreground">
           Everyone who joins with your code becomes part of your chain, and their acts count toward
           your ripple.
         </p>
@@ -161,8 +197,6 @@ function MyCode({
     </div>
   );
 }
-
-
 
 function ScanPanel() {
   const navigate = useNavigate();
@@ -274,13 +308,13 @@ function ScanPanel() {
   }, []);
 
   return (
-    <div className="pt-6">
-      <h1 className="text-center font-sans text-2xl font-extrabold">Scan their code</h1>
-      <p className="mx-auto mt-2 max-w-xs text-center text-sm leading-relaxed text-app-surface/85">
-        Point the camera at a pass code to log the hand-off and add them to your chain.
-      </p>
+    <div className="flex flex-col items-center gap-4">
+      <div className="text-center">
+        <p className="text-xs font-bold uppercase tracking-[0.07em] text-app-ink/50">Receive the chain</p>
+        <p className="mt-1 text-[19px] font-bold text-foreground">Scan someone's code to pass kindness to them</p>
+      </div>
 
-      <div className="relative mt-5 aspect-square overflow-hidden rounded-3xl bg-app-ink">
+      <div className="relative aspect-square w-full overflow-hidden rounded-3xl bg-app-ink">
         {denied ? (
           <div className="flex h-full flex-col items-center justify-center gap-3 px-8 text-center">
             <Camera className="h-8 w-8 text-app-surface/60" />
@@ -299,22 +333,28 @@ function ScanPanel() {
           />
         )}
         <canvas ref={canvasRef} className="hidden" />
-        <div className="pointer-events-none absolute inset-10 rounded-2xl border-2 border-app-surface/70" />
+        {/* Orange corner brackets frame the scan area instead of a uniform border. */}
+        <div className="pointer-events-none absolute inset-8">
+          <span className="absolute left-0 top-0 h-9 w-9 rounded-tl-xl border-l-[3px] border-t-[3px] border-app-coral" />
+          <span className="absolute right-0 top-0 h-9 w-9 rounded-tr-xl border-r-[3px] border-t-[3px] border-app-coral" />
+          <span className="absolute bottom-0 left-0 h-9 w-9 rounded-bl-xl border-b-[3px] border-l-[3px] border-app-coral" />
+          <span className="absolute bottom-0 right-0 h-9 w-9 rounded-br-xl border-b-[3px] border-r-[3px] border-app-coral" />
+        </div>
       </div>
 
       {result ? (
-        <div className="mt-4 rounded-2xl bg-app-surface/15 p-4">
-          <p className="text-sm font-semibold">Scanned pass code</p>
-          <p className="mt-1 font-sans text-xl font-extrabold tracking-[0.15em]">{result}</p>
+        <div className="w-full rounded-2xl border border-border bg-app-surface p-4">
+          <p className="text-sm font-semibold text-foreground">Scanned pass code</p>
+          <p className="mt-1 text-xl font-extrabold tracking-[0.15em] text-foreground">{result}</p>
           <a
             href={`/wave?ref=${encodeURIComponent(result)}`}
-            className="mt-3 flex h-12 items-center justify-center rounded-2xl bg-app-ink font-semibold text-app-surface"
+            className="mt-3 flex h-12 items-center justify-center rounded-2xl bg-app-coral font-semibold text-app-surface"
           >
             Open their pass
           </a>
         </div>
       ) : (
-        <p className="mt-4 rounded-2xl bg-app-surface/15 p-4 text-xs leading-relaxed text-app-surface/75">
+        <p className="w-full text-center text-xs leading-relaxed text-muted-foreground">
           Hold steady — the code is read automatically as soon as it fits inside the frame.
         </p>
       )}
@@ -329,33 +369,33 @@ function TroubleshootPanel() {
   const steps = (icon: React.ReactNode, list: string[]) =>
     list.map((s, i) => (
       <li key={i} className="flex gap-2.5">
-        <span className="mt-0.5 shrink-0 text-app-teal">{icon}</span>
-        <span className="text-xs leading-relaxed text-app-surface/85">{s}</span>
+        <span className="mt-0.5 shrink-0 text-app-coral">{icon}</span>
+        <span className="text-xs leading-relaxed text-muted-foreground">{s}</span>
       </li>
     ));
 
   return (
-    <div className="mt-4 overflow-hidden rounded-2xl border border-app-surface/25 bg-app-surface/10">
+    <div className="w-full overflow-hidden rounded-2xl border border-border bg-app-surface">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left"
       >
-        <span className="flex items-center gap-2.5 text-sm font-semibold text-app-surface">
+        <span className="flex items-center gap-2.5 text-sm font-semibold text-foreground">
           <HelpCircle className="h-4 w-4" />
           Can't scan? Troubleshooting tips
         </span>
         <ChevronDown
-          className={cn("h-4 w-4 shrink-0 text-app-surface/70 transition-transform", open && "rotate-180")}
+          className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform", open && "rotate-180")}
         />
       </button>
 
       {open && (
-        <div className="border-t border-app-surface/20 px-4 py-4">
+        <div className="border-t border-border px-4 py-4">
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
-              <p className="flex items-center gap-2 text-sm font-bold text-app-surface">
+              <p className="flex items-center gap-2 text-sm font-bold text-foreground">
                 <Apple className="h-4 w-4" /> iPhone
               </p>
               <ul className="mt-2.5 space-y-2">
@@ -373,7 +413,7 @@ function TroubleshootPanel() {
             </div>
 
             <div>
-              <p className="flex items-center gap-2 text-sm font-bold text-app-surface">
+              <p className="flex items-center gap-2 text-sm font-bold text-foreground">
                 <Smartphone className="h-4 w-4" /> Android
               </p>
               <ul className="mt-2.5 space-y-2">
@@ -391,10 +431,10 @@ function TroubleshootPanel() {
             </div>
           </div>
 
-          <div className="mt-4 rounded-xl bg-app-surface/15 p-3">
-            <p className="text-xs font-semibold text-app-surface">Still not scanning?</p>
-            <p className="mt-1 text-xs leading-relaxed text-app-surface/80">
-              Ask the other person to open the <span className="font-semibold">My code</span> tab and
+          <div className="mt-4 rounded-xl bg-app-canvas p-3">
+            <p className="text-xs font-semibold text-foreground">Still not scanning?</p>
+            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+              Ask the other person to open the <span className="font-semibold">My Code</span> tab and
               read the code aloud, then type it into the box below to log the hand-off manually.
             </p>
             <ManualEntry />
@@ -419,7 +459,7 @@ function ManualEntry() {
         onChange={(e) => setVal(e.target.value.toLowerCase())}
         placeholder="ENTER CODE"
         aria-label="Type pass code manually"
-        className="flex-1 rounded-xl bg-app-surface px-3 py-2.5 text-sm font-bold uppercase tracking-wider text-app-ink placeholder:font-normal placeholder:normal-case placeholder:tracking-normal placeholder:text-app-ink/40"
+        className="flex-1 rounded-xl border border-border bg-app-surface px-3 py-2.5 text-sm font-bold uppercase tracking-wider text-foreground placeholder:font-normal placeholder:normal-case placeholder:tracking-normal placeholder:text-muted-foreground"
       />
       <a
         href={valid ? `/wave?ref=${encodeURIComponent(val.trim())}` : undefined}
@@ -434,4 +474,3 @@ function ManualEntry() {
     </div>
   );
 }
-

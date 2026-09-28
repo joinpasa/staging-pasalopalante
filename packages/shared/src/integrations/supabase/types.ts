@@ -48,6 +48,7 @@ export type Database = {
       }
       acts_of_kindness: {
         Row: {
+          act_type: string | null
           category: string | null
           classified_at: string | null
           community_guidelines_version: string | null
@@ -62,6 +63,7 @@ export type Database = {
           moderation_reason: string | null
           photo_paths: string[]
           privacy_version: string | null
+          share_on_wall: boolean
           status: string
           tag_confidence: Json | null
           tags: string[] | null
@@ -73,6 +75,7 @@ export type Database = {
           video_url: string | null
         }
         Insert: {
+          act_type?: string | null
           category?: string | null
           classified_at?: string | null
           community_guidelines_version?: string | null
@@ -87,6 +90,7 @@ export type Database = {
           moderation_reason?: string | null
           photo_paths?: string[]
           privacy_version?: string | null
+          share_on_wall?: boolean
           status?: string
           tag_confidence?: Json | null
           tags?: string[] | null
@@ -98,6 +102,7 @@ export type Database = {
           video_url?: string | null
         }
         Update: {
+          act_type?: string | null
           category?: string | null
           classified_at?: string | null
           community_guidelines_version?: string | null
@@ -112,6 +117,7 @@ export type Database = {
           moderation_reason?: string | null
           photo_paths?: string[]
           privacy_version?: string | null
+          share_on_wall?: boolean
           status?: string
           tag_confidence?: Json | null
           tags?: string[] | null
@@ -534,6 +540,7 @@ export type Database = {
           terms_major_accepted: number | null
           terms_version_accepted: string | null
           timezone: string | null
+          tour_seen: boolean
           updated_at: string
           user_id: string
         }
@@ -563,6 +570,7 @@ export type Database = {
           terms_major_accepted?: number | null
           terms_version_accepted?: string | null
           timezone?: string | null
+          tour_seen?: boolean
           updated_at?: string
           user_id: string
         }
@@ -592,6 +600,7 @@ export type Database = {
           terms_major_accepted?: number | null
           terms_version_accepted?: string | null
           timezone?: string | null
+          tour_seen?: boolean
           updated_at?: string
           user_id?: string
         }
