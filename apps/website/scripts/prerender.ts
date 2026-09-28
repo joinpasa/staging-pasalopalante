@@ -46,6 +46,7 @@ const FOOTER = `
   </p>
   <p>
     <a href="/about">About</a> ·
+    <a href="/partners">Partners</a> ·
     <a href="/how-it-works">How it works</a> ·
     <a href="/programs">Programs</a> ·
     <a href="/get-involved">Get involved</a> ·
@@ -265,6 +266,29 @@ const routes: Route[] = [
         <li>Report concerns to <a href="mailto:info@teamopr.org">info@teamopr.org</a>.</li>
       </ul>
       <p>Pásalo Pa'lante may remove, decline, or report content that violates these guidelines or harms the integrity of the movement.</p>
+    `,
+  },
+  {
+    path: "/partners",
+    title: "Our Partners | Pásalo Pa'lante",
+    description:
+      "Meet the corporate, faith-based, government, nonprofit, and education partners powering Pásalo Pa'lante and the global kindness movement.",
+    body: `
+      <h1>Our Partners</h1>
+      ${SISTER}
+      <p>Pásalo Pa'lante moves forward because of the organizations standing behind it. Across five pillars, our partners co-host activations, fund the movement, and carry kindness into every corner of their communities.</p>
+      <h2>Corporate</h2>
+      <p>Businesses and brands that sponsor kindness activations, match their teams' volunteer hours, and help fund the movement's reach: Animaze, C-Suite Network, Caribbean Cinemas, Eucaforest, Good Pop, Good News Network, HB CBC News, HTS, Laser 101 St Maarten, Mone &amp; You, Platea PR, TV15SXM, The Weather Network, bMedia.</p>
+      <h2>Faith-Based</h2>
+      <p>Churches, ministries, and faith communities that mobilize their congregations and weave kindness into their service to others: Awaken (Michael Krauss), Brahma Kumaris, ISKCON, Oneness, Purity Weaves Destiny, The Art of Living, Yoga Vidya.</p>
+      <h2>Government</h2>
+      <p>Municipalities and public agencies that bring the campaign to their cities, proclaim the Kindness Season, and support local activations: Montserrat, WIPR.</p>
+      <h2>Nonprofits</h2>
+      <p>Community organizations that co-host activations, share kindness resources, and connect the movement to the people they serve: WEDU, Ad Council, AIESEC, Coquí, HMI, HITN, Kids for Peace, Million Peacemakers, PBS, Rotary Westminster, WKM.</p>
+      <h2>Education</h2>
+      <p>Schools, campuses, and educators who bring kindness into classrooms with age-appropriate prompts, activities, and student-led projects: Departamento de Educación PR, MECYS.</p>
+      <h2>Become a partner</h2>
+      <p>Join the movement and help us pass kindness forward. Tell us about your organization at <a href="/contact">/contact</a> and we'll follow up with next steps.</p>
     `,
   },
 ];

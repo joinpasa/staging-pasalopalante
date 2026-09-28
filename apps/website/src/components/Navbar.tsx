@@ -33,6 +33,7 @@ const Navbar = () => {
     { label: t.navbar.ideas, href: "/ideas" },
     { label: t.mapPage.title, href: "/map" },
     { label: t.navbar.about, href: "/about" },
+    { label: t.navbar.partners, href: "/partners" },
     { label: t.navbar.ourStory, anchor: "story" },
     { label: t.navbar.getInvolved, href: "/get-involved" },
     { label: t.navbar.donateNow, href: "/donate" },
