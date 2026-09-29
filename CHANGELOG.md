@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-09-29 — va.deedumlao@gmail.com
+
+- **Added a "Chatbot and Automated Communications" section to the Privacy Policy page** (English and Spanish), disclosing the AI chatbot used on the site (Marketing Hub AI Agent, built by Adam Terpstra / Scale Smart) for the Pass Kindness Forward initiative — what it collects (name, email, country, organization), where it's stored (GoHighLevel), how it's used, and that chatbot-collected emails won't be used for unrelated marketing. Inserted as section 8, so every section after it shifted down by one number.
+
 ## 2026-09-28 — va.deedumlao@gmail.com
 
 - **Added an "Our Partners" page to the website**, listing corporate, faith-based, government, nonprofit, and education partners across five sections, linked from the Explore menu and the footer. This recreates a page that already existed on passkindnessforward.com — that domain had gotten disconnected from this codebase's deployment (pointed at a separate Lovable-hosted copy instead of the Cloudflare site this repo actually builds), discovered while looking into why the domain was showing a "Made with Lovable" badge. The domain is being reconnected to Cloudflare separately; this page needed to exist here first so nothing breaks once that's done.

@@ -190,16 +190,41 @@ export default function PrivacyPage() {
               <p>{t("You may unsubscribe from non-essential emails at any time. We may still send transactional or administrative messages when necessary (donation receipts, legal notices, registration confirmations, direct replies).", "Puedes darte de baja de correos no esenciales en cualquier momento. Aún podemos enviar mensajes transaccionales o administrativos cuando sea necesario (recibos, avisos legales, confirmaciones, respuestas directas).")}</p>
             </Section>
 
-            <Section n={8} title={t("Cookies and Analytics", "Cookies y analíticas")}>
+            <Section n={8} title={t("Chatbot and Automated Communications", "Chatbot y Comunicaciones Automatizadas")}>
+              <p>
+                {t(
+                  "Our website uses an AI-powered chatbot (\"the Chatbot\") operated through Marketing Hub AI Agent, a platform developed by Adam Terpstra / Scale Smart. The Chatbot is used in connection with the Pass Kindness Forward initiative.",
+                  "Nuestro sitio web utiliza un chatbot con inteligencia artificial (\"el Chatbot\") operado a través de Marketing Hub AI Agent, una plataforma desarrollada por Adam Terpstra / Scale Smart. El Chatbot se utiliza en el contexto de la iniciativa Pass Kindness Forward."
+                )}
+              </p>
+              <p>{t("When you interact with the Chatbot, we may collect the following information that you voluntarily provide:", "Cuando interactúa con el Chatbot, podemos recopilar la siguiente información que usted proporciona voluntariamente:")}</p>
+              <ul className="list-disc pl-6 space-y-1">
+                <li>{t("Name", "Nombre")}</li>
+                <li>{t("Email address", "Dirección de correo electrónico")}</li>
+                <li>{t("Country", "País")}</li>
+                <li>{t("Organization or institutional affiliation (where applicable)", "Nombre de la organización o institución (cuando corresponda)")}</li>
+              </ul>
+              <p>{t("This information is stored and managed through GoHighLevel (GHL), a customer relationship management (CRM) platform used by Te Amo PR.", "Esta información se almacena y gestiona a través de GoHighLevel (GHL), una plataforma de gestión de relaciones con contactos (CRM) utilizada por Te Amo PR.")}</p>
+              <p>{t("Information collected through the Chatbot may be used to:", "La información recopilada a través del Chatbot puede utilizarse para:")}</p>
+              <ul className="list-disc pl-6 space-y-1">
+                <li>{t("Respond to your questions and requests", "Responder sus preguntas y solicitudes")}</li>
+                <li>{t("Send you onboarding materials and follow-up communications related to Pass Kindness Forward", "Enviarle materiales de incorporación y comunicaciones de seguimiento relacionadas con Pass Kindness Forward")}</li>
+                <li>{t("Track your participation interest and status within the movement", "Dar seguimiento a su interés y estado de participación en el movimiento")}</li>
+              </ul>
+              <p>{t("Email addresses collected through the Chatbot will not be used for newsletters, marketing campaigns, or promotional communications unrelated to Pass Kindness Forward.", "Las direcciones de correo electrónico recopiladas a través del Chatbot no se utilizarán para newsletters, campañas de marketing ni comunicaciones promocionales no relacionadas con Pass Kindness Forward.")}</p>
+              <p>{t("Conversations held through the Chatbot are stored on the Marketing Hub AI Agent platform. Contact data is retained in GoHighLevel (GHL) for as long as reasonably necessary to fulfill the purposes described in this Policy.", "Las conversaciones realizadas a través del Chatbot se almacenan en la plataforma Marketing Hub AI Agent. Los datos de contacto se conservan en GoHighLevel (GHL) durante el tiempo que sea razonablemente necesario para cumplir con los propósitos descritos en esta Política.")}</p>
+            </Section>
+
+            <Section n={9} title={t("Cookies and Analytics", "Cookies y analíticas")}>
               <p>{t("Pásalo Pa'lante may use cookies, pixels, analytics tools, or similar technologies to understand website traffic, improve performance, measure campaign effectiveness, prevent spam, remember preferences, and support outreach connected to the nonprofit mission. These tools may include Google Analytics, Google Ads conversion tracking, Meta tools, email marketing analytics, or similar services. Users may control cookies through browser settings; disabling them may affect some functionality.", "Pásalo Pa'lante puede usar cookies, pixeles, herramientas de analítica o tecnologías similares para entender el tráfico, mejorar el desempeño, medir la efectividad de campañas, prevenir spam, recordar preferencias y apoyar el alcance de la misión. Estas herramientas pueden incluir Google Analytics, seguimiento de conversiones de Google Ads, herramientas de Meta, analíticas de correo o servicios similares. Los usuarios pueden controlar las cookies desde su navegador; deshabilitarlas puede afectar funcionalidad.")}</p>
             </Section>
 
-            <Section n={9} title={t("Google Ads, Google Ad Grants, and Measurement", "Google Ads, Google Ad Grants y medición")}>
+            <Section n={10} title={t("Google Ads, Google Ad Grants, and Measurement", "Google Ads, Google Ad Grants y medición")}>
               <p>{t("Pásalo Pa'lante may use Google Ads, Google Ad Grants, Google Analytics, conversion tracking, and related tools to help people discover the movement, learn about Te Amo PR, participate in kindness campaigns, donate, volunteer, or connect with mission-related resources. Google Ad Grants provides qualifying nonprofits with in-kind search advertising, and Google requires participating organizations to maintain a high-quality website that clearly communicates mission and activities.", "Pásalo Pa'lante puede usar Google Ads, Google Ad Grants, Google Analytics, seguimiento de conversiones y herramientas relacionadas para ayudar a personas a descubrir el movimiento, conocer a Te Amo PR, participar en campañas, donar, ser voluntarios o conectar con recursos de la misión. Google Ad Grants provee publicidad en especie a organizaciones sin fines de lucro elegibles, y Google requiere mantener un sitio web de alta calidad que comunique claramente la misión y actividades.")}</p>
               <p>{t("Information collected through Google tools may be used to understand which pages are visited, which campaigns are effective, and whether users complete meaningful actions such as signing up, contacting us, donating, or registering. We do not use Google Ads or analytics tools to sell personal information.", "La información recopilada mediante herramientas de Google puede usarse para entender qué páginas se visitan, qué campañas son efectivas y si los usuarios completan acciones significativas como suscribirse, contactarnos, donar o registrarse. No usamos Google Ads ni analíticas para vender información personal.")}</p>
             </Section>
 
-            <Section n={10} title={t("How We Share Information", "Cómo compartimos información")}>
+            <Section n={11} title={t("How We Share Information", "Cómo compartimos información")}>
               <p>{t("We may share information only when appropriate and necessary, including with:", "Podemos compartir información solo cuando sea apropiado y necesario, incluyendo con:")}</p>
               <ul className="list-disc pl-6 space-y-1">
                 <li>{t("Te Amo PR team members, officers, staff, contractors, advisors, or authorized volunteers.", "Miembros del equipo, oficiales, personal, contratistas, asesores o voluntarios autorizados de Te Amo PR.")}</li>
@@ -214,7 +239,7 @@ export default function PrivacyPage() {
               <p>{t("We do not sell personal information to advertisers, data brokers, or unrelated third parties.", "No vendemos información personal a anunciantes, intermediarios de datos ni terceros no relacionados.")}</p>
             </Section>
 
-            <Section n={11} title={t("User-Submitted Stories, Photos, Videos, and Testimonials", "Historias, fotos, videos y testimonios enviados por usuarios")}>
+            <Section n={12} title={t("User-Submitted Stories, Photos, Videos, and Testimonials", "Historias, fotos, videos y testimonios enviados por usuarios")}>
               <p>{t("Pásalo Pa'lante may invite participants to submit kindness stories, photos, videos, impact reports, testimonials, or campaign participation materials. By submitting content, you confirm that:", "Pásalo Pa'lante puede invitar a participantes a enviar historias de bondad, fotos, videos, reportes de impacto, testimonios o materiales de campaña. Al enviar contenido, confirmas que:")}</p>
               <ul className="list-disc pl-6 space-y-1">
                 <li>{t("You have the right to submit the content.", "Tienes el derecho de enviar el contenido.")}</li>
@@ -226,20 +251,20 @@ export default function PrivacyPage() {
               <p>{t("We may edit submitted stories for length, clarity, grammar, translation, formatting, or accessibility, while preserving the spirit of the submission. For minors, parents, guardians, schools, or authorized institutions should provide permission before submitting identifiable information, images, or stories involving children.", "Podemos editar historias por extensión, claridad, gramática, traducción, formato o accesibilidad, preservando el espíritu del envío. Para menores, padres, tutores, escuelas o instituciones autorizadas deben proveer permiso antes de enviar información, imágenes o historias identificables que involucren niños.")}</p>
             </Section>
 
-            <Section n={12} title={t("Children's Privacy", "Privacidad de menores")}>
+            <Section n={13} title={t("Children's Privacy", "Privacidad de menores")}>
               <p>{t("Pásalo Pa'lante may include school, youth, family, and educational participation. We care deeply about protecting children and young people. We do not knowingly collect personal information from children under the age required by applicable law without appropriate parent, guardian, school, or institutional consent.", "Pásalo Pa'lante puede incluir participación escolar, juvenil, familiar y educativa. Nos importa profundamente proteger a los niños y jóvenes. No recopilamos a sabiendas información personal de niños menores de la edad requerida por la ley aplicable sin consentimiento apropiado de padres, tutores, escuelas o instituciones.")}</p>
               <p>{t("If a parent, guardian, or school believes a child's personal information has been submitted without proper authorization, please contact us so we can review and, if appropriate, remove the information.", "Si un padre, tutor o escuela cree que la información personal de un niño ha sido enviada sin autorización adecuada, contáctanos para que podamos revisar y, si corresponde, eliminar la información.")}</p>
             </Section>
 
-            <Section n={13} title={t("Data Security", "Seguridad de los datos")}>
+            <Section n={14} title={t("Data Security", "Seguridad de los datos")}>
               <p>{t("We use reasonable administrative, technical, and organizational safeguards to protect personal information. These may include secure hosting, SSL/HTTPS encryption, limited access controls, trusted service providers, and routine monitoring. No website, email system, payment processor, or online platform can guarantee complete security. Users should avoid sending highly sensitive personal information through general contact forms or unsecured email.", "Usamos salvaguardas administrativas, técnicas y organizacionales razonables para proteger la información personal. Estas pueden incluir alojamiento seguro, cifrado SSL/HTTPS, controles de acceso limitados, proveedores confiables y monitoreo rutinario. Ningún sitio, correo, procesador de pago o plataforma puede garantizar seguridad completa. Los usuarios deben evitar enviar información altamente sensible por formularios generales o correo no seguro.")}</p>
             </Section>
 
-            <Section n={14} title={t("Data Retention", "Retención de datos")}>
+            <Section n={15} title={t("Data Retention", "Retención de datos")}>
               <p>{t("We keep personal information only as long as reasonably necessary for the purposes described in this policy, including responding to inquiries, managing participation, maintaining donation and accounting records, supporting nonprofit reporting, complying with legal obligations, resolving disputes, protecting website security, and preserving mission-related historical records or impact data. Donation, tax, and accounting records may be retained for longer periods as required by law or nonprofit best practices.", "Conservamos la información personal solo durante el tiempo razonablemente necesario para los propósitos descritos, incluyendo responder consultas, gestionar participación, mantener registros de donaciones y contabilidad, apoyar reportes sin fines de lucro, cumplir con la ley, resolver disputas, proteger la seguridad del sitio y preservar registros históricos o de impacto. Los registros de donaciones, fiscales y contables pueden conservarse por períodos más largos según lo requiera la ley.")}</p>
             </Section>
 
-            <Section n={15} title={t("Your Choices and Rights", "Tus opciones y derechos")}>
+            <Section n={16} title={t("Your Choices and Rights", "Tus opciones y derechos")}>
               <p>{t("Depending on your location, you may have rights related to your personal information, including the right to:", "Dependiendo de tu ubicación, puedes tener derechos sobre tu información personal, incluyendo:")}</p>
               <ul className="list-disc pl-6 space-y-1">
                 <li>{t("Request access to personal information we hold about you.", "Solicitar acceso a la información personal que tenemos sobre ti.")}</li>
@@ -252,19 +277,19 @@ export default function PrivacyPage() {
               <p>{t("To make a request, contact us using the information below. We may need to verify your identity before fulfilling certain requests.", "Para hacer una solicitud, contáctanos usando la información abajo. Podemos necesitar verificar tu identidad antes de cumplir ciertas solicitudes.")}</p>
             </Section>
 
-            <Section n={16} title={t("International Visitors", "Visitantes internacionales")}>
+            <Section n={17} title={t("International Visitors", "Visitantes internacionales")}>
               <p>{t("Pásalo Pa'lante is a global movement and may receive visitors, participants, partners, and supporters from many countries. By using this website or submitting information, you understand that your information may be processed in the United States, Puerto Rico, or other locations where our service providers operate. We aim to handle personal information respectfully and responsibly, regardless of where a visitor is located.", "Pásalo Pa'lante es un movimiento global y puede recibir visitantes, participantes, socios y simpatizantes de muchos países. Al usar este sitio o enviar información, entiendes que tu información puede procesarse en Estados Unidos, Puerto Rico u otras ubicaciones donde operan nuestros proveedores. Buscamos manejar la información personal con respeto y responsabilidad, sin importar la ubicación del visitante.")}</p>
             </Section>
 
-            <Section n={17} title={t("External Links", "Enlaces externos")}>
+            <Section n={18} title={t("External Links", "Enlaces externos")}>
               <p>{t("pasalopalante.com may link to external websites, including teamopr.org, donation processors, social media platforms, partner websites, event platforms, educational resources, media coverage, and volunteer or registration tools. We are not responsible for the privacy practices, content, security, or policies of external websites. Users should review the privacy policies of any third-party sites they visit.", "pasalopalante.com puede enlazar a sitios externos, incluyendo teamopr.org, procesadores de donaciones, redes sociales, sitios de socios, plataformas de eventos, recursos educativos, cobertura de medios y herramientas de voluntariado o registro. No somos responsables de las prácticas, contenido, seguridad o políticas de sitios externos. Los usuarios deben revisar las políticas de privacidad de cualquier sitio de terceros que visiten.")}</p>
             </Section>
 
-            <Section n={18} title={t("Nonprofit Transparency", "Transparencia sin fines de lucro")}>
+            <Section n={19} title={t("Nonprofit Transparency", "Transparencia sin fines de lucro")}>
               <p>{t("Pásalo Pa'lante is presented as a sister initiative and movement platform connected to Te Amo PR. To support public trust and nonprofit transparency, this website clearly includes or links to: Te Amo PR's legal nonprofit name, nonprofit registration/EIN, mission statement, contact information, programs/activities, donation information (where applicable), leadership/organizational information (where appropriate), and annual/impact reports or public charity documentation (where available).", "Pásalo Pa'lante se presenta como iniciativa hermana y plataforma del movimiento conectada con Te Amo PR. Para apoyar la confianza pública y la transparencia sin fines de lucro, este sitio incluye o enlaza claramente: nombre legal sin fines de lucro de Te Amo PR, registro/EIN, declaración de misión, información de contacto, programas/actividades, información de donaciones (cuando aplique), información organizacional/de liderazgo (cuando corresponda) y reportes anuales/de impacto o documentación de caridad pública (cuando esté disponible).")}</p>
             </Section>
 
-            <Section n={19} title={t("Terms of Website Use", "Términos de uso del sitio")}>
+            <Section n={20} title={t("Terms of Website Use", "Términos de uso del sitio")}>
               <p>{t("By using pasalopalante.com, you agree to use the site respectfully, lawfully, and in alignment with the mission of kindness. You agree not to:", "Al usar pasalopalante.com, aceptas usar el sitio con respeto, legalmente y en alineación con la misión de bondad. Aceptas no:")}</p>
               <ul className="list-disc pl-6 space-y-1">
                 <li>{t("Submit false, harmful, abusive, hateful, defamatory, or misleading content.", "Enviar contenido falso, dañino, abusivo, odioso, difamatorio o engañoso.")}</li>
@@ -277,28 +302,28 @@ export default function PrivacyPage() {
               <p>{t("We reserve the right to remove content, deny participation, restrict access, or take appropriate action if website use violates these terms or harms the integrity of the movement.", "Nos reservamos el derecho de eliminar contenido, denegar participación, restringir acceso o tomar acción apropiada si el uso del sitio viola estos términos o daña la integridad del movimiento.")}</p>
             </Section>
 
-            <Section n={20} title={t("Intellectual Property", "Propiedad intelectual")}>
+            <Section n={21} title={t("Intellectual Property", "Propiedad intelectual")}>
               <p>{t("The names, logos, designs, taglines, campaign language, materials, graphics, videos, written content, and other creative assets associated with Pásalo Pa'lante and Te Amo PR may be protected by copyright, trademark, or other intellectual property laws.", "Los nombres, logos, diseños, lemas, lenguaje de campañas, materiales, gráficos, videos, contenido escrito y otros activos creativos asociados con Pásalo Pa'lante y Te Amo PR pueden estar protegidos por derechos de autor, marcas u otras leyes de propiedad intelectual.")}</p>
               <p>{t("Users may share public campaign materials for personal, educational, community, or mission-aligned purposes, provided they do not alter the materials in a misleading way or imply unauthorized endorsement. Written permission is required for commercial use, major public campaigns, merchandise, co-branded materials, institutional use, sponsorship promotion, or any use that suggests official partnership.", "Los usuarios pueden compartir materiales públicos para propósitos personales, educativos, comunitarios o alineados con la misión, siempre que no los alteren de forma engañosa o impliquen respaldo no autorizado. Se requiere permiso escrito para uso comercial, campañas públicas mayores, mercancía, materiales co-marcados, uso institucional, promoción de patrocinios o cualquier uso que sugiera alianza oficial.")}</p>
             </Section>
 
-            <Section n={21} title={t("No Guarantee of Participation, Partnership, or Recognition", "Sin garantía de participación, alianza o reconocimiento")}>
+            <Section n={22} title={t("No Guarantee of Participation, Partnership, or Recognition", "Sin garantía de participación, alianza o reconocimiento")}>
               <p>{t("Submitting a form, story, partnership inquiry, ambassador application, sponsorship inquiry, or volunteer interest form does not guarantee acceptance, approval, recognition, publication, partnership, funding, or official affiliation. Pásalo Pa'lante and Te Amo PR may review opportunities based on mission alignment, safety, capacity, geography, timing, values, and available resources.", "Enviar un formulario, historia, consulta de alianza, aplicación de embajador, consulta de patrocinio o formulario de voluntariado no garantiza aceptación, aprobación, reconocimiento, publicación, alianza, financiamiento o afiliación oficial. Pásalo Pa'lante y Te Amo PR pueden revisar oportunidades según alineación de misión, seguridad, capacidad, geografía, tiempo, valores y recursos disponibles.")}</p>
             </Section>
 
-            <Section n={22} title={t("Disclaimer", "Aviso legal")}>
+            <Section n={23} title={t("Disclaimer", "Aviso legal")}>
               <p>{t("The information on this website is provided for general educational, inspirational, nonprofit, and community engagement purposes. Nothing on this website should be considered legal, financial, medical, tax, or professional advice. While we work to keep information accurate and current, we do not guarantee that all website content will always be complete, error-free, or up to date.", "La información en este sitio se provee para propósitos generales educativos, inspiracionales, sin fines de lucro y de involucramiento comunitario. Nada en este sitio debe considerarse asesoría legal, financiera, médica, fiscal o profesional. Aunque trabajamos para mantener la información precisa y actual, no garantizamos que todo el contenido siempre sea completo, libre de errores o actualizado.")}</p>
             </Section>
 
-            <Section n={23} title={t("Limitation of Liability", "Limitación de responsabilidad")}>
+            <Section n={24} title={t("Limitation of Liability", "Limitación de responsabilidad")}>
               <p>{t("To the fullest extent permitted by law, Pásalo Pa'lante, Te Amo PR, and their respective team members, officers, volunteers, advisors, contractors, partners, or representatives are not liable for damages arising from use of this website, inability to access the website, reliance on website content, third-party links, or participation in activities promoted through the website. Some jurisdictions do not allow certain limitations, so some of these terms may not apply to all users.", "En la medida máxima permitida por la ley, Pásalo Pa'lante, Te Amo PR y sus respectivos miembros del equipo, oficiales, voluntarios, asesores, contratistas, socios o representantes no son responsables por daños derivados del uso del sitio, incapacidad para acceder, dependencia del contenido, enlaces de terceros o participación en actividades promovidas. Algunas jurisdicciones no permiten ciertas limitaciones, por lo que algunos términos pueden no aplicar a todos los usuarios.")}</p>
             </Section>
 
-            <Section n={24} title={t("Changes to This Policy", "Cambios a esta política")}>
+            <Section n={25} title={t("Changes to This Policy", "Cambios a esta política")}>
               <p>{t("We may update this Privacy Policy and Legal Information page from time to time. Updates will be posted on this page with a revised \"Last Updated\" date. Continued use of pasalopalante.com after updates means you accept the revised policy.", "Podemos actualizar esta Política de Privacidad e Información Legal de vez en cuando. Las actualizaciones se publicarán en esta página con una nueva fecha de \"Última actualización\". El uso continuado de pasalopalante.com después de las actualizaciones significa que aceptas la política revisada.")}</p>
             </Section>
 
-            <Section n={25} title={t("Contact Information", "Información de contacto")}>
+            <Section n={26} title={t("Contact Information", "Información de contacto")}>
               <p>{t("For privacy, legal, nonprofit, donation, partnership, media, or general inquiries, please contact:", "Para asuntos de privacidad, legales, sin fines de lucro, donaciones, alianzas, medios o consultas generales, contacta:")}</p>
               <div className="bg-warm-cream/60 border border-border rounded-lg p-4 text-sm space-y-1">
                 <p><strong>Te Amo PR / Pásalo Pa'lante</strong></p>
