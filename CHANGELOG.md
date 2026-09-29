@@ -11,6 +11,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 ## 2026-09-29 — va.deedumlao@gmail.com
 
 - **Added a "Chatbot and Automated Communications" section to the Privacy Policy page** (English and Spanish), disclosing the AI chatbot used on the site (Marketing Hub AI Agent, built by Adam Terpstra / Scale Smart) for the Pass Kindness Forward initiative — what it collects (name, email, country, organization), where it's stored (GoHighLevel), how it's used, and that chatbot-collected emails won't be used for unrelated marketing. Inserted as section 8, so every section after it shifted down by one number.
+- **Changed the navbar's "Sign In" link to "My Account" on passkindnessforward.com specifically.** Because that domain can't see a sign-in that happened on pasalopalante.com (browsers keep login cookies separate between different domains, even when — like here — both are served from the same codebase), it was always showing "Sign In" there even for people already logged in elsewhere, which read as "something's wrong." "My Account" doesn't claim either way, and still takes people to the real, correct login/account page when clicked. pasalopalante.com itself is unaffected — it still says "Sign In" there, since that one's accurate.
 
 ## 2026-09-28 — va.deedumlao@gmail.com
 

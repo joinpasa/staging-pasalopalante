@@ -9,6 +9,7 @@ import { smoothScrollTo } from "@shared/lib/smoothScrollTo";
 import SubNav from "@/components/SubNav";
 import LanguageSwitcher from "@shared/components/LanguageSwitcher";
 import { supabase } from "@shared/integrations/supabase/client";
+import { isSatelliteDomain } from "@shared/lib/canonicalDomain";
 
 const SCROLL_THRESHOLD = 80;
 
@@ -19,6 +20,14 @@ const Navbar = () => {
   const [mobileExploreOpen, setMobileExploreOpen] = useState(false);
   const { t } = useLanguage();
   const { user } = useAuth();
+  // On a satellite marketing domain (e.g. passkindnessforward.com), the
+  // session cookie is scoped to pasalopalante.com and never reaches here, so
+  // `user` is always null regardless of whether the visitor is actually
+  // signed in elsewhere. "Sign in" would misleadingly claim they're signed
+  // out; "My Account" makes no claim either way and still links through to
+  // the real account/login page on the canonical domain (via
+  // CanonicalDomainGate), which resolves correctly either way.
+  const signedOutLabel = isSatelliteDomain() ? t.navbar.myAccount : t.navbar.signIn;
   const { anyShareFlowOpen, openShareModal, setNavbarMounted } = useUI();
   const [navStats, setNavStats] = useState<{ acts: number; streak: number }>({ acts: 0, streak: 0 });
   const location = useLocation();
@@ -201,7 +210,7 @@ const Navbar = () => {
             </Link>
           ) : (
             <Link to="/auth" className={`text-sm font-medium tracking-wide transition-colors duration-300 ${linkClass}`}>
-              {t.navbar.signIn}
+              {signedOutLabel}
             </Link>
           )}
 
@@ -315,7 +324,7 @@ const Navbar = () => {
                 </Link>
               ) : (
                 <Link to="/auth" onClick={() => setMobileOpen(false)} className="text-center text-foreground/70 text-sm">
-                  {t.navbar.signIn}
+                  {signedOutLabel}
                 </Link>
               )}
             </div>
