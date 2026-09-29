@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import LiveFromWall from "@/components/LiveFromWall";
@@ -6,7 +7,9 @@ import TheStory from "@/components/TheStory";
 import HowItWorks from "@/components/HowItWorks";
 import AnthemSection from "@/components/AnthemSection";
 import ScienceProof from "@/components/ScienceProof";
-import GlobalMap from "@/components/GlobalMap";
+// Lazy: pulls in react-simple-maps + d3 (~50KB), and sits well below the
+// fold, so there's no reason for it to delay the initial page load.
+const GlobalMap = lazy(() => import("@/components/GlobalMap"));
 import Testimonials from "@/components/Testimonials";
 import VisualTransition from "@/components/VisualTransition";
 import TwoPaths from "@/components/TwoPaths";
@@ -32,7 +35,9 @@ const Index = () => {
       <AnthemSection />
       <TheStory />
       <ScienceProof />
-      <GlobalMap />
+      <Suspense fallback={<div className="section-padding section-spacing min-h-[400px]" />}>
+        <GlobalMap />
+      </Suspense>
       <Testimonials />
       <VisualTransition />
       <TwoPaths />

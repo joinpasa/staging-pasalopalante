@@ -1,3 +1,4 @@
+import { lazy } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
@@ -9,17 +10,20 @@ import { AuthProvider } from "@shared/contexts/AuthContext";
 import { LanguageProvider } from "@shared/contexts/LanguageContext";
 import { UIProvider } from "@shared/contexts/UIContext";
 import AppShell from "./pages/AppShell.tsx";
+// AppHome (the "/" index route) loads eagerly — it's the screen almost
+// every app open lands on. Every other screen is lazy, so its code only
+// downloads when someone actually navigates there.
 import AppHome from "./pages/AppHome.tsx";
-import AppWall from "./pages/AppWall.tsx";
-import AppPass from "./pages/AppPass.tsx";
-import AppMap from "./pages/AppMap.tsx";
-import AppBadges from "./pages/AppBadges.tsx";
-import AppConnections from "./pages/AppConnections.tsx";
-import AppJoin from "./pages/AppJoin.tsx";
-import AppLog from "./pages/AppLog.tsx";
-import AppLogAct from "./pages/AppLogAct.tsx";
-import AppWave from "./pages/AppWave.tsx";
-import AppAccount from "./pages/AppAccount.tsx";
+const AppWall = lazy(() => import("./pages/AppWall.tsx"));
+const AppPass = lazy(() => import("./pages/AppPass.tsx"));
+const AppMap = lazy(() => import("./pages/AppMap.tsx"));
+const AppBadges = lazy(() => import("./pages/AppBadges.tsx"));
+const AppConnections = lazy(() => import("./pages/AppConnections.tsx"));
+const AppJoin = lazy(() => import("./pages/AppJoin.tsx"));
+const AppLog = lazy(() => import("./pages/AppLog.tsx"));
+const AppLogAct = lazy(() => import("./pages/AppLogAct.tsx"));
+const AppWave = lazy(() => import("./pages/AppWave.tsx"));
+const AppAccount = lazy(() => import("./pages/AppAccount.tsx"));
 import RequireVerified from "@/components/app/RequireVerified";
 import ScrollToTopOnRouteChange from "@shared/components/ScrollToTopOnRouteChange";
 import ReconsentGate from "@shared/components/ReconsentGate";

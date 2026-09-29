@@ -1,5 +1,7 @@
+import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Navigate, Route, Routes, useParams } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 
 function WaveRedirect() {
   const { id } = useParams();
@@ -12,36 +14,41 @@ import { TooltipProvider } from "@shared/components/ui/tooltip";
 import { AuthProvider } from "@shared/contexts/AuthContext";
 import { LanguageProvider } from "@shared/contexts/LanguageContext";
 import { UIProvider } from "@shared/contexts/UIContext";
+// Index (the homepage) loads eagerly — it's the page nearly every visitor
+// lands on first, so a route-split extra network round trip for it would
+// cost more than it saves. Every other route is lazy: each becomes its own
+// JS chunk that only loads when a visitor actually navigates there, instead
+// of every page's code shipping in one bundle on every visit.
 import Index from "./pages/Index.tsx";
-import NotFound from "./pages/NotFound.tsx";
-import SharePage from "./pages/SharePage.tsx";
-import ShareThanks from "./pages/ShareThanks.tsx";
-import CommitPage from "./pages/CommitPage.tsx";
-import AuthPage from "./pages/AuthPage.tsx";
-import ResetPasswordPage from "./pages/ResetPasswordPage.tsx";
-import AccountPage from "./pages/AccountPage.tsx";
-import AccountSettingsPage from "./pages/AccountSettingsPage.tsx";
-import IdeasPage from "./pages/IdeasPage.tsx";
-import WallPage from "./pages/WallPage.tsx";
-import MapPage from "./pages/MapPage.tsx";
-import JoinWavePage from "./pages/JoinWavePage.tsx";
-import DonatePage from "./pages/DonatePage.tsx";
-import TermsPage from "./pages/TermsPage.tsx";
-import PrivacyPage from "./pages/PrivacyPage.tsx";
-import CommunityGuidelinesPage from "./pages/CommunityGuidelinesPage.tsx";
-import ContactPage from "./pages/ContactPage.tsx";
-import AboutPage from "./pages/AboutPage.tsx";
+const NotFound = lazy(() => import("./pages/NotFound.tsx"));
+const SharePage = lazy(() => import("./pages/SharePage.tsx"));
+const ShareThanks = lazy(() => import("./pages/ShareThanks.tsx"));
+const CommitPage = lazy(() => import("./pages/CommitPage.tsx"));
+const AuthPage = lazy(() => import("./pages/AuthPage.tsx"));
+const ResetPasswordPage = lazy(() => import("./pages/ResetPasswordPage.tsx"));
+const AccountPage = lazy(() => import("./pages/AccountPage.tsx"));
+const AccountSettingsPage = lazy(() => import("./pages/AccountSettingsPage.tsx"));
+const IdeasPage = lazy(() => import("./pages/IdeasPage.tsx"));
+const WallPage = lazy(() => import("./pages/WallPage.tsx"));
+const MapPage = lazy(() => import("./pages/MapPage.tsx"));
+const JoinWavePage = lazy(() => import("./pages/JoinWavePage.tsx"));
+const DonatePage = lazy(() => import("./pages/DonatePage.tsx"));
+const TermsPage = lazy(() => import("./pages/TermsPage.tsx"));
+const PrivacyPage = lazy(() => import("./pages/PrivacyPage.tsx"));
+const CommunityGuidelinesPage = lazy(() => import("./pages/CommunityGuidelinesPage.tsx"));
+const ContactPage = lazy(() => import("./pages/ContactPage.tsx"));
+const AboutPage = lazy(() => import("./pages/AboutPage.tsx"));
 // Draft — not yet live; see the /partners routes below for why these
 // imports are unused right now.
-// import PartnersPage from "./pages/PartnersPage.tsx";
-// import PartnersApplyPage from "./pages/PartnersApplyPage.tsx";
-import ProgramsPage from "./pages/ProgramsPage.tsx";
-import GetInvolvedPage from "./pages/GetInvolvedPage.tsx";
-import SchoolsEducatorsPage from "./pages/SchoolsEducatorsPage.tsx";
-import NonprofitsFaithPage from "./pages/NonprofitsFaithPage.tsx";
-import AmbassadorsPage from "./pages/AmbassadorsPage.tsx";
-import MunicipalitiesPage from "./pages/MunicipalitiesPage.tsx";
-import CompaniesPage from "./pages/CompaniesPage.tsx";
+// const PartnersPage = lazy(() => import("./pages/PartnersPage.tsx"));
+// const PartnersApplyPage = lazy(() => import("./pages/PartnersApplyPage.tsx"));
+const ProgramsPage = lazy(() => import("./pages/ProgramsPage.tsx"));
+const GetInvolvedPage = lazy(() => import("./pages/GetInvolvedPage.tsx"));
+const SchoolsEducatorsPage = lazy(() => import("./pages/SchoolsEducatorsPage.tsx"));
+const NonprofitsFaithPage = lazy(() => import("./pages/NonprofitsFaithPage.tsx"));
+const AmbassadorsPage = lazy(() => import("./pages/AmbassadorsPage.tsx"));
+const MunicipalitiesPage = lazy(() => import("./pages/MunicipalitiesPage.tsx"));
+const CompaniesPage = lazy(() => import("./pages/CompaniesPage.tsx"));
 import ScrollToTopOnRouteChange from "@shared/components/ScrollToTopOnRouteChange";
 import StandaloneHomeRedirect from "./components/StandaloneHomeRedirect";
 import CanonicalDomainGate from "./components/CanonicalDomainGate";
@@ -73,6 +80,12 @@ const SiteWidgets = () => (
   </>
 );
 
+const RouteFallback = () => (
+  <div className="flex min-h-screen items-center justify-center">
+    <Loader2 className="animate-spin text-primary" size={28} />
+  </div>
+);
+
 
 const App = () => (
   <ErrorBoundary>
@@ -90,6 +103,7 @@ const App = () => (
             <CanonicalDomainGate />
             <EmailConfirmGate />
             <ReconsentGate />
+            <Suspense fallback={<RouteFallback />}>
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/share" element={<SharePage />} />
@@ -131,6 +145,7 @@ const App = () => (
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
+            </Suspense>
             <SiteWidgets />
           </BrowserRouter>
 

@@ -129,6 +129,7 @@ function ImageCursorTrail({
           data-status="inactive"
           src={item}
           alt=""
+          loading="lazy"
         />
       ))}
       {children}

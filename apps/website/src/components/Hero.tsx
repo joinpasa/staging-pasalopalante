@@ -34,6 +34,7 @@ const Hero = () => {
         src="/world-map.svg"
         alt=""
         aria-hidden="true"
+        fetchPriority="high"
         className="absolute inset-0 w-full h-full object-cover opacity-[0.07] pointer-events-none z-0"
         style={{ filter: "invert(1) brightness(1.2) hue-rotate(160deg) saturate(0.6)" }}
       />

@@ -1,4 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+/* The website's DM Sans/DM Serif Display font is loaded via a <link> tag in
+   apps/website/index.html, not a CSS @import here — @import forces the
+   browser to fully parse this stylesheet before it can even discover the
+   font request, serializing what should be a parallel fetch. This file is
+   shared with apps/app, which overrides to Montserrat and doesn't need
+   these fonts at all (see apps/app/tailwind.config.ts). */
 
 @tailwind base;
 @tailwind components;

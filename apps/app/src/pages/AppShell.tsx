@@ -1,7 +1,15 @@
+import { Suspense } from "react";
 import { Outlet } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 import AppBottomNav from "@/components/app/AppBottomNav";
 import VerificationBanner from "@/components/app/VerificationBanner";
 import ProfileBackfill from "@/components/app/ProfileBackfill";
+
+const RouteFallback = () => (
+  <div className="flex flex-1 items-center justify-center py-24">
+    <Loader2 className="animate-spin text-app-coral" size={28} />
+  </div>
+);
 
 /**
  * Shell for the Pásalo beta app screens: full-width so it fills the actual
@@ -24,7 +32,9 @@ export default function AppShell() {
         <ProfileBackfill />
         <VerificationBanner />
         <main className="flex flex-1 flex-col">
-          <Outlet />
+          <Suspense fallback={<RouteFallback />}>
+            <Outlet />
+          </Suspense>
         </main>
       </div>
       <AppBottomNav />
