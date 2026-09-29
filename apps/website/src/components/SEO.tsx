@@ -8,8 +8,7 @@ interface SEOProps {
 }
 
 const SITE_URL = "https://pasalopalante.com";
-const DEFAULT_IMAGE =
-  "https://storage.googleapis.com/gpt-engineer-file-uploads/nBBqTqafpbTS4KRb7ci12U6orRD2/social-images/social-1780335651701-social-1773740565066-Untitled-1.webp";
+const DEFAULT_IMAGE = `${SITE_URL}/social-share.webp`;
 
 function setMeta(attr: "name" | "property", key: string, content: string) {
   let el = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);
