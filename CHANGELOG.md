@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-01 — va.deedumlao@gmail.com
+
+- **Found and documented the cause of the Supabase "Log Ingestion" quota warning** (152% of the 1GB/month free allowance). It wasn't user growth or the database filling up — actual usage everywhere else was tiny and healthy (18 monthly active users). The cause was the email-sending cron job (`process-email-queue`) polling every 5 seconds regardless of whether there was anything to send, generating platform log volume from sheer invocation frequency (~518,000 times/month) rather than real activity. Documented the fix in `supabase/migrations/20260511014929_email_infra.sql` — widening the interval to 30 seconds, applied directly in the Supabase SQL Editor since this cron job lives in the live database rather than in a version-controlled migration. Cuts the log volume roughly 6x, comfortably back under the free-tier quota, with no meaningful change to how fast password-reset/magic-link emails go out.
+
 ## 2026-09-29 — va.deedumlao@gmail.com
 
 - **Added a "Chatbot and Automated Communications" section to the Privacy Policy page** (English and Spanish), disclosing the AI chatbot used on the site (Marketing Hub AI Agent, built by Adam Terpstra / Scale Smart) for the Pass Kindness Forward initiative — what it collects (name, email, country, organization), where it's stored (GoHighLevel), how it's used, and that chatbot-collected emails won't be used for unrelated marketing. Inserted as section 8, so every section after it shifted down by one number.

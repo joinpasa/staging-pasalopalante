@@ -283,10 +283,27 @@ CREATE INDEX IF NOT EXISTS idx_unsubscribe_tokens_token ON public.email_unsubscr
 --    To revert: DELETE FROM vault.secrets WHERE name = 'email_queue_service_role_key';
 --
 -- 2. CRON JOB (pg_cron)
---    Creates job 'process-email-queue' with a 5-second interval.
+--    Creates job 'process-email-queue', originally on a 5-second interval.
 --    The job checks:
 --      a) rate-limit cooldown (email_send_state.retry_after_until)
 --      b) whether auth_emails or transactional_emails queues have messages
 --    If conditions are met, it calls the process-email-queue Edge Function
 --    via net.http_post using the vault-stored service_role key.
 --    To revert: SELECT cron.unschedule('process-email-queue');
+--
+--    WIDENED TO 30 SECONDS (2026-10-01): at 5 seconds this job fires
+--    ~518,000 times/month regardless of whether either queue actually has
+--    anything to send — at this project's real traffic (well under 20
+--    monthly active users at the time), that invocation volume alone was
+--    responsible for exceeding Supabase's 1GB/month log-ingestion quota,
+--    not any actual growth in users or data. 30 seconds cuts that volume
+--    ~6x (to comfortably under the quota) while still delivering
+--    password-reset/magic-link emails within a normal wait. This job lives
+--    in the live database (applied via the Management API at setup time,
+--    not as static SQL here — see the note above), so the actual change
+--    was applied directly in the Supabase SQL Editor:
+--      SELECT cron.alter_job(
+--        job_id := (SELECT jobid FROM cron.job WHERE jobname = 'process-email-queue'),
+--        schedule := '30 seconds'
+--      );
+--    If this job is ever recreated from scratch, use '30 seconds', not '5 seconds'.
