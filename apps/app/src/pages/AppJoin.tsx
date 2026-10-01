@@ -54,6 +54,7 @@ export default function AppJoin() {
 
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [needsReset, setNeedsReset] = useState<{ email: string; sent: boolean } | null>(null);
   const [otpCode, setOtpCode] = useState("");
   const [verifyingCode, setVerifyingCode] = useState(false);
@@ -581,7 +582,7 @@ export default function AppJoin() {
             }
           >
             <input
-              type="password"
+              type={showLoginPassword ? "text" : "password"}
               value={loginPassword}
               onChange={(e) => setLoginPassword(e.target.value)}
               autoComplete="current-password"
@@ -591,6 +592,19 @@ export default function AppJoin() {
               className={inputClass}
             />
           </Field>
+          <div className="-mt-2 ml-auto grid w-[108px] grid-cols-2 rounded-full bg-app-coral-tint p-1">
+            <button
+              type="button"
+              onClick={() => setShowLoginPassword((show) => !show)}
+              aria-pressed={showLoginPassword}
+              className={cn(
+                "col-span-2 rounded-full py-1 text-xs font-semibold transition-colors",
+                showLoginPassword ? "bg-app-coral text-app-surface" : "bg-white text-foreground",
+              )}
+            >
+              {showLoginPassword ? "Hide" : "Show"}
+            </button>
+          </div>
           <button
             type="submit"
             disabled={busy}

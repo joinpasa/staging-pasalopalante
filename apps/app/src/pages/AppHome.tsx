@@ -273,7 +273,10 @@ export default function AppHome() {
             {timeOfDayGreeting()}
           </p>
           <p className="mt-0.5 truncate text-[21px] font-bold leading-tight text-foreground">
-            Hola, {greetingName}
+            {greetingName}
+          </p>
+          <p className="text-[11.5px] font-bold uppercase tracking-[0.07em] text-muted-foreground">
+            Thank you for passing kindness forward!
           </p>
         </div>
         {user && me?.tourSeen && (
