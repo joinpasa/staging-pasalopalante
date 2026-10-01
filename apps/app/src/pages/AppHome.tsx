@@ -22,6 +22,7 @@ import SeasonCountdown from "@/components/app/SeasonCountdown";
 import FirstTimeTour from "@/components/app/FirstTimeTour";
 import OnboardingWalkthrough, { type OnboardingResult } from "@/components/app/OnboardingWalkthrough";
 import { useAuth } from "@shared/contexts/AuthContext";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 import { supabase } from "@shared/integrations/supabase/client";
 import {
   useActReactions,
@@ -58,6 +59,7 @@ function initials(name: string) {
 
 export default function AppHome() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const { data: me } = useAppMe();
   const { data: totals } = useMovementTotals();
   const { data: myActs } = useMyRecentActs();
@@ -273,7 +275,10 @@ export default function AppHome() {
             {timeOfDayGreeting()}
           </p>
           <p className="mt-0.5 truncate text-[21px] font-bold leading-tight text-foreground">
-            Hola, {greetingName}
+            {greetingName}
+          </p>
+          <p className="text-[11.5px] font-bold uppercase tracking-[0.07em] text-muted-foreground">
+            {t.appHome.greetingSubtitle}
           </p>
         </div>
         {user && me?.tourSeen && (

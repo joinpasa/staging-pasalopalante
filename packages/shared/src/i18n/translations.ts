@@ -14,6 +14,9 @@ const translations = {
       commitments: "commitments",
       radiusNote: "100-mile radius shown around your location",
     },
+    appHome: {
+      greetingSubtitle: "Thank you for passing kindness forward!",
+    },
     navbar: {
       home: "Home",
       inspiration: "Inspiration",
@@ -779,6 +782,9 @@ const translations = {
       acts: "actos",
       commitments: "compromisos",
       radiusNote: "Radio de 160 km alrededor de tu ubicación",
+    },
+    appHome: {
+      greetingSubtitle: "¡Gracias por pasar la bondad pa'lante!",
     },
     navbar: {
       home: "Inicio",
@@ -2316,6 +2322,9 @@ const translations = {
       acts: "Taten",
       commitments: "Zusagen",
       radiusNote: "160-km-Radius um Ihren Standort",
+    },
+    appHome: {
+      greetingSubtitle: "Danke, dass Sie Freundlichkeit weitergeben!",
     },
     navbar: {
       home: "Startseite",
