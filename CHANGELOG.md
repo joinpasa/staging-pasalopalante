@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-02 — va.deedumlao@gmail.com
+
+- **Stopped the email-sending job from running on a timer, regardless of whether there was anything to send.** It used to check every 30 seconds, all day, every day — even with nothing in the queue, each check still generated a bit of platform log activity, and at that pace it was quietly the single biggest contributor to the Supabase account's log-volume usage (confirmed by checking the actual breakdown after a dashboard screenshot showed the quota still over, even after the September 30th fix). Now it's triggered the moment an email is actually queued, instead of polling — password-reset and magic-link emails go out just as fast (actually a bit faster, since there's no more waiting for the next 30-second check), while the constant background checking goes away. The on-timer check still runs as a once-every-5-minutes safety net, in case one single email ever needs a retry and nothing new gets queued afterward to re-trigger it.
+
 ## 2026-10-01 — va.deedumlao@gmail.com
 
 - **Fixed translated act descriptions re-translating on every view instead of being cached.** The Wall shows each act's story auto-translated when a viewer's language differs from the one it was written in, but there was no real cache behind that — only a per-browser-tab cache that cleared on reload — so a popular act viewed by many people in another language was costing a fresh AI translation call every single time, for an identical result. Added a proper cache (one translation saved per act per target language, reused forever since an act's text never changes after it's posted), cutting that down to once per language an act is ever viewed in.
