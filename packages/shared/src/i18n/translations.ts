@@ -377,6 +377,7 @@ const translations = {
       eyebrow: "The Anthem",
       heading: "Press Play. Feel a Movement Come Alive.",
       body: "The Pásalo Pa'lante anthem, feat. artists and influencers from across Puerto Rico, became the heartbeat of a movement that reached over a million people. Hit play. Then pass it on.",
+      playAria: "Play the Pásalo Pa'lante anthem video",
     },
     scienceProof: {
       eyebrow: "The Proof",

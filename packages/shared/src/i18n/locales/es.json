@@ -374,7 +374,8 @@
   "anthem": {
     "eyebrow": "El Himno",
     "heading": "Dale play. Siente cómo un movimiento cobra vida.",
-    "body": "El himno de Pásalo Pa'lante, con Choco Orta & Sie7e y otros artistas e influenciadores de todo Puerto Rico, se convirtió en el latido de un movimiento que alcanzó a más de un millón de personas. Dale play. Y pásalo."
+    "body": "El himno de Pásalo Pa'lante, con Choco Orta & Sie7e y otros artistas e influenciadores de todo Puerto Rico, se convirtió en el latido de un movimiento que alcanzó a más de un millón de personas. Dale play. Y pásalo.",
+    "playAria": "Reproducir el video del himno de Pásalo Pa'lante"
   },
   "scienceProof": {
     "eyebrow": "La Prueba",
