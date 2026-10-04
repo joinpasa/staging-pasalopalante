@@ -2,7 +2,7 @@ import { render, screen, cleanup } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import CommitRoles from "@/components/commit/CommitRoles";
 import { LanguageProvider } from "@shared/contexts/LanguageContext";
-import { LANGUAGES, getTranslations, type Language } from "@shared/i18n/translations";
+import { LANGUAGES, getTranslations, loadTranslations, type Language } from "@shared/i18n/translations";
 
 function renderIn(lang: Language, ui: React.ReactElement) {
   window.localStorage.setItem("ppl-lang", lang);
@@ -31,8 +31,12 @@ describe("RTL / i18n runtime behaviour", () => {
     }
   });
 
-  it("renders CommitRoles in every supported language without crashing", () => {
+  it("renders CommitRoles in every supported language without crashing", async () => {
     for (const { code } of LANGUAGES) {
+      // Mirrors main.tsx: load the locale before mounting, so this renders
+      // with its real content instead of only ever observing the
+      // (English, until loaded) synchronous fallback.
+      await loadTranslations(code);
       renderIn(code, <CommitRoles />);
       // English fallback copy is expected for languages without local content.
       expect(screen.getAllByRole("heading").length).toBeGreaterThan(0);
@@ -40,10 +44,14 @@ describe("RTL / i18n runtime behaviour", () => {
     }
   });
 
-  it("falls back to English strings for keys missing from a locale", () => {
+  it("falls back to English strings for keys missing from a locale", async () => {
     const en = getTranslations("en");
     for (const { code } of LANGUAGES) {
-      const t = getTranslations(code);
+      // Locales other than English load lazily on first use now - await
+      // the real locale's content instead of reading the (English, until
+      // loaded) synchronous fallback, so this actually tests each locale's
+      // own merged data, not just English against itself.
+      const t = await loadTranslations(code);
       expect(typeof t.hero.cta, `hero.cta for ${code}`).toBe("string");
       expect(t.hero.cta.length, `hero.cta for ${code}`).toBeGreaterThan(0);
       expect(Object.keys(t).sort(), `top-level keys for ${code}`).toEqual(Object.keys(en).sort());
