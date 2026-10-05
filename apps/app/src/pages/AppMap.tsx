@@ -110,6 +110,18 @@ export default function AppMap() {
 
   const radiusDeg = (RADIUS_MILES / 69) * 2.2;
 
+  // Markers were the click target, but their hit radius shrinks with zoom
+  // (r / zoom) and with how few acts a country has - on a phone, a low-
+  // activity country's dot was often just a few CSS pixels across, so a
+  // tap would easily land just outside it and silently do nothing. Whole
+  // countries are a far more reliable target, especially on a touchscreen,
+  // so this looks each Geography's name up against the same data instead.
+  const pointByName = useMemo(() => {
+    const map = new Map<string, Point>();
+    for (const p of points) map.set(normalize(p.country), p);
+    return map;
+  }, [points]);
+
   return (
     <div className="relative flex flex-1 flex-col">
       <div className="px-5 pt-5">
@@ -189,21 +201,26 @@ export default function AppMap() {
                   });
                   setTimeout(() => setCentroids(next), 0);
                 }
-                return geographies.map((geo) => (
-                  <Geography
-                    key={geo.rsmKey}
-                    geography={geo}
-                    className="fill-app-land"
-                    stroke="hsl(15, 72%, 55%)"
-                    strokeWidth={0.3}
-                    strokeOpacity={0.3}
-                    style={{
-                      default: { outline: "none" },
-                      hover: { outline: "none" },
-                      pressed: { outline: "none" },
-                    }}
-                  />
-                ));
+                return geographies.map((geo) => {
+                  const name = geo.properties?.name ?? geo.properties?.NAME;
+                  const match = name ? pointByName.get(normalize(String(name))) : undefined;
+                  return (
+                    <Geography
+                      key={geo.rsmKey}
+                      geography={geo}
+                      className="fill-app-land"
+                      stroke="hsl(15, 72%, 55%)"
+                      strokeWidth={0.3}
+                      strokeOpacity={0.3}
+                      onClick={match ? () => setActive(match) : undefined}
+                      style={{
+                        default: { outline: "none", cursor: match ? "pointer" : "default" },
+                        hover: { outline: "none", cursor: match ? "pointer" : "default" },
+                        pressed: { outline: "none" },
+                      }}
+                    />
+                  );
+                });
               }}
             </Geographies>
 
@@ -221,16 +238,14 @@ export default function AppMap() {
               </Marker>
             )}
 
+            {/* Purely a visual indicator of where activity is now - the
+                actual click target is that country's shape above, which
+                is far more reliable to tap than a small circle. */}
             {points.map((p) => {
               const total = p.acts + p.commitments;
               const r = Math.min(10, 3 + Math.log2(total + 1)) / zoom;
               return (
-                <Marker
-                  key={p.country}
-                  coordinates={p.coordinates}
-                  onClick={() => setActive(p)}
-                  style={{ default: { cursor: "pointer" } }}
-                >
+                <Marker key={p.country} coordinates={p.coordinates} style={{ default: { pointerEvents: "none" } }}>
                   <circle r={r} fill="hsl(15, 72%, 55%)" fillOpacity={0.8} />
                   <circle r={r} fill="none" stroke="hsl(15, 72%, 55%)" strokeWidth={0.6 / zoom}>
                     <animate attributeName="r" from={r} to={r * 3} dur="2.4s" repeatCount="indefinite" />
