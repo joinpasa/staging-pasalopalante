@@ -146,26 +146,34 @@ const GlobalMap = () => {
             projectionConfig={{ scale: 130, center: [0, 30] }}
             style={{ width: "100%", height: "auto", maxHeight: "700px" }}
           >
-            <Geographies geography={geoUrl}>
-              {({ geographies }) =>
-                geographies.map((geo) => (
-                  <Geography
-                    key={geo.rsmKey}
-                    geography={geo}
-                    fill="hsl(15, 72%, 55%)"
-                    fillOpacity={0.12}
-                    stroke="hsl(15, 72%, 55%)"
-                    strokeWidth={0.5}
-                    strokeOpacity={0.3}
-                    style={{
-                      default: { outline: "none" },
-                      hover: { outline: "none", fillOpacity: 0.2 },
-                      pressed: { outline: "none" },
-                    }}
-                  />
-                ))
-              }
-            </Geographies>
+            {/* GlobalMap is already a lazy-loaded chunk, but mounting it was
+                enough to trigger this fetch immediately regardless of
+                whether the section was anywhere near the viewport yet -
+                gate it on the same inView used for this section's own
+                fade-in, so the ~100KB country-shape file only loads once
+                someone's actually about to scroll to it. */}
+            {inView && (
+              <Geographies geography={geoUrl}>
+                {({ geographies }) =>
+                  geographies.map((geo) => (
+                    <Geography
+                      key={geo.rsmKey}
+                      geography={geo}
+                      fill="hsl(15, 72%, 55%)"
+                      fillOpacity={0.12}
+                      stroke="hsl(15, 72%, 55%)"
+                      strokeWidth={0.5}
+                      strokeOpacity={0.3}
+                      style={{
+                        default: { outline: "none" },
+                        hover: { outline: "none", fillOpacity: 0.2 },
+                        pressed: { outline: "none" },
+                      }}
+                    />
+                  ))
+                }
+              </Geographies>
+            )}
 
             {points.map((point) => {
               const age = Date.now() - point.timestamp;

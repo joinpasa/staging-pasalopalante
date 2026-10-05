@@ -125,36 +125,80 @@ export function RippleCanvas({
       rafRef.current = requestAnimationFrame(loop);
     };
 
-    if (reduced) {
-      // Single static frame — no motion
-      render();
-    } else {
-      rafRef.current = requestAnimationFrame(loop);
+    // This redraws the whole dot grid every frame forever, including while
+    // scrolled out of view (it only ever lives in the hero, the very top of
+    // the page) or while the tab is in the background - neither of which a
+    // viewer can see, so neither needs the work. Starts/stops the rAF loop
+    // and the ripple-scheduling timer together based on both, rather than
+    // running unconditionally.
+    let active = false;
 
-      const scheduleNext = () => {
-        // Random interval around the configured average for organic rhythm
-        const jitter = 0.6 + Math.random() * 0.9; // 0.6x..1.5x
-        timerRef.current = setTimeout(() => {
-          const w = canvas.clientWidth;
-          const h = canvas.clientHeight;
-          // Random position, biased toward center
-          const cx = w * (0.2 + Math.random() * 0.6);
-          const cy = h * (0.2 + Math.random() * 0.6);
-          addRipple(cx, cy);
-          scheduleNext();
-        }, autoRippleInterval * jitter);
-      };
-      // Seed a first ripple shortly after mount
+    const scheduleNext = () => {
+      // Random interval around the configured average for organic rhythm
+      const jitter = 0.6 + Math.random() * 0.9; // 0.6x..1.5x
+      timerRef.current = setTimeout(() => {
+        const w = canvas.clientWidth;
+        const h = canvas.clientHeight;
+        // Random position, biased toward center
+        const cx = w * (0.2 + Math.random() * 0.6);
+        const cy = h * (0.2 + Math.random() * 0.6);
+        addRipple(cx, cy);
+        scheduleNext();
+      }, autoRippleInterval * jitter);
+    };
+
+    const start = () => {
+      if (active) return;
+      active = true;
+      rafRef.current = requestAnimationFrame(loop);
       timerRef.current = setTimeout(() => {
         addRipple(canvas.clientWidth * 0.5, canvas.clientHeight * 0.5);
         scheduleNext();
       }, 600);
+    };
+
+    const stop = () => {
+      if (!active) return;
+      active = false;
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+
+    let observer: IntersectionObserver | undefined;
+    let onScreen = false;
+
+    const syncActive = () => {
+      if (onScreen && !document.hidden) start();
+      else stop();
+    };
+
+    const handleVisibilityChange = () => syncActive();
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    if (reduced) {
+      // Single static frame — no motion, regardless of visibility.
+      render();
+    } else if (typeof IntersectionObserver === "undefined") {
+      // No IntersectionObserver support — fall back to the old always-on
+      // behavior rather than never animating at all.
+      onScreen = true;
+      syncActive();
+    } else {
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          onScreen = entry.isIntersecting;
+          syncActive();
+        },
+        { threshold: 0 },
+      );
+      observer.observe(canvas);
     }
 
     return () => {
       window.removeEventListener("resize", handleResize);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      if (timerRef.current) clearTimeout(timerRef.current);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      observer?.disconnect();
+      stop();
     };
   }, [spacing, rippleSpeed, maxRadius, rippleWidth, autoRippleInterval]);
 
