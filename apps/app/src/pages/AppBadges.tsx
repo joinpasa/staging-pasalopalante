@@ -45,14 +45,14 @@ export default function AppBadges() {
         {t.account.streaksHeading}
       </h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Earned by showing up, not by competing.
+        {t.appBadges.subtitle}
       </p>
 
       {!user && (
         <div className="mt-5">
           <JoinGate
-            title="Start earning badges"
-            body="Join with a commitment to acts of kindness and your milestones start filling in."
+            title={t.appBadges.startEarning}
+            body={t.appBadges.startEarningBody}
           />
         </div>
       )}
@@ -100,7 +100,7 @@ export default function AppBadges() {
         <section className="mt-4 rounded-2xl bg-app-surface p-4">
           <div className="flex items-baseline justify-between gap-3">
             <p className="truncate text-sm font-semibold text-foreground">
-              Next milestone · {localized(next, lang, "name")}
+              {t.appBadges.nextMilestone} · {localized(next, lang, "name")}
             </p>
             <p className="shrink-0 text-sm font-bold text-app-coral">
               {nextCurrent} / {nextTarget}
@@ -162,7 +162,7 @@ export default function AppBadges() {
       )}
 
       <p className="mt-5 pb-2 text-center text-xs text-muted-foreground">
-        Your badges also appear on{" "}
+        {t.appBadges.onWebsite}{" "}
         <a href="https://pasalopalante.com/wall" className="underline">
           pasalopalante.com/wall
         </a>

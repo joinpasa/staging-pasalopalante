@@ -7,6 +7,7 @@ import { KeyRound, Mail, X } from "lucide-react";
 import PasswordForm from "@/components/app/PasswordForm";
 import { PENDING_EMAIL_KEY } from "@/lib/pendingSignup";
 import { useAuth } from "@shared/contexts/AuthContext";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useUI } from "@shared/contexts/UIContext";
 import { getCanonicalOrigin } from "@shared/lib/canonicalOrigin";
 import { supabase } from "@shared/integrations/supabase/client";
@@ -27,6 +28,7 @@ const JOIN_POPUP_DISMISS_DAYS = 14;
  *  every single visit even after being closed. */
 function JoinPopup() {
   const { setJoinPopupOpen } = useUI();
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -62,25 +64,25 @@ function JoinPopup() {
           transition={{ duration: 0.3, ease: "easeOut" }}
           className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] left-4 right-4 z-[65] mx-auto max-w-md"
           role="dialog"
-          aria-label="Join Pásalo Pa'lante"
+          aria-label={t.appWidgets.joinDialogLabel}
         >
           <div className="flex items-center gap-3 rounded-2xl border border-app-coral bg-app-surface p-4 shadow-xl">
             <div className="flex-1">
-              <p className="font-sans text-sm font-bold text-foreground">Join the chain</p>
+              <p className="font-sans text-sm font-bold text-foreground">{t.appWidgets.joinTheChainTitle}</p>
               <p className="text-xs text-muted-foreground">
-                Create an account to log acts, get your Pass, and see your badges.
+                {t.appWidgets.joinDialogBody}
               </p>
             </div>
             <Link
               to="/join"
               className="shrink-0 rounded-full bg-app-coral px-4 py-2 text-xs font-semibold text-app-surface"
             >
-              Join
+              {t.appWidgets.join}
             </Link>
             <button
               type="button"
               onClick={dismiss}
-              aria-label="Dismiss"
+              aria-label={t.appWidgets.dismiss}
               className="shrink-0 text-foreground/40 hover:text-foreground/70"
             >
               <X className="h-4 w-4" />
@@ -101,6 +103,7 @@ function JoinPopup() {
  */
 export default function VerificationBanner() {
   const { user, loading } = useAuth();
+  const { t } = useLanguage();
   const location = useLocation();
   const [hasPassword, setHasPassword] = useState(true);
   const [resending, setResending] = useState(false);
@@ -145,8 +148,8 @@ export default function VerificationBanner() {
         },
       });
       setResending(false);
-      if (error) toast.error("Couldn't resend the link. Please try again shortly.");
-      else toast.success("Sign-in link resent — check your email.");
+      if (error) toast.error(t.appWidgets.resendError);
+      else toast.success(t.appWidgets.linkResent);
     };
     // Verifying here (instead of tapping the link) skips the browser hop
     // entirely — on iPhone, Safari and this already-installed app don't
@@ -162,24 +165,24 @@ export default function VerificationBanner() {
         type: "email",
       });
       setVerifyingCode(false);
-      if (error) toast.error("That code didn't work — check it and try again.");
+      if (error) toast.error(t.appWidgets.codeError);
     };
     return (
       <div className="flex flex-col gap-2 bg-app-coral-tint px-4 py-2.5 text-xs text-foreground">
         <div className="flex items-center gap-2">
           <Mail className="h-4 w-4 shrink-0 text-app-coral" />
-          <span className="flex-1">Verify your email to unlock the full app.</span>
+          <span className="flex-1">{t.appWidgets.verifyEmail}</span>
           <button
             type="button"
             onClick={resend}
             disabled={resending}
             className="shrink-0 font-semibold text-app-coral underline disabled:opacity-60"
           >
-            {resending ? "Sending…" : "Resend link"}
+            {resending ? t.appWidgets.sending : t.appWidgets.resendLink}
           </button>
         </div>
         <form onSubmit={verifyCode} className="flex items-center gap-2 pl-6">
-          <span className="shrink-0 text-muted-foreground">Or enter the code:</span>
+          <span className="shrink-0 text-muted-foreground">{t.appWidgets.enterCode}</span>
           <input
             required
             inputMode="numeric"
@@ -195,7 +198,7 @@ export default function VerificationBanner() {
             disabled={verifyingCode || otpCode.length < 6}
             className="shrink-0 font-semibold text-app-coral underline disabled:opacity-60"
           >
-            {verifyingCode ? "…" : "Verify"}
+            {verifyingCode ? "…" : t.appWidgets.verify}
           </button>
         </form>
       </div>
@@ -208,7 +211,7 @@ export default function VerificationBanner() {
     <div className="bg-app-coral-tint px-4 py-2.5 text-xs text-foreground">
       <div className="flex items-center gap-2">
         <KeyRound className="h-4 w-4 shrink-0 text-app-coral" />
-        <span className="flex-1">Set up a password for faster sign-in.</span>
+        <span className="flex-1">{t.appWidgets.setupPassword}</span>
         {!showPasswordForm && (
           <>
             <button
@@ -216,12 +219,12 @@ export default function VerificationBanner() {
               onClick={() => setShowPasswordForm(true)}
               className="shrink-0 font-semibold text-app-coral underline"
             >
-              Set password
+              {t.appWidgets.setPassword}
             </button>
             <button
               type="button"
               onClick={() => setDismissed(true)}
-              aria-label="Dismiss"
+              aria-label={t.appWidgets.dismiss}
               className="shrink-0 text-muted-foreground"
             >
               ×

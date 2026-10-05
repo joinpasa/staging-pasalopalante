@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Link2, ScanLine, LayoutGrid, Radio } from "lucide-react";
 import { cn } from "@shared/lib/utils";
 import { COUNTRIES } from "@shared/data/countries";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 
 const PLEDGE_PRESETS = [1, 5, 10, 25, 100];
 const DEFAULT_PLEDGE = 10;
@@ -39,6 +40,7 @@ export default function OnboardingWalkthrough({
   onFinish,
   busy,
 }: OnboardingWalkthroughProps) {
+  const { t } = useLanguage();
   // `?? ""` rather than a default param — a caller can pass an explicit
   // `null` (e.g. a DB column that's genuinely empty), which a default
   // param does not catch, only `undefined` does.
@@ -99,7 +101,7 @@ export default function OnboardingWalkthrough({
             disabled={busy || profileIncomplete}
             className="text-xs font-semibold text-muted-foreground underline disabled:opacity-60"
           >
-            {busy ? "…" : "Skip for now"}
+            {busy ? "…" : t.appOnboarding.skip}
           </button>
         </div>
 
@@ -117,11 +119,10 @@ export default function OnboardingWalkthrough({
                 <Link2 className="h-8 w-8 text-app-coral" />
               </div>
               <h2 className="mt-4 font-sans text-xl font-extrabold text-foreground">
-                Welcome to Pásalo Pa'lante!
+                {t.appOnboarding.welcomeTitle}
               </h2>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                You're joining a global chain. Every act of kindness you perform and log inspires
-                someone else to pass it forward.
+                {t.appOnboarding.welcomeBody}
               </p>
             </motion.div>
           )}
@@ -136,15 +137,15 @@ export default function OnboardingWalkthrough({
               className="mt-6"
             >
               <h2 className="text-center font-sans text-xl font-extrabold text-foreground">
-                A Little About You
+                {t.appOnboarding.aboutHeading}
               </h2>
               <p className="mt-2 text-center text-sm leading-relaxed text-muted-foreground">
-                Just enough to put you on the map.
+                {t.appOnboarding.aboutBody}
               </p>
               <div className="mt-4 space-y-3 text-left">
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="text-xs font-semibold text-muted-foreground" htmlFor="onb-first-name">First name</label>
+                    <label className="text-xs font-semibold text-muted-foreground" htmlFor="onb-first-name">{t.appOnboarding.firstName}</label>
                     <input
                       id="onb-first-name"
                       value={firstName}
@@ -154,7 +155,7 @@ export default function OnboardingWalkthrough({
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-muted-foreground" htmlFor="onb-last-name">Last name</label>
+                    <label className="text-xs font-semibold text-muted-foreground" htmlFor="onb-last-name">{t.appOnboarding.lastName}</label>
                     <input
                       id="onb-last-name"
                       value={lastName}
@@ -165,14 +166,14 @@ export default function OnboardingWalkthrough({
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground" htmlFor="onb-country">Country</label>
+                  <label className="text-xs font-semibold text-muted-foreground" htmlFor="onb-country">{t.appOnboarding.country}</label>
                   <select
                     id="onb-country"
                     value={country}
                     onChange={(e) => setCountry(e.target.value)}
                     className="mt-1 w-full rounded-xl border border-border bg-app-canvas px-3 py-2 text-sm text-foreground outline-none focus:border-app-coral"
                   >
-                    <option value="">Select your country</option>
+                    <option value="">{t.appOnboarding.selectCountry}</option>
                     {COUNTRIES.map((c) => (
                       <option key={c} value={c}>{c}</option>
                     ))}
@@ -192,10 +193,10 @@ export default function OnboardingWalkthrough({
               className="mt-6 text-center"
             >
               <h2 className="font-sans text-xl font-extrabold text-foreground">
-                Choose Your First Pledge
+                {t.appOnboarding.pledgeHeading}
               </h2>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                How many acts of kindness would you like to commit to starting with?
+                {t.appOnboarding.pledgeBody}
               </p>
               <div className="mt-4 flex flex-wrap justify-center gap-2">
                 {PLEDGE_PRESETS.map((n) => (
@@ -231,7 +232,7 @@ export default function OnboardingWalkthrough({
                     }
                   }}
                   onBlur={commitPledgeText}
-                  aria-label="Custom number of acts"
+                  aria-label={t.appOnboarding.customActsLabel}
                   className="w-24 rounded-xl border border-border bg-app-canvas px-3 py-2 text-center text-sm text-foreground outline-none focus:border-app-coral"
                 />
               </div>
@@ -248,26 +249,25 @@ export default function OnboardingWalkthrough({
               className="mt-6 flex flex-col items-center text-center"
             >
               <h2 className="font-sans text-xl font-extrabold text-foreground">
-                Ready to Pass it Forward?
+                {t.appOnboarding.readyHeading}
               </h2>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                Tap Pass whenever you complete an act, or check the Wall and Map to see kindness
-                spreading worldwide.
+                {t.appOnboarding.readyBody}
               </p>
               <div className="mt-5 flex items-center gap-6 rounded-2xl border border-app-coral bg-app-coral-tint px-6 py-4">
                 <div className="flex flex-col items-center gap-1">
                   <LayoutGrid className="h-5 w-5 text-app-coral" />
-                  <span className="text-[11px] font-semibold text-app-coral">Wall</span>
+                  <span className="text-[11px] font-semibold text-app-coral">{t.appOnboarding.wall}</span>
                 </div>
                 <div className="flex flex-col items-center gap-1">
                   <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-app-coral shadow">
                     <ScanLine className="h-5 w-5 text-app-surface" />
                   </span>
-                  <span className="text-[11px] font-semibold text-app-coral">Pass</span>
+                  <span className="text-[11px] font-semibold text-app-coral">{t.appOnboarding.pass}</span>
                 </div>
                 <div className="flex flex-col items-center gap-1">
                   <Radio className="h-5 w-5 text-app-coral" />
-                  <span className="text-[11px] font-semibold text-app-coral">Map</span>
+                  <span className="text-[11px] font-semibold text-app-coral">{t.appOnboarding.map}</span>
                 </div>
               </div>
             </motion.div>
@@ -286,7 +286,7 @@ export default function OnboardingWalkthrough({
               disabled={step === profileStep && profileIncomplete}
               className="flex h-12 w-full items-center justify-center rounded-2xl bg-app-coral font-semibold text-app-surface disabled:opacity-60"
             >
-              Next
+              {t.appOnboarding.next}
             </button>
           ) : (
             <button
@@ -295,7 +295,7 @@ export default function OnboardingWalkthrough({
               disabled={busy}
               className="flex h-12 w-full items-center justify-center rounded-2xl bg-app-coral font-semibold text-app-surface disabled:opacity-60"
             >
-              {busy ? "Setting up…" : "Get Started"}
+              {busy ? t.appOnboarding.settingUp : t.appOnboarding.getStarted}
             </button>
           )}
         </div>

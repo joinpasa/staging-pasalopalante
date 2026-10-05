@@ -4,12 +4,7 @@ import { ArrowDownLeft, ArrowLeft, ArrowUpRight, Globe2, Link2, Users } from "lu
 import { useLongestChain, useMyConnections, type Connection, type ConnectionDirection } from "@/hooks/useAppData";
 import { timeAgo } from "@shared/lib/appActs";
 import { cn } from "@shared/lib/utils";
-
-const FILTERS: { key: "all" | ConnectionDirection; label: string }[] = [
-  { key: "all", label: "All" },
-  { key: "passed_to", label: "Passed to" },
-  { key: "received_from", label: "Received from" },
-];
+import { useLanguage } from "@shared/contexts/LanguageContext";
 
 function initials(name: string) {
   return name
@@ -20,12 +15,13 @@ function initials(name: string) {
 }
 
 function DirectionBadge({ direction }: { direction: ConnectionDirection }) {
+  const { t } = useLanguage();
   if (direction === "both") {
     return (
       <span className="inline-flex items-center gap-1 rounded-full bg-app-sky/10 px-2 py-0.5 text-[10.5px] font-bold text-app-sky">
         <ArrowUpRight className="h-3 w-3" />
         <ArrowDownLeft className="h-3 w-3 -ml-1.5" />
-        Both ways
+        {t.appConnections.bothWays}
       </span>
     );
   }
@@ -33,22 +29,28 @@ function DirectionBadge({ direction }: { direction: ConnectionDirection }) {
     return (
       <span className="inline-flex items-center gap-1 rounded-full bg-app-coral/10 px-2 py-0.5 text-[10.5px] font-bold text-app-coral">
         <ArrowUpRight className="h-3 w-3" />
-        You passed to them
+        {t.appConnections.youPassedToThem}
       </span>
     );
   }
   return (
     <span className="inline-flex items-center gap-1 rounded-full bg-app-teal/10 px-2 py-0.5 text-[10.5px] font-bold text-app-teal">
       <ArrowDownLeft className="h-3 w-3" />
-      They passed to you
+      {t.appConnections.theyPassedToYou}
     </span>
   );
 }
 
 export default function AppConnections() {
+  const { t, lang } = useLanguage();
   const { data: connections, isLoading } = useMyConnections();
   const { data: longestChain } = useLongestChain();
   const [filter, setFilter] = useState<"all" | ConnectionDirection>("all");
+  const filters = [
+    { key: "all" as const, label: t.appConnections.all },
+    { key: "passed_to" as const, label: t.appConnections.passedTo },
+    { key: "received_from" as const, label: t.appConnections.receivedFrom },
+  ];
 
   const list = connections ?? [];
   const countries = useMemo(
@@ -67,37 +69,37 @@ export default function AppConnections() {
         className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
-        Home
+        {t.appConnections.home}
       </Link>
 
       <h1 className="mt-3 font-sans text-3xl font-extrabold tracking-tight text-foreground">
-        My Network
+        {t.appConnections.title}
       </h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Everyone you've connected with in person via Pass.
+        {t.appConnections.subtitle}
       </p>
 
       <div className="mt-5 grid grid-cols-3 gap-3">
         <div className="flex flex-col gap-1.5 rounded-2xl bg-app-magenta/10 p-3">
           <Users className="h-[17px] w-[17px] text-app-magenta" strokeWidth={1.6} />
           <p className="text-[19px] font-extrabold leading-none text-foreground">{list.length}</p>
-          <p className="text-[10.5px] leading-tight text-muted-foreground">Connections</p>
+          <p className="text-[10.5px] leading-tight text-muted-foreground">{t.appConnections.connections}</p>
         </div>
         <div className="flex flex-col gap-1.5 rounded-2xl bg-app-sky/10 p-3">
           <Globe2 className="h-[17px] w-[17px] text-app-sky" strokeWidth={1.6} />
           <p className="text-[19px] font-extrabold leading-none text-foreground">{countries.size}</p>
-          <p className="text-[10.5px] leading-tight text-muted-foreground">Countries</p>
+          <p className="text-[10.5px] leading-tight text-muted-foreground">{t.appConnections.countries}</p>
         </div>
         <div className="flex flex-col gap-1.5 rounded-2xl bg-app-gold/15 p-3">
           <Link2 className="h-[17px] w-[17px] text-app-gold" strokeWidth={1.6} />
           <p className="text-[19px] font-extrabold leading-none text-foreground">{longestChain ?? 0}</p>
-          <p className="text-[10.5px] leading-tight text-muted-foreground">Longest chain</p>
+          <p className="text-[10.5px] leading-tight text-muted-foreground">{t.appConnections.longestChain}</p>
         </div>
       </div>
 
       {list.length > 0 && (
         <div className="mt-5 flex gap-2">
-          {FILTERS.map((f) => (
+          {filters.map((f) => (
             <button
               key={f.key}
               type="button"
@@ -125,13 +127,13 @@ export default function AppConnections() {
         <div className="mt-5 flex flex-col items-center gap-3 rounded-3xl bg-app-surface p-8 text-center">
           <Users className="h-8 w-8 text-muted-foreground" />
           <p className="text-sm leading-relaxed text-muted-foreground">
-            No connections yet. Scan someone's pass, or have them scan yours, to connect.
+            {t.appConnections.empty}
           </p>
         </div>
       ) : filtered.length === 0 ? (
         <div className="mt-5 flex flex-col items-center gap-3 rounded-3xl bg-app-surface p-8 text-center">
           <p className="text-sm leading-relaxed text-muted-foreground">
-            No connections in this category yet.
+            {t.appConnections.emptyFilter}
           </p>
         </div>
       ) : (
@@ -148,7 +150,7 @@ export default function AppConnections() {
                 <p className="truncate text-sm font-bold text-foreground">{c.name}</p>
                 <p className="truncate text-xs text-muted-foreground">
                   {c.country ? `${c.country} · ` : ""}
-                  Connected {timeAgo(c.connectedAt)}
+                  {t.appConnections.connected} {timeAgo(c.connectedAt, t.appCommon, lang)}
                 </p>
                 <div className="mt-1.5">
                   <DirectionBadge direction={c.direction} />

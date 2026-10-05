@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 
 // Puerto Rico is AST (UTC-4) year-round, no DST — same dates MyCommitment
 // already tracks for the pre-season countdown, plus a season-end date for
@@ -26,6 +27,7 @@ function timeLeftTo(target: Date) {
  * the countdown this replaced on the commitment card did.
  */
 export default function SeasonCountdown() {
+  const { t } = useLanguage();
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000);
@@ -41,9 +43,9 @@ export default function SeasonCountdown() {
       <div className="flex items-center justify-between">
         <div>
           <p className="text-[10.5px] font-bold uppercase tracking-[0.08em] text-app-gold">
-            Global Kindness Season
+            {t.appWidgets.globalSeason}
           </p>
-          <p className="mt-1 text-xs text-app-surface/65">Nov 1, 2026 – Jan 31, 2027</p>
+          <p className="mt-1 text-xs text-app-surface/65">{t.appWidgets.seasonDates}</p>
         </div>
         <Heart className="h-5 w-5 shrink-0 fill-app-gold text-app-gold" />
       </div>
@@ -52,10 +54,10 @@ export default function SeasonCountdown() {
         <>
           <div className="grid grid-cols-4 gap-2.5">
             {[
-              { v: left.days, l: "DAYS" },
-              { v: left.hours, l: "HRS" },
-              { v: left.minutes, l: "MIN" },
-              { v: left.seconds, l: "SEC" },
+              { v: left.days, l: t.appWidgets.days },
+              { v: left.hours, l: t.appWidgets.hours },
+              { v: left.minutes, l: t.appWidgets.minutes },
+              { v: left.seconds, l: t.appWidgets.seconds },
             ].map((u) => (
               <div key={u.l} className="rounded-2xl bg-app-surface/10 px-1 py-3.5 text-center">
                 <p className="text-2xl font-extrabold tabular-nums text-app-surface">
@@ -66,12 +68,12 @@ export default function SeasonCountdown() {
             ))}
           </div>
           <p className="text-[11px] italic text-app-surface/50">
-            In Puerto Rico time — where the wave began.
+            {t.appWidgets.puertoRicoTime}
           </p>
         </>
       ) : (
         <p className="text-[12.5px] leading-relaxed text-app-surface/75">
-          This year's Global Kindness Season has wrapped — thank you for passing it forward.
+          {t.appWidgets.seasonEnded}
         </p>
       )}
     </section>

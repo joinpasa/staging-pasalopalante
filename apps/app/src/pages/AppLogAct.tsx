@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { useAppMe } from "@/hooks/useAppData";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 import { supabase } from "@shared/integrations/supabase/client";
 import { cn } from "@shared/lib/utils";
 
@@ -32,6 +33,7 @@ const MAX_FILE_SIZE = 25 * 1024 * 1024;
  */
 export default function AppLogAct() {
   const navigate = useNavigate();
+  const { t, lang } = useLanguage();
   const { data: me } = useAppMe();
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
@@ -39,13 +41,23 @@ export default function AppLogAct() {
   const toUserId = searchParams.get("toUserId")?.trim();
 
   const [picked, setPicked] = useState<string | null>(null);
-  const [note, setNote] = useState(withName ? `Passed it forward to ${withName}: ` : "");
+  const [note, setNote] = useState(withName ? `${t.appLogAct.passedItForwardTo} ${withName}: ` : "");
   const [file, setFile] = useState<{ file: File; preview: string; isVideo: boolean } | null>(null);
   const [shareOnWall, setShareOnWall] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [newTotal, setNewTotal] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const chipTranslations: Record<(typeof CHIP_LABELS)[number], string> = {
+    "Helped a neighbor": t.appLogAct.helpedNeighbor,
+    "Gave a compliment": t.appLogAct.gaveCompliment,
+    Volunteered: t.appLogAct.volunteered,
+    Donated: t.appLogAct.donated,
+    "Paid for someone": t.appLogAct.paidForSomeone,
+    "Listened & supported": t.appLogAct.listenedSupported,
+    "Something else": t.appLogAct.somethingElse,
+  };
+  const nf = new Intl.NumberFormat(lang);
 
   function pickFile(list: FileList | null) {
     const f = list?.[0];
@@ -53,7 +65,7 @@ export default function AppLogAct() {
     const isVideo = f.type.startsWith("video/");
     if (!isVideo && !f.type.startsWith("image/")) return;
     if (f.size > MAX_FILE_SIZE) {
-      toast.error("That file is too large — please pick something under 25MB.");
+      toast.error(t.appLogAct.fileTooLarge);
       return;
     }
     if (file) URL.revokeObjectURL(file.preview);
@@ -80,9 +92,9 @@ export default function AppLogAct() {
             body: file.file,
           });
           if (put.ok) photoPaths = [data.path as string];
-          else toast.error("The photo couldn't be uploaded, but your act will still be logged.");
+          else toast.error(t.appLogAct.photoUploadFailed);
         } else {
-          toast.error("The photo couldn't be uploaded, but your act will still be logged.");
+          toast.error(t.appLogAct.photoUploadFailed);
         }
       }
 
@@ -102,11 +114,11 @@ export default function AppLogAct() {
         return;
       }
       if (data?.status === "rejected") {
-        toast.error(data?.short_reason || "Couldn't log that — please rephrase and try again.");
+        toast.error(data?.short_reason || t.appLogAct.rejected);
         return;
       }
       if (!data?.id) {
-        toast.error("Something went wrong. Please try again.");
+        toast.error(t.appLogAct.genericError);
         return;
       }
       setNewTotal((me?.actsPassedForward ?? 0) + 1);
@@ -114,7 +126,7 @@ export default function AppLogAct() {
       queryClient.invalidateQueries({ queryKey: ["app", "me"] });
       queryClient.invalidateQueries({ queryKey: ["app", "my-acts"] });
     } catch {
-      toast.error("Something went wrong. Please try again.");
+      toast.error(t.appLogAct.genericError);
     } finally {
       setSubmitting(false);
     }
@@ -128,18 +140,16 @@ export default function AppLogAct() {
             <CheckCircle2 className="h-[30px] w-[30px] text-app-surface" strokeWidth={2.4} />
           </div>
         </div>
-        <p className="text-[21px] font-bold text-foreground">Nice work!</p>
+        <p className="text-[21px] font-bold text-foreground">{t.appLogAct.niceWork}</p>
         <p className="max-w-[280px] text-sm leading-relaxed text-muted-foreground">
-          {shareOnWall
-            ? "Your act of kindness was added to the Wall and passed forward to the chain."
-            : "Your act of kindness was logged and passed forward to the chain."}{" "}
-          That's <strong className="text-foreground">{newTotal}</strong> acts and counting.
+          {shareOnWall ? t.appLogAct.sharedOnWall : t.appLogAct.privateLogged}{" "}
+          {t.appLogAct.actsAndCounting.replace("{count}", nf.format(newTotal ?? 0))}
         </p>
         <Link
           to="/"
           className="mt-2 w-full rounded-2xl bg-app-coral py-[15px] text-[15px] font-bold text-app-surface"
         >
-          Back to Dashboard
+          {t.appLogAct.backToDashboard}
         </Link>
       </div>
     );
@@ -151,17 +161,17 @@ export default function AppLogAct() {
         <button
           type="button"
           onClick={() => navigate("/")}
-          aria-label="Cancel"
+          aria-label={t.appLogAct.cancel}
           className="flex h-10 w-10 items-center justify-center rounded-xl"
         >
           <ArrowLeft className="h-5 w-5 text-foreground" />
         </button>
-        <p className="text-[15.5px] font-bold text-foreground">Log an Act of Kindness</p>
+        <p className="text-[15.5px] font-bold text-foreground">{t.appLogAct.title}</p>
       </div>
 
       <div className="flex flex-1 flex-col gap-[18px] px-4 py-5">
         <div>
-          <p className="mb-2.5 text-sm font-bold text-foreground">What did you do?</p>
+          <p className="mb-2.5 text-sm font-bold text-foreground">{t.appLogAct.whatDidYouDo}</p>
           <div className="flex flex-wrap gap-2">
             {CHIP_LABELS.map((label) => (
               <button
@@ -175,7 +185,7 @@ export default function AppLogAct() {
                     : "border-app-ink/[0.14] bg-app-surface text-foreground",
                 )}
               >
-                {label}
+                {chipTranslations[label]}
               </button>
             ))}
           </div>
@@ -183,7 +193,7 @@ export default function AppLogAct() {
 
         <div>
           <label htmlFor="log-note" className="mb-2 block text-sm font-bold text-foreground">
-            Tell us more <span className="font-medium text-muted-foreground">(optional)</span>
+            {t.appLogAct.tellUsMore} <span className="font-medium text-muted-foreground">{t.appLogAct.optional}</span>
           </label>
           <textarea
             id="log-note"
@@ -191,14 +201,14 @@ export default function AppLogAct() {
             maxLength={1000}
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            placeholder="A quick word about what happened..."
+            placeholder={t.appLogAct.notePlaceholder}
             className="w-full resize-none rounded-2xl border-[1.5px] border-app-ink/[0.14] bg-app-surface px-3.5 py-3 text-[13.5px] text-foreground"
           />
         </div>
 
         <div>
           <p className="mb-2 text-sm font-bold text-foreground">
-            Add a photo or video <span className="font-medium text-muted-foreground">(optional)</span>
+            {t.appLogAct.addPhotoVideo} <span className="font-medium text-muted-foreground">{t.appLogAct.optional}</span>
           </p>
           {!file ? (
             <>
@@ -208,7 +218,7 @@ export default function AppLogAct() {
               >
                 <Upload className="h-[22px] w-[22px] text-app-ink/40" />
                 <span className="text-xs font-semibold text-app-ink/50">
-                  Tap to attach a photo or video
+                  {t.appLogAct.attachMedia}
                 </span>
               </label>
               <input
@@ -225,12 +235,12 @@ export default function AppLogAct() {
               {file.isVideo ? (
                 <video src={file.preview} controls className="h-full w-full object-cover" />
               ) : (
-                <img src={file.preview} alt="Attached preview" className="h-full w-full object-cover" />
+                <img src={file.preview} alt={t.appLogAct.attachedPreview} className="h-full w-full object-cover" />
               )}
               <button
                 type="button"
                 onClick={removeFile}
-                aria-label="Remove attachment"
+                aria-label={t.appLogAct.removeAttachment}
                 className="absolute right-2 top-2 flex h-[30px] w-[30px] items-center justify-center rounded-full bg-app-ink/70"
               >
                 <X className="h-3.5 w-3.5 text-app-surface" />
@@ -246,8 +256,8 @@ export default function AppLogAct() {
 
         <div className="flex items-center justify-between rounded-2xl border border-border bg-app-surface p-3.5">
           <div>
-            <p className="text-[13.5px] font-bold text-foreground">Share on the Wall of Kindness</p>
-            <p className="mt-0.5 text-[11.5px] text-muted-foreground">Inspire someone else to pass it on</p>
+            <p className="text-[13.5px] font-bold text-foreground">{t.appLogAct.shareOnWall}</p>
+            <p className="mt-0.5 text-[11.5px] text-muted-foreground">{t.appLogAct.inspireOthers}</p>
           </div>
           <button
             type="button"
@@ -272,15 +282,15 @@ export default function AppLogAct() {
             picked ? "bg-app-coral" : "bg-app-ink/25",
           )}
         >
-          {submitting ? "…" : "Log This Act"}
+          {submitting ? "…" : t.appLogAct.logThisAct}
         </button>
 
         <Link to="/pass" className="text-center text-xs font-semibold text-app-sky">
-          or scan someone's Kindness QR instead
+          {t.appLogAct.scanQrInstead}
         </Link>
 
         <Link to={`/log/detailed${toUserId ? `?with=${encodeURIComponent(withName ?? "")}&toUserId=${encodeURIComponent(toUserId)}` : ""}`} className="text-center text-xs font-semibold text-muted-foreground underline underline-offset-2">
-          Want to log something witnessed or received, or add more photos? Use the detailed form
+          {t.appLogAct.moreDetails}
         </Link>
       </div>
     </div>

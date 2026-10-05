@@ -1,5 +1,6 @@
 import { Heart } from "lucide-react";
 import { cn } from "@shared/lib/utils";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 
 /** Single-tap heart reaction with an optimistic count, used on both AppWall
  *  and AppHome. `onToggle` is expected to update state instantly and let the
@@ -15,6 +16,7 @@ export default function ReactionButton({
   onToggle: () => void;
   className?: string;
 }) {
+  const { t } = useLanguage();
   return (
     <button
       type="button"
@@ -23,7 +25,7 @@ export default function ReactionButton({
         onToggle();
       }}
       aria-pressed={reacted}
-      aria-label={reacted ? "Remove heart" : "Send a heart"}
+      aria-label={reacted ? t.appWidgets.removeHeart : t.appWidgets.sendHeart}
       className={cn(
         "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors",
         reacted ? "bg-app-coral text-app-surface" : "bg-app-coral-tint text-app-coral",

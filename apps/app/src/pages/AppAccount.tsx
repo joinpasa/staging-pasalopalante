@@ -7,6 +7,8 @@ import PasswordForm from "@/components/app/PasswordForm";
 import EmailForm from "@/components/app/EmailForm";
 import PushToggle from "@/components/app/PushToggle";
 import { useAuth } from "@shared/contexts/AuthContext";
+import { useLanguage } from "@shared/contexts/LanguageContext";
+import { LANGUAGES } from "@shared/i18n/translations";
 import { supabase } from "@shared/integrations/supabase/client";
 import { COUNTRIES } from "@shared/data/countries";
 import { DISPLAY_NAME_RE, isReservedDisplayName } from "@shared/lib/displayName";
@@ -21,6 +23,7 @@ const inputClass =
  */
 export default function AppAccount() {
   const { user, signOut } = useAuth();
+  const { lang, setLang, t } = useLanguage();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
@@ -87,7 +90,7 @@ export default function AppAccount() {
   const saveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (trimmedNickname && (!nicknameValid || nicknameAvailable === false)) {
-      toast.error(nicknameValid ? "That nickname is taken." : "Nickname must be 2-30 letters/numbers.");
+      toast.error(nicknameValid ? t.appAccount.nicknameTaken : t.appAccount.nicknameInvalid);
       return;
     }
     setSaving(true);
@@ -102,9 +105,9 @@ export default function AppAccount() {
       })
       .eq("user_id", user.id);
     setSaving(false);
-    if (error) toast.error("Couldn't save your profile. Please try again.");
+    if (error) toast.error(t.appAccount.profileSaveError);
     else {
-      toast.success("Profile updated.");
+      toast.success(t.appAccount.profileUpdated);
       setSavedNickname(trimmedNickname);
     }
   };
@@ -120,22 +123,22 @@ export default function AppAccount() {
         <button
           type="button"
           onClick={() => navigate("/")}
-          aria-label="Back"
+          aria-label={t.appAccount.back}
           className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-app-surface"
         >
           <ArrowLeft className="h-5 w-5 text-foreground" />
         </button>
-        <h1 className="font-sans text-lg font-bold text-foreground">Account</h1>
+        <h1 className="font-sans text-lg font-bold text-foreground">{t.appAccount.title}</h1>
       </header>
 
       {!loading && (
         <div className="space-y-6">
           <section>
-            <h2 className="mb-3 font-sans text-sm font-bold text-foreground">Your profile</h2>
+            <h2 className="mb-3 font-sans text-sm font-bold text-foreground">{t.appAccount.profile}</h2>
             <form onSubmit={saveProfile} className="space-y-3 rounded-2xl bg-app-surface p-4">
               <div className="grid grid-cols-2 gap-3">
                 <label className="block space-y-1.5">
-                  <span className="text-xs font-semibold text-muted-foreground">First name</span>
+                  <span className="text-xs font-semibold text-muted-foreground">{t.appAccount.firstName}</span>
                   <input
                     maxLength={60}
                     value={firstName}
@@ -145,7 +148,7 @@ export default function AppAccount() {
                   />
                 </label>
                 <label className="block space-y-1.5">
-                  <span className="text-xs font-semibold text-muted-foreground">Last name</span>
+                  <span className="text-xs font-semibold text-muted-foreground">{t.appAccount.lastName}</span>
                   <input
                     maxLength={60}
                     value={lastName}
@@ -156,9 +159,9 @@ export default function AppAccount() {
                 </label>
               </div>
               <label className="block space-y-1.5">
-                <span className="text-xs font-semibold text-muted-foreground">Country</span>
+                <span className="text-xs font-semibold text-muted-foreground">{t.appAccount.country}</span>
                 <select value={country} onChange={(e) => setCountry(e.target.value)} className={inputClass}>
-                  <option value="">Select your country</option>
+                  <option value="">{t.appAccount.selectCountry}</option>
                   {COUNTRIES.map((c) => (
                     <option key={c} value={c}>
                       {c}
@@ -167,29 +170,29 @@ export default function AppAccount() {
                 </select>
               </label>
               <label className="block space-y-1.5">
-                <span className="text-xs font-semibold text-muted-foreground">Nickname</span>
+                <span className="text-xs font-semibold text-muted-foreground">{t.appAccount.nickname}</span>
                 <input
                   maxLength={30}
-                  placeholder="How you'll appear on the Wall"
+                  placeholder={t.appAccount.nicknamePlaceholder}
                   value={nickname}
                   onChange={(e) => setNickname(e.target.value)}
                   className={inputClass}
                 />
                 <p className="text-[11px] leading-snug text-muted-foreground">
                   {trimmedNickname && isReservedDisplayName(trimmedNickname) ? (
-                    <span className="text-destructive">That name isn't available.</span>
+                    <span className="text-destructive">{t.appAccount.nicknameReserved}</span>
                   ) : trimmedNickname && !nicknameValid ? (
-                    <span className="text-destructive">2-30 letters, numbers, spaces, or - ' _</span>
+                    <span className="text-destructive">{t.appAccount.nicknameLength}</span>
                   ) : checkingNickname ? (
                     <span className="inline-flex items-center gap-1">
-                      <Loader2 className="h-3 w-3 animate-spin" /> Checking availability…
+                      <Loader2 className="h-3 w-3 animate-spin" /> {t.appAccount.checkingAvailability}
                     </span>
                   ) : trimmedNickname && nicknameAvailable === true ? (
-                    <span className="text-app-teal">Available</span>
+                    <span className="text-app-teal">{t.appAccount.available}</span>
                   ) : trimmedNickname && nicknameAvailable === false ? (
-                    <span className="text-destructive">Already taken</span>
+                    <span className="text-destructive">{t.appAccount.alreadyTaken}</span>
                   ) : (
-                    "Optional — used on the Wall and when people connect with you via /wave. Leave blank to show your first name and last initial instead."
+                    t.appAccount.nicknameHint
                   )}
                 </p>
               </label>
@@ -198,13 +201,36 @@ export default function AppAccount() {
                 disabled={saving}
                 className="h-11 w-full rounded-xl bg-app-coral text-sm font-semibold text-app-surface disabled:opacity-60"
               >
-                {saving ? "Saving…" : "Save profile"}
+                {saving ? t.appAccount.saving : t.appAccount.saveProfile}
               </button>
             </form>
           </section>
 
           <section>
-            <h2 className="mb-3 font-sans text-sm font-bold text-foreground">Email</h2>
+            <h2 className="mb-3 font-sans text-sm font-bold text-foreground">{t.appAccount.language}</h2>
+            <div className="rounded-2xl bg-app-surface p-4">
+              <select
+                aria-label={t.appAccount.language}
+                value={lang}
+                onChange={(event) => {
+                  const selectedLanguage = LANGUAGES.find(
+                    (language) => language.code === event.target.value,
+                  );
+                  if (selectedLanguage) setLang(selectedLanguage.code);
+                }}
+                className={inputClass}
+              >
+                {LANGUAGES.map((language) => (
+                  <option key={language.code} value={language.code}>
+                    {language.native}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="mb-3 font-sans text-sm font-bold text-foreground">{t.appAccount.email}</h2>
             <div className="rounded-2xl bg-app-surface p-4">
               {!showEmailForm ? (
                 <button
@@ -216,7 +242,7 @@ export default function AppAccount() {
                     <Mail className="h-4 w-4" />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-bold text-foreground">Change email</span>
+                    <span className="block text-sm font-bold text-foreground">{t.appAccount.changeEmail}</span>
                     <span className="block truncate text-xs text-muted-foreground">{user.email}</span>
                   </span>
                 </button>
@@ -230,7 +256,7 @@ export default function AppAccount() {
           </section>
 
           <section>
-            <h2 className="mb-3 font-sans text-sm font-bold text-foreground">Password</h2>
+            <h2 className="mb-3 font-sans text-sm font-bold text-foreground">{t.appAccount.password}</h2>
             <div className="rounded-2xl bg-app-surface p-4">
               {!showPasswordForm ? (
                 <button
@@ -243,12 +269,12 @@ export default function AppAccount() {
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-sm font-bold text-foreground">
-                      {hasPassword ? "Change password" : "Set a password"}
+                      {hasPassword ? t.appAccount.changePassword : t.appAccount.setPassword}
                     </span>
                     <span className="block text-xs text-muted-foreground">
                       {hasPassword
-                        ? "Update the password you use to sign in."
-                        : "Add a password so you can sign in without an email link."}
+                        ? t.appAccount.passwordUpdateBody
+                        : t.appAccount.passwordSetupBody}
                     </span>
                   </span>
                 </button>
@@ -266,7 +292,7 @@ export default function AppAccount() {
           </section>
 
           <section>
-            <h2 className="mb-3 font-sans text-sm font-bold text-foreground">Notifications</h2>
+            <h2 className="mb-3 font-sans text-sm font-bold text-foreground">{t.appAccount.notifications}</h2>
             <PushToggle />
           </section>
 
@@ -276,7 +302,7 @@ export default function AppAccount() {
             className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-border bg-app-surface text-sm font-semibold text-foreground"
           >
             <LogOut className="h-4 w-4" />
-            Log out
+            {t.appAccount.logout}
           </button>
         </div>
       )}

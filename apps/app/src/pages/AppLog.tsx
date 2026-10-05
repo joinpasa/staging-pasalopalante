@@ -26,7 +26,7 @@ export default function AppLog() {
         <button
           type="button"
           onClick={() => navigate("/")}
-          aria-label="Back"
+          aria-label={t.appLogAct.cancel}
           className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-app-surface"
         >
           <ArrowLeft className="h-5 w-5 text-foreground" />
@@ -39,7 +39,7 @@ export default function AppLog() {
       <ShareActFlow
         redirectTo="/"
         initialMode={withName ? "performed" : undefined}
-        initialDescription={withName ? `Passed it forward to ${withName}: ` : undefined}
+        initialDescription={withName ? `${t.appLogAct.passedItForwardTo} ${withName}: ` : undefined}
         toUserId={toUserId || undefined}
       />
     </div>

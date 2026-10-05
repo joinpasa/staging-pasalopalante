@@ -1,12 +1,13 @@
 import { NavLink } from "react-router-dom";
 import { Home, LayoutGrid, ScanLine, Radio, Sparkles } from "lucide-react";
 import { cn } from "@shared/lib/utils";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 
 const TABS = [
-  { to: "/", label: "Home", Icon: Home, end: true },
-  { to: "/wall", label: "Wall", Icon: LayoutGrid, end: false },
-  { to: "/map", label: "Map", Icon: Radio, end: false },
-  { to: "/badges", label: "Badges", Icon: Sparkles, end: false },
+  { to: "/", label: "home", Icon: Home, end: true },
+  { to: "/wall", label: "wall", Icon: LayoutGrid, end: false },
+  { to: "/map", label: "map", Icon: Radio, end: false },
+  { to: "/badges", label: "badges", Icon: Sparkles, end: false },
 ];
 
 /**
@@ -14,19 +15,20 @@ const TABS = [
  * beta app's navigation.
  */
 export default function AppBottomNav() {
+  const { t } = useLanguage();
   return (
     <nav
-      aria-label="App sections"
+      aria-label={t.appNavigation.sections}
       className="fixed inset-x-0 bottom-0 z-40 mx-auto flex w-full items-end justify-around border-t border-border bg-app-surface/95 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur 2xl:max-w-3xl"
     >
       {TABS.slice(0, 2).map(({ to, label, Icon, end }) => (
-        <Tab key={to} to={to} label={label} Icon={Icon} end={end} />
+        <Tab key={to} to={to} label={t.appNavigation[label]} Icon={Icon} end={end} />
       ))}
 
       <NavLink
         to="/pass"
         className="flex w-16 flex-col items-center gap-1"
-        aria-label="Share your Kindness code or scan someone else's"
+        aria-label={t.appNavigation.shareScanAria}
       >
         {({ isActive }) => (
           <>
@@ -45,14 +47,14 @@ export default function AppBottomNav() {
                 isActive ? "text-app-coral" : "text-muted-foreground",
               )}
             >
-              Share and Scan
+              {t.appNavigation.shareScan}
             </span>
           </>
         )}
       </NavLink>
 
       {TABS.slice(2).map(({ to, label, Icon, end }) => (
-        <Tab key={to} to={to} label={label} Icon={Icon} end={end} />
+        <Tab key={to} to={to} label={t.appNavigation[label]} Icon={Icon} end={end} />
       ))}
     </nav>
   );

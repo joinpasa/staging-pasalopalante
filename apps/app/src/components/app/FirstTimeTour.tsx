@@ -1,19 +1,5 @@
 import { cn } from "@shared/lib/utils";
-
-const STEPS = [
-  {
-    title: "Your menu, always one tap away",
-    body: "Tap your avatar anytime for Account Settings, Get Support, Report an Issue, or to log out.",
-  },
-  {
-    title: "Your Kindness code lives here",
-    body: "This is your personal QR code. Share it so someone can pass kindness straight to you.",
-  },
-  {
-    title: "Logging an act is this easy",
-    body: "Whenever you do something kind, tap this card. Pick what you did and you're done in seconds.",
-  },
-];
+import { useLanguage } from "@shared/contexts/LanguageContext";
 
 interface Props {
   step: number;
@@ -37,8 +23,10 @@ interface Props {
  * component renders.
  */
 export default function FirstTimeTour({ step, dontShow, onToggleDontShow, onNext, onExit }: Props) {
-  const isLast = step === STEPS.length - 1;
-  const current = STEPS[step];
+  const { t } = useLanguage();
+  const steps = t.appWidgets.tourSteps;
+  const isLast = step === steps.length - 1;
+  const current = steps[step];
 
   return (
     <>
@@ -46,15 +34,15 @@ export default function FirstTimeTour({ step, dontShow, onToggleDontShow, onNext
 
       <div
         role="dialog"
-        aria-label="First-time tour"
+        aria-label={t.appWidgets.firstTimeTour}
         className="fixed inset-x-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-50 rounded-[20px] bg-app-surface p-[18px] shadow-2xl"
       >
         <div className="mb-1.5 flex items-center justify-between">
           <p className="text-[10.5px] font-bold uppercase tracking-[0.06em] text-app-coral">
-            Step {step + 1} of {STEPS.length}
+            {t.appWidgets.tourStep.replace("{step}", String(step + 1)).replace("{total}", String(steps.length))}
           </p>
           <button type="button" onClick={onExit} className="text-[11.5px] font-bold text-app-ink/40">
-            Skip tour
+            {t.appWidgets.skipTour}
           </button>
         </div>
 
@@ -69,13 +57,13 @@ export default function FirstTimeTour({ step, dontShow, onToggleDontShow, onNext
               onChange={onToggleDontShow}
               className="h-[17px] w-[17px] accent-app-coral"
             />
-            Don't show this tour again
+            {t.appWidgets.dontShowTour}
           </label>
         )}
 
         <div className="flex items-center justify-between">
           <div className="flex gap-1.5">
-            {STEPS.map((_, i) => (
+            {steps.map((_, i) => (
               <span
                 key={i}
                 className={cn("h-1.5 w-1.5 rounded-full", i === step ? "bg-app-coral" : "bg-app-ink/[0.18]")}
@@ -87,7 +75,7 @@ export default function FirstTimeTour({ step, dontShow, onToggleDontShow, onNext
             onClick={isLast ? onExit : onNext}
             className="rounded-xl bg-app-coral px-5 py-2.5 text-[13.5px] font-bold text-app-surface"
           >
-            {isLast ? "Get Started" : "Next"}
+            {isLast ? t.appWidgets.getStarted : t.appWidgets.next}
           </button>
         </div>
       </div>

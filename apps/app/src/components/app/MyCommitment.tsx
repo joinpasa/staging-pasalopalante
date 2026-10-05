@@ -70,7 +70,7 @@ export default function MyCommitment({ userId, email }: { userId: string; email:
     try {
       const { error } = await supabase.from("commitments").update({ pledge_count: draft }).eq("id", id);
       if (error) {
-        toast.error(error.message);
+        toast.error(t.appHome.savingPledgeError);
         return;
       }
       toast.success(t.account.saved);
@@ -90,7 +90,7 @@ export default function MyCommitment({ userId, email }: { userId: string; email:
       });
       const failure = (data as { error?: string } | null)?.error ?? error?.message;
       if (failure) {
-        toast.error(failure);
+        toast.error(t.appHome.savingPledgeError);
         return;
       }
       toast.success(t.account.saved);
