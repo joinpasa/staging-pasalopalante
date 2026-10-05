@@ -8,6 +8,7 @@ import ReactionButton from "@/components/app/ReactionButton";
 import DeleteActDialog from "@/components/app/DeleteActDialog";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { supabase } from "@shared/integrations/supabase/client";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useActReactions, useMovementTotals, useMyRecentActs, useWallActs } from "@/hooks/useAppData";
 import { actEmoji, modeLabel, timeAgo } from "@shared/lib/appActs";
 import { cn } from "@shared/lib/utils";
@@ -22,7 +23,6 @@ import {
   DropdownMenuTrigger,
 } from "@shared/components/ui/dropdown-menu";
 
-const nf = new Intl.NumberFormat("en-US");
 const FILTERS = ["Worldwide", "My chain"] as const;
 type Filter = (typeof FILTERS)[number];
 
@@ -37,6 +37,8 @@ function initials(name: string) {
 export default function AppWall() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { t, lang } = useLanguage();
+  const nf = new Intl.NumberFormat(lang);
   const [filter, setFilter] = useState<Filter>("Worldwide");
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -47,14 +49,14 @@ export default function AppWall() {
 
   const showingMine = filter === "My chain";
   const posts = showingMine
-    ? (mine.data ?? []).map((act) => ({ ...act, name: "You", photoUrl: null as string | null }))
+    ? (mine.data ?? []).map((act) => ({ ...act, name: t.appWidgets.you, photoUrl: null as string | null }))
     : (worldwide.data ?? []);
   const loading = showingMine ? mine.isLoading : worldwide.isLoading;
 
   const { reactions, toggle } = useActReactions(posts.map((p) => p.id));
   const onToggleReact = (actId: string) => {
     if (!user) {
-      toast("Join to react to acts of kindness.");
+      toast(t.appWall.joinToReact);
       return;
     }
     void toggle(actId);
@@ -88,9 +90,9 @@ export default function AppWall() {
   return (
     <div className="px-5 pt-6">
       <h1 className="font-sans text-3xl font-extrabold tracking-tight text-foreground">
-        Wall of Kindness
+      {t.appWall.title}
       </h1>
-      <p className="mt-1 text-sm text-muted-foreground">Every act shared, from everywhere.</p>
+      <p className="mt-1 text-sm text-muted-foreground">{t.appWall.subtitle}</p>
 
       {/* The worldwide movement totals — otherwise only visible on Home to
           a signed-out visitor, and replaced there by personal stats once
@@ -104,14 +106,14 @@ export default function AppWall() {
           className="h-4 w-4 object-contain"
         />
         <p className="text-xs font-semibold tracking-wide text-muted-foreground">
-          Pass Kindness Forward — the global movement
+          {t.appWall.movementLabel}
         </p>
       </div>
       <section className="mt-2 grid grid-cols-3 gap-3">
         {[
-          { value: totals?.pledged ?? 0, label: "Acts pledged" },
-          { value: totals?.actsToday ?? 0, label: "Logged today" },
-          { value: totals?.actsAllTime ?? 0, label: "Acts all time" },
+          { value: totals?.pledged ?? 0, label: t.appCommon.actsPledged },
+          { value: totals?.actsToday ?? 0, label: t.appCommon.loggedToday },
+          { value: totals?.actsAllTime ?? 0, label: t.appCommon.actsAllTime },
         ].map((stat) => (
           <div key={stat.label} className="overflow-hidden rounded-2xl bg-app-surface p-4">
             <p className={cn("break-all font-sans font-bold leading-tight text-foreground", statFontSizeClass(stat.value))}>
@@ -122,7 +124,7 @@ export default function AppWall() {
         ))}
       </section>
 
-      <div className="mt-5 flex gap-2" role="tablist" aria-label="Wall filter">
+      <div className="mt-5 flex gap-2" role="tablist" aria-label={t.appWall.filterAria}>
         {FILTERS.map((option) => {
           const active = option === filter;
           return (
@@ -139,7 +141,7 @@ export default function AppWall() {
                   : "border-border bg-app-surface text-foreground",
               )}
             >
-              {option}
+              {option === "Worldwide" ? t.appWall.worldwide : t.appWall.myChain}
             </button>
           );
         })}
@@ -147,9 +149,9 @@ export default function AppWall() {
 
       {showingMine && !user ? (
         <div className="mt-5 rounded-3xl bg-app-surface p-5 text-sm leading-relaxed text-muted-foreground">
-          Your chain appears once you join.{" "}
+          {t.appWall.yourChainAppears}{" "}
           <Link to="/join" className="font-semibold text-app-coral">
-            Join or log in →
+            {t.appWall.joinOrLogin}
           </Link>
         </div>
       ) : loading ? (
@@ -161,8 +163,8 @@ export default function AppWall() {
       ) : posts.length === 0 ? (
         <div className="mt-5 rounded-3xl bg-app-surface p-5 text-sm leading-relaxed text-muted-foreground">
           {showingMine
-            ? "You haven't logged an act yet. Your first one shows up here."
-            : "No acts have been shared yet. Be the first to pass it forward."}
+            ? t.appWall.noPersonalActs
+            : t.appWall.noSharedActs}
         </div>
       ) : (
         <div className="mt-5 space-y-5">
@@ -184,7 +186,7 @@ export default function AppWall() {
               {post.photoUrl ? (
                 <img
                   src={post.photoUrl}
-                  alt={`Act of kindness shared by ${post.name}`}
+                  alt={t.appWall.photoAlt.replace("{name}", post.name)}
                   loading="lazy"
                   className="h-44 w-full object-cover"
                 />
@@ -221,7 +223,7 @@ export default function AppWall() {
                     {actEmoji(post.tags, post.mode)}
                   </span>
                   <span className="absolute left-4 top-4 rounded-full bg-app-surface/85 px-3 py-1 text-xs font-semibold text-foreground">
-                    {modeLabel(post.mode)}
+                    {modeLabel(post.mode, t.appCommon)}
                   </span>
                 </div>
               )}
@@ -234,11 +236,11 @@ export default function AppWall() {
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-bold text-foreground">{post.name}</p>
                     <p className="truncate text-xs text-muted-foreground">
-                      {modeLabel(post.mode)} an act of kindness
+                      {t.appWall.modeOfKindness.replace("{mode}", modeLabel(post.mode, t.appCommon))}
                     </p>
                   </div>
                   <span className="shrink-0 text-xs text-muted-foreground">
-                    {timeAgo(post.createdAt)}
+                    {timeAgo(post.createdAt, t.appCommon, lang)}
                   </span>
                   {showingMine && (
                     <DropdownMenu>

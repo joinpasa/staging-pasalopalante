@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { CheckCircle2, HeartHandshake } from "lucide-react";
 
 import { useAuth } from "@shared/contexts/AuthContext";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 import { supabase } from "@shared/integrations/supabase/client";
 import { supabasePublic } from "@shared/integrations/supabase/publicClient";
 
@@ -17,6 +18,7 @@ import { supabasePublic } from "@shared/integrations/supabase/publicClient";
  */
 export default function AppWave() {
   const { user, loading } = useAuth();
+  const { t } = useLanguage();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const code = (searchParams.get("ref") ?? "").trim();
@@ -89,7 +91,7 @@ export default function AppWave() {
     if (cached) {
       try {
         const { name: cachedName, ownerId: cachedOwnerId } = JSON.parse(cached);
-        resolve("connected", { name: cachedName || "a fellow member", ownerId: cachedOwnerId || "" });
+        resolve("connected", { name: cachedName || t.appWave.fellowMember, ownerId: cachedOwnerId || "" });
         return;
       } catch { /* fall through to a fresh log */ }
     }
@@ -100,7 +102,7 @@ export default function AppWave() {
         resolve("invalid");
         return;
       }
-      const resolvedName = row.from_name || "a fellow member";
+      const resolvedName = row.from_name || t.appWave.fellowMember;
       if (row.is_self) {
         resolve("self", { name: resolvedName, ownerId: row.from_user_id });
         return;
@@ -108,12 +110,12 @@ export default function AppWave() {
       resolve("connected", { name: resolvedName, ownerId: row.from_user_id });
       sessionStorage.setItem(cacheKey, JSON.stringify({ name: resolvedName, ownerId: row.from_user_id }));
     })();
-  }, [user, loading, code, navigate]);
+  }, [user, loading, code, navigate, t]);
 
   if (loading) {
     return (
       <div className="flex flex-1 items-center justify-center px-6 py-24 text-sm text-muted-foreground">
-        Connecting…
+        {t.appWave.connecting}
       </div>
     );
   }
@@ -126,20 +128,20 @@ export default function AppWave() {
       <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 py-16 text-center">
         <HeartHandshake className="h-12 w-12 text-app-coral" />
         <h1 className="font-sans text-2xl font-extrabold text-foreground">
-          You're about to connect kindness with {inviterName || "a fellow member"} 💛
+          {t.appWave.connectPrompt.replace("{name}", inviterName || t.appWave.fellowMember)}
         </h1>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          Log in or create a free account to complete the connection and keep your act moving forward.
+          {t.appWave.loginToConnect}
         </p>
         <button
           type="button"
           onClick={() => navigate(`/join?ref=${encodeURIComponent(code)}`)}
           className="flex h-14 w-full max-w-xs items-center justify-center rounded-2xl bg-app-coral font-semibold text-app-surface"
         >
-          Proceed
+          {t.appWave.proceed}
         </button>
         <p className="text-xs text-muted-foreground">
-          No account yet? Signing up takes less time than reading this.
+          {t.appWave.noAccountPrompt}
         </p>
       </div>
     );
@@ -148,7 +150,7 @@ export default function AppWave() {
   if (status === "checking") {
     return (
       <div className="flex flex-1 items-center justify-center px-6 py-24 text-sm text-muted-foreground">
-        Connecting…
+        {t.appWave.connecting}
       </div>
     );
   }
@@ -156,9 +158,9 @@ export default function AppWave() {
   if (status === "invalid") {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 py-16 text-center">
-        <p className="text-sm text-muted-foreground">That pass code isn't valid.</p>
+        <p className="text-sm text-muted-foreground">{t.appWave.invalidCode}</p>
         <Link to="/pass" className="text-sm font-semibold text-app-coral underline">
-          Back to Pass
+          {t.appWave.backToPass}
         </Link>
       </div>
     );
@@ -168,10 +170,10 @@ export default function AppWave() {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 py-16 text-center">
         <p className="text-sm text-muted-foreground">
-          That's your own pass code! Share it with someone else to connect with them.
+          {t.appWave.ownCode}
         </p>
         <Link to="/pass" className="text-sm font-semibold text-app-coral underline">
-          Back to Pass
+          {t.appWave.backToPass}
         </Link>
       </div>
     );
@@ -181,10 +183,10 @@ export default function AppWave() {
     <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 py-16 text-center">
       <CheckCircle2 className="h-12 w-12 text-app-coral" />
       <h1 className="font-sans text-2xl font-extrabold text-foreground">
-        You connected with {name}!
+        {t.appWave.connected.replace("{name}", name)}
       </h1>
       <p className="text-sm leading-relaxed text-muted-foreground">
-        The hand-off is logged. Now pass it forward — log an act of kindness with them.
+        {t.appWave.handoffLogged}
       </p>
       <button
         type="button"
@@ -194,10 +196,10 @@ export default function AppWave() {
         className="flex h-14 w-full max-w-xs items-center justify-center gap-2 rounded-2xl bg-app-coral font-semibold text-app-surface"
       >
         <HeartHandshake className="h-4 w-4" />
-        Log an act of kindness
+        {t.appWave.logAct}
       </button>
       <Link to="/" className="text-sm font-semibold text-app-coral underline">
-        Maybe later
+        {t.appWave.maybeLater}
       </Link>
     </div>
   );
