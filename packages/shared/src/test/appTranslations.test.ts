@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getTranslations, loadTranslations } from "@shared/i18n/translations";
+import { getTranslations, LANGUAGES, loadTranslations } from "@shared/i18n/translations";
 
 function matchingStrings(english: unknown, german: unknown, path = ""): string[] {
   if (typeof english === "string" && typeof german === "string") {
@@ -18,19 +18,19 @@ function matchingStrings(english: unknown, german: unknown, path = ""): string[]
   );
 }
 
-describe("German app translations", () => {
-  it("translates every join and onboarding string", async () => {
-    const english = getTranslations("en");
-    const german = await loadTranslations("de");
+function getPath(value: unknown, path: string): unknown {
+  return path.split(".").reduce<unknown>((current, key) => {
+    if (typeof current !== "object" || current === null) return undefined;
+    return (current as Record<string, unknown>)[key];
+  }, value);
+}
 
-    expect(matchingStrings(english.appJoin, german.appJoin)).toEqual([]);
-    expect(matchingStrings(english.appOnboarding, german.appOnboarding)).toEqual([]);
-  });
-
-  it("translates every app screen and shared-widget string", async () => {
+describe("App translations", () => {
+  it("translates every app screen and shared-widget string in each supported locale", async () => {
     const english = getTranslations("en");
-    const german = await loadTranslations("de");
     const appNamespaces = [
+      "appJoin",
+      "appOnboarding",
       "appNavigation",
       "appCommon",
       "appHome",
@@ -44,40 +44,48 @@ describe("German app translations", () => {
       "appWave",
       "appWidgets",
     ] as const;
-    const inheritedAppStrings: [string, string, string][] = [
-      ["account.saved", english.account.saved, german.account.saved],
-      ["account.commitmentHeading", english.account.commitmentHeading, german.account.commitmentHeading],
-      ["account.modify", english.account.modify, german.account.modify],
-      ["account.personalCommitmentIntro", english.account.personalCommitmentIntro, german.account.personalCommitmentIntro],
-      ["account.eventMonth", english.account.eventMonth, german.account.eventMonth],
-      ["account.personalCommitmentNote", english.account.personalCommitmentNote, german.account.personalCommitmentNote],
-      ["account.submitPersonalCommitment", english.account.submitPersonalCommitment, german.account.submitPersonalCommitment],
-      ["account.cancel", english.account.cancel, german.account.cancel],
-      ["account.emptyCommitment", english.account.emptyCommitment, german.account.emptyCommitment],
-      ["account.makePersonalCommitment", english.account.makePersonalCommitment, german.account.makePersonalCommitment],
-      ["account.commitmentBody", english.account.commitmentBody, german.account.commitmentBody],
-      ["account.progressLabel", english.account.progressLabel, german.account.progressLabel],
-      ["account.save", english.account.save, german.account.save],
-      ["account.pastCommitments", english.account.pastCommitments, german.account.pastCommitments],
-      ["account.streaksHeading", english.account.streaksHeading, german.account.streaksHeading],
-      ["account.dayStreak", english.account.dayStreak, german.account.dayStreak],
-      ["account.longest", english.account.longest, german.account.longest],
-      ["account.totalActs", english.account.totalActs, german.account.totalActs],
-      ["share.sectionHeading", english.share.sectionHeading, german.share.sectionHeading],
-      ["appAccount.language", english.appAccount.language, german.appAccount.language],
-    ];
+    const inheritedAppPaths = [
+      "account.saved",
+      "account.commitmentHeading",
+      "account.modify",
+      "account.personalCommitmentIntro",
+      "account.eventMonth",
+      "account.personalCommitmentNote",
+      "account.submitPersonalCommitment",
+      "account.cancel",
+      "account.emptyCommitment",
+      "account.makePersonalCommitment",
+      "account.commitmentBody",
+      "account.progressLabel",
+      "account.save",
+      "account.pastCommitments",
+      "account.streaksHeading",
+      "account.dayStreak",
+      "account.longest",
+      "account.totalActs",
+      "share.sectionHeading",
+    ] as const;
+    const englishOnlyLabels = new Set([
+      "appPass.iphone",
+      "appPass.android",
+      "appJoin.passwordResetSentSuffix",
+      "appJoin.passwordResetInstructionsSuffix",
+      "appJoin.signInLinkSentSuffix",
+    ]);
 
-    const untranslated = [
-      ...appNamespaces.flatMap((namespace) =>
-        matchingStrings(english[namespace], german[namespace], namespace),
-      ).filter((path) => ![
-        "appPass.iphone",
-        "appPass.android",
-        "appLogAct.optional",
-      ].includes(path)),
-      ...inheritedAppStrings.filter(([, englishText, germanText]) => englishText === germanText).map(([path]) => path),
-    ];
+    for (const { code } of LANGUAGES) {
+      if (code === "en") continue;
+      const locale = await loadTranslations(code);
+      const untranslated = [
+        ...appNamespaces.flatMap((namespace) =>
+          matchingStrings(english[namespace], locale[namespace], namespace),
+        ),
+        ...inheritedAppPaths.filter((path) =>
+          getPath(english, path) === getPath(locale, path),
+        ),
+      ].filter((path) => !englishOnlyLabels.has(path));
 
-    expect(untranslated).toEqual([]);
+      expect(untranslated, `untranslated app strings in ${code}`).toEqual([]);
+    }
   });
 });
