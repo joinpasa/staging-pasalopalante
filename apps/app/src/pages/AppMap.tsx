@@ -3,6 +3,8 @@ import { ComposableMap, Geographies, Geography, Marker, ZoomableGroup } from "re
 import { geoCentroid } from "d3-geo";
 import { Loader2, LocateFixed, Minus, Plus, Search } from "lucide-react";
 import { useKindnessMapCounts, useMovementTotals, useWallActs } from "@/hooks/useAppData";
+import { useLanguage } from "@shared/contexts/LanguageContext";
+import { timeAgo } from "@shared/lib/appActs";
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
@@ -10,8 +12,6 @@ const MIN_ZOOM = 1;
 const MAX_ZOOM = 40;
 const LOCAL_ZOOM = 12;
 const RADIUS_MILES = 100;
-
-const nf = new Intl.NumberFormat("en-US");
 
 const NAME_ALIASES: Record<string, string> = {
   "united states of america": "united states",
@@ -36,15 +36,9 @@ const normalize = (name: string) => {
 
 type Point = { country: string; coordinates: [number, number]; acts: number; commitments: number };
 
-const timeAgo = (iso: string) => {
-  const mins = Math.max(1, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
-  if (mins < 60) return `${mins}m ago`;
-  const hours = Math.round(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  return `${Math.round(hours / 24)}d ago`;
-};
-
 export default function AppMap() {
+  const { t, lang } = useLanguage();
+  const nf = new Intl.NumberFormat(lang);
   const { data: totals } = useMovementTotals();
   const { data: rows = [], isLoading } = useKindnessMapCounts();
   const { data: acts = [] } = useWallActs(8);
@@ -54,14 +48,14 @@ export default function AppMap() {
   const [zoom, setZoom] = useState(MIN_ZOOM);
   const [userLoc, setUserLoc] = useState<[number, number] | null>(null);
   const [locating, setLocating] = useState(false);
-  const [locError, setLocError] = useState<string | null>(null);
+  const [locError, setLocError] = useState<"unavailable" | "denied" | null>(null);
   const [query, setQuery] = useState("");
   const [active, setActive] = useState<Point | null>(null);
   const requested = useRef(false);
 
   const locate = () => {
     if (!("geolocation" in navigator)) {
-      setLocError("Location isn't available on this device.");
+      setLocError("unavailable");
       return;
     }
     setLocating(true);
@@ -75,7 +69,7 @@ export default function AppMap() {
         setLocating(false);
       },
       () => {
-        setLocError("Location off — showing the whole world.");
+        setLocError("denied");
         setLocating(false);
       },
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 },
@@ -117,7 +111,7 @@ export default function AppMap() {
           <p className="font-sans text-2xl font-extrabold leading-none text-foreground">
             {nf.format(totals?.actsToday ?? 0)}
           </p>
-          <p className="mt-1 text-sm text-muted-foreground">acts of kindness today, worldwide</p>
+          <p className="mt-1 text-sm text-muted-foreground">{t.appMap.actsTodayWorldwide}</p>
         </div>
 
         <div className="relative mt-3 flex items-center gap-2">
@@ -126,8 +120,8 @@ export default function AppMap() {
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search a country"
-              aria-label="Search a country"
+              placeholder={t.appMap.searchCountry}
+              aria-label={t.appMap.searchCountry}
               className="w-full rounded-full border border-border bg-app-surface ps-9 pe-3 py-2.5 text-sm text-foreground outline-none focus:border-app-coral"
             />
             {suggestions.length > 0 && (
@@ -153,13 +147,17 @@ export default function AppMap() {
           </div>
           <button
             onClick={locate}
-            aria-label="Use my location"
+            aria-label={t.appMap.useMyLocation}
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-app-surface text-app-teal shadow-sm"
           >
             {locating ? <Loader2 size={17} className="animate-spin" /> : <LocateFixed size={17} />}
           </button>
         </div>
-        {locError && <p className="mt-2 text-xs text-muted-foreground">{locError}</p>}
+        {locError && (
+          <p className="mt-2 text-xs text-muted-foreground">
+            {locError === "unavailable" ? t.appMap.locationUnavailable : t.appMap.locationDenied}
+          </p>
+        )}
       </div>
 
       {/* Live world map */}
@@ -245,14 +243,14 @@ export default function AppMap() {
         <div className="absolute end-3 top-3 flex flex-col gap-2">
           <button
             onClick={() => setZoom((z) => Math.min(MAX_ZOOM, z * 1.6))}
-            aria-label="Zoom in"
+            aria-label={t.appMap.zoomIn}
             className="flex h-9 w-9 items-center justify-center rounded-full bg-app-surface text-foreground shadow-sm"
           >
             <Plus size={16} />
           </button>
           <button
             onClick={() => setZoom((z) => Math.max(MIN_ZOOM, z / 1.6))}
-            aria-label="Zoom out"
+            aria-label={t.appMap.zoomOut}
             className="flex h-9 w-9 items-center justify-center rounded-full bg-app-surface text-foreground shadow-sm"
           >
             <Minus size={16} />
@@ -263,7 +261,7 @@ export default function AppMap() {
           <div className="absolute bottom-3 start-3 rounded-xl bg-app-surface px-4 py-2 shadow-md">
             <p className="text-sm font-semibold text-foreground">{active.country}</p>
             <p className="text-xs text-muted-foreground">
-              {nf.format(active.acts)} acts · {nf.format(active.commitments)} commitments
+              {nf.format(active.acts)} {t.appMap.acts} · {nf.format(active.commitments)} {t.appMap.commitments}
             </p>
           </div>
         )}
@@ -277,9 +275,9 @@ export default function AppMap() {
 
       <section className="relative mt-3 flex-1 rounded-t-3xl bg-app-surface px-5 pb-6 pt-3">
         <div className="mx-auto h-1 w-10 rounded-full bg-border" />
-        <h2 className="mt-4 font-sans text-base font-bold text-foreground">Latest kindness</h2>
+        <h2 className="mt-4 font-sans text-base font-bold text-foreground">{t.appMap.latestKindness}</h2>
         {acts.length === 0 ? (
-          <p className="mt-3 text-sm text-muted-foreground">No acts published yet — be the first.</p>
+          <p className="mt-3 text-sm text-muted-foreground">{t.appMap.noActs}</p>
         ) : (
           <ul className="mt-3 space-y-1">
             {acts.map((act) => (
@@ -291,7 +289,7 @@ export default function AppMap() {
                   <p className="truncate text-sm font-semibold text-foreground">{act.description}</p>
                   <p className="truncate text-xs text-muted-foreground">{act.name}</p>
                 </div>
-                <span className="shrink-0 text-xs font-bold text-app-teal">{timeAgo(act.createdAt)}</span>
+                <span className="shrink-0 text-xs font-bold text-app-teal">{timeAgo(act.createdAt, t.appCommon, lang)}</span>
               </li>
             ))}
           </ul>

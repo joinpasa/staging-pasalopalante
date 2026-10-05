@@ -8,6 +8,7 @@ import GoogleIcon from "@shared/components/icons/GoogleIcon";
 import OnboardingWalkthrough, { type OnboardingResult } from "@/components/app/OnboardingWalkthrough";
 import { PENDING_EMAIL_KEY, PENDING_PROFILE_KEY, ONBOARDING_SEEN_KEY } from "@/lib/pendingSignup";
 import { useAuth } from "@shared/contexts/AuthContext";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 import { supabase } from "@shared/integrations/supabase/client";
 import { supabasePublic } from "@shared/integrations/supabase/publicClient";
 import { COUNTRIES } from "@shared/data/countries";
@@ -27,6 +28,7 @@ import { storeReferralCode } from "@shared/lib/referral";
  */
 export default function AppJoin() {
   const { user, signIn, signInWithMagicLink, signInWithGoogle, resetPassword } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [tab, setTab] = useState<"join" | "login">("join");
@@ -67,15 +69,20 @@ export default function AppJoin() {
   function magicLinkOnCooldown() {
     const elapsed = Date.now() - lastMagicLinkSentAt.current;
     if (elapsed >= MAGIC_LINK_COOLDOWN_MS) return false;
-    toast.error(`Please wait ${Math.ceil((MAGIC_LINK_COOLDOWN_MS - elapsed) / 1000)}s before requesting another link.`);
+    toast.error(
+      t.appJoin.cooldown.replace(
+        "{seconds}",
+        String(Math.ceil((MAGIC_LINK_COOLDOWN_MS - elapsed) / 1000)),
+      ),
+    );
     return true;
   }
 
   async function handleJoin(e: React.FormEvent) {
     e.preventDefault();
-    if (!firstName.trim() || !lastName.trim()) return toast.error("Please add your name.");
-    if (!country) return toast.error("Please pick your country.");
-    if (!agreed) return toast.error("Please accept the terms to continue.");
+    if (!firstName.trim() || !lastName.trim()) return toast.error(t.appJoin.nameRequired);
+    if (!country) return toast.error(t.appJoin.countryRequired);
+    if (!agreed) return toast.error(t.appJoin.termsRequired);
     if (magicLinkOnCooldown()) return;
 
     setBusy(true);
@@ -90,7 +97,7 @@ export default function AppJoin() {
         import.meta.env.BASE_URL,
       );
       if (magicLinkError) {
-        toast.error(getAuthErrorMessage(magicLinkError));
+        toast.error(getAuthErrorMessage(magicLinkError, t.appJoin.authErrors));
         return;
       }
       lastMagicLinkSentAt.current = Date.now();
@@ -102,7 +109,7 @@ export default function AppJoin() {
       );
       setSentTo(email.trim());
     } catch {
-      toast.error("Something went wrong. Please try again.");
+      toast.error(t.appJoin.genericError);
     } finally {
       setBusy(false);
     }
@@ -137,7 +144,7 @@ export default function AppJoin() {
         // Non-fatal — commitment already succeeded
       }
     } catch {
-      toast.error("Something went wrong saving your pledge. You can set it later from your profile.");
+      toast.error(t.appJoin.pledgeSaveError);
     } finally {
       setBusy(false);
       localStorage.setItem(ONBOARDING_SEEN_KEY, "1");
@@ -161,7 +168,7 @@ export default function AppJoin() {
     const { error } = await signInWithGoogle(import.meta.env.BASE_URL);
     if (error) {
       setGoogleBusy(false);
-      toast.error(getAuthErrorMessage(error));
+      toast.error(getAuthErrorMessage(error, t.appJoin.authErrors));
     }
   }
 
@@ -189,7 +196,7 @@ export default function AppJoin() {
     }
     setBusy(false);
     if (error) {
-      toast.error(getAuthErrorMessage(error));
+      toast.error(getAuthErrorMessage(error, t.appJoin.authErrors));
       return;
     }
     navigate("/", { replace: true });
@@ -197,7 +204,7 @@ export default function AppJoin() {
 
   function handleForgotPassword() {
     const email = loginEmail.trim();
-    if (!email) return toast.error("Enter your email first.");
+    if (!email) return toast.error(t.appJoin.emailRequired);
     setNeedsReset({ email, sent: false });
   }
 
@@ -206,12 +213,12 @@ export default function AppJoin() {
     setBusy(true);
     const { error } = await resetPassword(needsReset.email);
     setBusy(false);
-    if (error) toast.error(getAuthErrorMessage(error));
+    if (error) toast.error(getAuthErrorMessage(error, t.appJoin.authErrors));
     else setNeedsReset({ ...needsReset, sent: true });
   }
 
   async function handleMagicLogin() {
-    if (!loginEmail.trim()) return toast.error("Enter your email first.");
+    if (!loginEmail.trim()) return toast.error(t.appJoin.emailRequired);
     if (magicLinkOnCooldown()) return;
     setBusy(true);
     // shouldCreateUser: false — this tab is "I have an account", so an
@@ -230,11 +237,11 @@ export default function AppJoin() {
     if (error) {
       const code = (error as { code?: string }).code;
       if (code === "user_not_found" || code === "signup_disabled" || code === "otp_disabled") {
-        toast.error("We couldn't find an account with that email. Let's get you set up instead.");
+        toast.error(t.appJoin.accountNotFound);
         setTab("join");
         return;
       }
-      toast.error(getAuthErrorMessage(error));
+      toast.error(getAuthErrorMessage(error, t.appJoin.authErrors));
       return;
     }
     lastMagicLinkSentAt.current = Date.now();
@@ -260,7 +267,7 @@ export default function AppJoin() {
     });
     setVerifyingCode(false);
     if (error) {
-      toast.error(getAuthErrorMessage(error));
+      toast.error(getAuthErrorMessage(error, t.appJoin.authErrors));
       return;
     }
     if (isNewSignup && !localStorage.getItem(ONBOARDING_SEEN_KEY)) {
@@ -289,12 +296,12 @@ export default function AppJoin() {
         });
     setBusy(false);
     if (error) {
-      toast.error(getAuthErrorMessage(error));
+      toast.error(getAuthErrorMessage(error, t.appJoin.authErrors));
       return;
     }
     lastMagicLinkSentAt.current = Date.now();
     setOtpCode("");
-    toast.success("Sent — check your email for the new link and code.");
+    toast.success(t.appJoin.emailSent);
   }
 
   if (showOnboarding) {
@@ -314,18 +321,20 @@ export default function AppJoin() {
       <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 py-12 text-center">
         <KeyRound className="h-12 w-12 text-app-coral" />
         <h1 className="font-sans text-2xl font-extrabold text-foreground">
-          {needsReset.sent ? "Check your email" : "Set a password"}
+          {needsReset.sent ? t.appJoin.checkEmail : t.appJoin.setPassword}
         </h1>
         {needsReset.sent ? (
           <p className="text-sm leading-relaxed text-muted-foreground">
-            We sent a password reset link to{" "}
-            <span className="font-semibold text-foreground">{needsReset.email}</span>.
+            {t.appJoin.passwordResetSentPrefix}{" "}
+            <span className="font-semibold text-foreground">{needsReset.email}</span>
+            {t.appJoin.passwordResetSentSuffix}
           </p>
         ) : (
           <>
             <p className="text-sm leading-relaxed text-muted-foreground">
-              We'll email you a link to set a new password for{" "}
-              <span className="font-semibold text-foreground">{needsReset.email}</span>.
+              {t.appJoin.passwordResetInstructionsPrefix}{" "}
+              <span className="font-semibold text-foreground">{needsReset.email}</span>
+              {t.appJoin.passwordResetInstructionsSuffix}
             </p>
             <button
               type="button"
@@ -333,7 +342,7 @@ export default function AppJoin() {
               disabled={busy}
               className="flex h-12 w-full max-w-xs items-center justify-center rounded-2xl bg-app-coral font-semibold text-app-surface disabled:opacity-60"
             >
-              {busy ? "…" : "Send reset link"}
+              {busy ? "…" : t.appJoin.sendResetLink}
             </button>
           </>
         )}
@@ -342,7 +351,7 @@ export default function AppJoin() {
           onClick={() => setNeedsReset(null)}
           className="text-sm font-semibold text-app-coral underline"
         >
-          Use a different email
+          {t.appJoin.differentEmail}
         </button>
       </div>
     );
@@ -352,13 +361,14 @@ export default function AppJoin() {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 py-12 text-center">
         <CheckCircle2 className="h-12 w-12 text-app-coral" />
-        <h1 className="font-sans text-2xl font-extrabold text-foreground">Check your email</h1>
+        <h1 className="font-sans text-2xl font-extrabold text-foreground">{t.appJoin.checkEmail}</h1>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          We sent a sign-in link to <span className="font-semibold text-foreground">{sentTo}</span>.
-          Open it on this phone and the app will be signed in.
+          {t.appJoin.signInLinkSentPrefix} <span className="font-semibold text-foreground">{sentTo}</span>
+          {t.appJoin.signInLinkSentSuffix}
+          {" "}{t.appJoin.openLinkInstruction}
         </p>
         <p className="text-xs leading-relaxed text-muted-foreground">
-          On iPhone, the link may open in Safari instead of this app — if that happens, just type the code below instead.
+          {t.appJoin.iphoneCodeInstruction}
         </p>
 
         {/* The link opens the phone's regular browser, which — especially on
@@ -370,7 +380,7 @@ export default function AppJoin() {
             change on Supabase's side independently of this code. */}
         <form onSubmit={handleVerifyCode} className="w-full max-w-xs space-y-2 pt-1">
           <p className="text-sm font-semibold text-foreground">
-            Enter the code from that email
+            {t.appJoin.enterEmailCode}
           </p>
           <input
             required
@@ -387,7 +397,7 @@ export default function AppJoin() {
             disabled={verifyingCode || otpCode.length < 6}
             className="flex h-12 w-full items-center justify-center rounded-2xl bg-app-coral font-semibold text-app-surface disabled:opacity-60"
           >
-            {verifyingCode ? "…" : "Verify code"}
+            {verifyingCode ? "…" : t.appJoin.verifyCode}
           </button>
         </form>
 
@@ -397,7 +407,7 @@ export default function AppJoin() {
             onClick={() => setShowOnboarding(true)}
             className="flex h-12 w-full max-w-xs items-center justify-center gap-2 rounded-2xl border border-border bg-app-surface font-semibold text-foreground"
           >
-            Proceed to Next Step
+            {t.appJoin.proceedNextStep}
             <ArrowRight className="h-4 w-4" />
           </button>
         )}
@@ -408,14 +418,14 @@ export default function AppJoin() {
             disabled={busy}
             className="text-sm font-semibold text-app-coral underline disabled:opacity-60"
           >
-            {busy ? "…" : "Resend code"}
+            {busy ? "…" : t.appJoin.resendCode}
           </button>
           <button
             type="button"
             onClick={() => setSentTo(null)}
             className="text-sm font-semibold text-app-coral underline"
           >
-            Use a different email
+            {t.appJoin.differentEmail}
           </button>
         </div>
       </div>
@@ -430,10 +440,10 @@ export default function AppJoin() {
         </div>
         <div>
           <h1 className="font-sans text-2xl font-extrabold leading-tight text-foreground">
-            Join the chain
+            {t.appJoin.joinTitle}
           </h1>
           <p className="text-xs text-muted-foreground">
-            Commit to acts of kindness and pass it forward.
+            {t.appJoin.joinSubtitle}
           </p>
         </div>
       </div>
@@ -445,19 +455,19 @@ export default function AppJoin() {
         className="mt-5 flex h-14 w-full items-center justify-center gap-2 rounded-2xl border border-border bg-app-surface font-semibold text-foreground disabled:opacity-60"
       >
         <GoogleIcon size={18} />
-        {googleBusy ? "…" : "Continue with Google"}
+        {googleBusy ? "…" : t.appJoin.continueWithGoogle}
       </button>
 
       <div className="my-4 flex items-center gap-3">
         <div className="h-px flex-1 bg-border" />
-        <span className="text-xs text-muted-foreground">or continue with email</span>
+        <span className="text-xs text-muted-foreground">{t.appJoin.continueWithEmail}</span>
         <div className="h-px flex-1 bg-border" />
       </div>
 
       <div className="grid grid-cols-2 gap-2 rounded-full bg-app-surface p-1">
         {([
-          ["join", "I'm new"],
-          ["login", "I have an account"],
+          ["join", t.appJoin.newUser],
+          ["login", t.appJoin.existingUser],
         ] as const).map(([value, label]) => (
           <button
             key={value}
@@ -477,7 +487,7 @@ export default function AppJoin() {
       {tab === "join" ? (
         <form onSubmit={handleJoin} className="mt-5 space-y-4 pb-4">
           <div className="grid grid-cols-2 gap-3">
-            <Field label="First name">
+            <Field label={t.appJoin.firstName}>
               <input
                 required
                 maxLength={60}
@@ -487,7 +497,7 @@ export default function AppJoin() {
                 className={inputClass}
               />
             </Field>
-            <Field label="Last name">
+            <Field label={t.appJoin.lastName}>
               <input
                 required
                 maxLength={60}
@@ -499,7 +509,7 @@ export default function AppJoin() {
             </Field>
           </div>
 
-          <Field label="Email">
+          <Field label={t.appJoin.email}>
             <input
               required
               type="email"
@@ -511,14 +521,14 @@ export default function AppJoin() {
             />
           </Field>
 
-          <Field label="Country">
+          <Field label={t.appJoin.country}>
             <select
               required
               value={country}
               onChange={(e) => setCountry(e.target.value)}
               className={inputClass}
             >
-              <option value="">Select your country</option>
+              <option value="">{t.appJoin.selectCountry}</option>
               {COUNTRIES.map((c) => (
                 <option key={c} value={c}>
                   {c}
@@ -535,13 +545,13 @@ export default function AppJoin() {
               className="mt-0.5 h-4 w-4 rounded border-2 border-foreground/50 accent-app-coral"
             />
             <span>
-              I agree to the{" "}
+              {t.appJoin.agreeTo}{" "}
               <a href="https://pasalopalante.com/terms" target="_blank" rel="noopener noreferrer" className="underline">
-                terms
+                {t.appJoin.terms}
               </a>{" "}
-              and{" "}
+              {t.appJoin.and}{" "}
               <a href="https://pasalopalante.com/privacy" target="_blank" rel="noopener noreferrer" className="underline">
-                privacy policy
+                {t.appJoin.privacyPolicy}
               </a>
               .
             </span>
@@ -552,12 +562,12 @@ export default function AppJoin() {
             disabled={busy}
             className="flex h-14 w-full items-center justify-center rounded-2xl bg-app-coral font-semibold text-app-surface disabled:opacity-60"
           >
-            {busy ? "Sending…" : "Create Account"}
+            {busy ? t.appJoin.sending : t.appJoin.createAccount}
           </button>
         </form>
       ) : (
         <form onSubmit={handleLogin} className="mt-5 space-y-4 pb-4">
-          <Field label="Email">
+          <Field label={t.appJoin.email}>
             <input
               required
               type="email"
@@ -570,13 +580,13 @@ export default function AppJoin() {
           <Field
             label={
               <span className="flex items-center justify-between">
-                Password
+                {t.appJoin.password}
                 <button
                   type="button"
                   onClick={handleForgotPassword}
                   className="text-xs font-normal normal-case text-app-coral underline"
                 >
-                  Forgot password?
+                  {t.appJoin.forgotPassword}
                 </button>
               </span>
             }
@@ -602,7 +612,7 @@ export default function AppJoin() {
                 showLoginPassword ? "bg-app-coral text-app-surface" : "bg-white text-foreground",
               )}
             >
-              {showLoginPassword ? "Hide" : "Show"}
+              {showLoginPassword ? t.appJoin.hide : t.appJoin.show}
             </button>
           </div>
           <button
@@ -610,7 +620,7 @@ export default function AppJoin() {
             disabled={busy}
             className="flex h-14 w-full items-center justify-center rounded-2xl bg-app-coral font-semibold text-app-surface disabled:opacity-60"
           >
-            {busy ? "…" : "Log in"}
+            {busy ? "…" : t.appJoin.logIn}
           </button>
           <button
             type="button"
@@ -619,7 +629,7 @@ export default function AppJoin() {
             className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-border bg-app-surface text-sm font-semibold text-foreground"
           >
             <Mail className="h-4 w-4" />
-            Email me a sign-in link
+            {t.appJoin.emailSignInLink}
           </button>
         </form>
       )}

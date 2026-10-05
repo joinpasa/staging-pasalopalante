@@ -1,16 +1,30 @@
+interface TimeAgoTranslations {
+  justNow: string;
+  minutesAgo: string;
+  hoursAgo: string;
+  yesterday: string;
+  daysAgo: string;
+}
+
+interface ModeTranslations {
+  modePerformed: string;
+  modeReceived: string;
+  modeWitnessed: string;
+}
+
 /** Short relative time labels for the app feeds ("2h ago", "Yesterday"). */
-export function timeAgo(iso: string): string {
+export function timeAgo(iso: string, translations?: TimeAgoTranslations, locale?: string): string {
   const then = new Date(iso).getTime();
   if (Number.isNaN(then)) return "";
   const mins = Math.max(0, Math.round((Date.now() - then) / 60000));
-  if (mins < 1) return "Just now";
-  if (mins < 60) return `${mins}m ago`;
+  if (mins < 1) return translations?.justNow ?? "Just now";
+  if (mins < 60) return (translations?.minutesAgo ?? "{count}m ago").replace("{count}", String(mins));
   const hours = Math.round(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return (translations?.hoursAgo ?? "{count}h ago").replace("{count}", String(hours));
   const days = Math.round(hours / 24);
-  if (days === 1) return "Yesterday";
-  if (days < 7) return `${days}d ago`;
-  return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  if (days === 1) return translations?.yesterday ?? "Yesterday";
+  if (days < 7) return (translations?.daysAgo ?? "{count}d ago").replace("{count}", String(days));
+  return new Date(iso).toLocaleDateString(locale, { month: "short", day: "numeric" });
 }
 
 const TAG_EMOJI: Record<string, string> = {
@@ -31,8 +45,8 @@ export function actEmoji(tags: string[], mode: string): string {
 }
 
 /** Human label for how the act reached the person logging it. */
-export function modeLabel(mode: string): string {
-  if (mode === "received") return "Received";
-  if (mode === "witnessed") return "Saw";
-  return "Did";
+export function modeLabel(mode: string, translations?: ModeTranslations): string {
+  if (mode === "received") return translations?.modeReceived ?? "Received";
+  if (mode === "witnessed") return translations?.modeWitnessed ?? "Saw";
+  return translations?.modePerformed ?? "Did";
 }
