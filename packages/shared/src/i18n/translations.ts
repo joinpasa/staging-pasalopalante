@@ -257,6 +257,7 @@ const translations = {
       title: "Account",
       back: "Back",
       profile: "Your profile",
+      language: "Language",
       firstName: "First name",
       lastName: "Last name",
       country: "Country",
