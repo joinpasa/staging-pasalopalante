@@ -64,6 +64,7 @@ describe("German app translations", () => {
       ["account.longest", english.account.longest, german.account.longest],
       ["account.totalActs", english.account.totalActs, german.account.totalActs],
       ["share.sectionHeading", english.share.sectionHeading, german.share.sectionHeading],
+      ["appAccount.language", english.appAccount.language, german.appAccount.language],
     ];
 
     const untranslated = [

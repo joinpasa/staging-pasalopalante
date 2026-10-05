@@ -8,6 +8,7 @@ import EmailForm from "@/components/app/EmailForm";
 import PushToggle from "@/components/app/PushToggle";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { useLanguage } from "@shared/contexts/LanguageContext";
+import { LANGUAGES } from "@shared/i18n/translations";
 import { supabase } from "@shared/integrations/supabase/client";
 import { COUNTRIES } from "@shared/data/countries";
 import { DISPLAY_NAME_RE, isReservedDisplayName } from "@shared/lib/displayName";
@@ -22,7 +23,7 @@ const inputClass =
  */
 export default function AppAccount() {
   const { user, signOut } = useAuth();
-  const { t } = useLanguage();
+  const { lang, setLang, t } = useLanguage();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
@@ -203,6 +204,30 @@ export default function AppAccount() {
                 {saving ? t.appAccount.saving : t.appAccount.saveProfile}
               </button>
             </form>
+          </section>
+
+          <section>
+            <h2 className="mb-3 font-sans text-sm font-bold text-foreground">{t.appAccount.language}</h2>
+            <div className="rounded-2xl bg-app-surface p-4">
+              <select
+                aria-label={t.appAccount.language}
+                value={lang}
+                onChange={(event) => {
+                  if (event.target.value === "en" || event.target.value === "de") {
+                    setLang(event.target.value);
+                  }
+                }}
+                className={inputClass}
+              >
+                {lang !== "en" && lang !== "de" && (
+                  <option value={lang} disabled>
+                    {LANGUAGES.find((language) => language.code === lang)?.native ?? lang}
+                  </option>
+                )}
+                <option value="en">English</option>
+                <option value="de">Deutsch</option>
+              </select>
+            </div>
           </section>
 
           <section>
