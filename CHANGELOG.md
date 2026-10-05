@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-05 — va.deedumlao@gmail.com
+
+- **Stopped three more below-the-fold homepage things from loading before anyone scrolls to them**, wrapping up the October 2nd page-speed investigation. The photo carousel further down the page, the world map section, and the ambient animated dot pattern behind the hero banner were all doing real work (downloading photos, fetching map data, redrawing an animation nearly 2,000 times a frame) regardless of whether a visitor ever saw them — including, for the dot pattern, continuing to run even after someone switched to a different browser tab or scrolled past it entirely. All three now wait for the relevant moment: the photos and map data load only once scrolled near, and the background animation now actually pauses when the tab isn't active or the banner's off-screen, instead of running forever in the background. Verified live against the built site, including directly inspecting the animation's own pixel output to confirm it's truly frozen (not just skipping a visual step) when hidden.
+
 ## 2026-10-04 — va.deedumlao@gmail.com
 
 - **Stopped both homepage YouTube videos from loading before anyone asks for them**, another piece of the October 2nd page-speed investigation. The "Anthem" section further down the homepage never actually autoplayed — you always had to click play first — so it now shows a plain thumbnail with a play button and only loads the real YouTube player on that same click; nothing changes for anyone who watches it, it just stops loading for everyone who doesn't scroll down to it. The hero's background video at the top of the page does autoplay on purpose (muted, ambient), so that behavior is unchanged — it still starts automatically with no click needed — but it now waits until the rest of the page has actually finished loading before it starts pulling in YouTube's video player, instead of competing for bandwidth with everything else right from the first second.
