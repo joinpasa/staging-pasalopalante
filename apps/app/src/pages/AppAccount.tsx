@@ -213,19 +213,18 @@ export default function AppAccount() {
                 aria-label={t.appAccount.language}
                 value={lang}
                 onChange={(event) => {
-                  if (event.target.value === "en" || event.target.value === "de") {
-                    setLang(event.target.value);
-                  }
+                  const selectedLanguage = LANGUAGES.find(
+                    (language) => language.code === event.target.value,
+                  );
+                  if (selectedLanguage) setLang(selectedLanguage.code);
                 }}
                 className={inputClass}
               >
-                {lang !== "en" && lang !== "de" && (
-                  <option value={lang} disabled>
-                    {LANGUAGES.find((language) => language.code === lang)?.native ?? lang}
+                {LANGUAGES.map((language) => (
+                  <option key={language.code} value={language.code}>
+                    {language.native}
                   </option>
-                )}
-                <option value="en">English</option>
-                <option value="de">Deutsch</option>
+                ))}
               </select>
             </div>
           </section>
