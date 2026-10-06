@@ -103,6 +103,49 @@ Deno.serve(async (req) => {
 
   try {
     const body = await req.json().catch(() => ({}));
+    const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
+
+    // Backfill mode: catches up acts that were submitted before this
+    // function existed, so a post logged on day one isn't stuck without a
+    // thumbnail forever. Invoke manually from the Supabase dashboard
+    // (Edge Functions -> fetch-link-preview -> Invoke, Authorization:
+    // Bearer <service_role key>, body {"backfill": true}) — nothing calls
+    // this automatically, since it only ever needs to run once per
+    // already-existing act.
+    if (body?.backfill) {
+      const limit = Math.min(Math.max(Number(body.limit) || 25, 1), 100);
+      const { data: acts } = await supabase
+        .from("acts_of_kindness")
+        .select("id, video_url")
+        .eq("status", "published")
+        .is("link_preview_image", null)
+        .not("video_url", "is", null)
+        .order("created_at", { ascending: true })
+        .limit(limit);
+
+      let found = 0;
+      for (const act of (acts || []) as Array<{ id: string; video_url: string }>) {
+        try {
+          const host = new URL(act.video_url).hostname.toLowerCase().replace(/^www\./, "");
+          if (host === "youtube.com" || host.endsWith(".youtube.com") || host === "youtu.be") continue;
+        } catch {
+          continue;
+        }
+        const image = await fetchPreviewImage(act.video_url);
+        if (image) {
+          const { error } = await supabase
+            .from("acts_of_kindness")
+            .update({ link_preview_image: image })
+            .eq("id", act.id);
+          if (!error) found++;
+        }
+        await new Promise((r) => setTimeout(r, 300)); // gentle pacing
+      }
+      return new Response(JSON.stringify({ processed: (acts || []).length, found }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const actId = typeof body?.act_id === "string" ? body.act_id : null;
     const url = typeof body?.url === "string" ? body.url : null;
     if (!actId || !url || !/^https?:\/\//i.test(url)) {
@@ -114,7 +157,6 @@ Deno.serve(async (req) => {
 
     const image = await fetchPreviewImage(url);
     if (image) {
-      const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
       const { error } = await supabase
         .from("acts_of_kindness")
         .update({ link_preview_image: image })

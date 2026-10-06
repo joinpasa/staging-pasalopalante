@@ -39,7 +39,7 @@ import { actEmoji, modeLabel, timeAgo } from "@shared/lib/appActs";
 import { submitPPLForm } from "@shared/lib/pplForm";
 import { cn } from "@shared/lib/utils";
 import { detectSocialLink, type DetectedSocialLink } from "@shared/lib/socialLinks";
-import SocialLinkChip from "@shared/components/share/SocialLinkChip";
+import SocialLinkChip, { SOCIAL_LINK_ICONS } from "@shared/components/share/SocialLinkChip";
 
 const nf = new Intl.NumberFormat("en-US");
 const GOAL = 1_000_000_000;
@@ -57,6 +57,28 @@ function initials(name: string) {
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase() ?? "")
     .join("");
+}
+
+/** Compact "View on [platform] ↗" link for an act's video_url, used in the
+ *  Home screen's list rows (Passed to you / Your recent kindness / Recent
+ *  Acts of Kindness) — the same affordance the Wall and app Wall screens
+ *  give a social-link act, just small enough to fit a single list row. */
+function SocialLinkRow({ videoUrl }: { videoUrl: string | null | undefined }) {
+  const link = detectSocialLink(videoUrl);
+  if (!link) return null;
+  const Icon = SOCIAL_LINK_ICONS[link.platform];
+  return (
+    <a
+      href={link.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={(e) => e.stopPropagation()}
+      className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-app-sky"
+    >
+      <Icon className="h-3 w-3" />
+      View on {link.label}
+    </a>
+  );
 }
 
 export default function AppHome() {
@@ -504,6 +526,7 @@ export default function AppHome() {
                       <p className="line-clamp-2 text-sm font-semibold leading-snug text-foreground">
                         {act.description}
                       </p>
+                      <SocialLinkRow videoUrl={act.videoUrl} />
                       <p className="mt-0.5 text-xs text-muted-foreground">
                         From {act.fromName} · {timeAgo(act.createdAt)}
                       </p>
@@ -549,6 +572,7 @@ export default function AppHome() {
                     <p className="line-clamp-2 text-sm font-semibold leading-snug text-foreground">
                       {act.description}
                     </p>
+                    <SocialLinkRow videoUrl={act.videoUrl} />
                     <p className="mt-0.5 text-xs text-muted-foreground">{timeAgo(act.createdAt)}</p>
                   </div>
                   <span
@@ -604,6 +628,7 @@ export default function AppHome() {
                 <p className="mt-1 line-clamp-2 text-[12.5px] leading-snug text-foreground/75">
                   {act.description}
                 </p>
+                <SocialLinkRow videoUrl={act.videoUrl} />
                 <span className="mt-2 inline-block rounded-full bg-app-sky/10 px-2.5 py-1 text-[10.5px] font-semibold text-app-sky">
                   {modeLabel(act.mode)}
                 </span>

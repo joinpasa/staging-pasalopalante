@@ -15,6 +15,9 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-10-06 — va.deedumlao@gmail.com
 
+- **The Home screen's own act lists ("Passed to you," "Your recent kindness," "Recent Acts of Kindness") now show a "View on [platform]" link for a social-link act**, matching what the Wall already did — these three lists had no link handling at all before, so a logged Instagram/Facebook/etc. act showed as plain text there with no way to reach the original post.
+- **Added a one-time backfill for existing social-link acts** that were logged before thumbnail-scraping existed (like the Instagram act already on the Wall) — invokable from the Supabase dashboard (Edge Functions → `fetch-link-preview` → Invoke, body `{"backfill": true}`) to go back and fetch a real thumbnail for posts that currently only show the icon card.
+
 - **Fixed a deploy-pipeline misconfiguration that was silently keeping every Supabase change off the live site.** Supabase's own GitHub sync (separate from the `.github/workflows/deploy-supabase.yml` Action) was pointed at a different repository (`pasalopalante-website`) than the one all development actually happens in (`staging-pasalopalante`), so nothing pushed here was ever reaching the database or edge functions regardless of what the Action did. Repointed to the correct repo and branch. Separately, `deploy-supabase.yml` itself has been failing on every push with a Supabase "Unauthorized" error since ~Oct 2 — the `SUPABASE_ACCESS_TOKEN` repo secret needs to be refreshed from the Supabase dashboard for that path to work again; not something fixable from here.
 - Small copy fix: the "Logged! That's 1 acts and counting" grammar on both quick-log success screens (Dashboard and the full Log an Act screen) now says "1 act" for the singular case.
 
