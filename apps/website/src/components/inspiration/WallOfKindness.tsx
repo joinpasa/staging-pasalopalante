@@ -34,6 +34,7 @@ interface ActRow {
   first_name: string | null;
   photo_paths: string[] | null;
   video_url: string | null;
+  link_preview_image: string | null;
   created_at: string;
   mode: string;
   language: string | null;
@@ -136,7 +137,7 @@ export default function WallOfKindness() {
         const to = from + PAGE_SIZE - 1;
         let q = supabasePublic
           .from("acts_of_kindness")
-          .select("id, description, first_name, photo_paths, video_url, created_at, mode, language")
+          .select("id, description, first_name, photo_paths, video_url, link_preview_image, created_at, mode, language")
           .eq("status", "published")
           .not("description", "is", null)
           .neq("description", "");
@@ -158,7 +159,7 @@ export default function WallOfKindness() {
           const to = from + LIKED_CANDIDATE_BATCH - 1;
           let q = supabasePublic
             .from("acts_of_kindness")
-            .select("id, description, first_name, photo_paths, video_url, created_at, mode, language")
+            .select("id, description, first_name, photo_paths, video_url, link_preview_image, created_at, mode, language")
             .eq("status", "published")
             .not("description", "is", null)
             .neq("description", "");
@@ -256,14 +257,17 @@ export default function WallOfKindness() {
     [openAct],
   );
   // Non-YouTube platforms (Facebook, Instagram, TikTok, X) don't get a rich
-  // inline embed here — Meta's oEmbed in particular requires an approved
+  // inline PLAYER here — Meta's oEmbed in particular requires an approved
   // Developer App + access token and still fails for most personal-profile
-  // posts, so a plain "view the original post" link is what's reliable for
-  // every one of these instead.
+  // posts. They do get a thumbnail when fetch-link-preview managed to scrape
+  // one from the post's own Open Graph tags (link_preview_image); either
+  // way, the actual click target is always a plain "view the original post"
+  // link, since that's what's reliable for every one of these.
   const dialogSocialLink = useMemo(
     () => (dialogYouTubeId ? null : detectSocialLink(openAct?.video_url)),
     [openAct, dialogYouTubeId],
   );
+  const dialogPreviewImage = dialogSocialLink ? openAct?.link_preview_image ?? null : null;
 
   return (
     <section className="section-padding pt-0 pb-20 md:pb-28 lg:pb-36">
@@ -343,6 +347,7 @@ export default function WallOfKindness() {
                 const ytId = parseYouTubeId(a.video_url);
                 const videoThumbUrl = ytId ? getYouTubeThumbnail(ytId) : null;
                 const socialLink = ytId ? null : detectSocialLink(a.video_url);
+                const socialPreviewImage = socialLink ? a.link_preview_image : null;
                 return (
                   <WallCard
                     key={a.id}
@@ -354,6 +359,7 @@ export default function WallOfKindness() {
                     photoUrl={photoUrl}
                     videoThumbUrl={videoThumbUrl}
                     socialLink={socialLink}
+                    socialPreviewImage={socialPreviewImage}
                     reactionCount={a.reaction_count}
                     reacted={a.reacted}
                     onToggleReact={() => toggleReaction(a)}
@@ -409,6 +415,20 @@ export default function WallOfKindness() {
                       className="max-w-full max-h-[55vh] w-auto h-auto object-contain"
                     />
                   </div>
+                ) : dialogPreviewImage ? (
+                  <a
+                    href={dialogSocialLink!.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full flex items-center justify-center bg-black/5 hover:opacity-90 transition-opacity"
+                    style={{ maxHeight: "55vh" }}
+                  >
+                    <img
+                      src={dialogPreviewImage}
+                      alt=""
+                      className="max-w-full max-h-[55vh] w-auto h-auto object-contain"
+                    />
+                  </a>
                 ) : null}
                 <WallDialogBody
                   id={live.id}

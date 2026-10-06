@@ -59,6 +59,7 @@ export type Database = {
           id: string
           ip_address: string | null
           language: string | null
+          link_preview_image: string | null
           mode: string
           moderation_reason: string | null
           photo_paths: string[]
@@ -86,6 +87,7 @@ export type Database = {
           id?: string
           ip_address?: string | null
           language?: string | null
+          link_preview_image?: string | null
           mode: string
           moderation_reason?: string | null
           photo_paths?: string[]
@@ -113,6 +115,7 @@ export type Database = {
           id?: string
           ip_address?: string | null
           language?: string | null
+          link_preview_image?: string | null
           mode?: string
           moderation_reason?: string | null
           photo_paths?: string[]

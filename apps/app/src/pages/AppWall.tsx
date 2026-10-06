@@ -1,12 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { ExternalLink } from "lucide-react";
 
 import ReactionButton from "@/components/app/ReactionButton";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { useActReactions, useMovementTotals, useMyRecentActs, useWallActs } from "@/hooks/useAppData";
 import { actEmoji, modeLabel, timeAgo } from "@shared/lib/appActs";
 import { cn } from "@shared/lib/utils";
+import { parseYouTubeId, getYouTubeThumbnail } from "@shared/lib/youtube";
+import { detectSocialLink } from "@shared/lib/socialLinks";
+import { SOCIAL_LINK_ICONS } from "@shared/components/share/SocialLinkChip";
 
 const nf = new Intl.NumberFormat("en-US");
 const FILTERS = ["Worldwide", "My chain"] as const;
@@ -124,7 +128,20 @@ export default function AppWall() {
         </div>
       ) : (
         <div className="mt-5 space-y-5">
-          {posts.map((post) => (
+          {posts.map((post) => {
+            const ytId = parseYouTubeId(post.videoUrl);
+            const socialLink = ytId ? null : detectSocialLink(post.videoUrl);
+            // YouTube always has a thumbnail (hotlinked from img.youtube.com);
+            // the other platforms only have one when fetch-link-preview
+            // managed to scrape an og:image from the post — a private post
+            // or a platform that blocked the fetch just falls back to the
+            // icon tile below instead.
+            const linkPreviewImage = ytId ? getYouTubeThumbnail(ytId) : socialLink ? post.linkPreviewImage : null;
+            const linkUrl = ytId ? post.videoUrl : socialLink?.url ?? null;
+            const SocialIcon = ytId ? null : socialLink ? SOCIAL_LINK_ICONS[socialLink.platform] : null;
+            const linkLabel = ytId ? "YouTube" : socialLink?.label ?? null;
+
+            return (
             <article key={post.id} className="overflow-hidden rounded-3xl bg-app-surface">
               {post.photoUrl ? (
                 <img
@@ -133,6 +150,33 @@ export default function AppWall() {
                   loading="lazy"
                   className="h-44 w-full object-cover"
                 />
+              ) : linkUrl && linkPreviewImage ? (
+                <a href={linkUrl} target="_blank" rel="noopener noreferrer" className="relative block">
+                  <img
+                    src={linkPreviewImage}
+                    alt=""
+                    loading="lazy"
+                    className="h-44 w-full object-cover"
+                  />
+                  {SocialIcon && (
+                    <span className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-app-surface shadow">
+                      <SocialIcon size={14} className="text-app-coral" />
+                    </span>
+                  )}
+                </a>
+              ) : linkUrl ? (
+                <a
+                  href={linkUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex h-28 flex-col items-center justify-center gap-1.5 bg-gradient-to-br from-app-coral-tint to-app-teal-tint"
+                >
+                  {SocialIcon && <SocialIcon size={24} className="text-app-coral" />}
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-foreground">
+                    View on {linkLabel}
+                    <ExternalLink size={11} />
+                  </span>
+                </a>
               ) : (
                 <div className="relative flex h-28 items-center justify-center bg-gradient-to-br from-app-coral-tint to-app-teal-tint">
                   <span className="text-4xl" aria-hidden="true">
@@ -184,7 +228,8 @@ export default function AppWall() {
                 </div>
               </div>
             </article>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

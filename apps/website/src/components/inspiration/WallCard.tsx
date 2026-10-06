@@ -20,6 +20,7 @@ interface Props {
   photoUrl: string | null;
   videoThumbUrl: string | null;
   socialLink?: DetectedSocialLink | null;
+  socialPreviewImage?: string | null;
   reactionCount: number;
   reacted: boolean;
   onToggleReact: () => void;
@@ -40,6 +41,7 @@ export default function WallCard({
   photoUrl,
   videoThumbUrl,
   socialLink,
+  socialPreviewImage,
   reactionCount,
   reacted,
   onToggleReact,
@@ -61,10 +63,13 @@ export default function WallCard({
 
   // If both photo and video, prefer photo for the polaroid frame.
   const showVideo = !photoUrl && !!videoThumbUrl;
-  const mediaUrl = photoUrl ?? videoThumbUrl ?? null;
-  // A social link with no thumbnail (Facebook/Instagram/TikTok/X) still
-  // earns the media slot — it's rendered as a "view original post" tile
-  // instead of an image.
+  // A scraped Open Graph thumbnail for a non-YouTube social link only
+  // counts as "media" when there's no real uploaded photo/video to prefer.
+  const showSocialPreview = !photoUrl && !videoThumbUrl && !!socialPreviewImage;
+  const mediaUrl = photoUrl ?? videoThumbUrl ?? (showSocialPreview ? socialPreviewImage : null) ?? null;
+  // A social link with no scraped thumbnail (private post, or the platform
+  // blocked the fetch) still earns the media slot — it's rendered as a
+  // "view original post" tile instead of an image.
   const hasMedia = !!mediaUrl || !!socialLink;
   const SocialIcon = socialLink ? SOCIAL_LINK_ICONS[socialLink.platform] : null;
 
@@ -169,6 +174,11 @@ export default function WallCard({
                     <span className="flex items-center justify-center w-12 h-12 rounded-full bg-black/60 text-white group-hover:bg-black/75 transition-colors shadow-lg">
                       <Play size={22} className="fill-current ml-0.5" />
                     </span>
+                  </span>
+                )}
+                {showSocialPreview && SocialIcon && (
+                  <span className="absolute top-1.5 right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-white shadow">
+                    <SocialIcon size={13} className="text-primary" />
                   </span>
                 )}
               </button>
