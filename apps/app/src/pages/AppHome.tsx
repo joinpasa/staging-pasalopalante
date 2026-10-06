@@ -38,6 +38,8 @@ import {
 import { actEmoji, modeLabel, timeAgo } from "@shared/lib/appActs";
 import { submitPPLForm } from "@shared/lib/pplForm";
 import { cn } from "@shared/lib/utils";
+import { detectSocialLink, type DetectedSocialLink } from "@shared/lib/socialLinks";
+import SocialLinkChip from "@shared/components/share/SocialLinkChip";
 
 const nf = new Intl.NumberFormat("en-US");
 const GOAL = 1_000_000_000;
@@ -182,18 +184,25 @@ export default function AppHome() {
   // wants to log something in one tap without leaving the dashboard. The
   // full flow (mode picker, multi-photo, anonymous name/email) stays at
   // /log for anyone who wants more than that.
-  const [quickText, setQuickText] = useState("I did an act of kindness");
+  const [quickText, setQuickText] = useState("");
+  const [quickSocialLink, setQuickSocialLink] = useState<DetectedSocialLink | null>(null);
   const [quickSubmitting, setQuickSubmitting] = useState(false);
   const [quickLogged, setQuickLogged] = useState(false);
   const [quickLoggedTotal, setQuickLoggedTotal] = useState<number | null>(null);
 
   async function submitQuick() {
     if (!user || quickSubmitting) return;
-    const description = quickText.trim() || "I did an act of kindness";
+    const trimmed = quickText.trim();
+    if (!trimmed && !quickSocialLink) return;
     setQuickSubmitting(true);
     try {
       const { data, error } = await supabase.functions.invoke("submit-act", {
-        body: { mode: "performed", description, photo_paths: [] },
+        body: {
+          mode: "performed",
+          description: trimmed || undefined,
+          photo_paths: [],
+          video_url: quickSocialLink?.url || undefined,
+        },
       });
       const failure = (data as { error?: string } | null)?.error ?? error?.message;
       if (failure) {
@@ -221,7 +230,8 @@ export default function AppHome() {
 
   function resetQuick() {
     setQuickLogged(false);
-    setQuickText("I did an act of kindness");
+    setQuickText("");
+    setQuickSocialLink(null);
   }
 
   const earned = (badges ?? []).filter((b) => b.earned).slice(0, 6);
@@ -310,17 +320,37 @@ export default function AppHome() {
 
           {!quickLogged ? (
             <div className="mt-3">
+              {quickSocialLink && (
+                <div className="mb-2">
+                  <SocialLinkChip
+                    link={quickSocialLink}
+                    detectedLabel={`${quickSocialLink.label} link detected`}
+                    removeLabel="Remove link"
+                    onRemove={() => setQuickSocialLink(null)}
+                  />
+                </div>
+              )}
               <div className="flex items-center gap-2 rounded-full bg-app-surface py-[5px] pl-4 pr-[5px]">
                 <input
                   value={quickText}
-                  onChange={(e) => setQuickText(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    const detected = detectSocialLink(value);
+                    if (detected) {
+                      setQuickSocialLink(detected);
+                      setQuickText("");
+                    } else {
+                      setQuickText(value);
+                    }
+                  }}
+                  placeholder={quickSocialLink ? "Add a short caption (optional)" : "Describe what you did"}
                   aria-label="Describe what you did"
-                  className="min-w-0 flex-1 border-none bg-transparent text-[13.5px] text-app-ink outline-none"
+                  className="min-w-0 flex-1 border-none bg-transparent text-[13.5px] text-app-ink outline-none placeholder:text-app-ink/40"
                 />
                 <button
                   type="button"
                   onClick={submitQuick}
-                  disabled={quickSubmitting}
+                  disabled={quickSubmitting || (!quickText.trim() && !quickSocialLink)}
                   aria-label="Log this act"
                   className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full bg-app-ink disabled:opacity-60"
                 >
