@@ -82,25 +82,30 @@ const NOISE_KEYS = new Set([
   "phone", "country", "city", "state", "postal_code", "address1", "company_name",
   "tags", "contact_source", "contact_type", "date_created", "full_address",
   "location", "workflow", "triggerData", "contact", "attributionSource",
-  "user", "form", "form_name", "formName", "timezone", "customData",
+  "user", "form", "form_name", "formName", "timezone", "customData", "intake_secret",
 ]);
 
 Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
-
-  if (!INTAKE_SECRET || req.headers.get("x-intake-secret") !== INTAKE_SECRET) {
-    return json({ error: "Unauthorized" }, 401);
-  }
-  if (!AIRTABLE.apiKey) {
-    console.error("AIRTABLE_API_KEY is not set");
-    return json({ error: "Airtable not configured" }, 500);
-  }
 
   let body: Record<string, unknown>;
   try {
     body = await req.json();
   } catch {
     return json({ error: "Invalid JSON body" }, 400);
+  }
+
+  // Secret comes from the x-intake-secret header (GHL "Custom Webhook" action)
+  // or an `intake_secret` Custom Data key (GHL's standard "Webhook" action,
+  // which can't set headers).
+  const sentSecret = req.headers.get("x-intake-secret") ??
+    asRecord(body.customData).intake_secret ?? body.intake_secret;
+  if (!INTAKE_SECRET || sentSecret !== INTAKE_SECRET) {
+    return json({ error: "Unauthorized" }, 401);
+  }
+  if (!AIRTABLE.apiKey) {
+    console.error("AIRTABLE_API_KEY is not set");
+    return json({ error: "Airtable not configured" }, 500);
   }
 
   // GHL nests things differently depending on webhook type — flatten the
