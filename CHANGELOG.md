@@ -11,6 +11,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 ## 2026-10-06 — va.deedumlao@gmail.com
 
 - **Logging an act of kindness can now link to a social media post instead of (or alongside) a photo.** If you paste a Facebook, Instagram, TikTok, X, or YouTube link — e.g. the link iOS gives you from the Facebook app's Share button — into the description/note field on either the website's Share flow or the app's "Log an Act of Kindness" screen, it's now automatically recognized as a link rather than treated as the story text, and the field switches to an optional caption instead. On the Wall of Kindness, YouTube links still get the existing rich video embed; Facebook, Instagram, TikTok, and X links show as a "View on [platform]" card that opens the original post in a new tab. (Facebook/Instagram don't get a full inline preview — Meta's embed APIs now require an approved developer app and typically don't work for personal-profile posts at all, so a reliable link-out was the realistic option for those two rather than something that would silently fail for most people's actual posts.)
+- **Fixed cramped spacing on the website's Share flow**, where the "Back" link and the kindness-type pill (e.g. "I Did an Act of Kindness") next to it had no gap between them. While in there, turned that pill into an actual dropdown — picking "I Did" / "I Received" / "I Witnessed" now switches it in place, instead of bouncing back to the first screen and losing your spot.
 
 ## 2026-10-05 — va.deedumlao@gmail.com
 
