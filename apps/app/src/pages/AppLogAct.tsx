@@ -137,7 +137,7 @@ export default function AppLogAct() {
           {shareOnWall
             ? "Your act of kindness was added to the Wall and passed forward to the chain."
             : "Your act of kindness was logged and passed forward to the chain."}{" "}
-          That's <strong className="text-foreground">{newTotal}</strong> acts and counting.
+          That's <strong className="text-foreground">{newTotal}</strong> {newTotal === 1 ? "act" : "acts"} and counting.
         </p>
         <Link
           to="/"

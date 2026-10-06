@@ -368,7 +368,8 @@ export default function AppHome() {
             <div className="mt-3 flex items-center gap-2.5 rounded-2xl bg-app-surface/20 px-3.5 py-2.5">
               <CheckCircle2 className="h-5 w-5 shrink-0 fill-app-surface text-app-coral" />
               <p className="flex-1 text-[12.5px] leading-snug">
-                Logged! That's <strong>{nf.format(quickLoggedTotal ?? 0)}</strong> acts and counting.
+                Logged! That's <strong>{nf.format(quickLoggedTotal ?? 0)}</strong>{" "}
+                {quickLoggedTotal === 1 ? "act" : "acts"} and counting.
               </p>
               <button
                 type="button"
