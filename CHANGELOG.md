@@ -8,6 +8,11 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-06 — will@willpoweredstudios.com
+
+- **The five GoHighLevel forms on the Get Involved pages (Schools, Nonprofits & Faith, Ambassadors, Municipalities, Companies) can now feed Airtable.** These forms are embedded straight from GHL, so until now their submissions only ever reached GHL and never the PPL CRM in Airtable. A new backend endpoint (`ghl-form-intake`) receives each submission from a GHL workflow and records it in PPL Signups plus PPL Contacts (matched by email so the same person doesn't get duplicated), tagged with which form it came from and the right participant type. It goes live once the GHL workflows and its shared-secret setting are configured.
+- **Fixed pledge totals in Airtable being overwritten instead of added up.** When someone who was already a contact pledged again, their "Total Pledges" was replaced with just the latest pledge, because the contact lookup was reading fields in a format it wasn't asking for. Repeat pledgers' totals now accumulate correctly.
+
 ## 2026-10-06 — va.deedumlao@gmail.com
 
 - **Fixed the Dashboard's quick "Log an Act of Kindness" field rejecting social media links with a confusing error, then logging a blank placeholder act anyway.** This was the one quick-log spot the new link-detection feature (above) hadn't reached yet — pasting a link there was sent straight through as plain story text, which the AI moderation correctly refused ("should not contain url"-type message), but the field's leftover default text could then get submitted as an empty, meaningless act. The quick-log field now detects Facebook/Instagram/TikTok/X/YouTube links the same way the other two screens do, and no longer has a hidden fallback that could silently log a canned "I did an act of kindness" when nothing real was typed — the button now stays disabled until there's either real text or a detected link. Verified live: pasting an Instagram link now shows the same "link detected" chip and submits with the link properly attached, with nothing sent that would trip the moderation check.
