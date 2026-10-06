@@ -7,6 +7,8 @@ import { toast } from "sonner";
 import { useAppMe } from "@/hooks/useAppData";
 import { supabase } from "@shared/integrations/supabase/client";
 import { cn } from "@shared/lib/utils";
+import { detectSocialLink, type DetectedSocialLink } from "@shared/lib/socialLinks";
+import SocialLinkChip from "@shared/components/share/SocialLinkChip";
 
 const CHIP_LABELS = [
   "Helped a neighbor",
@@ -40,6 +42,7 @@ export default function AppLogAct() {
 
   const [picked, setPicked] = useState<string | null>(null);
   const [note, setNote] = useState(withName ? `Passed it forward to ${withName}: ` : "");
+  const [socialLink, setSocialLink] = useState<DetectedSocialLink | null>(null);
   const [file, setFile] = useState<{ file: File; preview: string; isVideo: boolean } | null>(null);
   const [shareOnWall, setShareOnWall] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -94,6 +97,7 @@ export default function AppLogAct() {
           to_user_id: toUserId || undefined,
           act_type: picked,
           share_on_wall: shareOnWall,
+          video_url: socialLink?.url || undefined,
         },
       });
       const failure = (data as { error?: string } | null)?.error ?? error?.message;
@@ -183,15 +187,38 @@ export default function AppLogAct() {
 
         <div>
           <label htmlFor="log-note" className="mb-2 block text-sm font-bold text-foreground">
-            Tell us more <span className="font-medium text-muted-foreground">(optional)</span>
+            {socialLink ? (
+              <>Add a caption <span className="font-medium text-muted-foreground">(optional)</span></>
+            ) : (
+              <>Tell us more <span className="font-medium text-muted-foreground">(optional)</span></>
+            )}
           </label>
+          {socialLink && (
+            <div className="mb-2">
+              <SocialLinkChip
+                link={socialLink}
+                detectedLabel={`${socialLink.label} link detected`}
+                removeLabel="Remove link"
+                onRemove={() => setSocialLink(null)}
+              />
+            </div>
+          )}
           <textarea
             id="log-note"
             rows={3}
             maxLength={1000}
             value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="A quick word about what happened..."
+            onChange={(e) => {
+              const value = e.target.value;
+              const detected = detectSocialLink(value);
+              if (detected) {
+                setSocialLink(detected);
+                setNote("");
+              } else {
+                setNote(value);
+              }
+            }}
+            placeholder={socialLink ? "Add a short caption..." : "A quick word about what happened..."}
             className="w-full resize-none rounded-2xl border-[1.5px] border-app-ink/[0.14] bg-app-surface px-3.5 py-3 text-[13.5px] text-foreground"
           />
         </div>

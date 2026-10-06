@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { Heart, Loader2 } from "lucide-react";
+import { Heart, Loader2, ExternalLink } from "lucide-react";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useActTranslation } from "@/hooks/useActTranslation";
+import { SOCIAL_LINK_ICONS } from "@shared/components/share/SocialLinkChip";
+import type { DetectedSocialLink } from "@shared/lib/socialLinks";
 
 interface Props {
   id: string;
@@ -12,6 +14,7 @@ interface Props {
   reacted: boolean;
   anonymousLabel: string;
   onToggleReact: () => void;
+  socialLink?: DetectedSocialLink | null;
 }
 
 export default function WallDialogBody({
@@ -23,6 +26,7 @@ export default function WallDialogBody({
   reacted,
   anonymousLabel,
   onToggleReact,
+  socialLink,
 }: Props) {
   const { t, lang } = useLanguage();
   const original = (description ?? "").trim();
@@ -74,6 +78,22 @@ export default function WallDialogBody({
           ) : null}
         </div>
       )}
+      {socialLink && (() => {
+        const SocialIcon = SOCIAL_LINK_ICONS[socialLink.platform];
+        return (
+          <a
+            href={socialLink.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold hover:opacity-80 transition-opacity"
+            style={{ borderColor: "hsl(20 35% 18% / 0.15)", color: "hsl(20 35% 18%)" }}
+          >
+            <SocialIcon size={16} />
+            View the original post on {socialLink.label}
+            <ExternalLink size={14} />
+          </a>
+        );
+      })()}
       <div className="mt-6 flex items-center justify-between">
         <span className="text-sm font-semibold" style={{ color: "hsl(20 25% 30%)" }}>
           — {firstName || anonymousLabel}

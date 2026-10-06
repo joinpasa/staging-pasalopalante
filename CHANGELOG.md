@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-06 — va.deedumlao@gmail.com
+
+- **Logging an act of kindness can now link to a social media post instead of (or alongside) a photo.** If you paste a Facebook, Instagram, TikTok, X, or YouTube link — e.g. the link iOS gives you from the Facebook app's Share button — into the description/note field on either the website's Share flow or the app's "Log an Act of Kindness" screen, it's now automatically recognized as a link rather than treated as the story text, and the field switches to an optional caption instead. On the Wall of Kindness, YouTube links still get the existing rich video embed; Facebook, Instagram, TikTok, and X links show as a "View on [platform]" card that opens the original post in a new tab. (Facebook/Instagram don't get a full inline preview — Meta's embed APIs now require an approved developer app and typically don't work for personal-profile posts at all, so a reliable link-out was the realistic option for those two rather than something that would silently fail for most people's actual posts.)
+
 ## 2026-10-05 — va.deedumlao@gmail.com
 
 - **Fixed the Map screen in the app sometimes not responding to taps.** Reported as: tapping a country sometimes shows its kindness count, sometimes doesn't, and tapping the same one again can make it stop showing. The cause was the tappable target being a small dot that shrinks the more zoomed-in you are and the less activity a country has — on a phone, some countries' dots were only a few pixels across, easy to miss by a hair. The whole country is now the tappable area instead of just its dot, so a tap anywhere on a country (even a small one) reliably works. Verified by simulating taps at several slightly-off-center positions on a small country's area on a touchscreen-sized screen — all landed correctly, where some previously would have missed.

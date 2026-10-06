@@ -14,6 +14,8 @@ import { Label } from "@shared/components/ui/label";
 import { supabase } from "@shared/integrations/supabase/client";
 import { logConsent } from "@shared/lib/legal";
 import { getAuthErrorMessage } from "@shared/lib/authErrors";
+import { detectSocialLink, type DetectedSocialLink } from "@shared/lib/socialLinks";
+import SocialLinkChip from "./SocialLinkChip";
 
 type Mode = "performed" | "witnessed" | "received";
 
@@ -57,6 +59,7 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
   const [step, setStep] = useState<1 | 2>(initialMode || singleStep ? 2 : 1);
   const [mode, setMode] = useState<Mode | null>(initialMode ?? (singleStep ? "performed" : null));
   const [description, setDescription] = useState(initialDescription ?? "");
+  const [socialLink, setSocialLink] = useState<DetectedSocialLink | null>(null);
   const [firstName, setFirstName] = useState("");
   const [profileDisplayName, setProfileDisplayName] = useState<string | null>(null);
   const [email, setEmail] = useState("");
@@ -194,6 +197,7 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
           email: email.trim() || undefined,
           photo_paths: photoPaths,
           to_user_id: toUserId || undefined,
+          video_url: socialLink?.url || undefined,
         },
       });
 
@@ -315,14 +319,31 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
   const detailsFields = (
     <>
       <div className="space-y-2">
-        <Label htmlFor="desc">{t.share.descriptionLabel}</Label>
+        <Label htmlFor="desc">{socialLink ? t.share.linkCaptionLabel : t.share.descriptionLabel}</Label>
+        {socialLink && (
+          <SocialLinkChip
+            link={socialLink}
+            detectedLabel={t.share.linkDetected.replace("{platform}", socialLink.label)}
+            removeLabel={t.share.removeLink}
+            onRemove={() => setSocialLink(null)}
+          />
+        )}
         <Textarea
           id="desc"
           rows={4}
           maxLength={1000}
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder={t.share.descriptionPlaceholder}
+          onChange={(e) => {
+            const value = e.target.value;
+            const detected = detectSocialLink(value);
+            if (detected) {
+              setSocialLink(detected);
+              setDescription("");
+            } else {
+              setDescription(value);
+            }
+          }}
+          placeholder={socialLink ? t.share.linkCaptionPlaceholder : t.share.descriptionPlaceholder}
         />
         {singleStep && <p className="text-xs text-muted-foreground">{t.share.descriptionHelper}</p>}
       </div>

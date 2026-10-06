@@ -23,6 +23,7 @@ import {
   getYouTubeThumbnail,
   getYouTubeEmbedUrl,
 } from "@shared/lib/youtube";
+import { detectSocialLink } from "@shared/lib/socialLinks";
 
 type TabValue = "all" | WallMode;
 type SortValue = "liked" | "recent";
@@ -254,6 +255,15 @@ export default function WallOfKindness() {
     () => parseYouTubeId(openAct?.video_url),
     [openAct],
   );
+  // Non-YouTube platforms (Facebook, Instagram, TikTok, X) don't get a rich
+  // inline embed here — Meta's oEmbed in particular requires an approved
+  // Developer App + access token and still fails for most personal-profile
+  // posts, so a plain "view the original post" link is what's reliable for
+  // every one of these instead.
+  const dialogSocialLink = useMemo(
+    () => (dialogYouTubeId ? null : detectSocialLink(openAct?.video_url)),
+    [openAct, dialogYouTubeId],
+  );
 
   return (
     <section className="section-padding pt-0 pb-20 md:pb-28 lg:pb-36">
@@ -332,6 +342,7 @@ export default function WallOfKindness() {
                     : null;
                 const ytId = parseYouTubeId(a.video_url);
                 const videoThumbUrl = ytId ? getYouTubeThumbnail(ytId) : null;
+                const socialLink = ytId ? null : detectSocialLink(a.video_url);
                 return (
                   <WallCard
                     key={a.id}
@@ -342,6 +353,7 @@ export default function WallOfKindness() {
                     language={a.language}
                     photoUrl={photoUrl}
                     videoThumbUrl={videoThumbUrl}
+                    socialLink={socialLink}
                     reactionCount={a.reaction_count}
                     reacted={a.reacted}
                     onToggleReact={() => toggleReaction(a)}
@@ -407,6 +419,7 @@ export default function WallOfKindness() {
                   reacted={live.reacted}
                   anonymousLabel={t.inspiration.anonymous}
                   onToggleReact={() => toggleReaction(live)}
+                  socialLink={dialogSocialLink}
                 />
 
               </div>
