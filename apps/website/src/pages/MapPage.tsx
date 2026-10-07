@@ -8,8 +8,12 @@ import SEO from "@/components/SEO";
 import ScrollToTop from "@/components/ScrollToTop";
 import { supabasePublic } from "@shared/integrations/supabase/publicClient";
 import { useLanguage } from "@shared/contexts/LanguageContext";
-
-const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
+// Bundled locally instead of fetched from cdn.jsdelivr.net at runtime - that
+// CDN is blocked or unreliable on some networks, which made the map
+// silently fail to render any country shapes for anyone on such a network,
+// with no error shown. Same file, same version, just served from this
+// site's own origin instead of a third-party one no code here can control.
+import geoData from "world-atlas/countries-110m.json";
 
 const RADIUS_MILES = 100;
 const MIN_ZOOM = 1;
@@ -220,7 +224,7 @@ const MapPage = () => {
                   setZoom(z);
                 }}
               >
-                <Geographies geography={geoUrl}>
+                <Geographies geography={geoData}>
                   {({ geographies }) => {
                     if (Object.keys(centroids).length === 0 && geographies.length > 0) {
                       const next: Record<string, [number, number]> = {};

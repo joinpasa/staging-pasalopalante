@@ -3,8 +3,13 @@ import { ComposableMap, Geographies, Geography, Marker, ZoomableGroup } from "re
 import { geoCentroid } from "d3-geo";
 import { Loader2, LocateFixed, Minus, Plus, Search } from "lucide-react";
 import { useKindnessMapCounts, useMovementTotals, useWallActs } from "@/hooks/useAppData";
-
-const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
+// Bundled locally instead of fetched from cdn.jsdelivr.net at runtime - that
+// CDN is blocked or unreliable on some networks (confirmed blocked outright
+// from this project's own dev sandbox), which made the map silently fail to
+// render any country shapes for anyone on such a network, with no error
+// shown. Same file, same version, just served from this app's own origin
+// instead of a third-party one no code here can control.
+import geoData from "world-atlas/countries-110m.json";
 
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 40;
@@ -191,7 +196,7 @@ export default function AppMap() {
               setZoom(z);
             }}
           >
-            <Geographies geography={geoUrl}>
+            <Geographies geography={geoData}>
               {({ geographies }) => {
                 if (Object.keys(centroids).length === 0 && geographies.length > 0) {
                   const next: Record<string, [number, number]> = {};
