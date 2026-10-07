@@ -243,6 +243,7 @@ export default function AppHome() {
       setQuickLoggedTotal((me?.actsPassedForward ?? 0) + 1);
       queryClient.invalidateQueries({ queryKey: ["app", "me"] });
       queryClient.invalidateQueries({ queryKey: ["app", "my-acts"] });
+      queryClient.invalidateQueries({ queryKey: ["app", "badges"] });
     } catch {
       toast.error("Something went wrong. Please try again.");
     } finally {
