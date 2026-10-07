@@ -567,21 +567,21 @@ export default function AppJoin() {
               className={inputClass}
             />
           </Field>
-          <Field
-            label={
-              <span className="flex items-center justify-between">
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label htmlFor="login-password" className="text-xs font-semibold text-muted-foreground">
                 Password
-                <button
-                  type="button"
-                  onClick={handleForgotPassword}
-                  className="text-xs font-normal normal-case text-app-coral underline"
-                >
-                  Forgot password?
-                </button>
-              </span>
-            }
-          >
+              </label>
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                className="inline-flex w-auto shrink-0 text-xs font-normal normal-case text-app-coral underline"
+              >
+                Forgot password?
+              </button>
+            </div>
             <input
+              id="login-password"
               type={showLoginPassword ? "text" : "password"}
               value={loginPassword}
               onChange={(e) => setLoginPassword(e.target.value)}
@@ -591,7 +591,7 @@ export default function AppJoin() {
               spellCheck={false}
               className={inputClass}
             />
-          </Field>
+          </div>
           <div className="-mt-2 ml-auto grid w-[108px] grid-cols-2 rounded-full bg-app-coral-tint p-1">
             <button
               type="button"
