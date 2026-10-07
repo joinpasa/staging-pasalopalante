@@ -395,6 +395,37 @@ Deno.serve(async (req) => {
       console.error("classify-act dispatch error", e);
     }
 
+    // Link-preview thumbnail for a non-YouTube social link (Facebook/
+    // Instagram/TikTok/X) — YouTube already gets a thumbnail directly from
+    // img.youtube.com with no fetch needed. Fire-and-forget, same dispatch
+    // pattern as classify-act above: never blocks the response, and a
+    // blocked/failed fetch just leaves no preview image, which the Wall
+    // already renders fine as a plain link card.
+    if (shouldPublish && videoUrl) {
+      try {
+        const host = new URL(videoUrl).hostname.toLowerCase().replace(/^www\./, "");
+        const isYouTube = host === "youtube.com" || host.endsWith(".youtube.com") || host === "youtu.be";
+        if (!isYouTube) {
+          const task = fetch(`${SUPABASE_URL}/functions/v1/fetch-link-preview`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${SERVICE_ROLE}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ act_id: data.id, url: videoUrl }),
+          })
+            .then(async (res) => {
+              if (!res.ok) console.error("fetch-link-preview dispatch failed", res.status, await res.text());
+            })
+            .catch((e) => console.error("fetch-link-preview dispatch failed", e));
+          // @ts-ignore EdgeRuntime is available in Supabase Edge Functions
+          if (typeof EdgeRuntime !== "undefined") EdgeRuntime.waitUntil(task);
+        }
+      } catch (e) {
+        console.error("fetch-link-preview dispatch error", e);
+      }
+    }
+
     // Refresh this contact's GHL totals (acts + pledges) fire-and-forget —
     // same dispatch pattern as classify-act above, never blocks the response.
     if (shouldPublish && email) {

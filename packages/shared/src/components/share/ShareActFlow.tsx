@@ -11,9 +11,12 @@ import { Button } from "@shared/components/ui/button";
 import { Input } from "@shared/components/ui/input";
 import { Textarea } from "@shared/components/ui/textarea";
 import { Label } from "@shared/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@shared/components/ui/select";
 import { supabase } from "@shared/integrations/supabase/client";
 import { logConsent } from "@shared/lib/legal";
 import { getAuthErrorMessage } from "@shared/lib/authErrors";
+import { detectSocialLink, type DetectedSocialLink } from "@shared/lib/socialLinks";
+import SocialLinkChip from "./SocialLinkChip";
 
 type Mode = "performed" | "witnessed" | "received";
 
@@ -57,6 +60,7 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
   const [step, setStep] = useState<1 | 2>(initialMode || singleStep ? 2 : 1);
   const [mode, setMode] = useState<Mode | null>(initialMode ?? (singleStep ? "performed" : null));
   const [description, setDescription] = useState(initialDescription ?? "");
+  const [socialLink, setSocialLink] = useState<DetectedSocialLink | null>(null);
   const [firstName, setFirstName] = useState("");
   const [profileDisplayName, setProfileDisplayName] = useState<string | null>(null);
   const [email, setEmail] = useState("");
@@ -194,6 +198,7 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
           email: email.trim() || undefined,
           photo_paths: photoPaths,
           to_user_id: toUserId || undefined,
+          video_url: socialLink?.url || undefined,
         },
       });
 
@@ -315,14 +320,31 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
   const detailsFields = (
     <>
       <div className="space-y-2">
-        <Label htmlFor="desc">{t.share.descriptionLabel}</Label>
+        <Label htmlFor="desc">{socialLink ? t.share.linkCaptionLabel : t.share.descriptionLabel}</Label>
+        {socialLink && (
+          <SocialLinkChip
+            link={socialLink}
+            detectedLabel={t.share.linkDetected.replace("{platform}", socialLink.label)}
+            removeLabel={t.share.removeLink}
+            onRemove={() => setSocialLink(null)}
+          />
+        )}
         <Textarea
           id="desc"
           rows={4}
           maxLength={1000}
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder={t.share.descriptionPlaceholder}
+          onChange={(e) => {
+            const value = e.target.value;
+            const detected = detectSocialLink(value);
+            if (detected) {
+              setSocialLink(detected);
+              setDescription("");
+            } else {
+              setDescription(value);
+            }
+          }}
+          placeholder={socialLink ? t.share.linkCaptionPlaceholder : t.share.descriptionPlaceholder}
         />
         {singleStep && <p className="text-xs text-muted-foreground">{t.share.descriptionHelper}</p>}
       </div>
@@ -575,31 +597,31 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
             transition={{ duration: 0.3 }}
             className="space-y-6"
           >
-            <button
-              onClick={() => setStep(1)}
-              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-            >
-              <ArrowLeft size={16} /> {t.share.back}
-            </button>
-
-            {mode && (
-              // A button, not static text — tapping it goes back to step 1
-              // to pick a different one (e.g. "I Did" vs "I Gave" when the
-              // act was specifically for someone you just connected with),
-              // without needing to notice the separate Back link above it.
+            <div className="flex items-center gap-3">
               <button
-                type="button"
                 onClick={() => setStep(1)}
-                className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary transition-colors hover:border-primary hover:bg-primary/20"
+                className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
               >
-                <Heart size={12} className="fill-current" />
-                {mode === "performed"
-                  ? t.share.modePerformed
-                  : mode === "received"
-                  ? t.share.modeReceived
-                  : t.share.modeWitnessed}
+                <ArrowLeft size={16} /> {t.share.back}
               </button>
-            )}
+
+              {mode && (
+                // A dropdown, not a button back to step 1 — switches which
+                // kind of act this is in place, without leaving this screen
+                // or losing anything already typed below.
+                <Select value={mode} onValueChange={(v) => setMode(v as Mode)}>
+                  <SelectTrigger className="h-auto w-auto gap-1.5 rounded-full border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary hover:border-primary hover:bg-primary/20">
+                    <Heart size={12} className="fill-current shrink-0" />
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="performed">{t.share.modePerformed}</SelectItem>
+                    <SelectItem value="received">{t.share.modeReceived}</SelectItem>
+                    <SelectItem value="witnessed">{t.share.modeWitnessed}</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
 
             <h2 className="headline-md text-foreground">{t.share.detailsHeading}</h2>
 

@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { motion, type PanInfo } from "framer-motion";
+import { motion, useInView, type PanInfo } from "framer-motion";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import pplGroup from "@/assets/ppl-group.jpg";
 import pplNoticentro from "@/assets/ppl-noticentro.jpg";
@@ -51,6 +51,13 @@ export function VerticalImageStack() {
   const lastNavigationTime = useRef(0);
   const navigationCooldown = 400;
   const containerRef = useRef<HTMLDivElement>(null);
+  // This whole section sits below the fold (Index.tsx renders TheStory
+  // eagerly, but it still isn't on screen on first paint), yet the window
+  // of up to 5 images below was fetching immediately on mount regardless.
+  // margin:"200px" starts the fetch a bit before it's actually in view, so
+  // the images are ready by the time someone scrolls down to it rather
+  // than popping in.
+  const inView = useInView(containerRef, { once: true, margin: "200px" });
 
   const navigate = useCallback((newDirection: number) => {
     const now = Date.now();
@@ -94,6 +101,7 @@ export function VerticalImageStack() {
   // the first one meant this component alone forced ~20MB+ onto every
   // visitor's very first page load, before compression (see CHANGELOG).
   useEffect(() => {
+    if (!inView) return;
     const preloadIndexes = new Set(
       [-2, -1, 0, 1, 2].map((offset) => (currentIndex + offset + images.length) % images.length),
     );
@@ -108,7 +116,7 @@ export function VerticalImageStack() {
         img.src = "";
       });
     };
-  }, [currentIndex]);
+  }, [currentIndex, inView]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -149,7 +157,7 @@ export function VerticalImageStack() {
           // the same fixed-size stack, so loading="lazy" can't help (its
           // viewport check has nothing to go on here). Only give the ones
           // actually reachable by a swipe a real src.
-          const inLoadWindow = Math.abs(getRelativeDiff(index)) <= 2;
+          const inLoadWindow = inView && Math.abs(getRelativeDiff(index)) <= 2;
 
           return (
             <motion.div

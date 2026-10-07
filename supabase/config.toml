@@ -34,3 +34,5 @@ project_id = "tipfbleltjexofsjffwb"
   [functions.partner-sheet]
     verify_jwt = false
 
+  [functions.ghl-form-intake]
+    verify_jwt = false

@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { Heart, Play, Loader2 } from "lucide-react";
+import { Heart, Play, Loader2, ExternalLink } from "lucide-react";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { pickCardGradient } from "@shared/lib/cardGradients";
 import { useActTranslation } from "@/hooks/useActTranslation";
 import PalanteArrow from "@shared/components/icons/PalanteArrow";
 import { splitKindnessTag } from "@shared/lib/splitKindnessTag";
+import { SOCIAL_LINK_ICONS } from "@shared/components/share/SocialLinkChip";
+import type { DetectedSocialLink } from "@shared/lib/socialLinks";
 
 
 export type WallMode = "performed" | "received" | "witnessed";
@@ -17,6 +19,8 @@ interface Props {
   language: string | null;
   photoUrl: string | null;
   videoThumbUrl: string | null;
+  socialLink?: DetectedSocialLink | null;
+  socialPreviewImage?: string | null;
   reactionCount: number;
   reacted: boolean;
   onToggleReact: () => void;
@@ -36,6 +40,8 @@ export default function WallCard({
   language,
   photoUrl,
   videoThumbUrl,
+  socialLink,
+  socialPreviewImage,
   reactionCount,
   reacted,
   onToggleReact,
@@ -57,8 +63,15 @@ export default function WallCard({
 
   // If both photo and video, prefer photo for the polaroid frame.
   const showVideo = !photoUrl && !!videoThumbUrl;
-  const mediaUrl = photoUrl ?? videoThumbUrl ?? null;
-  const hasMedia = !!mediaUrl;
+  // A scraped Open Graph thumbnail for a non-YouTube social link only
+  // counts as "media" when there's no real uploaded photo/video to prefer.
+  const showSocialPreview = !photoUrl && !videoThumbUrl && !!socialPreviewImage;
+  const mediaUrl = photoUrl ?? videoThumbUrl ?? (showSocialPreview ? socialPreviewImage : null) ?? null;
+  // A social link with no scraped thumbnail (private post, or the platform
+  // blocked the fetch) still earns the media slot — it's rendered as a
+  // "view original post" tile instead of an image.
+  const hasMedia = !!mediaUrl || !!socialLink;
+  const SocialIcon = socialLink ? SOCIAL_LINK_ICONS[socialLink.platform] : null;
 
   const cutoff = hasMedia ? TRUNCATE_AT_MEDIA : TRUNCATE_AT;
   const isLong = hasText && displayText.length > cutoff;
@@ -140,29 +153,51 @@ export default function WallCard({
         <>
           {/* Polaroid frame */}
           <div className="px-5 pb-3 flex justify-center">
-            <button
-              type="button"
-              onClick={onOpen}
-              className="group relative block bg-white p-2 pb-5 rounded-sm shadow-md hover:shadow-lg transition-shadow"
-              style={{ border: "1px solid rgba(255,255,255,0.9)", width: 168 }}
-              aria-label={showVideo ? "Play video" : t.inspiration.readMore}
-            >
-              <div className="w-full aspect-square overflow-hidden bg-black/5">
-                <img
-                  src={mediaUrl!}
-                  alt=""
-                  loading="lazy"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              {showVideo && (
-                <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <span className="flex items-center justify-center w-12 h-12 rounded-full bg-black/60 text-white group-hover:bg-black/75 transition-colors shadow-lg">
-                    <Play size={22} className="fill-current ml-0.5" />
+            {mediaUrl ? (
+              <button
+                type="button"
+                onClick={onOpen}
+                className="group relative block bg-white p-2 pb-5 rounded-sm shadow-md hover:shadow-lg transition-shadow"
+                style={{ border: "1px solid rgba(255,255,255,0.9)", width: 168 }}
+                aria-label={showVideo ? "Play video" : t.inspiration.readMore}
+              >
+                <div className="w-full aspect-square overflow-hidden bg-black/5">
+                  <img
+                    src={mediaUrl}
+                    alt=""
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                {showVideo && (
+                  <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <span className="flex items-center justify-center w-12 h-12 rounded-full bg-black/60 text-white group-hover:bg-black/75 transition-colors shadow-lg">
+                      <Play size={22} className="fill-current ml-0.5" />
+                    </span>
                   </span>
+                )}
+                {showSocialPreview && SocialIcon && (
+                  <span className="absolute top-1.5 right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-white shadow">
+                    <SocialIcon size={13} className="text-primary" />
+                  </span>
+                )}
+              </button>
+            ) : socialLink && SocialIcon ? (
+              <a
+                href={socialLink.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="group relative flex flex-col items-center justify-center gap-1.5 bg-white p-2 rounded-sm shadow-md hover:shadow-lg transition-shadow"
+                style={{ border: "1px solid rgba(255,255,255,0.9)", width: 168, aspectRatio: "1 / 1" }}
+              >
+                <SocialIcon size={30} className="text-primary" />
+                <span className="text-xs font-semibold text-center px-2" style={{ color: TEXT_COLOR }}>
+                  View on {socialLink.label}
                 </span>
-              )}
-            </button>
+                <ExternalLink size={12} className="text-muted-foreground" />
+              </a>
+            ) : null}
           </div>
 
           {/* Description under media */}

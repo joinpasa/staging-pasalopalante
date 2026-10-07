@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { getTranslations, LANGUAGES, type Language, type Translations } from "@shared/i18n/translations";
+import { getTranslations, loadTranslations, LANGUAGES, type Language, type Translations } from "@shared/i18n/translations";
 
 interface LanguageContextType {
   lang: Language;
@@ -15,8 +15,12 @@ const SUPPORTED = LANGUAGES.map((l) => l.code);
 const isSupported = (value: string): value is Language =>
   (SUPPORTED as string[]).includes(value);
 
-/** Saved choice wins; otherwise fall back to the browser's preferred language. */
-function detectLanguage(): Language {
+/**
+ * Saved choice wins; otherwise fall back to the browser's preferred
+ * language. Exported so main.tsx can preload this language's translations
+ * before the app ever mounts - see loadTranslations in i18n/translations.ts.
+ */
+export function detectLanguage(): Language {
   if (typeof window === "undefined") return "en";
 
   try {
@@ -39,17 +43,41 @@ function detectLanguage(): Language {
 }
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
+  // By the time this runs, main.tsx has already awaited
+  // loadTranslations(detectLanguage()) before mounting the app at all - so
+  // this initial read is a real, correct value from cache, not a fallback.
   const [lang, setLangState] = useState<Language>(() => detectLanguage());
-  const t = getTranslations(lang);
+  const [t, setT] = useState<Translations>(() => getTranslations(lang));
 
+  // Only swaps lang + t together once the new language has actually
+  // loaded, so switching to a not-yet-loaded locale never flashes English
+  // (or blank) in between - it just takes a beat before anything changes.
   const setLang = (next: Language) => {
-    setLangState(next);
+    loadTranslations(next).then((loaded) => {
+      setLangState(next);
+      setT(loaded);
+    });
     try {
       window.localStorage.setItem(STORAGE_KEY, next);
     } catch {
       /* ignore */
     }
   };
+
+  // Correctness safety net, independent of main.tsx's preload: ensures
+  // whatever language is current actually gets (or already has) its real
+  // translations loaded, even when this provider mounts on its own (tests,
+  // Storybook, hot reload) without main.tsx's loadTranslations-before-mount
+  // step ever having run. A no-op cache hit when it has.
+  useEffect(() => {
+    let cancelled = false;
+    loadTranslations(lang).then((loaded) => {
+      if (!cancelled) setT(loaded);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [lang]);
 
   useEffect(() => {
     const meta = LANGUAGES.find((l) => l.code === lang);

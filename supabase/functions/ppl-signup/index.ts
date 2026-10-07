@@ -377,7 +377,7 @@ async function airtableUpsertContact({ email, fullName, phone, country, city,
 }) {
   const searchRes = await fetch(
     `https://api.airtable.com/v0/${CONFIG.airtable.baseId}/${CONFIG.airtable.contactsTableId}` +
-    `?filterByFormula=${encodeURIComponent(`{Email}="${email}"`)}`,
+    `?returnFieldsByFieldId=true&filterByFormula=${encodeURIComponent(`{Email}="${email}"`)}`,
     { headers: { Authorization: `Bearer ${CONFIG.airtable.apiKey}` } }
   );
   const searchData = await searchRes.json();

@@ -76,6 +76,7 @@ export function useActTranslation(
               text: trimmed,
               target_lang: targetLang,
               source_lang: sourceLang,
+              act_id: actId,
             },
           },
         );

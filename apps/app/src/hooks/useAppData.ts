@@ -98,6 +98,8 @@ export interface AppAct {
   createdAt: string;
   mode: string;
   tags: string[];
+  videoUrl: string | null;
+  linkPreviewImage: string | null;
 }
 
 /** The signed-in user's own most recent acts. */
@@ -110,7 +112,7 @@ export function useMyRecentActs(limit = 5) {
     queryFn: async (): Promise<AppAct[]> => {
       const { data, error } = await supabase
         .from("acts_of_kindness")
-        .select("id, description, created_at, mode, tags")
+        .select("id, description, created_at, mode, tags, video_url, link_preview_image")
         .eq("user_id", user!.id)
         .order("created_at", { ascending: false })
         .limit(limit);
@@ -121,6 +123,8 @@ export function useMyRecentActs(limit = 5) {
         createdAt: row.created_at,
         mode: row.mode,
         tags: row.tags ?? [],
+        videoUrl: row.video_url ?? null,
+        linkPreviewImage: row.link_preview_image ?? null,
       }));
     },
   });
@@ -139,7 +143,7 @@ export function useWallActs(limit = 20) {
     queryFn: async (): Promise<WallAct[]> => {
       const { data, error } = await supabasePublic
         .from("acts_of_kindness")
-        .select("id, description, created_at, mode, tags, first_name, photo_paths")
+        .select("id, description, created_at, mode, tags, first_name, photo_paths, video_url, link_preview_image")
         .eq("status", "published")
         .order("created_at", { ascending: false })
         .limit(limit);
@@ -152,6 +156,8 @@ export function useWallActs(limit = 20) {
           createdAt: row.created_at,
           mode: row.mode,
           tags: row.tags ?? [],
+          videoUrl: row.video_url ?? null,
+          linkPreviewImage: row.link_preview_image ?? null,
           name: row.first_name?.trim() || "Someone",
           photoUrl: path
             ? supabasePublic.storage.from("kindness-photos").getPublicUrl(path).data.publicUrl
@@ -277,7 +283,7 @@ export function useActsReceivedByMe(limit = 10) {
     queryFn: async (): Promise<ReceivedAct[]> => {
       const { data, error } = await supabase
         .from("acts_of_kindness")
-        .select("id, description, created_at, mode, tags, first_name")
+        .select("id, description, created_at, mode, tags, first_name, video_url, link_preview_image")
         .eq("to_user_id", user!.id)
         .eq("status", "published")
         .order("created_at", { ascending: false })
@@ -289,6 +295,8 @@ export function useActsReceivedByMe(limit = 10) {
         createdAt: row.created_at,
         mode: row.mode,
         tags: row.tags ?? [],
+        videoUrl: row.video_url ?? null,
+        linkPreviewImage: row.link_preview_image ?? null,
         fromName: row.first_name?.trim() || "a fellow member",
       }));
     },

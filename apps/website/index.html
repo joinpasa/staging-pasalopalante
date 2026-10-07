@@ -13,6 +13,14 @@
          requested it — harmless on a domain that isn't being verified. -->
     <meta name="p:domain_verify" content="f56f5ad81190c22be50358430ef1b4da"/>
 
+    <!-- The hero's background map is the page's LCP element (confirmed via
+         Lighthouse), but it only appears in JSX - the browser couldn't
+         discover it until the JS bundle downloaded, parsed, and rendered
+         the <img>. Preloading it here lets the browser fetch it starting
+         at initial HTML parse, in parallel with the JS bundle, instead of
+         after it. -->
+    <link rel="preload" as="image" href="/world-map.svg" fetchpriority="high" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" />
@@ -115,19 +123,26 @@
         font-family: "DM Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
         -webkit-font-smoothing: antialiased;
       }
-      #root {
+      /* #root itself is never width-constrained - React's real app renders
+         full-width from the very first paint. A width constraint here used
+         to be lifted via a JS-added class once React mounted, which meant
+         the real app was briefly painted at the WRONG (narrow) width before
+         snapping to full-width on the next frame - a real, visible layout
+         shift (this was the main driver of a measured 0.22 CLS). The
+         noscript fallback below gets its own readable-width styling
+         instead, scoped so it can never affect the real app's layout. */
+      #root > noscript {
+        display: block;
         max-width: 760px;
         margin: 0 auto;
         padding: 2rem 1.25rem;
         line-height: 1.6;
       }
-      html.app-ready #root {
-        max-width: none;
-        margin: 0;
-        padding: 0;
-      }
       /* Paints instantly (no JS needed) to cover the gap between first HTML
-         paint and React mounting - logo only, never the crawler fallback text. */
+         paint and React mounting - logo only, never the crawler fallback
+         text. Needs no JS-driven hide: React's createRoot().render() call
+         replaces #root's entire contents (this included) the moment it
+         first commits, which is exactly when it should disappear. */
       #boot-splash {
         position: fixed;
         inset: 0;
@@ -140,9 +155,6 @@
       #boot-splash img {
         height: 56px;
         animation: boot-splash-pulse 1.6s ease-in-out infinite;
-      }
-      html.app-ready #boot-splash {
-        display: none;
       }
       @keyframes boot-splash-pulse {
         0%, 100% { opacity: 0.55; }

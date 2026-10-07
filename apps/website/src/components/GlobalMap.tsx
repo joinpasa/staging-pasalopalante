@@ -3,8 +3,6 @@ import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps
 import { motion, useInView } from "framer-motion";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 
-const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
-
 const REGIONS = [
   { name: "US", weight: 25, bounds: { minLng: -125, maxLng: -70, minLat: 25, maxLat: 48 } },
   { name: "Philippines", weight: 12, bounds: { minLng: 117, maxLng: 126, minLat: 5, maxLat: 18 } },
@@ -49,7 +47,20 @@ const GlobalMap = () => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const [points, setPoints] = useState<MapPoint[]>([]);
+  // Dynamically imported (not a static top-level import) so the ~100KB
+  // country-shape data stays out of this already-lazy chunk's own bundle
+  // and only loads once someone's actually about to scroll to it - same
+  // deferred timing the old CDN fetch had, just from this site's own
+  // origin now instead of cdn.jsdelivr.net, which is blocked or
+  // unreliable on some networks and was making the map silently render
+  // with no countries at all for anyone on such a network.
+  const [geoData, setGeoData] = useState<object | null>(null);
   const { t } = useLanguage();
+
+  useEffect(() => {
+    if (!inView || geoData) return;
+    import("world-atlas/countries-110m.json").then((mod) => setGeoData(mod.default));
+  }, [inView, geoData]);
 
   const generateRandomPoint = useCallback((): MapPoint => {
     const totalWeight = REGIONS.reduce((sum, r) => sum + r.weight, 0);
@@ -146,26 +157,28 @@ const GlobalMap = () => {
             projectionConfig={{ scale: 130, center: [0, 30] }}
             style={{ width: "100%", height: "auto", maxHeight: "700px" }}
           >
-            <Geographies geography={geoUrl}>
-              {({ geographies }) =>
-                geographies.map((geo) => (
-                  <Geography
-                    key={geo.rsmKey}
-                    geography={geo}
-                    fill="hsl(15, 72%, 55%)"
-                    fillOpacity={0.12}
-                    stroke="hsl(15, 72%, 55%)"
-                    strokeWidth={0.5}
-                    strokeOpacity={0.3}
-                    style={{
-                      default: { outline: "none" },
-                      hover: { outline: "none", fillOpacity: 0.2 },
-                      pressed: { outline: "none" },
-                    }}
-                  />
-                ))
-              }
-            </Geographies>
+            {geoData && (
+              <Geographies geography={geoData}>
+                {({ geographies }) =>
+                  geographies.map((geo) => (
+                    <Geography
+                      key={geo.rsmKey}
+                      geography={geo}
+                      fill="hsl(15, 72%, 55%)"
+                      fillOpacity={0.12}
+                      stroke="hsl(15, 72%, 55%)"
+                      strokeWidth={0.5}
+                      strokeOpacity={0.3}
+                      style={{
+                        default: { outline: "none" },
+                        hover: { outline: "none", fillOpacity: 0.2 },
+                        pressed: { outline: "none" },
+                      }}
+                    />
+                  ))
+                }
+              </Geographies>
+            )}
 
             {points.map((point) => {
               const age = Date.now() - point.timestamp;

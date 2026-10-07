@@ -38,6 +38,8 @@ import {
 import { actEmoji, modeLabel, timeAgo } from "@shared/lib/appActs";
 import { submitPPLForm } from "@shared/lib/pplForm";
 import { cn } from "@shared/lib/utils";
+import { detectSocialLink, type DetectedSocialLink } from "@shared/lib/socialLinks";
+import SocialLinkChip, { SOCIAL_LINK_ICONS } from "@shared/components/share/SocialLinkChip";
 
 const nf = new Intl.NumberFormat("en-US");
 const GOAL = 1_000_000_000;
@@ -55,6 +57,28 @@ function initials(name: string) {
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase() ?? "")
     .join("");
+}
+
+/** Compact "View on [platform] ↗" link for an act's video_url, used in the
+ *  Home screen's list rows (Passed to you / Your recent kindness / Recent
+ *  Acts of Kindness) — the same affordance the Wall and app Wall screens
+ *  give a social-link act, just small enough to fit a single list row. */
+function SocialLinkRow({ videoUrl }: { videoUrl: string | null | undefined }) {
+  const link = detectSocialLink(videoUrl);
+  if (!link) return null;
+  const Icon = SOCIAL_LINK_ICONS[link.platform];
+  return (
+    <a
+      href={link.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={(e) => e.stopPropagation()}
+      className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-app-sky"
+    >
+      <Icon className="h-3 w-3" />
+      View on {link.label}
+    </a>
+  );
 }
 
 export default function AppHome() {
@@ -182,18 +206,25 @@ export default function AppHome() {
   // wants to log something in one tap without leaving the dashboard. The
   // full flow (mode picker, multi-photo, anonymous name/email) stays at
   // /log for anyone who wants more than that.
-  const [quickText, setQuickText] = useState("I did an act of kindness");
+  const [quickText, setQuickText] = useState("");
+  const [quickSocialLink, setQuickSocialLink] = useState<DetectedSocialLink | null>(null);
   const [quickSubmitting, setQuickSubmitting] = useState(false);
   const [quickLogged, setQuickLogged] = useState(false);
   const [quickLoggedTotal, setQuickLoggedTotal] = useState<number | null>(null);
 
   async function submitQuick() {
     if (!user || quickSubmitting) return;
-    const description = quickText.trim() || "I did an act of kindness";
+    const trimmed = quickText.trim();
+    if (!trimmed && !quickSocialLink) return;
     setQuickSubmitting(true);
     try {
       const { data, error } = await supabase.functions.invoke("submit-act", {
-        body: { mode: "performed", description, photo_paths: [] },
+        body: {
+          mode: "performed",
+          description: trimmed || undefined,
+          photo_paths: [],
+          video_url: quickSocialLink?.url || undefined,
+        },
       });
       const failure = (data as { error?: string } | null)?.error ?? error?.message;
       if (failure) {
@@ -212,6 +243,7 @@ export default function AppHome() {
       setQuickLoggedTotal((me?.actsPassedForward ?? 0) + 1);
       queryClient.invalidateQueries({ queryKey: ["app", "me"] });
       queryClient.invalidateQueries({ queryKey: ["app", "my-acts"] });
+      queryClient.invalidateQueries({ queryKey: ["app", "badges"] });
     } catch {
       toast.error("Something went wrong. Please try again.");
     } finally {
@@ -221,7 +253,8 @@ export default function AppHome() {
 
   function resetQuick() {
     setQuickLogged(false);
-    setQuickText("I did an act of kindness");
+    setQuickText("");
+    setQuickSocialLink(null);
   }
 
   const earned = (badges ?? []).filter((b) => b.earned).slice(0, 6);
@@ -310,17 +343,37 @@ export default function AppHome() {
 
           {!quickLogged ? (
             <div className="mt-3">
+              {quickSocialLink && (
+                <div className="mb-2">
+                  <SocialLinkChip
+                    link={quickSocialLink}
+                    detectedLabel={`${quickSocialLink.label} link detected`}
+                    removeLabel="Remove link"
+                    onRemove={() => setQuickSocialLink(null)}
+                  />
+                </div>
+              )}
               <div className="flex items-center gap-2 rounded-full bg-app-surface py-[5px] pl-4 pr-[5px]">
                 <input
                   value={quickText}
-                  onChange={(e) => setQuickText(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    const detected = detectSocialLink(value);
+                    if (detected) {
+                      setQuickSocialLink(detected);
+                      setQuickText("");
+                    } else {
+                      setQuickText(value);
+                    }
+                  }}
+                  placeholder={quickSocialLink ? "Add a short caption (optional)" : "Describe what you did"}
                   aria-label="Describe what you did"
-                  className="min-w-0 flex-1 border-none bg-transparent text-[13.5px] text-app-ink outline-none"
+                  className="min-w-0 flex-1 border-none bg-transparent text-[13.5px] text-app-ink outline-none placeholder:text-app-ink/40"
                 />
                 <button
                   type="button"
                   onClick={submitQuick}
-                  disabled={quickSubmitting}
+                  disabled={quickSubmitting || (!quickText.trim() && !quickSocialLink)}
                   aria-label="Log this act"
                   className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full bg-app-ink disabled:opacity-60"
                 >
@@ -338,7 +391,8 @@ export default function AppHome() {
             <div className="mt-3 flex items-center gap-2.5 rounded-2xl bg-app-surface/20 px-3.5 py-2.5">
               <CheckCircle2 className="h-5 w-5 shrink-0 fill-app-surface text-app-coral" />
               <p className="flex-1 text-[12.5px] leading-snug">
-                Logged! That's <strong>{nf.format(quickLoggedTotal ?? 0)}</strong> acts and counting.
+                Logged! That's <strong>{nf.format(quickLoggedTotal ?? 0)}</strong>{" "}
+                {quickLoggedTotal === 1 ? "act" : "acts"} and counting.
               </p>
               <button
                 type="button"
@@ -473,6 +527,7 @@ export default function AppHome() {
                       <p className="line-clamp-2 text-sm font-semibold leading-snug text-foreground">
                         {act.description}
                       </p>
+                      <SocialLinkRow videoUrl={act.videoUrl} />
                       <p className="mt-0.5 text-xs text-muted-foreground">
                         From {act.fromName} · {timeAgo(act.createdAt)}
                       </p>
@@ -518,6 +573,7 @@ export default function AppHome() {
                     <p className="line-clamp-2 text-sm font-semibold leading-snug text-foreground">
                       {act.description}
                     </p>
+                    <SocialLinkRow videoUrl={act.videoUrl} />
                     <p className="mt-0.5 text-xs text-muted-foreground">{timeAgo(act.createdAt)}</p>
                   </div>
                   <span
@@ -573,6 +629,7 @@ export default function AppHome() {
                 <p className="mt-1 line-clamp-2 text-[12.5px] leading-snug text-foreground/75">
                   {act.description}
                 </p>
+                <SocialLinkRow videoUrl={act.videoUrl} />
                 <span className="mt-2 inline-block rounded-full bg-app-sky/10 px-2.5 py-1 text-[10.5px] font-semibold text-app-sky">
                   {modeLabel(act.mode)}
                 </span>
