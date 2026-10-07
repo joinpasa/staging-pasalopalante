@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
     .eq("id", staffId)
     .eq("partner_id", partner.id)
     .maybeSingle();
-  if (!staff?.active) return json({ error: "Your Staff ID is no longer active. Ask your coordinator." }, 403);
+  if (!staff?.active) return json({ error: "Your Kindness ID is no longer active. Ask your coordinator." }, 403);
 
   if (items.length === 0) return json({ error: "Add at least one act." }, 400);
   if (items.length > MAX_ITEMS) return json({ error: `Up to ${MAX_ITEMS} rows per submission.` }, 400);

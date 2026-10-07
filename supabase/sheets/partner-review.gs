@@ -5,7 +5,7 @@
  * tab. Change a row's Status (Pending / Approved / Needs Changes / Rejected)
  * and it's sent straight back: Approved publishes it to the Wall of
  * Kindness (website + app), anything else takes it down again. The Note
- * column is shown to the school next to "Needs Changes".
+ * column is shown to the organization next to "Needs Changes".
  *
  * Videos: upload the file to the YouTube channel (Public or Unlisted — not
  * Private, private videos can't play on the wall) and paste the link into
@@ -22,7 +22,7 @@
 
 const TAB = 'Submissions';
 const HEADERS = [
-  'Submission ID', 'Submitted', 'School', 'City', 'Staff', 'What happened',
+  'Submission ID', 'Submitted', 'Organization', 'City', 'Submitted by', 'What happened',
   'People', 'Act date', 'Photos / videos', 'Media consent', 'Status', 'Note',
   'YouTube link', 'Last synced',
 ];

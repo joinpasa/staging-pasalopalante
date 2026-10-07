@@ -112,7 +112,7 @@ Deno.serve(async (req) => {
       const partnerId = String(body.partner_id ?? "");
       const code = String(body.staff_code ?? "");
       if (!UUID_RE.test(partnerId) || !code.trim()) {
-        return json({ error: "Pick your school and enter your Staff ID." }, 400);
+        return json({ error: "Pick your organization and enter your Kindness ID." }, 400);
       }
 
       const schoolKey = `login:${partnerId}`;
@@ -133,7 +133,7 @@ Deno.serve(async (req) => {
       const staff = rows?.[0] as { staff_id: string; staff_name: string } | undefined;
       if (!staff) {
         await admin.from("partner_login_attempts").insert([{ key: schoolKey }, { key: ipKey }]);
-        return json({ error: "That Staff ID doesn't match this school." }, 401);
+        return json({ error: "That Kindness ID doesn't match this organization." }, 401);
       }
 
       const { data: partner } = await admin
