@@ -27,4 +27,10 @@ project_id = "tipfbleltjexofsjffwb"
     verify_jwt = false
   [functions.ghl-backfill-tags]
     verify_jwt = false
+  [functions.partner-auth]
+    verify_jwt = false
+  [functions.partner-submit]
+    verify_jwt = false
+  [functions.partner-sheet]
+    verify_jwt = false
 

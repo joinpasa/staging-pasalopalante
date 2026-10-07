@@ -10,12 +10,14 @@
   "scripts": {
     "dev:website": "npm run dev --workspace=@pasalopalante/website",
     "dev:app": "npm run dev --workspace=@pasalopalante/app",
+    "dev:partners": "npm run dev --workspace=@pasalopalante/partners",
     "build:website": "npm run build --workspace=@pasalopalante/website",
     "build:app": "npm run build --workspace=@pasalopalante/app",
-    "build": "npm run build:website && npm run build:app",
+    "build:partners": "npm run build --workspace=@pasalopalante/partners",
+    "build": "npm run build:website && npm run build:app && npm run build:partners",
     "build:combined": "node scripts/build-combined.mjs",
     "lint": "eslint .",
-    "test": "npm run test --workspace=@pasalopalante/shared && npm run test --workspace=@pasalopalante/website && npm run test --workspace=@pasalopalante/app && npx vitest run --config tests/repo-invariants/vitest.config.ts",
+    "test": "npm run test --workspace=@pasalopalante/shared && npm run test --workspace=@pasalopalante/website && npm run test --workspace=@pasalopalante/app && npm run test --workspace=@pasalopalante/partners && npx vitest run --config tests/repo-invariants/vitest.config.ts",
     "test:e2e:website": "npm run test:e2e --workspace=@pasalopalante/website",
     "test:e2e:app": "npm run test:e2e --workspace=@pasalopalante/app",
     "translate": "tsx scripts/translate-i18n.ts"

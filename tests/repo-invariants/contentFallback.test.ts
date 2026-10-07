@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { LANGUAGES } from "../../packages/shared/src/i18n/translations";
 
 const ROOT = path.resolve(__dirname, "../..");
-const SRC_ROOTS = ["apps/website/src", "apps/app/src", "packages/shared/src"].map((p) =>
+const SRC_ROOTS = ["apps/website/src", "apps/app/src", "apps/partners/src", "packages/shared/src"].map((p) =>
   path.join(ROOT, p),
 );
 

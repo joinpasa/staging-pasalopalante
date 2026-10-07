@@ -10,8 +10,8 @@ export const DIRECTIONAL_PATTERN =
 
 const ROOT = path.resolve(__dirname, "../..");
 
-/** The three independent source trees the split produced. */
-const SRC_ROOTS = ["apps/website/src", "apps/app/src", "packages/shared/src"].map((p) =>
+/** The independent source trees (website, app, partner portal, shared). */
+const SRC_ROOTS = ["apps/website/src", "apps/app/src", "apps/partners/src", "packages/shared/src"].map((p) =>
   path.join(ROOT, p),
 );
 
@@ -21,6 +21,7 @@ const IGNORED_DIRS = [
   path.join(ROOT, "packages/shared/src/test"),
   path.join(ROOT, "apps/website/src/test"),
   path.join(ROOT, "apps/app/src/test"),
+  path.join(ROOT, "apps/partners/src/test"),
 ];
 
 function walk(dir: string, out: string[] = []): string[] {
