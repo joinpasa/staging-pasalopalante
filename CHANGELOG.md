@@ -12,6 +12,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 - **New Partner Portal app (`apps/partners`, for partners.pasalopalante.com).** A separate app for schools and partner orgs, built from the PKF Partner Portal design: log in, a dashboard with acts logged vs. pledged and the Global Kindness Season countdown, Log 1 Act, Bulk Log and a thank-you screen. It's in English and Spanish. Each school has one shared account behind the scenes. Teachers join from the school's invite link, type their name and get their own Staff ID, so there are no emails or passwords to manage, and someone who leaves just has their ID switched off.
 - **Partner submissions are reviewed in Google Sheets before going on the Wall.** Every logged act lands in a review sheet within a minute. Setting its Status to Approved publishes it to the Wall of Kindness on the website and app, "Needs Changes" sends your note back to the school, and un-approving takes it down again. Setup steps are in `supabase/sheets/README.md`.
+- **Partner videos can play on the Wall via YouTube.** The review sheet has a "YouTube link" column. Upload a school's video to the YouTube channel (Public or Unlisted), paste the link, and the approved post plays it on the website's Wall of Kindness. It works with the temporary Gmail-owned channel today and keeps working after the channel moves to the Workspace account, because YouTube links don't change when a channel changes owner.
 
 ## 2026-10-01 — va.deedumlao@gmail.com
 

@@ -10,6 +10,7 @@ import type { SupabaseClient } from "npm:@supabase/supabase-js@2";
  *   { action: "pull" }                                  -> new submissions to append
  *   { action: "ack", ids: [...] }                       -> mark those as in the sheet
  *   { action: "review", submission_id, status, note }   -> apply a Status change
+ *   { action: "video", submission_id, youtube_url }     -> set/clear the YouTube link
  *
  * Approving copies the submission's photos into the public kindness-photos
  * bucket and inserts a published acts_of_kindness row — the exact row shape
@@ -40,6 +41,26 @@ function constantTimeEqual(a: string, b: string) {
 function one<T>(embed: unknown): T | null {
   if (Array.isArray(embed)) return (embed[0] as T) ?? null;
   return (embed as T) ?? null;
+}
+
+// Same URL shapes the website wall's parseYouTubeId (packages/shared/src/lib/youtube.ts) accepts.
+const YT_PATTERNS = [
+  /(?:youtube\.com\/watch\?[^#]*v=)([A-Za-z0-9_-]{11})/,
+  /(?:youtu\.be\/)([A-Za-z0-9_-]{11})/,
+  /(?:youtube\.com\/shorts\/)([A-Za-z0-9_-]{11})/,
+  /(?:youtube\.com\/embed\/)([A-Za-z0-9_-]{11})/,
+  /(?:youtube\.com\/live\/)([A-Za-z0-9_-]{11})/,
+];
+
+/** Any YouTube link form -> canonical watch URL; "" -> null; anything else -> undefined (invalid). */
+function normalizeYouTube(raw: string): string | null | undefined {
+  const url = raw.trim();
+  if (!url) return null;
+  for (const re of YT_PATTERNS) {
+    const m = url.match(re);
+    if (m) return `https://www.youtube.com/watch?v=${m[1]}`;
+  }
+  return undefined;
 }
 
 interface MediaItem {
@@ -89,19 +110,22 @@ async function pull(admin: SupabaseClient) {
 async function publishToWall(admin: SupabaseClient, submissionId: string) {
   const { data: s, error } = await admin
     .from("partner_submissions")
-    .select("id, description, media, act_id, partners(name, account_user_id)")
+    .select("id, description, media, act_id, youtube_url, partners(name, account_user_id)")
     .eq("id", submissionId)
     .single();
   if (error || !s) throw error ?? new Error("submission not found");
 
   if (s.act_id) {
-    await admin.from("acts_of_kindness").update({ status: "published" }).eq("id", s.act_id);
+    await admin
+      .from("acts_of_kindness")
+      .update({ status: "published", video_url: s.youtube_url ?? null })
+      .eq("id", s.act_id);
     return s.act_id as string;
   }
 
   // Wall cards read photo_paths from the public kindness-photos bucket.
-  // Videos stay in the sheet for review/social — the walls only embed
-  // YouTube links today.
+  // Uploaded videos aren't copied: the wall plays YouTube links, which come
+  // from the sheet's "YouTube link" column (youtube_url) instead.
   const photoPaths: string[] = [];
   for (const m of ((s.media ?? []) as MediaItem[]).filter((m) => m.type === "image")) {
     const { data: file } = await admin.storage.from("partner-media").download(m.path);
@@ -122,6 +146,7 @@ async function publishToWall(admin: SupabaseClient, submissionId: string) {
       description: s.description,
       first_name: partner?.name ?? null,
       photo_paths: photoPaths,
+      video_url: s.youtube_url ?? null,
       status: "published",
       share_on_wall: true,
       user_id: partner?.account_user_id ?? null,
@@ -178,6 +203,25 @@ Deno.serve(async (req) => {
         .update({ status, review_note: note, reviewed_at: new Date().toISOString(), act_id: actId })
         .eq("id", id);
       return json({ ok: true, status, on_wall: status === "approved" });
+    }
+
+    if (body?.action === "video") {
+      const id = String(body.submission_id ?? "");
+      const youtubeUrl = normalizeYouTube(String(body.youtube_url ?? ""));
+      if (!UUID_RE.test(id)) return json({ error: "Bad submission id" }, 400);
+      if (youtubeUrl === undefined) {
+        return json({ error: "Not a YouTube link — paste the video's youtube.com or youtu.be URL" }, 400);
+      }
+
+      const { data: current } = await admin.from("partner_submissions").select("act_id").eq("id", id).maybeSingle();
+      if (!current) return json({ error: "Submission not found" }, 404);
+
+      await admin.from("partner_submissions").update({ youtube_url: youtubeUrl }).eq("id", id);
+      // Already on the wall? Update it now; otherwise approval picks it up.
+      if (current.act_id) {
+        await admin.from("acts_of_kindness").update({ video_url: youtubeUrl }).eq("id", current.act_id);
+      }
+      return json({ ok: true, youtube_url: youtubeUrl });
     }
 
     return json({ error: "Unknown action" }, 400);

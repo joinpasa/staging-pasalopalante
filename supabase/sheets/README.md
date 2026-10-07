@@ -38,5 +38,6 @@ After that the Sheet fills itself. **Partner review → Sync now** forces an imm
 
 - You can change your mind. Moving an Approved row to anything else takes it off the wall again.
 - Photo/video links in the sheet are private, signed links that work for 30 days.
-- Videos are kept for review and social use. The walls only embed YouTube links today, so an approved post shows its photos (or text only).
+- **Videos → YouTube link column.** Download the video from the row's link, upload it to the YouTube channel as **Public or Unlisted** (Private videos can't play on the wall), and paste the YouTube URL into **YouTube link**. Any youtube.com, youtu.be or Shorts link works. Once the row is Approved, the video plays on the website's Wall of Kindness. Paste the link before or after approving, either works. Clear the cell to remove it.
+- **Which channel account doesn't matter.** Upload from the temporary Gmail-owned channel now and transfer it to the Workspace account later. Video URLs don't change when a channel changes owners, so everything already on the wall keeps playing.
 - If **Last synced** shows `ERROR: …`, the status change didn't reach Supabase. Fix the cause (usually a wrong secret) and change the Status again.

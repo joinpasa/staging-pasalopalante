@@ -7,6 +7,11 @@
  * Kindness (website + app), anything else takes it down again. The Note
  * column is shown to the school next to "Needs Changes".
  *
+ * Videos: upload the file to the YouTube channel (Public or Unlisted — not
+ * Private, private videos can't play on the wall) and paste the link into
+ * "YouTube link". It plays on the website's Wall of Kindness once the row is
+ * Approved. Works no matter which Google account manages the channel.
+ *
  * SETUP (once, ~5 minutes) — see supabase/sheets/README.md for the full steps:
  *   1. New Google Sheet → Extensions → Apps Script → paste this file.
  *   2. Project Settings → Script properties:
@@ -19,9 +24,9 @@ const TAB = 'Submissions';
 const HEADERS = [
   'Submission ID', 'Submitted', 'School', 'City', 'Staff', 'What happened',
   'People', 'Act date', 'Photos / videos', 'Media consent', 'Status', 'Note',
-  'Last synced',
+  'YouTube link', 'Last synced',
 ];
-const COL = { ID: 1, STATUS: 11, NOTE: 12, SYNCED: 13 };
+const COL = { ID: 1, STATUS: 11, NOTE: 12, YOUTUBE: 13, SYNCED: 14 };
 const STATUSES = ['Pending', 'Approved', 'Needs Changes', 'Rejected'];
 
 function props_() {
@@ -105,6 +110,7 @@ function pullSubmissions() {
         r.media_consent ? 'Yes' : 'No',
         'Pending',
         '',
+        '',
         now,
       ]);
     if (out.length) {
@@ -116,20 +122,31 @@ function pullSubmissions() {
   }
 }
 
-/** Sends Status (and Note) changes back to Supabase. */
+/** Sends Status / Note / YouTube link changes back to Supabase. */
 function onStatusEdit(e) {
   const range = e.range;
   const sh = range.getSheet();
   if (sh.getName() !== TAB || range.getRow() < 2) return;
-  const col = range.getColumn();
-  if (col !== COL.STATUS && col !== COL.NOTE) return;
+  const first = range.getColumn();
+  const last = first + range.getNumColumns() - 1;
+  const touches = (c) => c >= first && c <= last;
+  const review = touches(COL.STATUS) || touches(COL.NOTE);
+  const video = touches(COL.YOUTUBE);
+  if (!review && !video) return;
 
   for (let r = range.getRow(); r < range.getRow() + range.getNumRows(); r++) {
     const id = sh.getRange(r, COL.ID).getValue();
-    const status = sh.getRange(r, COL.STATUS).getValue();
-    if (!id || !status) continue;
+    if (!id) continue;
     try {
-      call_({ action: 'review', submission_id: id, status: status, note: sh.getRange(r, COL.NOTE).getValue() });
+      // Link first, so approving in the same paste already has the video.
+      if (video) {
+        const res = call_({ action: 'video', submission_id: id, youtube_url: String(sh.getRange(r, COL.YOUTUBE).getValue()) });
+        if (res.youtube_url) sh.getRange(r, COL.YOUTUBE).setValue(res.youtube_url);
+      }
+      const status = sh.getRange(r, COL.STATUS).getValue();
+      if (review && status) {
+        call_({ action: 'review', submission_id: id, status: status, note: sh.getRange(r, COL.NOTE).getValue() });
+      }
       sh.getRange(r, COL.SYNCED).setValue(new Date());
     } catch (err) {
       sh.getRange(r, COL.SYNCED).setValue('ERROR: ' + err.message);
