@@ -21,6 +21,8 @@ const MAX_JOINS_PER_HOUR = 30; // per IP
 
 function accountEmail(partnerId: string) {
   // Never receives mail — only exists so the account has a unique login key.
+  // Deliberately NOT tied to the portal's public domain (now
+  // partners.passkindnessforward.com): changing it would orphan existing accounts.
   return `partner-${partnerId}@partners.pasalopalante.com`;
 }
 

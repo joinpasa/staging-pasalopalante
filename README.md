@@ -4,7 +4,7 @@ A monorepo containing two independently deployable apps that share one design sy
 
 - **`apps/website`** — the public marketing site (pasalopalante.com): landing page, share/commit flows, wall of kindness, donate, legal pages.
 - **`apps/app`** — the installed/logged-in app (app.pasalopalante.com), also packaged for the App Store / Play Store via Capacitor: home feed, wall, pass/QR, map, badges.
-- **`apps/partners`**: the Partner Portal (partners.pasalopalante.com), where schools and partner orgs log acts of kindness for review. It uses its own login model (one account per school plus per-person Staff IDs) and its own Supabase session storage. See `apps/partners/README.md`.
+- **`apps/partners`**: the Partner Portal (partners.passkindnessforward.com), where schools and partner orgs log acts of kindness for review. It uses its own login model (one account per school plus per-person Staff IDs) and its own Supabase session storage. See `apps/partners/README.md`.
 - **`packages/shared`** — auth context, Supabase client, i18n, shadcn UI components, and design tokens used by both apps. Not published or built independently — each app's Vite config resolves it directly from source via the `@shared/*` alias.
 - **`supabase/`** — the single shared Supabase project (migrations + edge functions) both apps talk to.
 

@@ -2,7 +2,7 @@ name = "stagingpartners-pasalopalante"
 compatibility_date = "2024-09-23"
 
 # Pure static-asset deployment, same as apps/app — served as a single-page
-# app on partners.pasalopalante.com (set as the Worker's Custom Domain).
+# app on partners.passkindnessforward.com (set as the Worker's Custom Domain).
 [assets]
 directory = "./dist"
 not_found_handling = "single-page-application"

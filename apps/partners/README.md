@@ -1,6 +1,6 @@
 # Partner Portal (`apps/partners`)
 
-partners.pasalopalante.com is where schools and partner orgs log their acts of kindness. Submissions go to a Google Sheet for review, and approved ones are published to the Wall of Kindness.
+partners.passkindnessforward.com is where schools and partner orgs log their acts of kindness. Submissions go to a Google Sheet for review, and approved ones are published to the Wall of Kindness.
 
 ## How login works
 
@@ -21,7 +21,7 @@ returning invite_token;
 
 `org_type` is one of `school`, `ngo`, `company`, `faith`, `government`, `community`, `other`. It and `contact_email` are optional and show up in the review sheet's **Org type** and **Org contact** columns.
 
-Send the coordinator `https://partners.pasalopalante.com/join/<invite_token>`. To remove someone, run `update public.partner_staff set active = false where id = '…'`. To invalidate an invite link, give the partner a new `invite_token`.
+Send the coordinator `https://partners.passkindnessforward.com/join/<invite_token>`. To remove someone, run `update public.partner_staff set active = false where id = '…'`. To invalidate an invite link, give the partner a new `invite_token`.
 
 ## Screens → routes
 
@@ -43,4 +43,4 @@ Send the coordinator `https://partners.pasalopalante.com/join/<invite_token>`. T
 
 ## Deploy (Cloudflare)
 
-Same as `apps/app`: a static-assets Worker (`wrangler.toml`, name `stagingpartners-pasalopalante`). Create the Cloudflare project from this repo with build command `npm run build:partners`, then add `partners.pasalopalante.com` as its Custom Domain.
+Same as `apps/app`: a static-assets Worker (`wrangler.toml`, name `stagingpartners-pasalopalante`). Create the Cloudflare project from this repo with build command `npm run build:partners`, then add `partners.passkindnessforward.com` as its Custom Domain.
