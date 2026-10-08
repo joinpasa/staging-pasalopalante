@@ -1,9 +1,12 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type MouseEvent, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ChevronRight, Heart, Image as ImageIcon, Layers, MapPin, MessageSquareWarning, Pencil } from "lucide-react";
+import { ChevronRight, Compass, Heart, Image as ImageIcon, Layers, MapPin, MessageSquareWarning, Pencil } from "lucide-react";
 import PortalHeader from "@/components/PortalHeader";
 import StatusPill from "@/components/StatusPill";
 import LogOneDialog from "@/components/LogOneDialog";
+import ActMenu from "@/components/ActMenu";
+import DashboardTour, { type TourStep } from "@/components/DashboardTour";
+import { hasSeenTour, markTourSeen, TOUR_EVENT } from "@/lib/tour";
 import { useCopy } from "@/lib/i18n";
 import { useSession } from "@/lib/session";
 import { seasonCountdown } from "@/lib/season";
@@ -53,7 +56,7 @@ function ProgressCard({ logged, goal }: { logged: number; goal: number }) {
           : t.keepGoing;
 
   return (
-    <section className="flex flex-col gap-5 rounded-3xl bg-white p-5 shadow-card col-span-2 lg:col-span-1 lg:p-7">
+    <section data-tour="progress" className="flex flex-col gap-5 rounded-3xl bg-white p-5 shadow-card col-span-2 lg:col-span-1 lg:p-7">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex flex-col gap-1.5">
           <span className="text-xs font-bold tracking-[0.08em] text-ink-muted">{t.actsLogged}</span>
@@ -117,13 +120,21 @@ function ProgressCard({ logged, goal }: { logged: number; goal: number }) {
 }
 
 /** A "Needs Changes" row is a link to its edit screen; every other row is plain. */
+/**
+ * One act row. A "Needs Changes" row opens its edit screen when tapped (the
+ * "Edit & resubmit" link inside is the keyboard/screen-reader route); taps on
+ * the ⋯ menu are left alone.
+ */
 function RowWrap({ editTo, className, children }: { editTo: string | null; className: string; children: ReactNode }) {
-  return editTo ? (
-    <Link to={editTo} className={className}>
+  const navigate = useNavigate();
+  const onClick = (e: MouseEvent<HTMLDivElement>) => {
+    if (!editTo || (e.target as HTMLElement).closest("[data-row-ignore], a, button")) return;
+    navigate(editTo);
+  };
+  return (
+    <div onClick={onClick} className={`${className} ${editTo ? "cursor-pointer" : ""}`}>
       {children}
-    </Link>
-  ) : (
-    <div className={className}>{children}</div>
+    </div>
   );
 }
 
@@ -135,7 +146,7 @@ function RecentActs({ rows }: { rows: Submission[] }) {
     new Date(`${d}T12:00:00`).toLocaleDateString(locale, { month: "short", day: "numeric", year: "numeric" });
 
   return (
-    <section className="flex flex-col gap-3.5">
+    <section className="flex flex-col gap-3.5" data-tour="recent">
       <div className="flex items-baseline justify-between">
         <h2 className="m-0 text-[22px] font-extrabold">{t.recentActs}</h2>
         {rows.length > 5 && (
@@ -145,11 +156,12 @@ function RecentActs({ rows }: { rows: Submission[] }) {
         )}
       </div>
       <div className="rounded-3xl bg-white px-4 py-2 shadow-[0_4px_20px_rgba(14,35,75,0.06)] lg:px-7">
-        <div className="hidden grid-cols-[1fr_120px_140px_180px] gap-4 py-3.5 text-xs font-bold tracking-[0.06em] text-ink-muted md:grid">
+        <div className="hidden grid-cols-[1fr_100px_130px_170px_40px] gap-4 py-3.5 text-xs font-bold tracking-[0.06em] text-ink-muted md:grid">
           <span>{t.colActivity}</span>
           <span>{t.colActs}</span>
           <span>{t.colDate}</span>
           <span>{t.colStatus}</span>
+          <span />
         </div>
         {shown.map((r, i) => {
           // "Needs Changes" rows open the act for editing; others aren't clickable.
@@ -158,7 +170,7 @@ function RecentActs({ rows }: { rows: Submission[] }) {
           <RowWrap
             key={r.id}
             editTo={editable ? `/edit/${r.id}` : null}
-            className={`flex flex-col gap-2 border-t border-line-faint py-3 text-navy no-underline first:border-t-0 md:grid md:grid-cols-[1fr_120px_140px_180px] md:items-center md:gap-4 md:first:border-t ${
+            className={`group relative flex flex-col gap-2 border-t border-line-faint py-3 pe-11 text-navy first:border-t-0 md:grid md:grid-cols-[1fr_100px_130px_170px_40px] md:items-center md:gap-4 md:pe-0 md:first:border-t ${
               editable ? "-mx-2 rounded-2xl px-2 hover:bg-rose-soft/40" : ""
             }`}
           >
@@ -182,12 +194,15 @@ function RecentActs({ rows }: { rows: Submission[] }) {
             <span className="flex flex-col items-start gap-2 ps-[72px] md:ps-0">
               <StatusPill status={r.status} />
               {editable && (
-                <span className="inline-flex items-center gap-1.5 text-[13px] font-bold text-sky-deep">
+                <Link to={`/edit/${r.id}`} className="inline-flex items-center gap-1.5 text-[13px] font-bold text-sky-deep no-underline">
                   <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
                   {t.editAct}
-                </span>
+                </Link>
               )}
             </span>
+            <div data-row-ignore className="absolute end-0 top-2 md:static">
+              <ActMenu act={r} tourTarget={i === 0} />
+            </div>
           </RowWrap>
           );
         })}
@@ -199,7 +214,7 @@ function RecentActs({ rows }: { rows: Submission[] }) {
 function EmptyState() {
   const { t } = useCopy();
   return (
-    <section className="flex flex-col gap-3.5">
+    <section className="flex flex-col gap-3.5" data-tour="recent">
       <h2 className="m-0 text-[22px] font-extrabold">{t.recentActs}</h2>
       <div className="flex flex-col items-center gap-6 rounded-3xl border-2 border-dashed border-[#F3D9A4] bg-white p-8 text-center lg:flex-row lg:gap-10 lg:p-12 lg:text-start">
         <div className="flex h-[140px] w-[140px] shrink-0 items-center justify-center rounded-full bg-sun-soft">
@@ -229,6 +244,39 @@ export default function DashboardPage() {
   const editing = editId ? rows?.find((r) => r.id === editId && r.status === "changes_requested") : undefined;
   const needsChanges = (rows ?? []).filter((r) => r.status === "changes_requested");
 
+  // ── Tour: once automatically for each newcomer, then from "Take a tour" ──
+  const [touring, setTouring] = useState(false);
+  const startTour = useCallback(() => setTouring(true), []);
+  const endTour = useCallback(() => {
+    setTouring(false);
+    if (staff) markTourSeen(staff.id);
+  }, [staff]);
+  useEffect(() => {
+    window.addEventListener(TOUR_EVENT, startTour);
+    return () => window.removeEventListener(TOUR_EVENT, startTour);
+  }, [startTour]);
+  useEffect(() => {
+    // Wait until the page has its content, and never on top of an open form.
+    if (!staff || isLoading || logOpen || editId) return;
+    const requested = (location.state as { tour?: boolean } | null)?.tour;
+    if (requested || !hasSeenTour(staff.id)) {
+      if (requested) navigate(".", { replace: true, state: null });
+      const id = window.setTimeout(startTour, 400);
+      return () => window.clearTimeout(id);
+    }
+  }, [staff, isLoading, logOpen, editId, location.state, navigate, startTour]);
+  const tourSteps: TourStep[] = [
+    { title: t.tour.welcomeTitle, body: t.tour.welcomeBody },
+    { target: "org", title: t.tour.orgTitle, body: t.tour.orgBody },
+    { target: "progress", title: t.tour.progressTitle, body: t.tour.progressBody },
+    { target: "log-one", title: t.tour.logOneTitle, body: t.tour.logOneBody },
+    { target: "bulk", title: t.tour.bulkTitle, body: t.tour.bulkBody },
+    { target: "recent", title: t.tour.recentTitle, body: t.tour.recentBody },
+    { target: "act-menu", title: t.tour.actMenuTitle, body: t.tour.actMenuBody },
+    { target: "menu", title: t.tour.menuTitle, body: t.tour.menuBody },
+    { title: t.tour.doneTitle, body: t.tour.doneBody },
+  ];
+
   // An /edit/ link for an act that isn't (or is no longer) "Needs Changes" — back to the dashboard.
   useEffect(() => {
     if (editId && rows && !editing) navigate("/", { replace: true });
@@ -239,12 +287,22 @@ export default function DashboardPage() {
     <div className="flex min-h-screen flex-col bg-canvas">
       <PortalHeader />
       <main className="mx-auto flex w-full max-w-[1440px] flex-col gap-7 px-4 py-6 lg:px-10 lg:py-10 xl:px-40">
-        <div className="flex flex-col gap-1.5">
-          <h1 className="m-0 text-[28px] font-extrabold lg:text-4xl">{t.hi(firstName)} 👋</h1>
-          <div className="flex items-center gap-1.5 text-base font-medium text-ink-muted">
-            <MapPin className="h-[18px] w-[18px] text-sky" aria-hidden="true" />
-            <span>{[partner?.name, partner?.city].filter(Boolean).join(" · ")}</span>
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div className="flex flex-col gap-1.5">
+            <h1 className="m-0 text-[28px] font-extrabold lg:text-4xl">{t.hi(firstName)} 👋</h1>
+            <div data-tour="org" className="flex items-center gap-1.5 text-base font-medium text-ink-muted">
+              <MapPin className="h-[18px] w-[18px] text-sky" aria-hidden="true" />
+              <span>{[partner?.name, partner?.city].filter(Boolean).join(" · ")}</span>
+            </div>
           </div>
+          <button
+            type="button"
+            onClick={startTour}
+            className="inline-flex h-10 items-center gap-2 rounded-full border-[1.5px] border-sun bg-sun-soft px-4 text-sm font-bold text-sun-ink hover:bg-sun/30"
+          >
+            <Compass className="h-4 w-4" aria-hidden="true" />
+            {t.takeTour}
+          </button>
         </div>
 
         {needsChanges.length > 0 && (
@@ -265,6 +323,7 @@ export default function DashboardPage() {
           <ProgressCard logged={actsLogged(rows)} goal={summary?.pledge_goal ?? 0} />
           <Link
             to="/log"
+            data-tour="log-one"
             className="flex min-h-[150px] flex-col justify-between gap-4 rounded-3xl bg-orange p-5 text-white no-underline shadow-cta lg:p-6"
           >
             <span className="flex h-[52px] w-[52px] items-center justify-center rounded-2xl bg-white/20">
@@ -277,6 +336,7 @@ export default function DashboardPage() {
           </Link>
           <Link
             to="/bulk"
+            data-tour="bulk"
             className="flex min-h-[150px] flex-col justify-between gap-4 rounded-3xl border-[1.5px] border-line-soft bg-white p-5 text-navy no-underline lg:p-6"
           >
             <span className="flex h-[52px] w-[52px] items-center justify-center rounded-2xl bg-sky-soft">
@@ -302,6 +362,7 @@ export default function DashboardPage() {
         )}
       </main>
       <LogOneDialog open={logOpen || !!editing} editing={editing} onClose={() => navigate("/")} />
+      {touring && <DashboardTour steps={tourSteps} onClose={endTour} />}
     </div>
   );
 }

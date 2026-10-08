@@ -226,13 +226,26 @@ Deno.serve(async (req) => {
 
   try {
     if (body?.action === "pull") {
-      return json({ rows: await pull(admin) });
+      // Acts the organization deleted since the last pull — the sheet greys
+      // those rows out. Acked with the same "ack" call as new rows.
+      const { data: deleted } = await admin
+        .from("partner_deleted_submissions")
+        .select("submission_id, deleted_by_name, deleted_at")
+        .is("sheet_synced_at", null)
+        .order("deleted_at", { ascending: true })
+        .limit(PULL_LIMIT);
+      return json({
+        rows: await pull(admin),
+        deleted: (deleted ?? []).map((d) => ({ id: d.submission_id, by: d.deleted_by_name ?? "", at: d.deleted_at })),
+      });
     }
 
     if (body?.action === "ack") {
       const ids = (Array.isArray(body.ids) ? body.ids : []).filter((id: unknown) => typeof id === "string" && UUID_RE.test(id));
       if (ids.length) {
-        await admin.from("partner_submissions").update({ sheet_synced_at: new Date().toISOString() }).in("id", ids);
+        const now = new Date().toISOString();
+        await admin.from("partner_submissions").update({ sheet_synced_at: now }).in("id", ids);
+        await admin.from("partner_deleted_submissions").update({ sheet_synced_at: now }).in("submission_id", ids);
       }
       return json({ ok: true, acked: ids.length });
     }

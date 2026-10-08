@@ -45,6 +45,7 @@ const STATUSES = ['Pending', 'Approved', 'Needs Changes', 'Rejected'];
 const RESUBMITTED_BG = '#FFF4D6'; // light yellow: edited by the organization, waiting for a new decision
 const PORTAL_URL = 'https://partners.passkindnessforward.com';
 const EMAILED_MARK = 'Emailed '; // prefix of the Status cell's note once the org has been emailed for this round
+const DELETED_BG = '#E6E6E6'; // grey: the organization deleted this act; it no longer exists in the portal
 
 function props_() {
   const p = PropertiesService.getScriptProperties();
@@ -121,8 +122,10 @@ function pullSubmissions() {
   if (!lock.tryLock(20000)) return;
   try {
     const sh = sheet_();
-    const { rows } = call_({ action: 'pull' });
-    if (!rows || rows.length === 0) return;
+    const res = call_({ action: 'pull' });
+    const rows = res.rows || [];
+    const deleted = res.deleted || [];
+    if (rows.length === 0 && deleted.length === 0) return;
 
     const last = sh.getLastRow();
     const rowOf = new Map();
@@ -181,7 +184,20 @@ function pullSubmissions() {
     if (fresh.length) {
       sh.getRange(sh.getLastRow() + 1, 1, fresh.length, HEADERS.length).setValues(fresh);
     }
-    call_({ action: 'ack', ids: rows.map((r) => r.id) });
+
+    // Deleted by the organization: keep the row for the record, grey it out
+    // and strike it through. Changing its Status does nothing any more.
+    deleted.forEach((d) => {
+      const r = rowOf.get(d.id);
+      if (!r) return;
+      const when = Utilities.formatDate(new Date(d.at), Session.getScriptTimeZone(), 'MMM d, h:mm a');
+      const row = sh.getRange(r, 1, 1, HEADERS.length);
+      row.setBackground(DELETED_BG).setFontLine('line-through').setFontColor('#777777');
+      sh.getRange(r, COL['Reviewed by']).setValue('DELETED by ' + (d.by || 'organization') + ' · ' + when);
+      sh.getRange(r, COL['Status']).setNote('Deleted by the organization on ' + when + '. It no longer exists in the portal or on the Wall.');
+    });
+
+    call_({ action: 'ack', ids: rows.map((r) => r.id).concat(deleted.map((d) => d.id)) });
   } finally {
     lock.releaseLock();
   }

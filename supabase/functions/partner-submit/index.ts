@@ -12,6 +12,11 @@ import { adminClient, corsHeaders, json, partnerFromRequest, UUID_RE } from "../
  *
  * New acts:
  *   { staff_id, submitter_email, media_consent, items: [{ description, people_count, act_date, link_url?, media: [{ path, type, name }] }] }
+ * Permanently delete one of this organization's acts (any status):
+ *   { action: "delete", staff_id, submission_id }
+ *   Removes its uploaded files, its Wall row (and that row's photo copies)
+ *   and the act itself. Only a tombstone (who/when, no content) is kept so
+ *   the review sheet can grey the row out.
  * Fix an act the reviewer marked "Needs Changes" (goes back to Pending and
  * back into the sheet, flagged as resubmitted):
  *   { action: "update", staff_id, submission_id, media_consent, item: { …same fields… } }
@@ -92,7 +97,7 @@ Deno.serve(async (req) => {
   if (!UUID_RE.test(staffId)) return json({ error: "Please log in again." }, 401);
   const { data: staff } = await admin
     .from("partner_staff")
-    .select("id, active")
+    .select("id, active, name")
     .eq("id", staffId)
     .eq("partner_id", partner.id)
     .maybeSingle();
@@ -105,6 +110,44 @@ Deno.serve(async (req) => {
   if (submitterEmail) {
     // Remember it for this person so the form pre-fills on any device.
     await admin.from("partner_staff").update({ email: submitterEmail }).eq("id", staffId);
+  }
+
+  if (body?.action === "delete") {
+    const id = String(body.submission_id ?? "");
+    if (!UUID_RE.test(id)) return json({ error: "That act couldn't be found." }, 400);
+    const { data: sub } = await admin
+      .from("partner_submissions")
+      .select("id, media, act_id")
+      .eq("id", id)
+      .eq("partner_id", partner.id)
+      .maybeSingle();
+    if (!sub) return json({ error: "That act couldn't be found — it may already be deleted." }, 404);
+
+    // Uploaded originals (private bucket).
+    const paths = ((sub.media ?? []) as { path: string }[]).map((m) => m.path).filter(Boolean);
+    if (paths.length) await admin.storage.from("partner-media").remove(paths);
+
+    // Its Wall post, if it was approved: the public photo copies, then the row
+    // (reactions, thank-yous and translations go with it — ON DELETE CASCADE).
+    if (sub.act_id) {
+      const { data: act } = await admin.from("acts_of_kindness").select("photo_paths").eq("id", sub.act_id).maybeSingle();
+      const wallPhotos = ((act?.photo_paths ?? []) as string[]).filter((p) => p.startsWith(`partners/${sub.id}/`));
+      if (wallPhotos.length) await admin.storage.from("kindness-photos").remove(wallPhotos);
+      await admin.from("acts_of_kindness").delete().eq("id", sub.act_id);
+    }
+
+    const { error } = await admin.from("partner_submissions").delete().eq("id", id);
+    if (error) {
+      console.error("partner-submit delete failed", error);
+      return json({ error: "Couldn't delete that act. Please try again." }, 500);
+    }
+    await admin.from("partner_deleted_submissions").upsert({
+      submission_id: id,
+      partner_id: partner.id,
+      deleted_by_staff_id: staffId,
+      deleted_by_name: staff.name ?? null,
+    });
+    return json({ ok: true, deleted: id });
   }
 
   if (body?.action === "update") {

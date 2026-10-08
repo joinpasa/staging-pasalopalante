@@ -122,6 +122,23 @@ export function useSubmitActs() {
   });
 }
 
+/** Permanently deletes one of this organization's acts (and its Wall post, if approved). */
+export function useDeleteAct() {
+  const { staff } = useSession();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (submissionId: string) => {
+      const { data } = await portal.auth.getSession();
+      return callFunction<{ ok: boolean }>(
+        "partner-submit",
+        { action: "delete", staff_id: staff?.id, submission_id: submissionId },
+        data.session?.access_token,
+      );
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["submissions"] }),
+  });
+}
+
 /** Loose check before sending — the server validates properly. */
 export function isValidLink(value: string) {
   const v = value.trim();
