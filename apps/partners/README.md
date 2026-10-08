@@ -14,10 +14,12 @@ partners.pasalopalante.com is where schools and partner orgs log their acts of k
 In the Supabase SQL editor:
 
 ```sql
-insert into public.partners (name, city, pledge_goal)
-values ('Escuela Esperanza', 'San Juan, Puerto Rico', 1000)
+insert into public.partners (name, city, pledge_goal, org_type, contact_email)
+values ('Escuela Esperanza', 'San Juan, Puerto Rico', 1000, 'school', 'coordinator@example.org')
 returning invite_token;
 ```
+
+`org_type` is one of `school`, `ngo`, `company`, `faith`, `government`, `community`, `other`. It and `contact_email` are optional and show up in the review sheet's **Org type** and **Org contact** columns.
 
 Send the coordinator `https://partners.pasalopalante.com/join/<invite_token>`. To remove someone, run `update public.partner_staff set active = false where id = '…'`. To invalidate an invite link, give the partner a new `invite_token`.
 

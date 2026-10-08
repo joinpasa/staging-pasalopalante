@@ -63,6 +63,16 @@ function normalizeYouTube(raw: string): string | null | undefined {
   return undefined;
 }
 
+const ORG_TYPE_LABELS: Record<string, string> = {
+  school: "School",
+  ngo: "NGO",
+  company: "Company",
+  faith: "Faith",
+  government: "Government",
+  community: "Community",
+  other: "Other",
+};
+
 interface MediaItem {
   path: string;
   type: "image" | "video";
@@ -73,7 +83,7 @@ async function pull(admin: SupabaseClient) {
   const { data, error } = await admin
     .from("partner_submissions")
     .select(
-      "id, batch_id, created_at, description, people_count, act_date, media, media_consent, status, partners(name, city), partner_staff(name)",
+      "id, batch_id, created_at, description, people_count, act_date, media, media_consent, status, partners(name, city, org_type, contact_email), partner_staff(name)",
     )
     .is("sheet_synced_at", null)
     .order("created_at", { ascending: true })
@@ -88,20 +98,30 @@ async function pull(admin: SupabaseClient) {
       const { data: signed } = await admin.storage.from("partner-media").createSignedUrl(m.path, LINK_TTL_SECONDS);
       if (signed?.signedUrl) links.push(signed.signedUrl);
     }
-    const p = one<{ name: string; city: string | null }>(s.partners);
+    const p = one<{ name: string; city: string | null; org_type: string | null; contact_email: string | null }>(s.partners);
     const st = one<{ name: string }>(s.partner_staff);
+    const photos = media.filter((m) => m.type === "image").length;
+    const videos = media.filter((m) => m.type === "video").length;
     rows.push({
       id: s.id,
       submitted_at: s.created_at,
-      school: p?.name ?? "",
+      organization: p?.name ?? "",
+      org_type: ORG_TYPE_LABELS[p?.org_type ?? ""] ?? "",
+      org_contact: p?.contact_email ?? "",
       city: p?.city ?? "",
       staff: st?.name ?? "",
       description: s.description,
       people: s.people_count,
       act_date: s.act_date,
       media_links: links,
+      // "2 photos · 1 video" / "None" — lets reviewers filter rows needing a YouTube upload.
+      media_summary:
+        [photos && `${photos} photo${photos > 1 ? "s" : ""}`, videos && `${videos} video${videos > 1 ? "s" : ""}`]
+          .filter(Boolean)
+          .join(" · ") || "None",
       media_consent: s.media_consent,
-      batch_id: s.batch_id,
+      // Short, human-scannable code shared by every row of one Bulk Log submission.
+      batch: String(s.batch_id).slice(0, 8).toUpperCase(),
     });
   }
   return rows;

@@ -25,15 +25,28 @@ Supabase stays the source of truth, and the Sheet is a review surface. Deleting 
    - `SHEET_SECRET` = the same string from step 1
 5. **Run `setup`.** Pick `setup` in the function dropdown, click **Run** and approve the Google permissions. That creates the tab, the Status dropdown, the every-minute sync and the edit trigger.
 
+`setup` also writes the header row. Don't type headers yourself; the script finds columns by name and order.
+
 After that the Sheet fills itself. **Partner review → Sync now** forces an immediate pull.
+
+## Columns
+
+**Status · Note · Organization · Org type · What happened · People · Act date · Photos / videos · Media · Media consent · YouTube link** · Submitted by · City · Submitted · Batch · Reviewed by · Reviewed at · Org contact · Last synced · Submission ID
+
+- The review columns are on the left, and Status, Note and Organization stay frozen while you scroll.
+- **Media** summarizes attachments ("2 photos · 1 video" / "None"). Filter it for "video" to find rows that need a YouTube upload.
+- **Batch** is shared by every row from one Bulk Log submission.
+- **Reviewed by / Reviewed at** fill in automatically when someone changes Status. Reviewed by needs the reviewer to be in the same Google Workspace as the script's owner, otherwise it stays blank.
+- **Org type / Org contact** come from the partner record (see `apps/partners/README.md`).
+- Don't edit **Submission ID**; it's how each row is matched back to the database.
 
 ## Reviewing
 
 | Status        | What happens                                                         |
 |---------------|----------------------------------------------------------------------|
 | Pending       | Default. Not on the wall.                                            |
-| Approved      | Published to the wall with the school's name and its photos.         |
-| Needs Changes | Not on the wall. The school sees "Needs Changes" and your **Note**.  |
+| Approved      | Published to the wall with the organization's name and its photos.   |
+| Needs Changes | Not on the wall. The organization sees "Needs Changes" and your **Note**. |
 | Rejected      | Not on the wall.                                                     |
 
 - You can change your mind. Moving an Approved row to anything else takes it off the wall again.

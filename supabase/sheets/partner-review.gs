@@ -18,15 +18,21 @@
  *        SUPABASE_URL  = https://tipfbleltjexofsjffwb.supabase.co
  *        SHEET_SECRET  = (same value as the PARTNER_SHEET_SECRET function secret)
  *   3. Run `setup` once from the editor and approve the permissions.
+ *      It creates the header row itself — don't type headers by hand.
  */
 
 const TAB = 'Submissions';
+
+// Review columns on the left, admin/reference columns on the right.
 const HEADERS = [
-  'Submission ID', 'Submitted', 'Organization', 'City', 'Submitted by', 'What happened',
-  'People', 'Act date', 'Photos / videos', 'Media consent', 'Status', 'Note',
-  'YouTube link', 'Last synced',
+  'Status', 'Note', 'Organization', 'Org type', 'What happened', 'People',
+  'Act date', 'Photos / videos', 'Media', 'Media consent', 'YouTube link',
+  'Submitted by', 'City', 'Submitted', 'Batch', 'Reviewed by', 'Reviewed at',
+  'Org contact', 'Last synced', 'Submission ID',
 ];
-const COL = { ID: 1, STATUS: 11, NOTE: 12, YOUTUBE: 13, SYNCED: 14 };
+const COL = {};
+HEADERS.forEach((h, i) => (COL[h] = i + 1));
+
 const STATUSES = ['Pending', 'Approved', 'Needs Changes', 'Rejected'];
 
 function props_() {
@@ -64,23 +70,30 @@ function sheet_() {
   return sh;
 }
 
-/** Run once from the editor: creates the tab, the Status dropdown, and the triggers. */
+function menu_() {
+  SpreadsheetApp.getActive().addMenu('Partner review', [{ name: 'Sync now', functionName: 'pullSubmissions' }]);
+}
+
+/** Run once from the editor: creates the tab, headers, Status dropdown, and triggers. */
 function setup() {
   const sh = sheet_();
   const rule = SpreadsheetApp.newDataValidation().requireValueInList(STATUSES, true).setAllowInvalid(false).build();
-  sh.getRange(2, COL.STATUS, sh.getMaxRows() - 1, 1).setDataValidation(rule);
+  sh.getRange(2, COL['Status'], sh.getMaxRows() - 1, 1).setDataValidation(rule);
+  sh.setFrozenColumns(COL['Organization']); // Status, Note, Organization stay visible while scrolling right
+  sh.getRange(2, COL['What happened'], sh.getMaxRows() - 1, 1).setWrap(true);
+  sh.setColumnWidth(COL['What happened'], 320);
 
   ScriptApp.getProjectTriggers().forEach((t) => ScriptApp.deleteTrigger(t));
   ScriptApp.newTrigger('pullSubmissions').timeBased().everyMinutes(1).create();
   // Installable (not simple) onEdit — simple triggers can't call external URLs.
   ScriptApp.newTrigger('onStatusEdit').forSpreadsheet(SpreadsheetApp.getActive()).onEdit().create();
 
-  SpreadsheetApp.getActive().addMenu('Partner review', [{ name: 'Sync now', functionName: 'pullSubmissions' }]);
+  menu_();
   pullSubmissions();
 }
 
 function onOpen() {
-  SpreadsheetApp.getActive().addMenu('Partner review', [{ name: 'Sync now', functionName: 'pullSubmissions' }]);
+  menu_();
 }
 
 /** Appends new submissions (skipping any ID already in the sheet), then acks them. */
@@ -93,26 +106,37 @@ function pullSubmissions() {
     if (!rows || rows.length === 0) return;
 
     const last = sh.getLastRow();
-    const existing = new Set(last > 1 ? sh.getRange(2, COL.ID, last - 1, 1).getValues().map((r) => r[0]) : []);
+    const existing = new Set(
+      last > 1 ? sh.getRange(2, COL['Submission ID'], last - 1, 1).getValues().map((r) => r[0]) : [],
+    );
     const now = new Date();
     const out = rows
       .filter((r) => !existing.has(r.id))
-      .map((r) => [
-        r.id,
-        new Date(r.submitted_at),
-        r.school,
-        r.city,
-        r.staff,
-        r.description,
-        r.people,
-        r.act_date,
-        (r.media_links || []).join('\n'),
-        r.media_consent ? 'Yes' : 'No',
-        'Pending',
-        '',
-        '',
-        now,
-      ]);
+      .map((r) => {
+        const v = {
+          'Status': 'Pending',
+          'Note': '',
+          'Organization': r.organization,
+          'Org type': r.org_type,
+          'What happened': r.description,
+          'People': r.people,
+          'Act date': r.act_date,
+          'Photos / videos': (r.media_links || []).join('\n'),
+          'Media': r.media_summary,
+          'Media consent': r.media_consent ? 'Yes' : 'No',
+          'YouTube link': '',
+          'Submitted by': r.staff,
+          'City': r.city,
+          'Submitted': new Date(r.submitted_at),
+          'Batch': r.batch,
+          'Reviewed by': '',
+          'Reviewed at': '',
+          'Org contact': r.org_contact,
+          'Last synced': now,
+          'Submission ID': r.id,
+        };
+        return HEADERS.map((h) => v[h]);
+      });
     if (out.length) {
       sh.getRange(sh.getLastRow() + 1, 1, out.length, HEADERS.length).setValues(out);
     }
@@ -120,6 +144,16 @@ function pullSubmissions() {
   } finally {
     lock.releaseLock();
   }
+}
+
+/** Who made this edit. Works for reviewers in the same Google Workspace as the script owner. */
+function editorEmail_(e) {
+  try {
+    if (e && e.user && e.user.getEmail && e.user.getEmail()) return e.user.getEmail();
+  } catch (err) {
+    /* not available for this account type */
+  }
+  return Session.getActiveUser().getEmail() || '';
 }
 
 /** Sends Status / Note / YouTube link changes back to Supabase. */
@@ -130,26 +164,36 @@ function onStatusEdit(e) {
   const first = range.getColumn();
   const last = first + range.getNumColumns() - 1;
   const touches = (c) => c >= first && c <= last;
-  const review = touches(COL.STATUS) || touches(COL.NOTE);
-  const video = touches(COL.YOUTUBE);
+  const statusChanged = touches(COL['Status']);
+  const review = statusChanged || touches(COL['Note']);
+  const video = touches(COL['YouTube link']);
   if (!review && !video) return;
 
+  const who = statusChanged ? editorEmail_(e) : '';
   for (let r = range.getRow(); r < range.getRow() + range.getNumRows(); r++) {
-    const id = sh.getRange(r, COL.ID).getValue();
+    const id = sh.getRange(r, COL['Submission ID']).getValue();
     if (!id) continue;
     try {
       // Link first, so approving in the same paste already has the video.
       if (video) {
-        const res = call_({ action: 'video', submission_id: id, youtube_url: String(sh.getRange(r, COL.YOUTUBE).getValue()) });
-        if (res.youtube_url) sh.getRange(r, COL.YOUTUBE).setValue(res.youtube_url);
+        const res = call_({
+          action: 'video',
+          submission_id: id,
+          youtube_url: String(sh.getRange(r, COL['YouTube link']).getValue()),
+        });
+        if (res.youtube_url) sh.getRange(r, COL['YouTube link']).setValue(res.youtube_url);
       }
-      const status = sh.getRange(r, COL.STATUS).getValue();
+      const status = sh.getRange(r, COL['Status']).getValue();
       if (review && status) {
-        call_({ action: 'review', submission_id: id, status: status, note: sh.getRange(r, COL.NOTE).getValue() });
+        call_({ action: 'review', submission_id: id, status: status, note: sh.getRange(r, COL['Note']).getValue() });
+        if (statusChanged) {
+          sh.getRange(r, COL['Reviewed by']).setValue(who);
+          sh.getRange(r, COL['Reviewed at']).setValue(new Date());
+        }
       }
-      sh.getRange(r, COL.SYNCED).setValue(new Date());
+      sh.getRange(r, COL['Last synced']).setValue(new Date());
     } catch (err) {
-      sh.getRange(r, COL.SYNCED).setValue('ERROR: ' + err.message);
+      sh.getRange(r, COL['Last synced']).setValue('ERROR: ' + err.message);
     }
   }
 }
