@@ -15,6 +15,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-10-08 — va.deedumlao@gmail.com
 
+- **Invite links and QR codes always use partners.passkindnessforward.com,** even when the portal is opened through Cloudflare's backup workers.dev address, so organizations never get a link on the wrong domain.
 - **Partner portal: Invite team page with a QR code.** Each organization now has an "Invite team" page with its own join QR code and link. They can copy or share it, download a QR image for group chats, or print a one-page poster for the staff room. Anyone who scans it gets their own Kindness ID. If a link gets shared too widely, "Reset link" swaps in a new one, and the old link and QR codes stop working. The dashboard tour now points to the page.
 - **Partner portal link previews now show the Kindness Forward logo with its name.** Sharing the portal link in chat or email shows the full square logo (instead of just the small heart icon), and the preview text now says "organization" instead of "school".
 - **Added the icon-only version of the new logo** (just the heart, no wordmark) to close the one remaining gap from the logo update above — used on the app's Wall header and a couple of other compact spots. Verified live.

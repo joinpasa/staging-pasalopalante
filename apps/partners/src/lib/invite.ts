@@ -1,8 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { portal } from "./portalClient";
 import { useSession } from "./session";
+import { publicOrigin } from "./links";
 
-export const inviteUrl = (token: string) => `${window.location.origin}/join/${token}`;
+export const inviteUrl = (token: string) => `${publicOrigin()}/join/${token}`;
 
 /** The organization's invite token (only its own — see partner_my_invite). */
 export function useInviteToken() {

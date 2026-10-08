@@ -6,6 +6,7 @@ import PortalHeader from "@/components/PortalHeader";
 import { useCopy } from "@/lib/i18n";
 import { buildQrCard, inviteUrl, useInviteToken, useResetInvite } from "@/lib/invite";
 import { useSession } from "@/lib/session";
+import { publicOrigin } from "@/lib/links";
 
 const HEART = { src: "/kf-heart.webp", excavate: true };
 
@@ -186,7 +187,7 @@ export default function InvitePage() {
             ))}
           </ol>
           <p className="m-0 text-base text-ink-muted">
-            {t.posterLogin} <strong className="text-navy">{window.location.host}</strong>
+            {t.posterLogin} <strong className="text-navy">{new URL(publicOrigin()).host}</strong>
           </p>
         </div>
       )}
