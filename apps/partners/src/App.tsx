@@ -48,6 +48,7 @@ const App = () => (
               <Route path="/join/:token" element={<JoinPage />} />
               <Route path="/" element={<RequireStaff><DashboardPage /></RequireStaff>} />
               <Route path="/log" element={<RequireStaff><DashboardPage /></RequireStaff>} />
+              <Route path="/edit/:id" element={<RequireStaff><DashboardPage /></RequireStaff>} />
               <Route path="/bulk" element={<RequireStaff><BulkLogPage /></RequireStaff>} />
               <Route path="/done" element={<RequireStaff><SuccessPage /></RequireStaff>} />
               <Route path="*" element={<Navigate to="/" replace />} />

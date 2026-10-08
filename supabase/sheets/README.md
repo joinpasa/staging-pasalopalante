@@ -46,9 +46,11 @@ After that the Sheet fills itself. **Partner review → Sync now** forces an imm
 |---------------|----------------------------------------------------------------------|
 | Pending       | Default. Not on the wall.                                            |
 | Approved      | Published to the wall with the organization's name and its photos.   |
-| Needs Changes | Not on the wall. The organization sees "Needs Changes" and your **Note**. |
+| Needs Changes | Not on the wall. The organization sees "Needs Changes" and your **Note** on their dashboard, and gets an email if the partner has a `contact_email`. They can edit the act and resubmit. |
 | Rejected      | Not on the wall.                                                     |
 
+- **Resubmitted acts:** when an organization edits a "Needs Changes" act, its existing row updates in place, goes back to **Pending**, turns light yellow and shows "RESUBMITTED <date>" under **Reviewed by**. Your previous note stays in **Note**. Change the Status to decide again, which clears the highlight.
+- **Organization links:** if an organization adds a link to a post (YouTube, Instagram, Facebook, TikTok, X), it's the first line of **Photos / videos** ("Link: …"). It goes on the Wall when approved: YouTube plays there, other platforms show as a link card with a preview. A link pasted in **YouTube link** takes priority.
 - You can change your mind. Moving an Approved row to anything else takes it off the wall again.
 - Photo/video links in the sheet are private, signed links that work for 30 days.
 - **Videos → YouTube link column.** Download the video from the row's link, upload it to the YouTube channel as **Public or Unlisted** (Private videos can't play on the wall), and paste the YouTube URL into **YouTube link**. Any youtube.com, youtu.be or Shorts link works. Once the row is Approved, the video plays on the website's Wall of Kindness. Paste the link before or after approving, either works. Clear the cell to remove it.

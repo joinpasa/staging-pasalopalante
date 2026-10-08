@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { ChevronDown, Globe, LogOut } from "lucide-react";
+import { Bug, ChevronDown, Globe, LifeBuoy, LogOut } from "lucide-react";
 import { useCopy } from "@/lib/i18n";
 import { useSession } from "@/lib/session";
+import { openSupportChat } from "@/lib/supportChat";
+import { REPORT_ISSUE_URL } from "@/lib/links";
 
 export function initials(name: string) {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -11,7 +13,7 @@ export function initials(name: string) {
 
 export default function PortalHeader({ minimal = false }: { minimal?: boolean }) {
   const { t, toggle } = useCopy();
-  const { staff, logout } = useSession();
+  const { staff, partner, logout } = useSession();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -66,7 +68,33 @@ export default function PortalHeader({ minimal = false }: { minimal?: boolean })
             <ChevronDown className="hidden h-4 w-4 md:block" />
           </button>
           {open && (
-            <div className="absolute end-0 top-12 w-52 rounded-2xl border border-line-soft bg-white p-2 text-ink shadow-card">
+            <div className="absolute end-0 top-12 w-64 rounded-2xl border border-line-soft bg-white p-2 text-ink shadow-card">
+              <div className="flex flex-col border-b border-line-faint px-3 pb-2.5 pt-1.5">
+                <span className="truncate text-sm font-bold">{staff?.name}</span>
+                <span className="truncate text-[13px] text-ink-muted">{partner?.name}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  openSupportChat();
+                  setOpen(false);
+                }}
+                className="mt-1 flex h-11 w-full items-center gap-2.5 rounded-xl px-3 text-start text-sm font-semibold hover:bg-canvas"
+              >
+                <LifeBuoy className="h-4 w-4 text-sky" />
+                {t.getSupport}
+              </button>
+              <a
+                href={REPORT_ISSUE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setOpen(false)}
+                className="flex h-11 w-full items-center gap-2.5 rounded-xl px-3 text-start text-sm font-semibold text-ink no-underline hover:bg-canvas"
+              >
+                <Bug className="h-4 w-4 text-orange" />
+                {t.reportIssue}
+              </a>
+              <div className="my-1 border-t border-line-faint" />
               <button
                 type="button"
                 onClick={() => {

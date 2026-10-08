@@ -1,4 +1,4 @@
-import { adminClient, corsHeaders, json, UUID_RE } from "../_shared/partner.ts";
+import { adminClient, corsHeaders, json, SERVICE_ROLE_KEY, SUPABASE_URL, UUID_RE } from "../_shared/partner.ts";
 import type { SupabaseClient } from "npm:@supabase/supabase-js@2";
 
 /**
@@ -83,7 +83,7 @@ async function pull(admin: SupabaseClient) {
   const { data, error } = await admin
     .from("partner_submissions")
     .select(
-      "id, batch_id, created_at, description, people_count, act_date, media, media_consent, status, partners(name, city, org_type, contact_email), partner_staff(name)",
+      "id, batch_id, created_at, description, people_count, act_date, media, media_consent, link_url, resubmitted_at, review_note, status, partners(name, city, org_type, contact_email), partner_staff(name)",
     )
     .is("sheet_synced_at", null)
     .order("created_at", { ascending: true })
@@ -113,7 +113,13 @@ async function pull(admin: SupabaseClient) {
       description: s.description,
       people: s.people_count,
       act_date: s.act_date,
-      media_links: links,
+      // The organization's own social post link (if any) leads the cell.
+      media_links: s.link_url ? [`Link: ${s.link_url}`, ...links] : links,
+      link_url: s.link_url ?? "",
+      // Set when the organization edited it after "Needs Changes": the sheet
+      // updates the existing row instead of appending a new one.
+      resubmitted_at: s.resubmitted_at ?? null,
+      previous_note: s.review_note ?? "",
       // "2 photos · 1 video" / "None" — lets reviewers filter rows needing a YouTube upload.
       media_summary:
         [photos && `${photos} photo${photos > 1 ? "s" : ""}`, videos && `${videos} video${videos > 1 ? "s" : ""}`]
@@ -127,25 +133,32 @@ async function pull(admin: SupabaseClient) {
   return rows;
 }
 
+function isYouTube(url: string) {
+  try {
+    const host = new URL(url).hostname.toLowerCase().replace(/^www\./, "");
+    return host === "youtube.com" || host.endsWith(".youtube.com") || host === "youtu.be";
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Approve → publish (or refresh) the submission's Wall row. Always rewrites
+ * the row's content, so an act that was approved, sent back with "Needs
+ * Changes", edited by the organization and approved again shows the edit.
+ */
 async function publishToWall(admin: SupabaseClient, submissionId: string) {
   const { data: s, error } = await admin
     .from("partner_submissions")
-    .select("id, description, media, act_id, youtube_url, partners(name, account_user_id)")
+    .select("id, description, media, act_id, youtube_url, link_url, partners(name, account_user_id)")
     .eq("id", submissionId)
     .single();
   if (error || !s) throw error ?? new Error("submission not found");
 
-  if (s.act_id) {
-    await admin
-      .from("acts_of_kindness")
-      .update({ status: "published", video_url: s.youtube_url ?? null })
-      .eq("id", s.act_id);
-    return s.act_id as string;
-  }
-
   // Wall cards read photo_paths from the public kindness-photos bucket.
   // Uploaded videos aren't copied: the wall plays YouTube links, which come
-  // from the sheet's "YouTube link" column (youtube_url) instead.
+  // from the sheet's "YouTube link" column (youtube_url) or the
+  // organization's own post link (link_url).
   const photoPaths: string[] = [];
   for (const m of ((s.media ?? []) as MediaItem[]).filter((m) => m.type === "image")) {
     const { data: file } = await admin.storage.from("partner-media").download(m.path);
@@ -158,24 +171,104 @@ async function publishToWall(admin: SupabaseClient, submissionId: string) {
     if (!upErr) photoPaths.push(dest);
   }
 
+  // Reviewer's YouTube upload wins; otherwise the organization's own link —
+  // the walls render YouTube as a player and other platforms as a link card.
+  const videoUrl = (s.youtube_url as string | null) ?? (s.link_url as string | null) ?? null;
   const partner = one<{ name: string; account_user_id: string | null }>(s.partners);
-  const { data: act, error: actErr } = await admin
-    .from("acts_of_kindness")
-    .insert({
-      mode: "performed",
-      description: s.description,
-      first_name: partner?.name ?? null,
-      photo_paths: photoPaths,
-      video_url: s.youtube_url ?? null,
-      status: "published",
-      share_on_wall: true,
-      user_id: partner?.account_user_id ?? null,
-      moderation_reason: "Approved in partner review sheet",
-    })
-    .select("id")
-    .single();
-  if (actErr) throw actErr;
-  return act.id as string;
+  const fields = {
+    mode: "performed",
+    description: s.description,
+    first_name: partner?.name ?? null,
+    photo_paths: photoPaths,
+    video_url: videoUrl,
+    link_preview_image: null,
+    status: "published",
+    share_on_wall: true,
+    user_id: partner?.account_user_id ?? null,
+    moderation_reason: "Approved in partner review sheet",
+  };
+
+  let actId = s.act_id as string | null;
+  if (actId) {
+    const { error: upErr } = await admin.from("acts_of_kindness").update(fields).eq("id", actId);
+    if (upErr) throw upErr;
+  } else {
+    const { data: act, error: actErr } = await admin.from("acts_of_kindness").insert(fields).select("id").single();
+    if (actErr) throw actErr;
+    actId = act.id as string;
+  }
+
+  // Same thumbnail step submit-act uses for Instagram/Facebook/TikTok/X links.
+  if (videoUrl && !isYouTube(videoUrl)) {
+    const task = fetch(`${SUPABASE_URL}/functions/v1/fetch-link-preview`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${SERVICE_ROLE_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ act_id: actId, url: videoUrl }),
+    }).catch((e) => console.error("fetch-link-preview dispatch failed", e));
+    // Keep the request alive until the dispatch is sent (Supabase Edge Runtime).
+    (globalThis as { EdgeRuntime?: { waitUntil(p: Promise<unknown>): void } }).EdgeRuntime?.waitUntil(task);
+  }
+  return actId;
+}
+
+const SENDER = "Pass Kindness Forward <noreply@ntf.pasalopalante.com>";
+const PORTAL_URL = "https://partners.passkindnessforward.com";
+
+function escapeHtml(v: string) {
+  return v.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+}
+
+/** Emails the organization's contact when an act is marked "Needs Changes". Best-effort. */
+async function emailNeedsChanges(admin: SupabaseClient, submissionId: string, note: string | null) {
+  const { data: s } = await admin
+    .from("partner_submissions")
+    .select("description, partners(name, contact_email)")
+    .eq("id", submissionId)
+    .maybeSingle();
+  const partner = one<{ name: string; contact_email: string | null }>(s?.partners);
+  const to = partner?.contact_email;
+  if (!s || !to) return false;
+
+  const subject = "One of your acts needs a quick change";
+  const noteHtml = note
+    ? `<p style="margin:0 0 6px;font-size:13px;font-weight:700;color:#A3134A">Note from the reviewer</p>
+       <p style="margin:0 0 20px;padding:12px 14px;background:#FCE4EE;border-radius:10px;font-size:15px;color:#0e234b">${escapeHtml(note)}</p>`
+    : "";
+  const html = `
+    <div style="font-family:Montserrat,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:#F8F6F1;padding:32px 16px;color:#0e234b">
+      <div style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:20px;padding:32px">
+        <h1 style="font-size:22px;margin:0 0 8px">An act needs a quick change</h1>
+        <p style="margin:0 0 20px;font-size:15px;color:#4A5875">
+          Thanks for sharing ${escapeHtml(partner?.name ?? "your organization")}'s kindness! Before this act can go on the Wall of Kindness, our team asked for a small update:
+        </p>
+        <p style="margin:0 0 20px;padding:12px 14px;background:#F8F6F1;border-radius:10px;font-size:15px">“${escapeHtml(String(s.description))}”</p>
+        ${noteHtml}
+        <a href="${PORTAL_URL}" style="display:inline-block;background:#f37023;color:#ffffff;text-decoration:none;font-weight:700;padding:14px 24px;border-radius:12px">Open the Partner Portal</a>
+        <p style="margin:20px 0 0;font-size:13px;color:#4A5875">Log in, tap the act marked “Needs Changes”, update it and resubmit.</p>
+      </div>
+    </div>`;
+  const text = `An act needs a quick change before it can go on the Wall of Kindness:\n\n"${s.description}"\n\n${
+    note ? `Note from the reviewer: ${note}\n\n` : ""
+  }Log in at ${PORTAL_URL}, tap the act marked "Needs Changes", update it and resubmit.`;
+
+  const { error } = await admin.rpc("enqueue_email", {
+    queue_name: "transactional_emails",
+    payload: {
+      message_id: crypto.randomUUID(),
+      to,
+      from: SENDER,
+      subject,
+      html,
+      text,
+      label: "partner_needs_changes",
+      queued_at: new Date().toISOString(),
+    },
+  });
+  if (error) {
+    console.error("needs-changes email enqueue failed", error);
+    return false;
+  }
+  return true;
 }
 
 Deno.serve(async (req) => {
@@ -208,7 +301,11 @@ Deno.serve(async (req) => {
       if (!UUID_RE.test(id) || !status) return json({ error: "Bad submission id or status" }, 400);
       const note = String(body.note ?? "").trim().slice(0, 1000) || null;
 
-      const { data: current } = await admin.from("partner_submissions").select("act_id").eq("id", id).maybeSingle();
+      const { data: current } = await admin
+        .from("partner_submissions")
+        .select("act_id, status, review_note")
+        .eq("id", id)
+        .maybeSingle();
       if (!current) return json({ error: "Submission not found" }, 404);
 
       let actId = current.act_id as string | null;
@@ -222,7 +319,13 @@ Deno.serve(async (req) => {
         .from("partner_submissions")
         .update({ status, review_note: note, reviewed_at: new Date().toISOString(), act_id: actId })
         .eq("id", id);
-      return json({ ok: true, status, on_wall: status === "approved" });
+      // Email only on the switch to "Needs Changes", or when the note changes
+      // while it's already there — not on every edit of the row.
+      let emailed = false;
+      if (status === "changes_requested" && (current.status !== "changes_requested" || current.review_note !== note)) {
+        emailed = await emailNeedsChanges(admin, id, note);
+      }
+      return json({ ok: true, status, on_wall: status === "approved", emailed });
     }
 
     if (body?.action === "video") {

@@ -24,12 +24,18 @@ export default function SuccessPage() {
             <img src="/logo-PKF-icon.png" srcSet="/logo-PKF-icon.png 1x, /logo-PKF-icon@2x.png 2x" alt="" className="relative w-[84px]" />
           </div>
           <div className="flex flex-col gap-2.5">
-            <h1 className="m-0 text-[32px] font-extrabold lg:text-[40px]">{t.thankYou}</h1>
-            <p className="m-0 text-lg font-semibold leading-snug lg:text-xl">{t.onTheirWay}</p>
+            <h1 className="m-0 text-[32px] font-extrabold lg:text-[40px]">
+              {result.resubmitted ? t.resubmittedTitle : t.thankYou}
+            </h1>
+            <p className="m-0 text-lg font-semibold leading-snug lg:text-xl">
+              {result.resubmitted ? t.resubmittedBody : t.onTheirWay}
+            </p>
           </div>
-          <span className="rounded-full bg-sky-soft px-4 py-2 text-sm font-bold text-sky-ink">
-            {t.summary(result.activities, result.acts.toLocaleString(locale))}
-          </span>
+          {!result.resubmitted && (
+            <span className="rounded-full bg-sky-soft px-4 py-2 text-sm font-bold text-sky-ink">
+              {t.summary(result.activities, result.acts.toLocaleString(locale))}
+            </span>
+          )}
           <div className="flex items-center gap-2.5 rounded-[14px] bg-canvas px-[18px] py-3.5 text-start text-[15px] text-ink-muted">
             <Clock className="h-5 w-5 shrink-0 text-sky" aria-hidden="true" />
             <span>{t.reviewNote}</span>

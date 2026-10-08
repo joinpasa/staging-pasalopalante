@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Heart, Image as ImageIcon, Layers, MapPin } from "lucide-react";
+import { ChevronRight, Heart, Image as ImageIcon, Layers, MapPin, MessageSquareWarning, Pencil } from "lucide-react";
 import PortalHeader from "@/components/PortalHeader";
 import StatusPill from "@/components/StatusPill";
 import LogOneDialog from "@/components/LogOneDialog";
@@ -65,7 +65,7 @@ function ProgressCard({ logged, goal }: { logged: number; goal: number }) {
         {cd.phase === "after" ? (
           <span className="rounded-full bg-sky-soft px-3 py-1.5 text-xs font-bold text-sky-ink">{t.seasonOver}</span>
         ) : (
-          <div className="flex flex-col items-end gap-1.5">
+          <div className="flex flex-col items-start gap-1.5">
             <span className="text-[10px] font-bold tracking-[0.08em] text-ink-muted">
               {cd.phase === "before" ? t.startsIn : t.endsIn}
             </span>
@@ -116,6 +116,17 @@ function ProgressCard({ logged, goal }: { logged: number; goal: number }) {
   );
 }
 
+/** A "Needs Changes" row is a link to its edit screen; every other row is plain. */
+function RowWrap({ editTo, className, children }: { editTo: string | null; className: string; children: ReactNode }) {
+  return editTo ? (
+    <Link to={editTo} className={className}>
+      {children}
+    </Link>
+  ) : (
+    <div className={className}>{children}</div>
+  );
+}
+
 function RecentActs({ rows }: { rows: Submission[] }) {
   const { t, locale } = useCopy();
   const [all, setAll] = useState(false);
@@ -140,17 +151,26 @@ function RecentActs({ rows }: { rows: Submission[] }) {
           <span>{t.colDate}</span>
           <span>{t.colStatus}</span>
         </div>
-        {shown.map((r, i) => (
-          <div
+        {shown.map((r, i) => {
+          // "Needs Changes" rows open the act for editing; others aren't clickable.
+          const editable = r.status === "changes_requested";
+          return (
+          <RowWrap
             key={r.id}
-            className="flex flex-col gap-2 border-t border-line-faint py-3 first:border-t-0 md:grid md:grid-cols-[1fr_120px_140px_180px] md:items-center md:gap-4 md:first:border-t"
+            editTo={editable ? `/edit/${r.id}` : null}
+            className={`flex flex-col gap-2 border-t border-line-faint py-3 text-navy no-underline first:border-t-0 md:grid md:grid-cols-[1fr_120px_140px_180px] md:items-center md:gap-4 md:first:border-t ${
+              editable ? "-mx-2 rounded-2xl px-2 hover:bg-rose-soft/40" : ""
+            }`}
           >
             <div className="flex min-w-0 items-center gap-4">
               <Thumb row={r} index={i} />
               <div className="flex min-w-0 flex-col gap-1">
                 <span className="text-[15px] font-semibold [overflow-wrap:anywhere]">{r.description}</span>
-                {r.status === "changes_requested" && r.review_note && (
-                  <span className="text-[13px] font-medium text-rose-ink">{r.review_note}</span>
+                {editable && r.review_note && (
+                  <span className="flex flex-col gap-0.5 rounded-xl bg-rose-soft px-3 py-2 text-[13px]">
+                    <span className="text-[11px] font-bold uppercase tracking-[0.06em] text-rose-ink">{t.reviewerNote}</span>
+                    <span className="font-medium text-navy">{r.review_note}</span>
+                  </span>
                 )}
                 <span className="text-[13px] text-ink-muted md:hidden">
                   {r.people_count.toLocaleString(locale)} {t.colActs.toLowerCase()} · {fmtDate(r.act_date)}
@@ -159,11 +179,18 @@ function RecentActs({ rows }: { rows: Submission[] }) {
             </div>
             <span className="hidden text-[15px] font-bold md:block">{r.people_count.toLocaleString(locale)}</span>
             <span className="hidden text-sm text-ink-muted md:block">{fmtDate(r.act_date)}</span>
-            <span className="ps-[72px] md:ps-0">
+            <span className="flex flex-col items-start gap-2 ps-[72px] md:ps-0">
               <StatusPill status={r.status} />
+              {editable && (
+                <span className="inline-flex items-center gap-1.5 text-[13px] font-bold text-sky-deep">
+                  <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
+                  {t.editAct}
+                </span>
+              )}
             </span>
-          </div>
-        ))}
+          </RowWrap>
+          );
+        })}
       </div>
     </section>
   );
@@ -198,6 +225,14 @@ export default function DashboardPage() {
   const { data: rows, isLoading, isError } = useSubmissions();
   const { data: summary } = usePartnerSummary();
   const logOpen = location.pathname === "/log";
+  const editId = location.pathname.startsWith("/edit/") ? location.pathname.slice("/edit/".length) : null;
+  const editing = editId ? rows?.find((r) => r.id === editId && r.status === "changes_requested") : undefined;
+  const needsChanges = (rows ?? []).filter((r) => r.status === "changes_requested");
+
+  // An /edit/ link for an act that isn't (or is no longer) "Needs Changes" — back to the dashboard.
+  useEffect(() => {
+    if (editId && rows && !editing) navigate("/", { replace: true });
+  }, [editId, rows, editing, navigate]);
   const firstName = staff?.name.split(/\s+/)[0] ?? "";
 
   return (
@@ -211,6 +246,20 @@ export default function DashboardPage() {
             <span>{[partner?.name, partner?.city].filter(Boolean).join(" · ")}</span>
           </div>
         </div>
+
+        {needsChanges.length > 0 && (
+          <Link
+            to={`/edit/${needsChanges[0].id}`}
+            className="flex items-center gap-4 rounded-2xl border-[1.5px] border-rose/30 bg-rose-soft px-5 py-4 text-navy no-underline hover:border-rose/60"
+          >
+            <MessageSquareWarning className="h-6 w-6 shrink-0 text-rose" aria-hidden="true" />
+            <span className="flex flex-1 flex-col gap-0.5">
+              <span className="text-base font-extrabold">{t.needsChangesBanner(needsChanges.length)}</span>
+              <span className="text-sm font-medium text-ink-muted">{t.needsChangesBannerSub}</span>
+            </span>
+            <ChevronRight className="h-5 w-5 shrink-0 text-rose rtl:rotate-180" aria-hidden="true" />
+          </Link>
+        )}
 
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-[2fr_1fr_1fr] lg:gap-5">
           <ProgressCard logged={actsLogged(rows)} goal={summary?.pledge_goal ?? 0} />
@@ -252,7 +301,7 @@ export default function DashboardPage() {
           <EmptyState />
         )}
       </main>
-      <LogOneDialog open={logOpen} onClose={() => navigate("/")} />
+      <LogOneDialog open={logOpen || !!editing} editing={editing} onClose={() => navigate("/")} />
     </div>
   );
 }

@@ -1,23 +1,28 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import * as Dialog from "@radix-ui/react-dialog";
-import { X } from "lucide-react";
+import { Link2, MessageSquareWarning, X } from "lucide-react";
 import MediaField from "./MediaField";
 import { useCopy } from "@/lib/i18n";
 import { todayISO } from "@/lib/season";
-import { useSubmitActs } from "@/lib/submissions";
+import { isValidLink, useSubmitActs, type Submission } from "@/lib/submissions";
 import { useUploads } from "@/lib/useUploads";
 
-/** Inner form is its own component so every open starts from a clean slate. */
-function LogOneForm({ onClose }: { onClose: () => void }) {
+/**
+ * Inner form is its own component so every open starts from a clean slate.
+ * With `editing`, it opens pre-filled with a "Needs Changes" act and
+ * resubmits it instead of creating a new one.
+ */
+function LogOneForm({ onClose, editing }: { onClose: () => void; editing?: Submission }) {
   const { t } = useCopy();
   const navigate = useNavigate();
   const submit = useSubmitActs();
-  const uploads = useUploads();
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState(todayISO());
-  const [group, setGroup] = useState(false);
-  const [count, setCount] = useState(2);
+  const uploads = useUploads(editing?.media ?? []);
+  const [description, setDescription] = useState(editing?.description ?? "");
+  const [date, setDate] = useState(editing?.act_date ?? todayISO());
+  const [group, setGroup] = useState((editing?.people_count ?? 1) > 1);
+  const [count, setCount] = useState(Math.max(2, editing?.people_count ?? 2));
+  const [link, setLink] = useState(editing?.link_url ?? "");
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,15 +39,18 @@ function LogOneForm({ onClose }: { onClose: () => void }) {
     if (!description.trim()) return setError(t.needDescription);
     if (uploads.busy) return setError(t.waitUploads);
     if (uploads.uploaded.length > 0 && !consent) return setError(t.needConsent);
+    if (!isValidLink(link)) return setError(t.badLink);
     try {
       const res = await submit.mutateAsync({
         consent,
+        editId: editing?.id,
         items: [
           {
             description: description.trim(),
             people_count: group ? count : 1,
             act_date: date,
             media: uploads.uploaded,
+            link_url: link.trim() || undefined,
           },
         ],
       });
@@ -56,8 +64,10 @@ function LogOneForm({ onClose }: { onClose: () => void }) {
     <form onSubmit={onSubmit} className="flex min-h-0 flex-1 flex-col">
       <div className="flex items-start justify-between gap-4 border-b border-line-faint px-5 py-5 lg:px-8 lg:py-6">
         <div className="flex flex-col gap-1">
-          <Dialog.Title className="m-0 text-2xl font-extrabold lg:text-[28px]">{t.logOne}</Dialog.Title>
-          <Dialog.Description className="m-0 text-[15px] text-ink-muted">{t.logOneIntro}</Dialog.Description>
+          <Dialog.Title className="m-0 text-2xl font-extrabold lg:text-[28px]">{editing ? t.editTitle : t.logOne}</Dialog.Title>
+          <Dialog.Description className="m-0 text-[15px] text-ink-muted">
+            {editing ? t.editIntro : t.logOneIntro}
+          </Dialog.Description>
         </div>
         <button
           type="button"
@@ -70,6 +80,15 @@ function LogOneForm({ onClose }: { onClose: () => void }) {
       </div>
 
       <div className="flex flex-1 flex-col gap-5 overflow-y-auto px-5 py-5 lg:px-8 lg:py-6">
+        {editing?.review_note && (
+          <div className="flex gap-3 rounded-2xl bg-rose-soft p-4">
+            <MessageSquareWarning className="mt-0.5 h-5 w-5 shrink-0 text-rose" aria-hidden="true" />
+            <div className="flex flex-col gap-1">
+              <span className="text-xs font-bold uppercase tracking-[0.06em] text-rose-ink">{t.reviewerNote}</span>
+              <span className="text-[15px] font-medium text-navy">{editing.review_note}</span>
+            </div>
+          </div>
+        )}
         <div className="flex flex-col gap-2">
           <label htmlFor="lo-what" className="label">
             {t.whatHappened}
@@ -162,6 +181,29 @@ function LogOneForm({ onClose }: { onClose: () => void }) {
 
         <MediaField uploads={uploads} id="lo-media" />
 
+        <div className="flex flex-col gap-2">
+          <label htmlFor="lo-link" className="label">
+            {t.linkLabel}
+          </label>
+          <div className="relative flex items-center">
+            <Link2 className="pointer-events-none absolute start-4 h-[18px] w-[18px] text-ink-muted" aria-hidden="true" />
+            <input
+              id="lo-link"
+              type="url"
+              inputMode="url"
+              autoComplete="off"
+              placeholder={t.linkPlaceholder}
+              value={link}
+              onChange={(e) => setLink(e.target.value)}
+              aria-describedby="lo-link-help"
+              className="field ps-11"
+            />
+          </div>
+          <span id="lo-link-help" className="text-[13px] text-ink-muted">
+            {t.linkHelp}
+          </span>
+        </div>
+
         {hasMedia && (
           <label className="flex cursor-pointer items-start gap-3 text-sm font-medium leading-normal">
             <input
@@ -186,14 +228,22 @@ function LogOneForm({ onClose }: { onClose: () => void }) {
           {t.cancel}
         </button>
         <button type="submit" disabled={submit.isPending} className="btn-primary h-[52px] flex-1 lg:flex-none">
-          {submit.isPending ? t.submitting : t.submitAct}
+          {submit.isPending ? t.submitting : editing ? t.resubmit : t.submitAct}
         </button>
       </div>
     </form>
   );
 }
 
-export default function LogOneDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
+export default function LogOneDialog({
+  open,
+  onClose,
+  editing,
+}: {
+  open: boolean;
+  onClose: () => void;
+  editing?: Submission;
+}) {
   return (
     <Dialog.Root open={open} onOpenChange={(o) => !o && onClose()}>
       <Dialog.Portal>
@@ -201,7 +251,7 @@ export default function LogOneDialog({ open, onClose }: { open: boolean; onClose
         <Dialog.Content
           className="fixed inset-0 z-50 flex flex-col bg-white text-ink outline-none lg:inset-auto lg:start-1/2 lg:top-1/2 lg:max-h-[90vh] lg:w-[680px] lg:-translate-x-1/2 lg:-translate-y-1/2 lg:rounded-[28px] lg:shadow-[0_24px_64px_rgba(14,35,75,0.25)] rtl:lg:translate-x-1/2"
         >
-          {open && <LogOneForm onClose={onClose} />}
+          {open && <LogOneForm key={editing?.id ?? "new"} onClose={onClose} editing={editing} />}
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

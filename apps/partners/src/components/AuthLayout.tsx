@@ -12,7 +12,11 @@ interface Props {
 function LangToggle({ className = "" }: { className?: string }) {
   const { t, toggle } = useCopy();
   return (
-    <button type="button" onClick={toggle} className={`h-11 rounded-full px-4 text-sm font-semibold ${className}`}>
+    <button
+      type="button"
+      onClick={toggle}
+      className={`h-11 rounded-full border-2 border-orange px-5 text-sm font-bold transition hover:bg-orange hover:text-white ${className}`}
+    >
       {t.language}
     </button>
   );
@@ -30,7 +34,7 @@ export default function AuthLayout({ chip, headline, body, children }: Props) {
           <span className="text-xl font-bold tracking-[0.02em]">{t.partners}</span>
           <span className="text-2xl font-medium text-sky">×</span>
           <img src="/logo-PKF-white.svg" alt="Pass Kindness Forward" className="h-[120px] w-auto" />
-          <LangToggle className="ms-auto text-ink-onnavy hover:text-white" />
+          <LangToggle className="ms-auto text-white" />
         </div>
         <div className="mt-auto flex flex-col gap-5">
           <span className="self-start rounded-full bg-sun px-3.5 py-2 text-[13px] font-bold text-navy">{chip}</span>
@@ -53,7 +57,7 @@ export default function AuthLayout({ chip, headline, body, children }: Props) {
           </div>
           {children}
           <div className="mt-auto flex flex-col items-center gap-2 pt-2 lg:hidden">
-            <LangToggle className="text-sky-deep" />
+            <LangToggle className="text-navy" />
             <span className="inline-flex items-center gap-2 rounded-full bg-sun-soft px-3.5 py-2 text-xs font-semibold text-sun-ink">
               <span className="h-2 w-2 rounded-full bg-sun" />
               {t.seasonChip}

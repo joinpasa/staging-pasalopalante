@@ -5,6 +5,7 @@ import {
   ArrowLeft,
   Check,
   Image as ImageIcon,
+  Link2,
   Play,
   Plus,
   RotateCw,
@@ -14,13 +15,15 @@ import {
 import PortalHeader from "@/components/PortalHeader";
 import { useCopy } from "@/lib/i18n";
 import { todayISO } from "@/lib/season";
-import { useSubmitActs } from "@/lib/submissions";
+import { isValidLink, useSubmitActs } from "@/lib/submissions";
+import { ACCEPT_ATTR } from "@/lib/upload";
 import type { UploadedMedia } from "@/lib/upload";
 import { useUploads } from "@/lib/useUploads";
 
 interface Row {
   id: number;
   description: string;
+  link: string;
   people: number;
   date: string;
 }
@@ -35,7 +38,7 @@ interface RowMedia {
 const EMPTY_MEDIA: RowMedia = { uploaded: [], busy: false, failed: 0, hasFiles: false };
 
 function newRow(id: number): Row {
-  return { id, description: "", people: 1, date: todayISO() };
+  return { id, description: "", link: "", people: 1, date: todayISO() };
 }
 
 /** One file slot per row, in its design states: empty → uploading → done / failed. */
@@ -59,7 +62,7 @@ function RowUpload({ onMedia }: { onMedia: (m: RowMedia) => void }) {
     <input
       ref={inputRef}
       type="file"
-      accept="image/*,video/*"
+      accept={ACCEPT_ATTR}
       className="hidden"
       onChange={(e) => {
         const f = e.target.files?.[0];
@@ -92,7 +95,7 @@ function RowUpload({ onMedia }: { onMedia: (m: RowMedia) => void }) {
     return (
       <div className="flex h-[52px] flex-col justify-center gap-1 rounded-xl border-[1.5px] border-line-soft bg-white px-3">
         <div className="flex justify-between gap-2 text-xs font-semibold">
-          <span className="truncate">{item.file.name}</span>
+          <span className="truncate">{item.name}</span>
           <span className="text-sky-deep">{item.progress}%</span>
         </div>
         <div className="h-1.5 rounded-full bg-track">
@@ -104,20 +107,26 @@ function RowUpload({ onMedia }: { onMedia: (m: RowMedia) => void }) {
 
   if (item.state === "failed") {
     return (
-      <div className="flex h-[52px] items-center gap-2 rounded-xl border-[1.5px] border-rose/40 bg-rose-soft px-3">
-        <AlertCircle className="h-5 w-5 shrink-0 text-rose" aria-hidden="true" />
-        <div className="flex min-w-0 flex-1 flex-col">
-          <span className="text-xs font-bold text-rose-ink">{t.uploadFailed}</span>
-          <span className="truncate text-xs text-ink-muted">{item.file.name}</span>
+      <div className="flex min-h-[52px] items-start gap-2 rounded-xl border-[1.5px] border-rose/40 bg-rose-soft px-3 py-2">
+        <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-rose" aria-hidden="true" />
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <span className="truncate text-xs font-bold text-rose-ink">
+            {t.uploadFailed} · {item.name}
+          </span>
+          <span role="alert" className="text-xs leading-snug text-navy">
+            {item.reason ? t.uploadErrors[item.reason] : t.uploadFailed}
+          </span>
         </div>
         <button
           type="button"
-          onClick={() => uploads.retry(item.key)}
+          // A wrong type or too-big file can't succeed on retry — pick a different file instead.
+          onClick={() => (item.reason === "type" || item.reason === "size" ? inputRef.current?.click() : uploads.retry(item.key))}
           className="flex h-9 shrink-0 items-center gap-1.5 rounded-lg bg-rose px-3 text-xs font-bold text-white"
         >
           <RotateCw className="h-3.5 w-3.5" aria-hidden="true" />
-          {t.retry}
+          {item.reason === "type" || item.reason === "size" ? t.chooseAnother : t.retry}
         </button>
+        {picker}
       </div>
     );
   }
@@ -142,7 +151,7 @@ function RowUpload({ onMedia }: { onMedia: (m: RowMedia) => void }) {
         className="flex min-w-0 flex-1 flex-col text-start"
         title={t.uploadMedia}
       >
-        <span className="truncate text-xs font-bold">{item.file.name}</span>
+        <span className="truncate text-xs font-bold">{item.name}</span>
         <span className="text-xs text-sky-ink">{t.uploadComplete}</span>
       </button>
       {picker}
@@ -187,6 +196,8 @@ export default function BulkLogPage() {
     if (orphan >= 0) return setError(t.rowError(orphan + 1, t.needDescription));
     if (busy) return setError(t.waitUploads);
     if (anyMedia && !consent) return setError(t.needConsent);
+    const badLink = rows.findIndex((r) => r.description.trim() && !isValidLink(r.link));
+    if (badLink >= 0) return setError(t.rowError(badLink + 1, t.badLink));
     try {
       const res = await submit.mutateAsync({
         consent,
@@ -195,6 +206,7 @@ export default function BulkLogPage() {
           people_count: Math.max(1, r.people || 1),
           act_date: r.date,
           media: media[r.id]?.uploaded ?? [],
+          link_url: r.link.trim() || undefined,
         })),
       });
       navigate("/done", { replace: true, state: res });
@@ -241,15 +253,30 @@ export default function BulkLogPage() {
                   <Trash2 className="h-5 w-5" />
                 </button>
               </div>
-              <input
-                type="text"
-                placeholder={t.whatHappened}
-                aria-label={t.actDescription}
-                maxLength={1000}
-                value={r.description}
-                onChange={(e) => update(r.id, { description: e.target.value })}
-                className="field col-span-2 lg:col-span-1"
-              />
+              <div className="col-span-2 flex flex-col gap-2 lg:col-span-1">
+                <input
+                  type="text"
+                  placeholder={t.whatHappened}
+                  aria-label={t.actDescription}
+                  maxLength={1000}
+                  value={r.description}
+                  onChange={(e) => update(r.id, { description: e.target.value })}
+                  className="field"
+                />
+                <div className="relative flex items-center">
+                  <Link2 className="pointer-events-none absolute start-3.5 h-4 w-4 text-ink-muted" aria-hidden="true" />
+                  <input
+                    type="url"
+                    inputMode="url"
+                    autoComplete="off"
+                    placeholder={t.linkLabel}
+                    aria-label={t.linkLabel}
+                    value={r.link}
+                    onChange={(e) => update(r.id, { link: e.target.value })}
+                    className="field h-11 ps-10 text-sm"
+                  />
+                </div>
+              </div>
               <input
                 type="text"
                 inputMode="numeric"

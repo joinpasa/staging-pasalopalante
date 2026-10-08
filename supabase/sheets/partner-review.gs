@@ -34,6 +34,7 @@ const COL = {};
 HEADERS.forEach((h, i) => (COL[h] = i + 1));
 
 const STATUSES = ['Pending', 'Approved', 'Needs Changes', 'Rejected'];
+const RESUBMITTED_BG = '#FFF4D6'; // light yellow: edited by the organization, waiting for a new decision
 
 function props_() {
   const p = PropertiesService.getScriptProperties();
@@ -96,7 +97,12 @@ function onOpen() {
   menu_();
 }
 
-/** Appends new submissions (skipping any ID already in the sheet), then acks them. */
+/**
+ * Appends new submissions (skipping any ID already in the sheet), then acks
+ * them. An act the organization edited after "Needs Changes" comes back with
+ * resubmitted_at set: its existing row is updated in place and put back to
+ * Pending, with the previous reviewer note kept in Note for context.
+ */
 function pullSubmissions() {
   const lock = LockService.getScriptLock();
   if (!lock.tryLock(20000)) return;
@@ -106,39 +112,59 @@ function pullSubmissions() {
     if (!rows || rows.length === 0) return;
 
     const last = sh.getLastRow();
-    const existing = new Set(
-      last > 1 ? sh.getRange(2, COL['Submission ID'], last - 1, 1).getValues().map((r) => r[0]) : [],
-    );
+    const rowOf = new Map();
+    if (last > 1) {
+      sh.getRange(2, COL['Submission ID'], last - 1, 1).getValues()
+        .forEach((r, i) => rowOf.set(r[0], i + 2));
+    }
     const now = new Date();
-    const out = rows
-      .filter((r) => !existing.has(r.id))
-      .map((r) => {
-        const v = {
-          'Status': 'Pending',
-          'Note': '',
-          'Organization': r.organization,
-          'Org type': r.org_type,
-          'What happened': r.description,
-          'People': r.people,
-          'Act date': r.act_date,
-          'Photos / videos': (r.media_links || []).join('\n'),
-          'Media': r.media_summary,
-          'Media consent': r.media_consent ? 'Yes' : 'No',
-          'YouTube link': '',
-          'Submitted by': r.staff,
-          'City': r.city,
-          'Submitted': new Date(r.submitted_at),
-          'Batch': r.batch,
-          'Reviewed by': '',
-          'Reviewed at': '',
-          'Org contact': r.org_contact,
-          'Last synced': now,
-          'Submission ID': r.id,
-        };
-        return HEADERS.map((h) => v[h]);
-      });
-    if (out.length) {
-      sh.getRange(sh.getLastRow() + 1, 1, out.length, HEADERS.length).setValues(out);
+    const toValues = (r, extra) => {
+      const v = Object.assign({
+        'Status': 'Pending',
+        'Note': '',
+        'Organization': r.organization,
+        'Org type': r.org_type,
+        'What happened': r.description,
+        'People': r.people,
+        'Act date': r.act_date,
+        'Photos / videos': (r.media_links || []).join('\n'),
+        'Media': r.media_summary,
+        'Media consent': r.media_consent ? 'Yes' : 'No',
+        'YouTube link': '',
+        'Submitted by': r.staff,
+        'City': r.city,
+        'Submitted': new Date(r.submitted_at),
+        'Batch': r.batch,
+        'Reviewed by': '',
+        'Reviewed at': '',
+        'Org contact': r.org_contact,
+        'Last synced': now,
+        'Submission ID': r.id,
+      }, extra || {});
+      return HEADERS.map((h) => v[h]);
+    };
+
+    const fresh = [];
+    rows.forEach((r) => {
+      const existing = rowOf.get(r.id);
+      if (!existing) {
+        fresh.push(toValues(r));
+      } else if (r.resubmitted_at) {
+        const when = Utilities.formatDate(new Date(r.resubmitted_at), Session.getScriptTimeZone(), 'MMM d, h:mm a');
+        // Note keeps the reviewer's previous note (it's what the org was
+        // answering); "Reviewed by" flags the resubmission until the next
+        // Status change overwrites it. The YouTube link, if pasted, is kept.
+        const keepYouTube = sh.getRange(existing, COL['YouTube link']).getValue();
+        sh.getRange(existing, 1, 1, HEADERS.length).setValues([toValues(r, {
+          'Note': r.previous_note || '',
+          'YouTube link': keepYouTube,
+          'Reviewed by': 'RESUBMITTED ' + when,
+        })]);
+        sh.getRange(existing, 1, 1, HEADERS.length).setBackground(RESUBMITTED_BG);
+      }
+    });
+    if (fresh.length) {
+      sh.getRange(sh.getLastRow() + 1, 1, fresh.length, HEADERS.length).setValues(fresh);
     }
     call_({ action: 'ack', ids: rows.map((r) => r.id) });
   } finally {
@@ -189,6 +215,7 @@ function onStatusEdit(e) {
         if (statusChanged) {
           sh.getRange(r, COL['Reviewed by']).setValue(who);
           sh.getRange(r, COL['Reviewed at']).setValue(new Date());
+          sh.getRange(r, 1, 1, HEADERS.length).setBackground(null); // clear the "resubmitted" highlight
         }
       }
       sh.getRange(r, COL['Last synced']).setValue(new Date());
