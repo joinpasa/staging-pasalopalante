@@ -9,6 +9,7 @@ import JoinPage from "@/pages/JoinPage";
 import DashboardPage from "@/pages/DashboardPage";
 import BulkLogPage from "@/pages/BulkLogPage";
 import SuccessPage from "@/pages/SuccessPage";
+import InvitePage from "@/pages/InvitePage";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: true, staleTime: 15_000 } },
@@ -50,6 +51,7 @@ const App = () => (
               <Route path="/log" element={<RequireStaff><DashboardPage /></RequireStaff>} />
               <Route path="/edit/:id" element={<RequireStaff><DashboardPage /></RequireStaff>} />
               <Route path="/bulk" element={<RequireStaff><BulkLogPage /></RequireStaff>} />
+              <Route path="/invite" element={<RequireStaff><InvitePage /></RequireStaff>} />
               <Route path="/done" element={<RequireStaff><SuccessPage /></RequireStaff>} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
-import { Bug, ChevronDown, Compass, Globe, Layers, LayoutDashboard, LifeBuoy, LogOut, Menu, X } from "lucide-react";
+import { Bug, ChevronDown, Compass, Globe, Layers, LayoutDashboard, LifeBuoy, LogOut, Menu, QrCode, X } from "lucide-react";
 import { useCopy } from "@/lib/i18n";
 import { useSession } from "@/lib/session";
 import { openSupportChat } from "@/lib/supportChat";
@@ -126,6 +126,9 @@ export default function PortalHeader({ minimal = false }: { minimal?: boolean })
               <NavLink to="/bulk" className={navClass}>
                 {t.bulkLog}
               </NavLink>
+              <NavLink to="/invite" data-tour="invite" className={navClass}>
+                {t.inviteTeam}
+              </NavLink>
             </>
           )}
           <div className="relative" ref={desktopRef}>
@@ -191,6 +194,10 @@ export default function PortalHeader({ minimal = false }: { minimal?: boolean })
               <NavLink to="/bulk" className={mobileNavClass}>
                 <Layers className="h-4 w-4 text-navy" />
                 {t.bulkLog}
+              </NavLink>
+              <NavLink to="/invite" className={mobileNavClass}>
+                <QrCode className="h-4 w-4 text-navy" />
+                {t.inviteTeam}
               </NavLink>
               <div className="my-1 border-t border-line-faint" />
             </>

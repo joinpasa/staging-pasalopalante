@@ -273,6 +273,7 @@ export default function DashboardPage() {
     { target: "bulk", title: t.tour.bulkTitle, body: t.tour.bulkBody },
     { target: "recent", title: t.tour.recentTitle, body: t.tour.recentBody },
     { target: "act-menu", title: t.tour.actMenuTitle, body: t.tour.actMenuBody },
+    { target: "invite", title: t.tour.inviteTitle, body: t.tour.inviteBody },
     { target: "menu", title: t.tour.menuTitle, body: t.tour.menuBody },
     { title: t.tour.doneTitle, body: t.tour.doneBody },
   ];

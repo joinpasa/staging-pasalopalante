@@ -21,7 +21,7 @@ returning invite_token;
 
 `org_type` is one of `school`, `ngo`, `company`, `faith`, `government`, `community`, `other`. It and `contact_email` are optional and show up in the review sheet's **Org type** and **Org contact** columns.
 
-Send the coordinator `https://partners.passkindnessforward.com/join/<invite_token>`. To remove someone, run `update public.partner_staff set active = false where id = '…'`. To invalidate an invite link, give the partner a new `invite_token`.
+Send the coordinator `https://partners.passkindnessforward.com/join/<invite_token>`. Once they've joined, anyone on the team can open **Invite team** (`/invite`) to get the same link as a QR code: copy/share it, download a QR image for group chats, or print a poster. **Reset link** there issues a new `invite_token` (old links and printed QR codes stop working; people who already joined keep their Kindness IDs). To remove someone, run `update public.partner_staff set active = false where id = '…'`.
 
 ## Screens → routes
 

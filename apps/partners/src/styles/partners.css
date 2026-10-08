@@ -26,3 +26,13 @@
     @apply text-sm font-semibold;
   }
 }
+
+@media print {
+  @page {
+    margin: 12mm;
+  }
+  html,
+  body {
+    background: #fff !important;
+  }
+}
