@@ -15,6 +15,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-10-08 — va.deedumlao@gmail.com
 
+- **Partner portal link previews now show the Kindness Forward logo with its name.** Sharing the portal link in chat or email shows the full square logo (instead of just the small heart icon), and the preview text now says "organization" instead of "school".
 - **Added the icon-only version of the new logo** (just the heart, no wordmark) to close the one remaining gap from the logo update above — used on the app's Wall header and a couple of other compact spots. Verified live.
 
 - **Applied the new "0930" Kindness Forward logo across the website and app.** The new mark drops "Pass" from the logo text itself (now reads "Kindness Forward" instead of "Pass Kindness Forward") with updated colors/shape. Trimmed and resized from the originals (which were 500KB–1.6MB each) down to normal web-asset sizes (8–100KB), and swapped in using the existing filenames so no code changes were needed — the Navbar (both its solid and transparent-over-hero states), Footer, and the app's Home header all now show the new logo. Left two spots untouched on purpose since no replacement was provided for them: the small icon-only mark (just the heart, no wordmark) used in a couple of compact spots, and the app's splash screen's separate Pásalo Pa'lante logo. The Partners portal app was intentionally left alone per instruction — that's being handled in a separate conversation.
