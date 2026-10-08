@@ -4,6 +4,7 @@ import { ArrowDownLeft, ArrowLeft, ArrowUpRight, Globe2, Link2, Users } from "lu
 import { useLongestChain, useMyConnections, type Connection, type ConnectionDirection } from "@/hooks/useAppData";
 import { timeAgo } from "@shared/lib/appActs";
 import { cn } from "@shared/lib/utils";
+import { statFontSizeClass } from "@shared/lib/statFontSize";
 
 const FILTERS: { key: "all" | ConnectionDirection; label: string }[] = [
   { key: "all", label: "All" },
@@ -78,19 +79,19 @@ export default function AppConnections() {
       </p>
 
       <div className="mt-5 grid grid-cols-3 gap-3">
-        <div className="flex flex-col gap-1.5 rounded-2xl bg-app-magenta/10 p-3">
+        <div className="flex flex-col gap-1.5 overflow-hidden rounded-2xl bg-app-magenta/10 p-3">
           <Users className="h-[17px] w-[17px] text-app-magenta" strokeWidth={1.6} />
-          <p className="text-[19px] font-extrabold leading-none text-foreground">{list.length}</p>
+          <p className={cn("font-extrabold leading-none text-foreground", statFontSizeClass(list.length, "compact"))}>{list.length}</p>
           <p className="text-[10.5px] leading-tight text-muted-foreground">Connections</p>
         </div>
-        <div className="flex flex-col gap-1.5 rounded-2xl bg-app-sky/10 p-3">
+        <div className="flex flex-col gap-1.5 overflow-hidden rounded-2xl bg-app-sky/10 p-3">
           <Globe2 className="h-[17px] w-[17px] text-app-sky" strokeWidth={1.6} />
-          <p className="text-[19px] font-extrabold leading-none text-foreground">{countries.size}</p>
+          <p className={cn("font-extrabold leading-none text-foreground", statFontSizeClass(countries.size, "compact"))}>{countries.size}</p>
           <p className="text-[10.5px] leading-tight text-muted-foreground">Countries</p>
         </div>
-        <div className="flex flex-col gap-1.5 rounded-2xl bg-app-gold/15 p-3">
+        <div className="flex flex-col gap-1.5 overflow-hidden rounded-2xl bg-app-gold/15 p-3">
           <Link2 className="h-[17px] w-[17px] text-app-gold" strokeWidth={1.6} />
-          <p className="text-[19px] font-extrabold leading-none text-foreground">{longestChain ?? 0}</p>
+          <p className={cn("font-extrabold leading-none text-foreground", statFontSizeClass(longestChain ?? 0, "compact"))}>{longestChain ?? 0}</p>
           <p className="text-[10.5px] leading-tight text-muted-foreground">Longest chain</p>
         </div>
       </div>

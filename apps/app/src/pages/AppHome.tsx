@@ -8,7 +8,9 @@ import {
   Heart,
   HeartHandshake,
   LayoutGrid,
+  MoreVertical,
   QrCode,
+  Trash2,
   Users,
 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -21,6 +23,7 @@ import MyCommitment from "@/components/app/MyCommitment";
 import SeasonCountdown from "@/components/app/SeasonCountdown";
 import FirstTimeTour from "@/components/app/FirstTimeTour";
 import OnboardingWalkthrough, { type OnboardingResult } from "@/components/app/OnboardingWalkthrough";
+import DeleteActDialog from "@/components/app/DeleteActDialog";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { supabase } from "@shared/integrations/supabase/client";
@@ -39,7 +42,14 @@ import { actEmoji, modeLabel, timeAgo } from "@shared/lib/appActs";
 import { submitPPLForm } from "@shared/lib/pplForm";
 import { cn } from "@shared/lib/utils";
 import { detectSocialLink, type DetectedSocialLink } from "@shared/lib/socialLinks";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@shared/components/ui/dropdown-menu";
 import SocialLinkChip, { SOCIAL_LINK_ICONS } from "@shared/components/share/SocialLinkChip";
+import { statFontSizeClass } from "@shared/lib/statFontSize";
 
 const nf = new Intl.NumberFormat("en-US");
 const GOAL = 1_000_000_000;
@@ -102,6 +112,8 @@ export default function AppHome() {
   const sendThanks = useSendThanks();
   const [justThanked, setJustThanked] = useState<Set<string>>(new Set());
   const queryClient = useQueryClient();
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   // A brand-new, verified account that hasn't pledged yet and hasn't seen
   // the tour - reachable regardless of which platform/device the signup
@@ -200,6 +212,31 @@ export default function AppHome() {
       });
     }
   };
+
+  async function handleDeleteAct() {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("delete-act", {
+        body: { act_id: deleteTarget },
+      });
+      const failure = (data as { error?: string } | null)?.error ?? error?.message;
+      if (failure) {
+        toast.error(failure);
+        return;
+      }
+      toast.success("Act deleted.");
+      setDeleteTarget(null);
+      queryClient.invalidateQueries({ queryKey: ["app", "my-acts"] });
+      queryClient.invalidateQueries({ queryKey: ["app", "me"] });
+      queryClient.invalidateQueries({ queryKey: ["app", "wall"] });
+      queryClient.invalidateQueries({ queryKey: ["app", "badges"] });
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   // The quick-log field on the hero card — a minimal direct call to the same
   // submit-act function ShareActFlow uses, for the case where someone just
@@ -435,16 +472,16 @@ export default function AppHome() {
 
       {user ? (
         <section className="grid grid-cols-3 gap-[9px]">
-          <div className="flex flex-col gap-1.5 rounded-2xl bg-app-sky/10 p-3">
+          <div className="flex flex-col gap-1.5 overflow-hidden rounded-2xl bg-app-sky/10 p-3">
             <Heart className="h-[17px] w-[17px] text-app-sky" strokeWidth={1.7} />
-            <p className="text-[19px] font-extrabold leading-none text-foreground">
+            <p className={cn("font-extrabold leading-none text-foreground", statFontSizeClass(me?.actsPassedForward ?? 0, "compact"))}>
               {nf.format(me?.actsPassedForward ?? 0)}
             </p>
             <p className="text-[10.5px] leading-tight text-muted-foreground">Acts passed forward</p>
           </div>
-          <div className="flex flex-col gap-1.5 rounded-2xl bg-app-gold/15 p-3">
+          <div className="flex flex-col gap-1.5 overflow-hidden rounded-2xl bg-app-gold/15 p-3">
             <Flame className="h-[17px] w-[17px] text-app-gold" strokeWidth={1.6} />
-            <p className="text-[19px] font-extrabold leading-none text-foreground">
+            <p className={cn("font-extrabold leading-none text-foreground", statFontSizeClass(me?.dayStreak ?? 0, "compact"))}>
               {nf.format(me?.dayStreak ?? 0)}
             </p>
             <p className="text-[10.5px] leading-tight text-muted-foreground">Day streak</p>
@@ -452,13 +489,13 @@ export default function AppHome() {
           <Link
             to="/connections"
             aria-label="Open My Network"
-            className="relative flex flex-col gap-1.5 rounded-2xl bg-app-magenta/10 p-3"
+            className="relative flex flex-col gap-1.5 overflow-hidden rounded-2xl bg-app-magenta/10 p-3"
           >
             <span className="absolute right-2 top-2 flex h-[22px] w-[22px] items-center justify-center rounded-full bg-app-magenta/15">
               <ArrowUpRight className="h-[11px] w-[11px] text-app-magenta" strokeWidth={2.1} />
             </span>
             <Users className="h-[17px] w-[17px] text-app-magenta" strokeWidth={1.6} />
-            <p className="text-[19px] font-extrabold leading-none text-foreground">
+            <p className={cn("font-extrabold leading-none text-foreground", statFontSizeClass(me?.connections ?? 0, "compact"))}>
               {nf.format(me?.connections ?? 0)}
             </p>
             <p className="text-[10.5px] leading-tight text-muted-foreground">People reached</p>
@@ -471,8 +508,8 @@ export default function AppHome() {
             { value: totals?.actsToday ?? 0, label: "Logged today" },
             { value: actsAllTime, label: "Acts all time" },
           ].map((stat) => (
-            <div key={stat.label} className="rounded-2xl bg-app-surface p-4">
-              <p className="font-sans text-2xl font-bold leading-none text-foreground">
+            <div key={stat.label} className="overflow-hidden rounded-2xl bg-app-surface p-4">
+              <p className={cn("break-all font-sans font-bold leading-tight text-foreground", statFontSizeClass(stat.value))}>
                 {nf.format(stat.value)}
               </p>
               <p className="mt-2 text-xs leading-snug text-muted-foreground">{stat.label}</p>
@@ -598,6 +635,26 @@ export default function AppHome() {
                       🙏 Thanked
                     </span>
                   )}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        type="button"
+                        aria-label="Act options"
+                        className="ml-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-muted-foreground"
+                      >
+                        <MoreVertical size={16} />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        className="text-destructive focus:text-destructive"
+                        onClick={() => setDeleteTarget(act.id)}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </li>
             ))}
@@ -694,6 +751,13 @@ export default function AppHome() {
         onExit={exitTour}
       />
     )}
+
+    <DeleteActDialog
+      open={!!deleteTarget}
+      onOpenChange={(o) => !o && setDeleteTarget(null)}
+      onConfirm={handleDeleteAct}
+      busy={deleting}
+    />
     </>
   );
 }

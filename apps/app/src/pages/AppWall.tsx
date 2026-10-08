@@ -1,16 +1,26 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, MoreVertical, Trash2 } from "lucide-react";
 
 import ReactionButton from "@/components/app/ReactionButton";
+import DeleteActDialog from "@/components/app/DeleteActDialog";
 import { useAuth } from "@shared/contexts/AuthContext";
+import { supabase } from "@shared/integrations/supabase/client";
 import { useActReactions, useMovementTotals, useMyRecentActs, useWallActs } from "@/hooks/useAppData";
 import { actEmoji, modeLabel, timeAgo } from "@shared/lib/appActs";
 import { cn } from "@shared/lib/utils";
 import { parseYouTubeId, getYouTubeThumbnail } from "@shared/lib/youtube";
 import { detectSocialLink } from "@shared/lib/socialLinks";
 import { SOCIAL_LINK_ICONS } from "@shared/components/share/SocialLinkChip";
+import { statFontSizeClass } from "@shared/lib/statFontSize";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@shared/components/ui/dropdown-menu";
 
 const nf = new Intl.NumberFormat("en-US");
 const FILTERS = ["Worldwide", "My chain"] as const;
@@ -26,7 +36,10 @@ function initials(name: string) {
 
 export default function AppWall() {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [filter, setFilter] = useState<Filter>("Worldwide");
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const worldwide = useWallActs();
   const mine = useMyRecentActs(20);
@@ -46,6 +59,31 @@ export default function AppWall() {
     }
     void toggle(actId);
   };
+
+  async function handleDelete() {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("delete-act", {
+        body: { act_id: deleteTarget },
+      });
+      const failure = (data as { error?: string } | null)?.error ?? error?.message;
+      if (failure) {
+        toast.error(failure);
+        return;
+      }
+      toast.success("Act deleted.");
+      setDeleteTarget(null);
+      queryClient.invalidateQueries({ queryKey: ["app", "my-acts"] });
+      queryClient.invalidateQueries({ queryKey: ["app", "me"] });
+      queryClient.invalidateQueries({ queryKey: ["app", "wall"] });
+      queryClient.invalidateQueries({ queryKey: ["app", "badges"] });
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   return (
     <div className="px-5 pt-6">
@@ -75,8 +113,8 @@ export default function AppWall() {
           { value: totals?.actsToday ?? 0, label: "Logged today" },
           { value: totals?.actsAllTime ?? 0, label: "Acts all time" },
         ].map((stat) => (
-          <div key={stat.label} className="rounded-2xl bg-app-surface p-4">
-            <p className="font-sans text-2xl font-bold leading-none text-foreground">
+          <div key={stat.label} className="overflow-hidden rounded-2xl bg-app-surface p-4">
+            <p className={cn("break-all font-sans font-bold leading-tight text-foreground", statFontSizeClass(stat.value))}>
               {nf.format(stat.value)}
             </p>
             <p className="mt-2 text-xs leading-snug text-muted-foreground">{stat.label}</p>
@@ -202,6 +240,28 @@ export default function AppWall() {
                   <span className="shrink-0 text-xs text-muted-foreground">
                     {timeAgo(post.createdAt)}
                   </span>
+                  {showingMine && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          type="button"
+                          aria-label="Act options"
+                          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-muted-foreground"
+                        >
+                          <MoreVertical size={16} />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          className="text-destructive focus:text-destructive"
+                          onClick={() => setDeleteTarget(post.id)}
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
                 </div>
 
                 <p className="mt-3 text-sm leading-relaxed text-foreground">{post.description}</p>
@@ -232,6 +292,13 @@ export default function AppWall() {
           })}
         </div>
       )}
+
+      <DeleteActDialog
+        open={!!deleteTarget}
+        onOpenChange={(o) => !o && setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        busy={deleting}
+      />
     </div>
   );
 }
