@@ -6,8 +6,12 @@ import { adminClient, corsHeaders, json, partnerFromRequest, UUID_RE } from "../
  * partner-sheet ("pull") within a minute, and approving one there is what
  * puts it on the Wall.
  *
+ * Both forms also send `submitter_email` — who to email if the reviewer
+ * marks the act "Needs Changes" (the org contact is cc'd). It's saved on
+ * the act and on the person's partner_staff row so the portal can pre-fill it.
+ *
  * New acts:
- *   { staff_id, media_consent, items: [{ description, people_count, act_date, link_url?, media: [{ path, type, name }] }] }
+ *   { staff_id, submitter_email, media_consent, items: [{ description, people_count, act_date, link_url?, media: [{ path, type, name }] }] }
  * Fix an act the reviewer marked "Needs Changes" (goes back to Pending and
  * back into the sheet, flagged as resubmitted):
  *   { action: "update", staff_id, submission_id, media_consent, item: { …same fields… } }
@@ -16,6 +20,7 @@ import { adminClient, corsHeaders, json, partnerFromRequest, UUID_RE } from "../
 const MAX_ITEMS = 50;
 const MAX_MEDIA_PER_ITEM = 4;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
 interface MediaIn {
   path?: unknown;
@@ -93,6 +98,15 @@ Deno.serve(async (req) => {
     .maybeSingle();
   if (!staff?.active) return json({ error: "Your Kindness ID is no longer active. Ask your coordinator." }, 403);
 
+  const submitterEmail = String(body?.submitter_email ?? "").trim().toLowerCase().slice(0, 254) || null;
+  if (submitterEmail && !EMAIL_RE.test(submitterEmail)) {
+    return json({ error: "That email address doesn't look right." }, 400);
+  }
+  if (submitterEmail) {
+    // Remember it for this person so the form pre-fills on any device.
+    await admin.from("partner_staff").update({ email: submitterEmail }).eq("id", staffId);
+  }
+
   if (body?.action === "update") {
     const id = String(body.submission_id ?? "");
     if (!UUID_RE.test(id)) return json({ error: "That act couldn't be found." }, 400);
@@ -116,6 +130,7 @@ Deno.serve(async (req) => {
         ...item,
         media_consent: consent,
         staff_id: staffId,
+        ...(submitterEmail ? { submitter_email: submitterEmail } : {}),
         status: "pending",
         resubmitted_at: new Date().toISOString(),
         sheet_synced_at: null, // the sheet re-pulls it and updates the same row
@@ -143,6 +158,7 @@ Deno.serve(async (req) => {
       staff_id: staffId,
       batch_id: batchId,
       media_consent: consent,
+      submitter_email: submitterEmail,
     });
   }
 

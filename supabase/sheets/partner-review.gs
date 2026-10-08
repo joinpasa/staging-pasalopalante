@@ -35,6 +35,8 @@ const HEADERS = [
   'Act date', 'Photos / videos', 'Media', 'Media consent', 'YouTube link',
   'Submitted by', 'City', 'Submitted', 'Batch', 'Reviewed by', 'Reviewed at',
   'Org contact', 'Last synced', 'Submission ID',
+  // Added later — kept at the end so existing sheets don't shift columns.
+  'Submitter email',
 ];
 const COL = {};
 HEADERS.forEach((h, i) => (COL[h] = i + 1));
@@ -75,6 +77,9 @@ function sheet_() {
     sh.appendRow(HEADERS);
     sh.setFrozenRows(1);
     sh.getRange(1, 1, 1, HEADERS.length).setFontWeight('bold');
+  } else if (sh.getLastColumn() < HEADERS.length) {
+    // A sheet set up before newer columns existed: add their headers at the end.
+    sh.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]).setFontWeight('bold');
   }
   return sh;
 }
@@ -148,6 +153,7 @@ function pullSubmissions() {
         'Org contact': r.org_contact,
         'Last synced': now,
         'Submission ID': r.id,
+        'Submitter email': r.submitter_email || '',
       }, extra || {});
       return HEADERS.map((h) => v[h]);
     };
@@ -186,7 +192,9 @@ function escapeHtml_(v) {
 }
 
 /**
- * Emails the organization once per "Needs Changes" round, from this Gmail.
+ * Emails the person who logged the act (cc the organization's contact) once
+ * per "Needs Changes" round, from this Gmail. No submitter email on file →
+ * it goes to the org contact alone.
  * Waits for a Note (setting the Status before typing the note is the usual
  * order), and remembers it was sent in a note on the Status cell, so later
  * edits don't send duplicates. Moving the row off "Needs Changes" resets it.
@@ -200,9 +208,12 @@ function maybeEmailNeedsChanges_(sh, r) {
   if (String(statusCell.getNote()).indexOf(EMAILED_MARK) === 0) return;
 
   const note = String(sh.getRange(r, COL['Note']).getValue()).trim();
-  const to = String(sh.getRange(r, COL['Org contact']).getValue()).trim();
+  const submitter = String(sh.getRange(r, COL['Submitter email']).getValue()).trim();
+  const orgContact = String(sh.getRange(r, COL['Org contact']).getValue()).trim();
+  const to = submitter || orgContact;
+  const cc = submitter && orgContact && orgContact.toLowerCase() !== submitter.toLowerCase() ? orgContact : '';
   if (!to) {
-    statusCell.setNote('Not emailed: this organization has no Org contact on file.');
+    statusCell.setNote('Not emailed: no Submitter email or Org contact on file.');
     return;
   }
   if (!note) {
@@ -228,6 +239,7 @@ function maybeEmailNeedsChanges_(sh, r) {
       '<p style="margin:18px 0 0;font-size:13px;color:#4A5875">Log in, tap the act marked “Needs Changes”, update it and resubmit. ' +
       'Questions? Just reply to this email.</p></div></div>',
   };
+  if (cc) opts.cc = cc;
   if (p.getProperty('REPLY_TO')) opts.replyTo = p.getProperty('REPLY_TO');
   if (p.getProperty('FROM_ALIAS')) opts.from = p.getProperty('FROM_ALIAS');
 
@@ -237,7 +249,7 @@ function maybeEmailNeedsChanges_(sh, r) {
     'Log in at ' + PORTAL_URL + ', tap the act marked "Needs Changes", update it and resubmit. Questions? Just reply to this email.';
 
   GmailApp.sendEmail(to, 'One of your acts needs a quick change', plain, opts);
-  statusCell.setNote(EMAILED_MARK + to + ' · ' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'MMM d, h:mm a'));
+  statusCell.setNote(EMAILED_MARK + to + (cc ? ' (cc ' + cc + ')' : '') + ' · ' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'MMM d, h:mm a'));
 }
 
 /** Who made this edit. Works for reviewers in the same Google Workspace as the script owner. */

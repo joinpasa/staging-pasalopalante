@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Link2, MessageSquareWarning, X } from "lucide-react";
 import MediaField from "./MediaField";
+import EmailField from "./EmailField";
+import { useSubmitterEmail } from "@/lib/useSubmitterEmail";
 import { useCopy } from "@/lib/i18n";
 import { todayISO } from "@/lib/season";
 import { isValidLink, useSubmitActs, type Submission } from "@/lib/submissions";
@@ -24,6 +26,7 @@ function LogOneForm({ onClose, editing }: { onClose: () => void; editing?: Submi
   const [count, setCount] = useState(Math.max(2, editing?.people_count ?? 2));
   const [link, setLink] = useState(editing?.link_url ?? "");
   const [consent, setConsent] = useState(false);
+  const submitter = useSubmitterEmail();
   const [error, setError] = useState<string | null>(null);
 
   // Default the permission box on once they've added a file — it's the
@@ -40,9 +43,11 @@ function LogOneForm({ onClose, editing }: { onClose: () => void; editing?: Submi
     if (uploads.busy) return setError(t.waitUploads);
     if (uploads.uploaded.length > 0 && !consent) return setError(t.needConsent);
     if (!isValidLink(link)) return setError(t.badLink);
+    if (!submitter.valid) return setError(t.needEmail);
     try {
       const res = await submit.mutateAsync({
         consent,
+        email: submitter.email,
         editId: editing?.id,
         items: [
           {
@@ -54,6 +59,7 @@ function LogOneForm({ onClose, editing }: { onClose: () => void; editing?: Submi
           },
         ],
       });
+      submitter.remember(submitter.email);
       navigate("/done", { replace: true, state: res });
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -203,6 +209,8 @@ function LogOneForm({ onClose, editing }: { onClose: () => void; editing?: Submi
             {t.linkHelp}
           </span>
         </div>
+
+        <EmailField id="lo-email" value={submitter.email} onChange={submitter.setEmail} />
 
         {hasMedia && (
           <label className="flex cursor-pointer items-start gap-3 text-sm font-medium leading-normal">

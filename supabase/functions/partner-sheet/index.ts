@@ -83,7 +83,7 @@ async function pull(admin: SupabaseClient) {
   const { data, error } = await admin
     .from("partner_submissions")
     .select(
-      "id, batch_id, created_at, description, people_count, act_date, media, media_consent, link_url, resubmitted_at, review_note, status, partners(name, city, org_type, contact_email), partner_staff(name)",
+      "id, batch_id, created_at, description, people_count, act_date, media, media_consent, link_url, resubmitted_at, review_note, submitter_email, status, partners(name, city, org_type, contact_email), partner_staff(name)",
     )
     .is("sheet_synced_at", null)
     .order("created_at", { ascending: true })
@@ -108,6 +108,8 @@ async function pull(admin: SupabaseClient) {
       organization: p?.name ?? "",
       org_type: ORG_TYPE_LABELS[p?.org_type ?? ""] ?? "",
       org_contact: p?.contact_email ?? "",
+      // Who logged it — the "Needs Changes" email goes here (org contact cc'd).
+      submitter_email: s.submitter_email ?? "",
       city: p?.city ?? "",
       staff: st?.name ?? "",
       description: s.description,

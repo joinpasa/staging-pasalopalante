@@ -93,12 +93,29 @@ export function useSubmitActs() {
   const { session, staff } = useSession();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ items, consent, editId }: { items: NewAct[]; consent: boolean; editId?: string }) => {
+    mutationFn: async ({
+      items,
+      consent,
+      editId,
+      email,
+    }: {
+      items: NewAct[];
+      consent: boolean;
+      editId?: string;
+      email: string;
+    }) => {
       const { data } = await portal.auth.getSession();
       const token = data.session?.access_token ?? session?.access_token;
       const body = editId
-        ? { action: "update", staff_id: staff?.id, submission_id: editId, media_consent: consent, item: items[0] }
-        : { staff_id: staff?.id, media_consent: consent, items };
+        ? {
+            action: "update",
+            staff_id: staff?.id,
+            submitter_email: email.trim(),
+            submission_id: editId,
+            media_consent: consent,
+            item: items[0],
+          }
+        : { staff_id: staff?.id, submitter_email: email.trim(), media_consent: consent, items };
       return callFunction<SubmitResult>("partner-submit", body, token);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["submissions"] }),

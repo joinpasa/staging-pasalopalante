@@ -13,6 +13,8 @@ import {
   Upload,
 } from "lucide-react";
 import PortalHeader from "@/components/PortalHeader";
+import EmailField from "@/components/EmailField";
+import { useSubmitterEmail } from "@/lib/useSubmitterEmail";
 import { useCopy } from "@/lib/i18n";
 import { todayISO } from "@/lib/season";
 import { isValidLink, useSubmitActs } from "@/lib/submissions";
@@ -167,6 +169,7 @@ export default function BulkLogPage() {
   const [rows, setRows] = useState<Row[]>(() => [newRow(1), newRow(2), newRow(3)]);
   const [media, setMedia] = useState<Record<number, RowMedia>>({});
   const [consent, setConsent] = useState(true);
+  const submitter = useSubmitterEmail();
   const [error, setError] = useState<string | null>(null);
 
   const update = (id: number, patch: Partial<Row>) =>
@@ -198,9 +201,11 @@ export default function BulkLogPage() {
     if (anyMedia && !consent) return setError(t.needConsent);
     const badLink = rows.findIndex((r) => r.description.trim() && !isValidLink(r.link));
     if (badLink >= 0) return setError(t.rowError(badLink + 1, t.badLink));
+    if (!submitter.valid) return setError(t.needEmail);
     try {
       const res = await submit.mutateAsync({
         consent,
+        email: submitter.email,
         items: filled.map((r) => ({
           description: r.description.trim(),
           people_count: Math.max(1, r.people || 1),
@@ -209,6 +214,7 @@ export default function BulkLogPage() {
           link_url: r.link.trim() || undefined,
         })),
       });
+      submitter.remember(submitter.email);
       navigate("/done", { replace: true, state: res });
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -226,6 +232,9 @@ export default function BulkLogPage() {
           </Link>
           <h1 className="m-0 text-[28px] font-extrabold lg:text-4xl">{t.bulkLog}</h1>
           <p className="m-0 max-w-[720px] text-base leading-relaxed text-ink-muted">{t.bulkIntro}</p>
+          <div className="mt-2 max-w-[460px]">
+            <EmailField id="bulk-email" value={submitter.email} onChange={submitter.setEmail} />
+          </div>
         </div>
 
         <section className="flex flex-col gap-3 lg:gap-0 lg:rounded-3xl lg:bg-white lg:px-6 lg:py-2 lg:shadow-card">
