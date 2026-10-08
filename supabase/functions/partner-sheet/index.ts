@@ -211,66 +211,6 @@ async function publishToWall(admin: SupabaseClient, submissionId: string) {
   return actId;
 }
 
-const SENDER = "Pass Kindness Forward <noreply@ntf.pasalopalante.com>";
-const PORTAL_URL = "https://partners.passkindnessforward.com";
-
-function escapeHtml(v: string) {
-  return v.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
-}
-
-/** Emails the organization's contact when an act is marked "Needs Changes". Best-effort. */
-async function emailNeedsChanges(admin: SupabaseClient, submissionId: string, note: string | null) {
-  const { data: s } = await admin
-    .from("partner_submissions")
-    .select("description, partners(name, contact_email)")
-    .eq("id", submissionId)
-    .maybeSingle();
-  const partner = one<{ name: string; contact_email: string | null }>(s?.partners);
-  const to = partner?.contact_email;
-  if (!s || !to) return false;
-
-  const subject = "One of your acts needs a quick change";
-  const noteHtml = note
-    ? `<p style="margin:0 0 6px;font-size:13px;font-weight:700;color:#A3134A">Note from the reviewer</p>
-       <p style="margin:0 0 20px;padding:12px 14px;background:#FCE4EE;border-radius:10px;font-size:15px;color:#0e234b">${escapeHtml(note)}</p>`
-    : "";
-  const html = `
-    <div style="font-family:Montserrat,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:#F8F6F1;padding:32px 16px;color:#0e234b">
-      <div style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:20px;padding:32px">
-        <h1 style="font-size:22px;margin:0 0 8px">An act needs a quick change</h1>
-        <p style="margin:0 0 20px;font-size:15px;color:#4A5875">
-          Thanks for sharing ${escapeHtml(partner?.name ?? "your organization")}'s kindness! Before this act can go on the Wall of Kindness, our team asked for a small update:
-        </p>
-        <p style="margin:0 0 20px;padding:12px 14px;background:#F8F6F1;border-radius:10px;font-size:15px">“${escapeHtml(String(s.description))}”</p>
-        ${noteHtml}
-        <a href="${PORTAL_URL}" style="display:inline-block;background:#f37023;color:#ffffff;text-decoration:none;font-weight:700;padding:14px 24px;border-radius:12px">Open the Partner Portal</a>
-        <p style="margin:20px 0 0;font-size:13px;color:#4A5875">Log in, tap the act marked “Needs Changes”, update it and resubmit.</p>
-      </div>
-    </div>`;
-  const text = `An act needs a quick change before it can go on the Wall of Kindness:\n\n"${s.description}"\n\n${
-    note ? `Note from the reviewer: ${note}\n\n` : ""
-  }Log in at ${PORTAL_URL}, tap the act marked "Needs Changes", update it and resubmit.`;
-
-  const { error } = await admin.rpc("enqueue_email", {
-    queue_name: "transactional_emails",
-    payload: {
-      message_id: crypto.randomUUID(),
-      to,
-      from: SENDER,
-      subject,
-      html,
-      text,
-      label: "partner_needs_changes",
-      queued_at: new Date().toISOString(),
-    },
-  });
-  if (error) {
-    console.error("needs-changes email enqueue failed", error);
-    return false;
-  }
-  return true;
-}
-
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
@@ -303,7 +243,7 @@ Deno.serve(async (req) => {
 
       const { data: current } = await admin
         .from("partner_submissions")
-        .select("act_id, status, review_note")
+        .select("act_id")
         .eq("id", id)
         .maybeSingle();
       if (!current) return json({ error: "Submission not found" }, 404);
@@ -319,13 +259,10 @@ Deno.serve(async (req) => {
         .from("partner_submissions")
         .update({ status, review_note: note, reviewed_at: new Date().toISOString(), act_id: actId })
         .eq("id", id);
-      // Email only on the switch to "Needs Changes", or when the note changes
-      // while it's already there — not on every edit of the row.
-      let emailed = false;
-      if (status === "changes_requested" && (current.status !== "changes_requested" || current.review_note !== note)) {
-        emailed = await emailNeedsChanges(admin, id, note);
-      }
-      return json({ ok: true, status, on_wall: status === "approved", emailed });
+      // The "Needs Changes" email to the organization is sent by the review
+      // sheet itself (Gmail, via Apps Script), so replies land in the
+      // reviewer's inbox — see supabase/sheets/partner-review.gs.
+      return json({ ok: true, status, on_wall: status === "approved" });
     }
 
     if (body?.action === "video") {

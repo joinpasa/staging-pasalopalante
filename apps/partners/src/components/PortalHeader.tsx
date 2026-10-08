@@ -76,7 +76,7 @@ export default function PortalHeader({ minimal = false }: { minimal?: boolean })
               <button
                 type="button"
                 onClick={() => {
-                  openSupportChat();
+                  openSupportChat(staff ? { name: staff.name, organization: partner?.name } : undefined);
                   setOpen(false);
                 }}
                 className="mt-1 flex h-11 w-full items-center gap-2.5 rounded-xl px-3 text-start text-sm font-semibold hover:bg-canvas"

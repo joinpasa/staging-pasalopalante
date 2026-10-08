@@ -19,6 +19,12 @@
  *        SHEET_SECRET  = (same value as the PARTNER_SHEET_SECRET function secret)
  *   3. Run `setup` once from the editor and approve the permissions.
  *      It creates the header row itself — don't type headers by hand.
+ *
+ * "Needs Changes" emails go out from the Gmail account that ran `setup`
+ * (they show in its Sent folder and replies come back to it). Optional
+ * script properties: SENDER_NAME (default "Pass Kindness Forward"),
+ * REPLY_TO (a different reply address), FROM_ALIAS (a "Send mail as" alias
+ * already set up in that Gmail, e.g. teampkf@passkindnessforward.com).
  */
 
 const TAB = 'Submissions';
@@ -35,6 +41,8 @@ HEADERS.forEach((h, i) => (COL[h] = i + 1));
 
 const STATUSES = ['Pending', 'Approved', 'Needs Changes', 'Rejected'];
 const RESUBMITTED_BG = '#FFF4D6'; // light yellow: edited by the organization, waiting for a new decision
+const PORTAL_URL = 'https://partners.passkindnessforward.com';
+const EMAILED_MARK = 'Emailed '; // prefix of the Status cell's note once the org has been emailed for this round
 
 function props_() {
   const p = PropertiesService.getScriptProperties();
@@ -161,6 +169,7 @@ function pullSubmissions() {
           'Reviewed by': 'RESUBMITTED ' + when,
         })]);
         sh.getRange(existing, 1, 1, HEADERS.length).setBackground(RESUBMITTED_BG);
+        sh.getRange(existing, COL['Status']).setNote(''); // a new round: next "Needs Changes" emails again
       }
     });
     if (fresh.length) {
@@ -170,6 +179,65 @@ function pullSubmissions() {
   } finally {
     lock.releaseLock();
   }
+}
+
+function escapeHtml_(v) {
+  return String(v).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+}
+
+/**
+ * Emails the organization once per "Needs Changes" round, from this Gmail.
+ * Waits for a Note (setting the Status before typing the note is the usual
+ * order), and remembers it was sent in a note on the Status cell, so later
+ * edits don't send duplicates. Moving the row off "Needs Changes" resets it.
+ */
+function maybeEmailNeedsChanges_(sh, r) {
+  const statusCell = sh.getRange(r, COL['Status']);
+  if (statusCell.getValue() !== 'Needs Changes') {
+    if (statusCell.getNote()) statusCell.setNote('');
+    return;
+  }
+  if (String(statusCell.getNote()).indexOf(EMAILED_MARK) === 0) return;
+
+  const note = String(sh.getRange(r, COL['Note']).getValue()).trim();
+  const to = String(sh.getRange(r, COL['Org contact']).getValue()).trim();
+  if (!to) {
+    statusCell.setNote('Not emailed: this organization has no Org contact on file.');
+    return;
+  }
+  if (!note) {
+    statusCell.setNote('Type a Note to email ' + to + ' what to change.');
+    return;
+  }
+
+  const org = String(sh.getRange(r, COL['Organization']).getValue());
+  const what = String(sh.getRange(r, COL['What happened']).getValue());
+  const p = PropertiesService.getScriptProperties();
+  const opts = {
+    name: p.getProperty('SENDER_NAME') || 'Pass Kindness Forward',
+    htmlBody:
+      '<div style="font-family:Montserrat,Arial,sans-serif;background:#F8F6F1;padding:28px 14px;color:#0e234b">' +
+      '<div style="max-width:560px;margin:0 auto;background:#fff;border-radius:18px;padding:28px">' +
+      '<h2 style="margin:0 0 8px;font-size:20px">An act needs a quick change</h2>' +
+      '<p style="margin:0 0 16px;color:#4A5875">Thanks for sharing ' + escapeHtml_(org) +
+      "'s kindness! Before this act can go on the Wall of Kindness, our team asked for a small update:</p>" +
+      '<p style="margin:0 0 16px;padding:12px 14px;background:#F8F6F1;border-radius:10px">“' + escapeHtml_(what) + '”</p>' +
+      '<p style="margin:0 0 4px;font-size:12px;font-weight:700;letter-spacing:.06em;color:#A3134A">NOTE FROM THE REVIEWER</p>' +
+      '<p style="margin:0 0 20px;padding:12px 14px;background:#FCE4EE;border-radius:10px">' + escapeHtml_(note) + '</p>' +
+      '<a href="' + PORTAL_URL + '" style="display:inline-block;background:#f37023;color:#fff;text-decoration:none;font-weight:700;padding:13px 22px;border-radius:12px">Open the Partner Portal</a>' +
+      '<p style="margin:18px 0 0;font-size:13px;color:#4A5875">Log in, tap the act marked “Needs Changes”, update it and resubmit. ' +
+      'Questions? Just reply to this email.</p></div></div>',
+  };
+  if (p.getProperty('REPLY_TO')) opts.replyTo = p.getProperty('REPLY_TO');
+  if (p.getProperty('FROM_ALIAS')) opts.from = p.getProperty('FROM_ALIAS');
+
+  const plain =
+    'An act needs a quick change before it can go on the Wall of Kindness:\n\n"' + what + '"\n\n' +
+    'Note from the reviewer: ' + note + '\n\n' +
+    'Log in at ' + PORTAL_URL + ', tap the act marked "Needs Changes", update it and resubmit. Questions? Just reply to this email.';
+
+  GmailApp.sendEmail(to, 'One of your acts needs a quick change', plain, opts);
+  statusCell.setNote(EMAILED_MARK + to + ' · ' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'MMM d, h:mm a'));
 }
 
 /** Who made this edit. Works for reviewers in the same Google Workspace as the script owner. */
@@ -217,6 +285,7 @@ function onStatusEdit(e) {
           sh.getRange(r, COL['Reviewed at']).setValue(new Date());
           sh.getRange(r, 1, 1, HEADERS.length).setBackground(null); // clear the "resubmitted" highlight
         }
+        maybeEmailNeedsChanges_(sh, r);
       }
       sh.getRange(r, COL['Last synced']).setValue(new Date());
     } catch (err) {

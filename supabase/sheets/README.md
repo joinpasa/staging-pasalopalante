@@ -46,9 +46,10 @@ After that the Sheet fills itself. **Partner review → Sync now** forces an imm
 |---------------|----------------------------------------------------------------------|
 | Pending       | Default. Not on the wall.                                            |
 | Approved      | Published to the wall with the organization's name and its photos.   |
-| Needs Changes | Not on the wall. The organization sees "Needs Changes" and your **Note** on their dashboard, and gets an email if the partner has a `contact_email`. They can edit the act and resubmit. |
+| Needs Changes | Not on the wall. The organization sees "Needs Changes" and your **Note** on their dashboard, and gets an email from your Gmail once you've typed a Note (see below). They can edit the act and resubmit. |
 | Rejected      | Not on the wall.                                                     |
 
+- **"Needs Changes" emails** are sent by this sheet from the Gmail account that ran `setup`, so they appear in its Sent folder and replies come straight back to you. One email per round, and only once there's a **Note**: set the Status first and type the Note after, and it sends when the Note is in. Hover the Status cell to see "Emailed <address> · <time>", or why it didn't send (no Org contact on file). To send from a team address, add it in Gmail as a "Send mail as" alias and set the `FROM_ALIAS` script property. `SENDER_NAME` and `REPLY_TO` are optional too.
 - **Resubmitted acts:** when an organization edits a "Needs Changes" act, its existing row updates in place, goes back to **Pending**, turns light yellow and shows "RESUBMITTED <date>" under **Reviewed by**. Your previous note stays in **Note**. Change the Status to decide again, which clears the highlight.
 - **Organization links:** if an organization adds a link to a post (YouTube, Instagram, Facebook, TikTok, X), it's the first line of **Photos / videos** ("Link: …"). It goes on the Wall when approved: YouTube plays there, other platforms show as a link card with a preview. A link pasted in **YouTube link** takes priority.
 - You can change your mind. Moving an Approved row to anything else takes it off the wall again.

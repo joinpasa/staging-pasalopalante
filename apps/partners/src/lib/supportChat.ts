@@ -6,6 +6,8 @@ declare global {
       maximize?: () => void;
       showWidget?: () => void;
       hideWidget?: () => void;
+      setAttributes?: (attrs: Record<string, string>, cb?: (err?: unknown) => void) => void;
+      visitor?: { name?: string; email?: string };
     };
     Tawk_LoadStart?: Date;
   }
@@ -29,8 +31,21 @@ const WIDGET_SRC = "https://embed.tawk.to/6ab43cfae84b8134496f22b1/1k380sct8";
  * chat removes it completely instead, back to nothing on screen until
  * "Get Support" is tapped again.
  */
-export function openSupportChat() {
+export interface SupportVisitor {
+  name: string;
+  organization?: string;
+}
+
+/** Tells the support inbox who's asking (portal only: the person + their organization). */
+function identify(who?: SupportVisitor) {
+  if (!who?.name) return;
+  const label = who.organization ? `${who.name} (${who.organization})` : who.name;
+  window.Tawk_API?.setAttributes?.({ name: label, ...(who.organization ? { organization: who.organization } : {}) }, () => {});
+}
+
+export function openSupportChat(who?: SupportVisitor) {
   if (window.Tawk_API?.maximize) {
+    identify(who);
     window.Tawk_API.showWidget?.();
     window.Tawk_API.maximize();
     return;
@@ -38,7 +53,13 @@ export function openSupportChat() {
 
   window.Tawk_LoadStart = new Date();
   window.Tawk_API = window.Tawk_API ?? {};
-  window.Tawk_API.onLoad = () => window.Tawk_API?.maximize?.();
+  if (who?.name) {
+    window.Tawk_API.visitor = { name: who.organization ? `${who.name} (${who.organization})` : who.name };
+  }
+  window.Tawk_API.onLoad = () => {
+    identify(who);
+    window.Tawk_API?.maximize?.();
+  };
   window.Tawk_API.onChatMinimized = () => window.Tawk_API?.hideWidget?.();
 
   const script = document.createElement("script");
