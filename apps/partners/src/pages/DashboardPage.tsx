@@ -203,7 +203,7 @@ function EmptyState() {
       <h2 className="m-0 text-[22px] font-extrabold">{t.recentActs}</h2>
       <div className="flex flex-col items-center gap-6 rounded-3xl border-2 border-dashed border-[#F3D9A4] bg-white p-8 text-center lg:flex-row lg:gap-10 lg:p-12 lg:text-start">
         <div className="flex h-[140px] w-[140px] shrink-0 items-center justify-center rounded-full bg-sun-soft">
-          <img src="/logo-PKF-icon.png" srcSet="/logo-PKF-icon.png 1x, /logo-PKF-icon@2x.png 2x" alt="" className="w-[84px]" />
+          <img src="/kf-heart.webp" alt="" className="w-[84px]" />
         </div>
         <div className="flex flex-1 flex-col gap-2.5">
           <h3 className="m-0 text-[26px] font-extrabold">{t.emptyTitle}</h3>

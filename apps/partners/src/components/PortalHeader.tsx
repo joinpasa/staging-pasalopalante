@@ -39,8 +39,8 @@ export default function PortalHeader({ minimal = false }: { minimal?: boolean })
   return (
     <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between bg-navy px-4 lg:h-[72px] lg:px-10 xl:px-40">
       <Link to="/" className="flex items-center gap-3 no-underline">
-        <img src="/logo-PKF-white.svg" alt="Pass Kindness Forward" className="h-14 w-auto lg:h-16" />
-        <span className="hidden text-base font-bold text-white sm:inline">{t.portal}</span>
+        <img src="/kf-logo-on-dark.webp" alt="Kindness Forward" width={123} height={40} className="h-9 w-auto lg:h-10" />
+        <span className="hidden border-s border-white/25 ps-3 text-base font-bold text-white sm:inline">{t.portal}</span>
       </Link>
       <nav className="flex items-center gap-5 lg:gap-7">
         {!minimal && (

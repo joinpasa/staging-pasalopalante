@@ -21,7 +21,7 @@ export default function SuccessPage() {
             <span className="absolute bottom-[18px] start-1 h-2.5 w-2.5 rounded-full bg-sky" />
             <span className="absolute start-0 top-10 h-2 w-2 rounded-full bg-orange" />
             <span className="absolute bottom-1 end-[34px] h-2 w-2 rounded-full bg-rose" />
-            <img src="/logo-PKF-icon.png" srcSet="/logo-PKF-icon.png 1x, /logo-PKF-icon@2x.png 2x" alt="" className="relative w-[84px]" />
+            <img src="/kf-heart.webp" alt="" className="relative w-[84px]" />
           </div>
           <div className="flex flex-col gap-2.5">
             <h1 className="m-0 text-[32px] font-extrabold lg:text-[40px]">

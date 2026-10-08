@@ -33,7 +33,7 @@ export default function AuthLayout({ chip, headline, body, children }: Props) {
         <div className="flex items-center gap-[18px]">
           <span className="text-xl font-bold tracking-[0.02em]">{t.partners}</span>
           <span className="text-2xl font-medium text-sky">×</span>
-          <img src="/logo-PKF-white.svg" alt="Pass Kindness Forward" className="h-[120px] w-auto" />
+          <img src="/kf-logo-on-dark.webp" alt="Kindness Forward" width={197} height={64} className="h-16 w-auto" />
           <LangToggle className="ms-auto text-white" />
         </div>
         <div className="mt-auto flex flex-col gap-5">
@@ -53,7 +53,7 @@ export default function AuthLayout({ chip, headline, body, children }: Props) {
           <div className="flex items-center justify-center gap-3.5 lg:hidden">
             <span className="text-[17px] font-bold tracking-[0.02em]">{t.partners}</span>
             <span className="text-xl font-medium text-sky">×</span>
-            <img src="/logo-PKF.png" srcSet="/logo-PKF.png 1x, /logo-PKF@2x.png 2x" alt="Pass Kindness Forward" className="h-[92px] w-auto" />
+            <img src="/kf-logo.webp" alt="Kindness Forward" width={172} height={56} className="h-14 w-auto" />
           </div>
           {children}
           <div className="mt-auto flex flex-col items-center gap-2 pt-2 lg:hidden">

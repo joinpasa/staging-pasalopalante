@@ -17,7 +17,7 @@ const queryClient = new QueryClient({
 function Splash() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-canvas">
-      <img src="/logo-PKF-icon.png" alt="" className="h-14 w-14 animate-pulse" />
+      <img src="/kf-heart.webp" alt="" className="h-14 w-14 animate-pulse" />
     </div>
   );
 }
