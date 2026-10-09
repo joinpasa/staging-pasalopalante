@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-10-09 — va.deedumlao@gmail.com
 
+- **The "Our Partners" page (`/partners` and `/partners/apply`) is live again**, after sitting in draft since late September. It's intentionally unlisted — not linked from the Navbar, Footer, or Explore menu, and left out of search-engine prerendering — so it's only reachable by whoever has the direct link, until it's ready to be publicly linked.
 - **Partner portal dashboard shows how many people are on the team.** A new "People" number next to "Acts logged" counts everyone in the organization who has joined with a Kindness ID (deactivated people aren't counted), so coordinators can see their team grow as they share the invite QR.
 
 ## 2026-10-06 — will@willpoweredstudios.com
