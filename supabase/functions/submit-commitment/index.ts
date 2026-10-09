@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { escapeHtml, notifyOps, SITE_NAME } from "../_shared/ops.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -9,6 +10,20 @@ const corsHeaders = {
 const TYPES = ["individual", "organization"] as const;
 const HELP_ROLES = ["do_acts", "champion", "ambassador", "civic", "volunteer"] as const;
 const ORG_TYPES = ["school", "company", "nonprofit", "ngo", "municipality", "faith", "other"] as const;
+
+// The number input on both pledge forms technically allows up to 1 billion
+// (the hard DB constraint) in a single submission, with no login required
+// and no human in the loop — exactly how one joke/bad-faith submission once
+// pushed the public "Acts pledged" total past 1B. Anything past these
+// per-type thresholds (well above the forms' own presets — 500 for
+// individuals, 10,000 for organizations — so a genuine enthusiastic pledge
+// still sails through) is held as 'pending' instead of auto-publishing, the
+// same way AI-flagged messages are, so it can't skew the public total until
+// a human has looked at it.
+const PLEDGE_REVIEW_THRESHOLD: Record<typeof TYPES[number], number> = {
+  individual: 10_000,
+  organization: 1_000_000,
+};
 
 interface Body {
   type: string;
@@ -146,7 +161,14 @@ Deno.serve(async (req) => {
       } catch (_) { /* ignore */ }
     }
 
-    const status = safe ? "published" : "rejected";
+    const reviewThreshold = PLEDGE_REVIEW_THRESHOLD[body.type as typeof TYPES[number]];
+    const needsPledgeReview = pledgeCount > reviewThreshold;
+    const status = !safe ? "rejected" : needsPledgeReview ? "pending" : "published";
+    const moderationReason = !safe
+      ? reason
+      : needsPledgeReview
+        ? `Pledge count ${pledgeCount.toLocaleString("en-US")} exceeds the ${reviewThreshold.toLocaleString("en-US")} auto-publish threshold for ${body.type} commitments — held for review.`
+        : null;
 
     const helpRole = body.help_role && HELP_ROLES.includes(body.help_role as any) ? body.help_role : null;
     const country = (body.country ?? "").toString().trim().slice(0, 80) || null;
@@ -167,7 +189,7 @@ Deno.serve(async (req) => {
         message: message || null,
         language,
         status,
-        moderation_reason: reason,
+        moderation_reason: moderationReason,
         user_id: userId,
         help_role: body.type === "individual" ? helpRole : null,
         country,
@@ -183,6 +205,31 @@ Deno.serve(async (req) => {
 
     if (!safe) {
       return bad("Your message couldn't be published. Please rephrase and try again.", 422);
+    }
+
+    if (needsPledgeReview) {
+      try {
+        const who = orgNameRaw || `${firstName} ${lastName}`.trim() || email;
+        await notifyOps(supabase, {
+          label: "oversized_pledge_review",
+          subject: `Pledge of ${pledgeCount.toLocaleString("en-US")} held for review — ${SITE_NAME}`,
+          text:
+            `${who} (${email}) pledged ${pledgeCount.toLocaleString("en-US")} acts as a${body.type === "organization" ? "n organization" : "n individual"}, ` +
+            `which is over the ${reviewThreshold.toLocaleString("en-US")} auto-publish threshold.\n\n` +
+            `It's saved but NOT counted in the public "Acts pledged" total yet (commitments.id = ${data.id}).\n\n` +
+            `To approve: in the Supabase Table Editor, open commitments, find this row by its id, and change status from pending to published.\n` +
+            `To reject: delete the row (or set status to rejected).`,
+          html:
+            `<p><strong>${escapeHtml(who)}</strong> (${escapeHtml(email)}) pledged <strong>${pledgeCount.toLocaleString("en-US")}</strong> acts ` +
+            `as a${body.type === "organization" ? "n organization" : "n individual"}, over the ${reviewThreshold.toLocaleString("en-US")} auto-publish threshold.</p>` +
+            `<p>It's saved but <strong>not counted</strong> in the public "Acts pledged" total yet.</p>` +
+            `<p style="font-size:12px;color:#a89c8e">commitments.id = ${data.id}</p>` +
+            `<p>To approve: in the Supabase Table Editor, open <code>commitments</code>, find this row by its id, and change <code>status</code> from <code>pending</code> to <code>published</code>.<br>` +
+            `To reject: delete the row (or set <code>status</code> to <code>rejected</code>).</p>`,
+        });
+      } catch (e) {
+        console.error("oversized pledge review alert failed", e);
+      }
     }
 
     // Sync role/org fields onto the user's profile (CRM-ready). Never overwrite with null.
