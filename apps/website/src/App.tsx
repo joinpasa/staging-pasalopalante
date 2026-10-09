@@ -39,10 +39,11 @@ const CommunityGuidelinesPage = lazy(() => import("./pages/CommunityGuidelinesPa
 const ContactPage = lazy(() => import("./pages/ContactPage.tsx"));
 const AboutPage = lazy(() => import("./pages/AboutPage.tsx"));
 // Unlisted — live at these URLs but not linked from the Navbar, Footer, or
-// prerendered for SEO (see the /partners routes below). Reachable only by
-// someone who already has the direct link.
+// prerendered for SEO (see the /partners and /ambassadors routes below).
+// Reachable only by someone who already has the direct link.
 const PartnersPage = lazy(() => import("./pages/PartnersPage.tsx"));
 const PartnersApplyPage = lazy(() => import("./pages/PartnersApplyPage.tsx"));
+const GlobalAmbassadorsPage = lazy(() => import("./pages/GlobalAmbassadorsPage.tsx"));
 const ProgramsPage = lazy(() => import("./pages/ProgramsPage.tsx"));
 const GetInvolvedPage = lazy(() => import("./pages/GetInvolvedPage.tsx"));
 const SchoolsEducatorsPage = lazy(() => import("./pages/SchoolsEducatorsPage.tsx"));
@@ -133,6 +134,7 @@ const App = () => (
                   either. Only reachable by direct URL. */}
               <Route path="/partners" element={<PartnersPage />} />
               <Route path="/partners/apply" element={<PartnersApplyPage />} />
+              <Route path="/ambassadors" element={<GlobalAmbassadorsPage />} />
               <Route path="/programs" element={<ProgramsPage />} />
               <Route path="/how-it-works" element={<ProgramsPage />} />
               <Route path="/get-involved" element={<GetInvolvedPage />} />

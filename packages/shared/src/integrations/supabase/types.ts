@@ -184,6 +184,63 @@ export type Database = {
         }
         Relationships: []
       }
+      ambassadors: {
+        Row: {
+          badge_url: string | null
+          country: string
+          created_at: string
+          email_hash: string
+          facebook: string | null
+          id: string
+          instagram: string | null
+          name: string
+          other_social: string | null
+          photo_url: string | null
+          region: string | null
+          role: string
+          status: string
+          tiktok: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          badge_url?: string | null
+          country: string
+          created_at?: string
+          email_hash: string
+          facebook?: string | null
+          id?: string
+          instagram?: string | null
+          name: string
+          other_social?: string | null
+          photo_url?: string | null
+          region?: string | null
+          role: string
+          status?: string
+          tiktok?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          badge_url?: string | null
+          country?: string
+          created_at?: string
+          email_hash?: string
+          facebook?: string | null
+          id?: string
+          instagram?: string | null
+          name?: string
+          other_social?: string | null
+          photo_url?: string | null
+          region?: string | null
+          role?: string
+          status?: string
+          tiktok?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       commitments: {
         Row: {
           country: string | null
