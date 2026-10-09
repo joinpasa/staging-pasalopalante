@@ -36,6 +36,24 @@ export function usePartnerSummary() {
   });
 }
 
+/** People on the team: active Kindness IDs under this organization. */
+export function useTeamSize() {
+  const { partner } = useSession();
+  return useQuery({
+    queryKey: ["team-size", partner?.id],
+    enabled: !!partner,
+    queryFn: async () => {
+      const { count, error } = await portal
+        .from("partner_staff")
+        .select("id", { count: "exact", head: true })
+        .eq("partner_id", partner!.id)
+        .eq("active", true);
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+}
+
 export function useSubmissions() {
   const { partner } = useSession();
   return useQuery({

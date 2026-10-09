@@ -10,7 +10,7 @@ import { hasSeenTour, markTourSeen, TOUR_EVENT } from "@/lib/tour";
 import { useCopy } from "@/lib/i18n";
 import { useSession } from "@/lib/session";
 import { seasonCountdown } from "@/lib/season";
-import { actsLogged, usePartnerSummary, useSubmissions, type Submission } from "@/lib/submissions";
+import { actsLogged, usePartnerSummary, useSubmissions, useTeamSize, type Submission } from "@/lib/submissions";
 
 const THUMB_TINTS = [
   "bg-[#FFF1E8] text-orange",
@@ -39,7 +39,7 @@ function Thumb({ row, index }: { row: Submission; index: number }) {
   );
 }
 
-function ProgressCard({ logged, goal }: { logged: number; goal: number }) {
+function ProgressCard({ logged, goal, people }: { logged: number; goal: number; people: number | undefined }) {
   const { t, locale } = useCopy();
   const now = useNow();
   const cd = seasonCountdown(now);
@@ -58,11 +58,16 @@ function ProgressCard({ logged, goal }: { logged: number; goal: number }) {
   return (
     <section data-tour="progress" className="flex flex-col gap-5 rounded-3xl bg-white p-5 shadow-card col-span-2 lg:col-span-1 lg:p-7">
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex flex-col gap-1.5">
-          <span className="text-xs font-bold tracking-[0.08em] text-ink-muted">{t.actsLogged}</span>
-          <div className="flex flex-wrap items-baseline gap-2">
-            <span className="text-5xl font-extrabold leading-none">{fmt(logged)}</span>
-            {goal > 0 && <span className="text-lg font-semibold text-ink-muted">{t.pledged(fmt(goal))}</span>}
+        <div className="grid grid-cols-[minmax(0,auto)_minmax(0,auto)] gap-x-5">
+          <div className="flex min-w-0 flex-col gap-1.5">
+            <span className="text-xs font-bold tracking-[0.08em] text-ink-muted">{t.actsLogged}</span>
+            <span className="text-[44px] font-extrabold leading-none">{fmt(logged)}</span>
+            {goal > 0 && <span className="text-sm font-semibold text-ink-muted">{t.pledged(fmt(goal))}</span>}
+          </div>
+          <div className="flex min-w-0 flex-col gap-1.5 border-s border-line-faint ps-5">
+            <span className="text-xs font-bold tracking-[0.08em] text-ink-muted">{t.teamPeople}</span>
+            <span className="text-[44px] font-extrabold leading-none">{people === undefined ? "–" : fmt(people)}</span>
+            <span className="text-sm font-semibold text-ink-muted">{t.teamPeopleHelp}</span>
           </div>
         </div>
         {cd.phase === "after" ? (
@@ -239,6 +244,7 @@ export default function DashboardPage() {
   const navigate = useNavigate();
   const { data: rows, isLoading, isError } = useSubmissions();
   const { data: summary } = usePartnerSummary();
+  const { data: teamSize } = useTeamSize();
   const logOpen = location.pathname === "/log";
   const editId = location.pathname.startsWith("/edit/") ? location.pathname.slice("/edit/".length) : null;
   const editing = editId ? rows?.find((r) => r.id === editId && r.status === "changes_requested") : undefined;
@@ -321,7 +327,7 @@ export default function DashboardPage() {
         )}
 
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-[2fr_1fr_1fr] lg:gap-5">
-          <ProgressCard logged={actsLogged(rows)} goal={summary?.pledge_goal ?? 0} />
+          <ProgressCard logged={actsLogged(rows)} goal={summary?.pledge_goal ?? 0} people={teamSize} />
           <Link
             to="/log"
             data-tour="log-one"

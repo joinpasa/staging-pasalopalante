@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-09 — va.deedumlao@gmail.com
+
+- **Partner portal dashboard shows how many people are on the team.** A new "People" number next to "Acts logged" counts everyone in the organization who has joined with a Kindness ID (deactivated people aren't counted), so coordinators can see their team grow as they share the invite QR.
+
 ## 2026-10-06 — will@willpoweredstudios.com
 
 - **The five GoHighLevel forms on the Get Involved pages (Schools, Nonprofits & Faith, Ambassadors, Municipalities, Companies) can now feed Airtable.** These forms are embedded straight from GHL, so until now their submissions only ever reached GHL and never the PPL CRM in Airtable. A new backend endpoint (`ghl-form-intake`) receives each submission from a GHL workflow and records it in PPL Signups plus PPL Contacts (matched by email so the same person doesn't get duplicated), tagged with which form it came from and the right participant type. It goes live once the GHL workflows and its shared-secret setting are configured.
