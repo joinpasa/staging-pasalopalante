@@ -127,9 +127,7 @@ function buildPillars(isEs: boolean): Pillar[] {
         ? "Empresas y marcas que patrocinan activaciones de bondad, igualan las horas de voluntariado de sus equipos y ayudan a financiar el alcance del movimiento."
         : "Businesses and brands that sponsor kindness activations, match their teams' volunteer hours, and help fund the movement's reach.",
       partners: [
-        { name: "Animaze", logo: "corporate_animaze.png", website: "animazefestival.com" },
         { name: "Eucaforest", logo: "corporate_eucaforest-logo1b.png" },
-        { name: "Good Pop", logo: "corporate_gdd_goodpop_logo.svg" },
         { name: "Loving AI", logo: "corporate_loving-ai.webp", website: "lovingai.org" },
         { name: "Mone & You", logo: "corporate_mone--you.png" },
         { name: "NuCalm", logo: "corporate_nucalm.png", website: "nucalm.com" },
@@ -157,7 +155,6 @@ function buildPillars(isEs: boolean): Pillar[] {
       partners: [
         { name: "Awaken — Michael Krauss", logo: "faith-based_awaken---michael-krauss.jpg" },
         { name: "Oneness", logo: "faith-based_oneness.png" },
-        { name: "Purity Weaves Destiny", logo: "faith-based_purity-weaves-destiny-blue-3-1.webp" },
         { name: "Yoga Vidya", logo: "faith-based_yoga-vidya.jpg" },
       ],
     },
@@ -170,7 +167,6 @@ function buildPillars(isEs: boolean): Pillar[] {
         ? "Municipios y agencias públicas que llevan la campaña a sus ciudades, proclaman la Temporada de Bondad y apoyan activaciones locales."
         : "Municipalities and public agencies that bring the campaign to their cities, proclaim the Kindness Season, and support local activations.",
       partners: [
-        { name: "Montserrat", logo: "government_montserrat.png" },
         {
           name: "Pres. Andrés Pastrana",
           role: isEs ? "Ex Presidente · Líder Cívico Global · Colombia" : "Former President · Global Civic Leader · Colombia",
@@ -187,14 +183,11 @@ function buildPillars(isEs: boolean): Pillar[] {
         ? "Organizaciones comunitarias que coorganizan activaciones, comparten recursos de bondad y conectan al movimiento con las personas a quienes sirven."
         : "Community organizations that co-host activations, share kindness resources, and connect the movement to the people they serve.",
       partners: [
-        { name: "WEDU", logo: "nonprofits_70e7b25ec4_wedu_logo_navy_web.png" },
         { name: "Coquí Charities", logo: "nonprofits_coqui-sq-logo-small-2-1.png" },
         { name: "Good Deeds Day", logo: "nonprofits_good-deeds-day.webp", website: "good-deeds-day.org" },
         { name: "HeartMath Institute", logo: "nonprofits_hmi-logo.png", website: "heartmath.org" },
         { name: "Kids for Peace", logo: "nonprofits_kids-for-peace.png", website: "kidsforpeaceglobal.org" },
-        { name: "Main", logo: "nonprofits_main_logo.png" },
         { name: "Million Peacemakers", logo: "nonprofits_million-peacemakers.png" },
-        { name: "Rotary Westminster International", logo: "nonprofits_rotary-westminster.png" },
         { name: "Te Amo PR", logo: "nonprofits_te-amo-pr.png", website: "teamopr.org" },
       ],
     },
