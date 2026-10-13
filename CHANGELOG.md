@@ -8,6 +8,12 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-13 — va.deedumlao@gmail.com
+
+- **Redesigned "Our Partners" (`/partners`) into a searchable directory.** New look: a dark navy hero with live stats (partner count, number of sectors, and the real live "acts pledged" total), a sticky search bar with per-sector filter chips showing live counts, and numbered directory sections with a website link on each card where one's known. Still unlisted — not linked from the Navbar, Footer, or Explore menu — until it's approved to go public.
+- **Added three newly confirmed coalition partners with logos:** JA Worldwide, the Ministry of Education (Anguilla), and Loving AI.
+- **Added all 78 Puerto Rico municipalities to the Government section**, each showing its official coat of arms (hotlinked directly from Wikimedia Commons rather than stored in this repo) — plus three confirmed civic leaders (the Premiers of the British Virgin Islands and Anguilla, and former President Andrés Pastrana of Colombia) shown as name/role cards.
+
 ## 2026-10-09 — va.deedumlao@gmail.com
 
 - **New Global Kindness Ambassadors directory (`/ambassadors`), built and unlisted while it's pending approval** — same "live but not linked anywhere" pattern as the Partners page. Ambassadors sync automatically from the Ambassador Kit Google Sheet/Apps Script: a new `sync-ambassador` backend endpoint receives each submission (and a second update once their badge is generated) and the page reads live from there, so a new ambassador appears within moments of submitting, no rebuild needed. Searchable by name/country/city, filterable by country and role. Never stores or shows the ambassador's email — only a one-way hash, used to make a resubmission update the same entry instead of creating a duplicate (closing the "what if someone submits twice" gap). The Apps Script side (Code.gs, Index.html) needs a small paste-in update to call the new endpoint and to add its own duplicate check — handed back separately since that script isn't part of this repo.
