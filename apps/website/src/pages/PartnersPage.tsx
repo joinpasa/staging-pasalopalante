@@ -129,7 +129,6 @@ function buildPillars(isEs: boolean): Pillar[] {
       partners: [
         { name: "Eucaforest", logo: "corporate_eucaforest-logo1b.png" },
         { name: "Loving AI", logo: "corporate_loving-ai.webp", website: "lovingai.org" },
-        { name: "Mone & You", logo: "corporate_mone--you.png" },
         { name: "NuCalm", logo: "corporate_nucalm.png", website: "nucalm.com" },
         { name: "SHRM", logo: "corporate_shrm.png", website: "shrm.org" },
       ],
@@ -209,6 +208,7 @@ function buildPillars(isEs: boolean): Pillar[] {
           name: "Ministry of Education, Health & Social Services — Montserrat",
           logo: "education_ministry-of-education-montserrat.png",
         },
+        { name: "Money & You / Excellerated Business Schools", logo: "education_money-and-you.png" },
       ],
     },
   ];
