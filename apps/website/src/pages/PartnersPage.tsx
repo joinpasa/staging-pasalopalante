@@ -1,126 +1,328 @@
+import { useMemo, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import SEO from "@/components/SEO";
 import { useLanguage } from "@shared/contexts/LanguageContext";
-import { Building2, GraduationCap, HandHeart, HeartHandshake, Landmark } from "lucide-react";
+import { useMovementTotals } from "@shared/hooks/useMovementTotals";
+import { ExternalLink, Search } from "lucide-react";
 
 interface Partner {
   name: string;
-  logo: string;
-  /** Some logos need a dark tile instead of the default light one to stay legible (e.g. a white-on-transparent mark). */
+  /** A filename served from /partners/, or a full https:// URL (e.g. a Wikimedia hotlink). */
+  logo?: string;
+  /** Some logos need a dark tile instead of the default white one to stay legible (e.g. a white-on-transparent mark). */
   dark?: boolean;
+  /** Bare domain, e.g. "jaworldwide.org" — rendered as a link to https://<website>. */
+  website?: string;
+  /** For individuals with no org logo (e.g. a head of state) — shown in place of a website link. */
+  role?: string;
 }
 
 interface Pillar {
   id: string;
-  icon: typeof Building2;
-  name: { en: string; es: string };
-  description: { en: string; es: string };
+  n: string;
+  tag: string;
+  name: string;
+  description: string;
   partners: Partner[];
 }
 
-const PILLARS: Pillar[] = [
-  {
-    id: "corporate",
-    icon: Building2,
-    name: { en: "Corporate", es: "Corporativo" },
-    description: {
-      en: "Businesses and brands that sponsor kindness activations, match their teams' volunteer hours, and help fund the movement's reach.",
-      es: "Empresas y marcas que patrocinan activaciones de bondad, igualan las horas de voluntariado de sus equipos y ayudan a financiar el alcance del movimiento.",
-    },
-    partners: [
-      { name: "Animaze", logo: "corporate_animaze.png" },
-      { name: "C-Suite Network", logo: "corporate_c-suite-network.png" },
-      { name: "Caribbean Cinemas", logo: "corporate_caribbean-cinemas-logo.png" },
-      { name: "Eucaforest", logo: "corporate_eucaforest-logo1b.png" },
-      { name: "Good Pop", logo: "corporate_gdd_goodpop_logo.svg" },
-      { name: "Good News Network", logo: "corporate_goodnewsnetwork_logo.jpg" },
-      { name: "HB CBC News", logo: "corporate_hb-cbc-news.jpg" },
-      { name: "HTS", logo: "corporate_hts.png" },
-      { name: "Laser 101 St Maarten", logo: "corporate_laser101-st-maarteen.png" },
-      { name: "Loving AI", logo: "corporate_loving-ai.webp" },
-      { name: "Mone & You", logo: "corporate_mone--you.png" },
-      { name: "Platea PR", logo: "corporate_platea-pr.png" },
-      { name: "TV15SXM", logo: "corporate_tv15sxm.png" },
-      { name: "The Weather Network", logo: "corporate_the_weather_network_2011.svg" },
-      { name: "bMedia", logo: "corporate_logo-bmedia--color.svg" },
-    ],
-  },
-  {
-    id: "faith-based",
-    icon: HeartHandshake,
-    name: { en: "Faith-Based", es: "Fe y Espiritualidad" },
-    description: {
-      en: "Churches, ministries, and faith communities that mobilize their congregations and weave kindness into their service to others.",
-      es: "Iglesias, ministerios y comunidades de fe que movilizan a sus congregaciones y tejen la bondad en su servicio a los demás.",
-    },
-    partners: [
-      { name: "Awaken — Michael Krauss", logo: "faith-based_awaken---michael-krauss.jpg" },
-      { name: "Brahma Kumaris", logo: "faith-based_brahma-kumaris.png" },
-      { name: "ISKCON", logo: "faith-based_iskcon.png", dark: true },
-      { name: "Oneness", logo: "faith-based_oneness.png" },
-      { name: "Purity Weaves Destiny", logo: "faith-based_purity-weaves-destiny-blue-3-1.webp" },
-      { name: "The Art of Living", logo: "faith-based_the-art-of-living.png" },
-      { name: "Yoga Vidya", logo: "faith-based_yoga-vidya.jpg" },
-    ],
-  },
-  {
-    id: "government",
-    icon: Landmark,
-    name: { en: "Government", es: "Gobierno" },
-    description: {
-      en: "Municipalities and public agencies that bring the campaign to their cities, proclaim the Kindness Season, and support local activations.",
-      es: "Municipios y agencias públicas que llevan la campaña a sus ciudades, proclaman la Temporada de Bondad y apoyan activaciones locales.",
-    },
-    partners: [
-      { name: "Montserrat", logo: "government_montserrat.png" },
-      { name: "WIPR", logo: "government_wipr6.png" },
-    ],
-  },
-  {
-    id: "nonprofits",
-    icon: HandHeart,
-    name: { en: "Nonprofits", es: "Organizaciones sin Fines de Lucro" },
-    description: {
-      en: "Community organizations that co-host activations, share kindness resources, and connect the movement to the people they serve.",
-      es: "Organizaciones comunitarias que coorganizan activaciones, comparten recursos de bondad y conectan al movimiento con las personas a quienes sirven.",
-    },
-    partners: [
-      { name: "WEDU", logo: "nonprofits_70e7b25ec4_wedu_logo_navy_web.png" },
-      { name: "Ad Council", logo: "nonprofits_ad-council.brightspotcdn.png" },
-      { name: "AIESEC", logo: "nonprofits_aiesec_logo_black.svg" },
-      { name: "Coquí", logo: "nonprofits_coqui-sq-logo-small-2-1.png" },
-      { name: "HMI", logo: "nonprofits_hmi-logo.png" },
-      { name: "HITN", logo: "nonprofits_hitn.webp" },
-      { name: "Kids for Peace", logo: "nonprofits_kids-for-peace.png" },
-      { name: "Main", logo: "nonprofits_main_logo.png" },
-      { name: "Million Peacemakers", logo: "nonprofits_million-peacemakers.png" },
-      { name: "PBS", logo: "nonprofits_pbs_logo_2019.svg" },
-      { name: "Rotary Westminster", logo: "nonprofits_rotary-westminster.png" },
-      { name: "WKM", logo: "nonprofits_wkm_wide.png" },
-    ],
-  },
-  {
-    id: "education",
-    icon: GraduationCap,
-    name: { en: "Education", es: "Educación" },
-    description: {
-      en: "Schools, campuses, and educators who bring kindness into classrooms with age-appropriate prompts, activities, and student-led projects.",
-      es: "Escuelas, campus y educadores que llevan la bondad a las aulas con actividades y proyectos liderados por estudiantes, adecuados para cada edad.",
-    },
-    partners: [
-      { name: "Departamento de Educación PR", logo: "education_departamento-educacion-pr.png" },
-      { name: "JA Worldwide", logo: "education_ja-worldwide.png" },
-      { name: "MECYS", logo: "education_mecys.png" },
-      { name: "Ministry of Education — Anguilla", logo: "education_ministry-of-education-anguilla.png" },
-    ],
-  },
+// Direct Wikimedia Commons file URLs for each municipality's coat of arms,
+// derived locally from Commons' documented md5-hash path scheme (no network
+// fetch needed/possible from this sandbox) — see the "Puerto Rico
+// Municipalities Seals and Flags" sheet for the source list.
+const PR_MUNICIPALITIES: Partner[] = [
+  { name: "Adjuntas", logo: "https://upload.wikimedia.org/wikipedia/commons/e/e5/Escudo_de_Adjuntas.svg" },
+  { name: "Aguada", logo: "https://upload.wikimedia.org/wikipedia/commons/7/72/Escudo_de_Aguada.svg" },
+  { name: "Aguadilla", logo: "https://upload.wikimedia.org/wikipedia/commons/1/1c/Escudo_de_Aguadilla.svg" },
+  { name: "Aguas Buenas", logo: "https://upload.wikimedia.org/wikipedia/commons/a/a8/Escudo_de_Aguas_Buenas.svg" },
+  { name: "Aibonito", logo: "https://upload.wikimedia.org/wikipedia/commons/f/fb/Escudo_de_Aibonito.svg" },
+  { name: "Añasco", logo: "https://upload.wikimedia.org/wikipedia/commons/8/89/Escudo_de_A%C3%B1asco.svg" },
+  { name: "Arecibo", logo: "https://upload.wikimedia.org/wikipedia/commons/5/5a/Escudo_de_Arecibo.svg" },
+  { name: "Arroyo", logo: "https://upload.wikimedia.org/wikipedia/commons/9/99/Escudo_de_Arroyo.svg" },
+  { name: "Barceloneta", logo: "https://upload.wikimedia.org/wikipedia/commons/0/0f/Escudo_de_Barceloneta.svg" },
+  { name: "Barranquitas", logo: "https://upload.wikimedia.org/wikipedia/commons/3/36/Escudo_de_Barranquitas.svg" },
+  { name: "Bayamón", logo: "https://upload.wikimedia.org/wikipedia/commons/c/c5/Escudo_de_Bayam%C3%B3n.svg" },
+  { name: "Cabo Rojo", logo: "https://upload.wikimedia.org/wikipedia/commons/d/d7/Escudo_de_Cabo_Rojo.svg" },
+  { name: "Caguas", logo: "https://upload.wikimedia.org/wikipedia/commons/5/5c/Escudo_de_Caguas.svg" },
+  { name: "Camuy", logo: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Escudo_de_Camuy.svg" },
+  { name: "Canóvanas", logo: "https://upload.wikimedia.org/wikipedia/commons/4/4a/Escudo_de_Can%C3%B3vanas.svg" },
+  { name: "Carolina", logo: "https://upload.wikimedia.org/wikipedia/commons/d/dd/Escudo_de_Carolina.svg" },
+  { name: "Cataño", logo: "https://upload.wikimedia.org/wikipedia/commons/0/02/Escudo_de_Cata%C3%B1o.svg" },
+  { name: "Cayey", logo: "https://upload.wikimedia.org/wikipedia/commons/4/46/Escudo_de_Cayey.svg" },
+  { name: "Ceiba", logo: "https://upload.wikimedia.org/wikipedia/commons/b/b8/Escudo_de_Ceiba.svg" },
+  { name: "Ciales", logo: "https://upload.wikimedia.org/wikipedia/commons/d/dd/Escudo_de_Ciales.svg" },
+  { name: "Cidra", logo: "https://upload.wikimedia.org/wikipedia/commons/c/c8/Escudo_de_Cidra.svg" },
+  { name: "Coamo", logo: "https://upload.wikimedia.org/wikipedia/commons/f/f2/Escudo_de_Coamo.svg" },
+  { name: "Comerío", logo: "https://upload.wikimedia.org/wikipedia/commons/d/dc/Escudo_de_Comer%C3%ADo.svg" },
+  { name: "Corozal", logo: "https://upload.wikimedia.org/wikipedia/commons/a/ae/Escudo_de_Corozal.svg" },
+  { name: "Culebra", logo: "https://upload.wikimedia.org/wikipedia/commons/6/6e/Escudo_de_Culebra.svg" },
+  { name: "Dorado", logo: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Escudo_de_Dorado.svg" },
+  { name: "Fajardo", logo: "https://upload.wikimedia.org/wikipedia/commons/1/18/Escudo_de_Fajardo.svg" },
+  { name: "Florida", logo: "https://upload.wikimedia.org/wikipedia/commons/8/80/Escudo_de_Florida.svg" },
+  { name: "Guánica", logo: "https://upload.wikimedia.org/wikipedia/commons/c/ce/Escudo_de_Gu%C3%A1nica.svg" },
+  { name: "Guayama", logo: "https://upload.wikimedia.org/wikipedia/commons/9/96/Escudo_de_Guayama.svg" },
+  { name: "Guayanilla", logo: "https://upload.wikimedia.org/wikipedia/commons/c/c7/Escudo_de_Guayanilla.svg" },
+  { name: "Guaynabo", logo: "https://upload.wikimedia.org/wikipedia/commons/2/22/Escudo_de_Guaynabo.svg" },
+  { name: "Gurabo", logo: "https://upload.wikimedia.org/wikipedia/commons/6/66/Escudo_de_Gurabo.svg" },
+  { name: "Hatillo", logo: "https://upload.wikimedia.org/wikipedia/commons/0/0c/Escudo_de_Hatillo.svg" },
+  { name: "Hormigueros", logo: "https://upload.wikimedia.org/wikipedia/commons/8/8c/Escudo_de_Hormigueros.svg" },
+  { name: "Humacao", logo: "https://upload.wikimedia.org/wikipedia/commons/0/09/Escudo_de_Humacao.svg" },
+  { name: "Isabela", logo: "https://upload.wikimedia.org/wikipedia/commons/c/cf/Escudo_de_Isabela.svg" },
+  { name: "Jayuya", logo: "https://upload.wikimedia.org/wikipedia/commons/9/9d/Escudo_de_Jayuya.svg" },
+  { name: "Juana Díaz", logo: "https://upload.wikimedia.org/wikipedia/commons/8/8d/Escudo_de_Juana_D%C3%ADaz.svg" },
+  { name: "Juncos", logo: "https://upload.wikimedia.org/wikipedia/commons/9/99/Escudo_de_Juncos.svg" },
+  { name: "Lajas", logo: "https://upload.wikimedia.org/wikipedia/commons/c/c6/Escudo_de_Lajas.svg" },
+  { name: "Lares", logo: "https://upload.wikimedia.org/wikipedia/commons/2/25/Escudo_de_Lares.svg" },
+  { name: "Las Marías", logo: "https://upload.wikimedia.org/wikipedia/commons/b/bc/Escudo_de_Las_Mar%C3%ADas.svg" },
+  { name: "Las Piedras", logo: "https://upload.wikimedia.org/wikipedia/commons/f/f4/Escudo_de_Las_Piedras.svg" },
+  { name: "Loíza", logo: "https://upload.wikimedia.org/wikipedia/commons/a/a3/Escudo_de_Lo%C3%ADza.svg" },
+  { name: "Luquillo", logo: "https://upload.wikimedia.org/wikipedia/commons/d/da/Escudo_de_Luquillo.svg" },
+  { name: "Manatí", logo: "https://upload.wikimedia.org/wikipedia/commons/d/df/Escudo_de_Manat%C3%AD.svg" },
+  { name: "Maricao", logo: "https://upload.wikimedia.org/wikipedia/commons/0/03/Escudo_de_Maricao.svg" },
+  { name: "Maunabo", logo: "https://upload.wikimedia.org/wikipedia/commons/a/a4/Escudo_de_Maunabo.svg" },
+  { name: "Mayagüez", logo: "https://upload.wikimedia.org/wikipedia/commons/7/78/Escudo_de_Mayag%C3%BCez.svg" },
+  { name: "Moca", logo: "https://upload.wikimedia.org/wikipedia/commons/5/5c/Escudo_de_Moca.svg" },
+  { name: "Morovis", logo: "https://upload.wikimedia.org/wikipedia/commons/7/76/Escudo_de_Morovis.svg" },
+  { name: "Naguabo", logo: "https://upload.wikimedia.org/wikipedia/commons/7/78/Escudo_de_Naguabo.svg" },
+  { name: "Naranjito", logo: "https://upload.wikimedia.org/wikipedia/commons/8/83/Escudo_de_Naranjito.svg" },
+  { name: "Orocovis", logo: "https://upload.wikimedia.org/wikipedia/commons/2/2c/Escudo_de_Orocovis.svg" },
+  { name: "Patillas", logo: "https://upload.wikimedia.org/wikipedia/commons/1/1e/Escudo_de_Patillas.svg" },
+  { name: "Peñuelas", logo: "https://upload.wikimedia.org/wikipedia/commons/b/b9/Escudo_de_Pe%C3%B1uelas.svg" },
+  { name: "Ponce", logo: "https://upload.wikimedia.org/wikipedia/commons/4/4c/Escudo_de_Ponce.svg" },
+  { name: "Quebradillas", logo: "https://upload.wikimedia.org/wikipedia/commons/8/8b/Escudo_de_Quebradillas.svg" },
+  { name: "Rincón", logo: "https://upload.wikimedia.org/wikipedia/commons/1/11/Escudo_de_Rinc%C3%B3n.svg" },
+  { name: "Río Grande", logo: "https://upload.wikimedia.org/wikipedia/commons/c/cf/Escudo_de_R%C3%ADo_Grande.svg" },
+  { name: "Sabana Grande", logo: "https://upload.wikimedia.org/wikipedia/commons/e/e4/Escudo_de_Sabana_Grande.svg" },
+  { name: "Salinas", logo: "https://upload.wikimedia.org/wikipedia/commons/5/53/Escudo_de_Salinas.svg" },
+  { name: "San Germán", logo: "https://upload.wikimedia.org/wikipedia/commons/1/1f/Escudo_de_San_Germ%C3%A1n.svg" },
+  { name: "San Juan", logo: "https://upload.wikimedia.org/wikipedia/commons/5/5a/Escudo_de_San_Juan.svg" },
+  { name: "San Lorenzo", logo: "https://upload.wikimedia.org/wikipedia/commons/b/b8/Escudo_de_San_Lorenzo.svg" },
+  { name: "San Sebastián", logo: "https://upload.wikimedia.org/wikipedia/commons/2/2c/Escudo_de_San_Sebasti%C3%A1n.svg" },
+  { name: "Santa Isabel", logo: "https://upload.wikimedia.org/wikipedia/commons/0/05/Escudo_de_Santa_Isabel.svg" },
+  { name: "Toa Alta", logo: "https://upload.wikimedia.org/wikipedia/commons/e/e3/Escudo_de_Toa_Alta.svg" },
+  { name: "Toa Baja", logo: "https://upload.wikimedia.org/wikipedia/commons/8/85/Escudo_de_Toa_Baja.svg" },
+  { name: "Trujillo Alto", logo: "https://upload.wikimedia.org/wikipedia/commons/f/fa/Escudo_de_Trujillo_Alto.svg" },
+  { name: "Utuado", logo: "https://upload.wikimedia.org/wikipedia/commons/1/11/Escudo_de_Utuado.svg" },
+  { name: "Vega Alta", logo: "https://upload.wikimedia.org/wikipedia/commons/8/8c/Escudo_de_Vega_Alta.svg" },
+  { name: "Vega Baja", logo: "https://upload.wikimedia.org/wikipedia/commons/b/b0/Escudo_de_Vega_Baja.svg" },
+  { name: "Vieques", logo: "https://upload.wikimedia.org/wikipedia/commons/0/04/Escudo_de_Vieques.svg" },
+  { name: "Villalba", logo: "https://upload.wikimedia.org/wikipedia/commons/1/15/Escudo_de_Villalba.svg" },
+  { name: "Yabucoa", logo: "https://upload.wikimedia.org/wikipedia/commons/d/da/Escudo_de_Yabucoa.svg" },
+  { name: "Yauco", logo: "https://upload.wikimedia.org/wikipedia/commons/b/b5/Escudo_de_Yauco.svg" },
 ];
+
+function buildPillars(isEs: boolean): Pillar[] {
+  return [
+    {
+      id: "corporate",
+      n: "01",
+      tag: isEs ? "CORPORATIVO" : "CORPORATE",
+      name: isEs ? "Corporativo" : "Corporate",
+      description: isEs
+        ? "Empresas y marcas que patrocinan activaciones de bondad, igualan las horas de voluntariado de sus equipos y ayudan a financiar el alcance del movimiento."
+        : "Businesses and brands that sponsor kindness activations, match their teams' volunteer hours, and help fund the movement's reach.",
+      partners: [
+        { name: "Animaze", logo: "corporate_animaze.png", website: "animazefestival.com" },
+        { name: "C-Suite Network", logo: "corporate_c-suite-network.png", website: "c-suitenetwork.com" },
+        { name: "Caribbean Cinemas", logo: "corporate_caribbean-cinemas-logo.png", website: "caribbeancinemas.com" },
+        { name: "Eucaforest", logo: "corporate_eucaforest-logo1b.png" },
+        { name: "Good Pop", logo: "corporate_gdd_goodpop_logo.svg" },
+        { name: "Good News Network", logo: "corporate_goodnewsnetwork_logo.jpg", website: "goodnewsnetwork.org" },
+        { name: "HB CBC News", logo: "corporate_hb-cbc-news.jpg" },
+        { name: "HTS", logo: "corporate_hts.png" },
+        { name: "Laser 101 St Maarten", logo: "corporate_laser101-st-maarteen.png" },
+        { name: "Loving AI", logo: "corporate_loving-ai.webp", website: "lovingai.org" },
+        { name: "Mone & You", logo: "corporate_mone--you.png" },
+        { name: "Platea PR", logo: "corporate_platea-pr.png" },
+        { name: "TV15SXM", logo: "corporate_tv15sxm.png" },
+        { name: "The Weather Network", logo: "corporate_the_weather_network_2011.svg", website: "theweathernetwork.com" },
+        { name: "bMedia", logo: "corporate_logo-bmedia--color.svg" },
+      ],
+    },
+    {
+      id: "faith-based",
+      n: "02",
+      tag: isEs ? "FE Y ESPIRITUALIDAD" : "FAITH-BASED",
+      name: isEs ? "Fe y Espiritualidad" : "Faith-Based",
+      description: isEs
+        ? "Iglesias, ministerios y comunidades de fe que movilizan a sus congregaciones y tejen la bondad en su servicio a los demás."
+        : "Churches, ministries, and faith communities that mobilize their congregations and weave kindness into their service to others.",
+      partners: [
+        { name: "Awaken — Michael Krauss", logo: "faith-based_awaken---michael-krauss.jpg" },
+        { name: "Brahma Kumaris", logo: "faith-based_brahma-kumaris.png", website: "brahmakumaris.org" },
+        { name: "ISKCON", logo: "faith-based_iskcon.png", dark: true, website: "iskcon.org" },
+        { name: "Oneness", logo: "faith-based_oneness.png" },
+        { name: "Purity Weaves Destiny", logo: "faith-based_purity-weaves-destiny-blue-3-1.webp" },
+        { name: "The Art of Living", logo: "faith-based_the-art-of-living.png", website: "artofliving.org" },
+        { name: "Yoga Vidya", logo: "faith-based_yoga-vidya.jpg" },
+      ],
+    },
+    {
+      id: "government",
+      n: "03",
+      tag: isEs ? "GOBIERNO" : "GOVERNMENT",
+      name: isEs ? "Gobierno" : "Government",
+      description: isEs
+        ? "Municipios y agencias públicas que llevan la campaña a sus ciudades, proclaman la Temporada de Bondad y apoyan activaciones locales."
+        : "Municipalities and public agencies that bring the campaign to their cities, proclaim the Kindness Season, and support local activations.",
+      partners: [
+        { name: "Montserrat", logo: "government_montserrat.png" },
+        { name: "WIPR", logo: "government_wipr6.png" },
+        {
+          name: "Premier Natalio Wheatley",
+          role: isEs ? "Líder Cívico Global Fundador · Islas Vírgenes Británicas" : "Founding Global Civic Leader · British Virgin Islands",
+        },
+        {
+          name: "Premier Cora Richardson-Hodge",
+          role: isEs ? "Líder Cívica Global Fundadora · Anguila" : "Founding Global Civic Leader · Anguilla",
+        },
+        {
+          name: "Pres. Andrés Pastrana",
+          role: isEs ? "Ex Presidente · Líder Cívico Global · Colombia" : "Former President · Global Civic Leader · Colombia",
+        },
+        ...PR_MUNICIPALITIES,
+      ],
+    },
+    {
+      id: "nonprofits",
+      n: "04",
+      tag: isEs ? "ORG. SIN FINES DE LUCRO" : "NONPROFIT",
+      name: isEs ? "Organizaciones sin Fines de Lucro" : "Nonprofits",
+      description: isEs
+        ? "Organizaciones comunitarias que coorganizan activaciones, comparten recursos de bondad y conectan al movimiento con las personas a quienes sirven."
+        : "Community organizations that co-host activations, share kindness resources, and connect the movement to the people they serve.",
+      partners: [
+        { name: "WEDU", logo: "nonprofits_70e7b25ec4_wedu_logo_navy_web.png" },
+        { name: "Ad Council", logo: "nonprofits_ad-council.brightspotcdn.png", website: "adcouncil.org" },
+        { name: "AIESEC", logo: "nonprofits_aiesec_logo_black.svg", website: "aiesec.org" },
+        { name: "Coquí Charities", logo: "nonprofits_coqui-sq-logo-small-2-1.png" },
+        { name: "HeartMath Institute", logo: "nonprofits_hmi-logo.png", website: "heartmath.org" },
+        { name: "HITN", logo: "nonprofits_hitn.webp", website: "hitn.org" },
+        { name: "Kids for Peace", logo: "nonprofits_kids-for-peace.png", website: "kidsforpeaceglobal.org" },
+        { name: "Main", logo: "nonprofits_main_logo.png" },
+        { name: "Million Peacemakers", logo: "nonprofits_million-peacemakers.png" },
+        { name: "PBS", logo: "nonprofits_pbs_logo_2019.svg", website: "pbs.org" },
+        { name: "Rotary Westminster International", logo: "nonprofits_rotary-westminster.png" },
+        { name: "World Kindness Movement", logo: "nonprofits_wkm_wide.png", website: "theworldkindnessmovement.org" },
+      ],
+    },
+    {
+      id: "education",
+      n: "05",
+      tag: isEs ? "EDUCACIÓN" : "EDUCATION",
+      name: isEs ? "Educación" : "Education",
+      description: isEs
+        ? "Escuelas, campus y educadores que llevan la bondad a las aulas con actividades y proyectos liderados por estudiantes, adecuados para cada edad."
+        : "Schools, campuses, and educators who bring kindness into classrooms with age-appropriate prompts, activities, and student-led projects.",
+      partners: [
+        { name: "Departamento de Educación PR", logo: "education_departamento-educacion-pr.png", website: "de.pr.gov" },
+        { name: "JA Worldwide", logo: "education_ja-worldwide.png", website: "jaworldwide.org" },
+        { name: "MECYS", logo: "education_mecys.png" },
+        { name: "Ministry of Education — Anguilla", logo: "education_ministry-of-education-anguilla.png" },
+      ],
+    },
+  ];
+}
+
+function initials(name: string) {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? "")
+    .join("");
+}
+
+function logoSrc(logo: string) {
+  return logo.startsWith("http") ? logo : `/partners/${logo}`;
+}
+
+function PartnerCard({ partner, tag }: { partner: Partner; tag: string }) {
+  return (
+    <article className="flex flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
+      <div
+        className={`flex h-28 items-center justify-center border-b border-border p-4 ${
+          partner.dark ? "bg-cyan-900" : "bg-white"
+        }`}
+      >
+        {partner.logo ? (
+          <img
+            src={logoSrc(partner.logo)}
+            alt={partner.name}
+            loading="lazy"
+            className="max-h-16 w-auto max-w-[78%] object-contain"
+          />
+        ) : (
+          <div
+            className="flex h-16 w-16 items-center justify-center rounded-full bg-warm-sand font-display text-lg text-foreground"
+            aria-hidden="true"
+          >
+            {initials(partner.name)}
+          </div>
+        )}
+      </div>
+      <div className="flex flex-grow flex-col gap-1.5 p-4">
+        <span className="text-[10px] font-bold tracking-[0.14em] text-foreground/45">{tag}</span>
+        <h3 className="text-sm font-bold leading-snug text-foreground">{partner.name}</h3>
+        <div className="mt-auto pt-2">
+          {partner.website ? (
+            <a
+              href={`https://${partner.website}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Visit ${partner.name} website (opens in a new tab)`}
+              className="inline-flex items-center gap-1 break-all text-xs font-bold text-[#0079A8] hover:underline"
+            >
+              {partner.website}
+              <ExternalLink size={12} className="shrink-0" />
+            </a>
+          ) : partner.role ? (
+            <span className="text-xs font-medium leading-snug text-foreground/60">{partner.role}</span>
+          ) : null}
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function compactNumber(n: number, locale: string) {
+  return new Intl.NumberFormat(locale, { notation: "compact", maximumFractionDigits: 1 }).format(n);
+}
 
 export default function PartnersPage() {
   const { lang } = useLanguage();
   const isEs = lang === "es";
+  const locale = isEs ? "es" : "en";
+  const { data: totals } = useMovementTotals();
+  const [query, setQuery] = useState("");
+  const [sector, setSector] = useState("all");
+
+  const pillars = useMemo(() => buildPillars(isEs), [isEs]);
+  const totalPartners = useMemo(() => pillars.reduce((n, p) => n + p.partners.length, 0), [pillars]);
+
+  const q = query.trim().toLowerCase();
+  const matchesQuery = (p: Partner) => !q || p.name.toLowerCase().includes(q) || (p.website ?? "").includes(q);
+
+  const chips = useMemo(() => {
+    const counts = pillars.map((p) => ({ id: p.id, label: p.name, count: p.partners.filter(matchesQuery).length }));
+    const allCount = counts.reduce((n, c) => n + c.count, 0);
+    return [{ id: "all", label: isEs ? "Todos" : "All", count: allCount }, ...counts];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pillars, q, isEs]);
+
+  const sections = useMemo(
+    () =>
+      pillars
+        .filter((p) => sector === "all" || p.id === sector)
+        .map((p) => ({ ...p, items: p.partners.filter(matchesQuery) }))
+        .filter((p) => p.items.length > 0),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [pillars, sector, q],
+  );
+
+  const shown = sections.reduce((n, s) => n + s.items.length, 0);
 
   return (
     <div className="min-h-screen bg-warm-cream">
@@ -131,75 +333,201 @@ export default function PartnersPage() {
       />
       <ScrollToTop />
       <Navbar />
-      <main className="pt-32 pb-20 section-padding">
-        <article className="max-w-5xl mx-auto">
-          <header className="mb-14 text-center">
-            <p className="eyebrow">{isEs ? "Juntos Pasamos la Bondad" : "Together We Pass It Forward"}</p>
-            <h1 className="headline-xl text-foreground mt-3 mb-4">{isEs ? "Nuestros Socios" : "Our Partners"}</h1>
-            <p className="text-base md:text-lg text-foreground/75 leading-relaxed max-w-2xl mx-auto">
-              {isEs
-                ? "Pásalo Pa'lante avanza gracias a las organizaciones que lo respaldan. A través de cinco pilares, nuestros socios coorganizan activaciones, financian el movimiento y llevan la bondad a cada rincón de sus comunidades."
-                : "Pásalo Pa'lante moves forward because of the organizations standing behind it. Across five pillars, our partners co-host activations, fund the movement, and carry kindness into every corner of their communities."}
-            </p>
-          </header>
-
-          <div className="space-y-14">
-            {PILLARS.map((pillar) => {
-              const Icon = pillar.icon;
-              return (
-                <section key={pillar.id} aria-labelledby={`pillar-${pillar.id}`}>
-                  <div className="flex items-start gap-4 mb-6">
-                    <span className="mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-warm-sand text-warm-earth">
-                      <Icon size={22} strokeWidth={2} />
-                    </span>
-                    <div>
-                      <h2 id={`pillar-${pillar.id}`} className="font-display text-2xl md:text-3xl text-foreground">
-                        {isEs ? pillar.name.es : pillar.name.en}
-                      </h2>
-                      <p className="text-foreground/75 leading-relaxed max-w-3xl mt-2">
-                        {isEs ? pillar.description.es : pillar.description.en}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
-                    {pillar.partners.map((partner) => (
-                      <div
-                        key={partner.name}
-                        className={`flex items-center justify-center rounded-2xl border border-border px-6 py-8 transition-shadow duration-200 hover:shadow-lg ${
-                          partner.dark ? "bg-warm-earth text-warm-cream" : "bg-warm-sand/80"
-                        }`}
-                      >
-                        <img
-                          src={`/partners/${partner.logo}`}
-                          alt={partner.name}
-                          loading="lazy"
-                          className="max-h-16 w-auto max-w-full object-contain"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              );
-            })}
+      <main>
+        {/* Hero */}
+        <section className="relative overflow-hidden bg-cyan-900 text-warm-cream">
+          <img
+            src="/world-map.svg"
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-20 top-10 w-[560px] opacity-[0.06]"
+          />
+          <div className="section-padding relative mx-auto flex max-w-6xl flex-wrap items-end gap-12 pb-16 pt-28 md:pt-32">
+            <div className="flex flex-1 flex-col gap-6" style={{ flexBasis: "560px" }}>
+              <p className="text-xs font-bold tracking-[0.18em] text-warm-gold">
+                {isEs ? "NUESTROS SOCIOS · LA COALICIÓN DE BONDAD" : "OUR PARTNERS · THE KINDNESS COALITION"}
+              </p>
+              <h1 className="font-display text-4xl leading-[1.05] tracking-tight md:text-5xl lg:text-6xl">
+                {isEs ? "La coalición que pasa la bondad hacia adelante." : "The coalition carrying kindness forward."}
+              </h1>
+              <p className="max-w-xl text-base leading-relaxed text-warm-cream/75 md:text-lg">
+                {isEs
+                  ? "Pásalo Pa'lante avanza gracias a las organizaciones que lo respaldan. A través de cinco pilares, nuestros socios coorganizan activaciones, financian el movimiento y llevan la bondad a cada rincón de sus comunidades."
+                  : "Pásalo Pa'lante moves forward because of the organizations standing behind it. Across five pillars, our partners co-host activations, fund the movement, and carry kindness into every corner of their communities."}
+              </p>
+              <div className="mt-2 flex flex-wrap gap-3">
+                <a
+                  href="#directory"
+                  className="inline-flex h-[52px] items-center justify-center rounded-full bg-warm-terracotta px-7 text-sm font-bold text-white transition-transform duration-200 hover:scale-105"
+                >
+                  {isEs ? "Explora el directorio" : "Explore the directory"}
+                </a>
+                <a
+                  href="#join"
+                  className="inline-flex h-[52px] items-center justify-center rounded-full border-[1.5px] border-warm-cream/40 px-7 text-sm font-bold text-warm-cream transition-colors duration-200 hover:border-warm-cream"
+                >
+                  {isEs ? "Conviértete en socio" : "Become a partner"}
+                </a>
+              </div>
+            </div>
+            <dl className="grid flex-1 grid-cols-3 gap-0 border-t border-warm-cream/20" style={{ flexBasis: "320px" }}>
+              <div className="flex flex-col gap-1.5 pr-4 pt-5">
+                <dd className="font-display text-4xl leading-none md:text-5xl">{totalPartners}</dd>
+                <dt className="text-xs font-semibold leading-tight text-warm-cream/70">
+                  {isEs ? "Organizaciones socias" : "Partner organizations"}
+                </dt>
+              </div>
+              <div className="flex flex-col gap-1.5 border-l border-warm-cream/20 px-4 pt-5">
+                <dd className="font-display text-4xl leading-none md:text-5xl">{pillars.length}</dd>
+                <dt className="text-xs font-semibold leading-tight text-warm-cream/70">
+                  {isEs ? "Sectores trabajando juntos" : "Sectors working together"}
+                </dt>
+              </div>
+              <div className="flex flex-col gap-1.5 border-l border-warm-cream/20 py-5 pl-4">
+                <dd className="font-display text-4xl leading-none text-warm-gold md:text-5xl">
+                  {totals ? compactNumber(totals.pledged, locale) : "—"}
+                </dd>
+                <dt className="text-xs font-semibold leading-tight text-warm-cream/70">
+                  {isEs ? "Actos de bondad, una meta compartida" : "Acts of kindness, one shared goal"}
+                </dt>
+              </div>
+            </dl>
           </div>
+          <div aria-hidden="true" className="flex h-1.5">
+            <span className="flex-1" style={{ background: "#00a3e0" }} />
+            <span className="flex-1 bg-warm-terracotta" />
+            <span className="flex-1 bg-warm-gold" />
+            <span className="flex-1" style={{ background: "#d81b60" }} />
+          </div>
+        </section>
 
-          <section className="mt-16 text-center bg-warm-earth text-warm-cream rounded-2xl p-10">
-            <h2 className="font-display text-2xl md:text-3xl mb-3">
-              {isEs ? "Conviértete en socio" : "Become a partner"}
-            </h2>
-            <p className="text-warm-cream/85 leading-relaxed max-w-2xl mx-auto mb-6">
-              {isEs
-                ? "Únete al movimiento y ayúdanos a pasar la bondad. Cuéntanos sobre tu organización y te contactaremos con los próximos pasos."
-                : "Join the movement and help us pass kindness forward. Tell us about your organization and we'll follow up with next steps."}
-            </p>
-            <a
-              href="/partners/apply"
-              className="inline-flex items-center justify-center rounded-full bg-warm-cream px-8 py-3 text-sm font-semibold text-warm-earth transition-transform duration-200 hover:scale-105"
-            >
-              {isEs ? "Contáctanos" : "Get in touch"}
-            </a>
-          </section>
-        </article>
+        {/* Sticky search / filter bar */}
+        <div id="directory" className="sticky top-0 z-10 border-b border-border bg-warm-cream/95 backdrop-blur">
+          <div className="section-padding mx-auto flex max-w-6xl flex-wrap items-center gap-3 py-4">
+            <div className="relative min-w-[220px] flex-[999_1_300px]">
+              <Search size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40" />
+              <label htmlFor="partner-search" className="sr-only">
+                {isEs ? "Buscar socios" : "Search partners"}
+              </label>
+              <input
+                id="partner-search"
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={isEs ? "Buscar socios" : "Search partners"}
+                className="h-12 w-full rounded-full border border-border bg-white pl-11 pr-4 text-sm text-foreground outline-none focus:border-warm-terracotta"
+              />
+            </div>
+            <div role="group" aria-label={isEs ? "Filtrar por sector" : "Filter by sector"} className="flex flex-[1_1_auto] flex-wrap gap-2">
+              {chips.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  aria-pressed={sector === c.id}
+                  onClick={() => setSector(c.id)}
+                  className={`flex h-10 items-center gap-1.5 rounded-full border px-4 text-[13px] font-bold transition-colors ${
+                    sector === c.id
+                      ? "border-cyan-900 bg-cyan-900 text-white"
+                      : "border-border bg-white text-foreground hover:border-warm-terracotta"
+                  }`}
+                >
+                  {c.label}
+                  <span className="text-xs font-semibold opacity-75">{c.count}</span>
+                </button>
+              ))}
+            </div>
+            <span className="text-[13px] font-semibold text-foreground/70">
+              {isEs ? `Mostrando ${shown} de ${totalPartners}` : `Showing ${shown} of ${totalPartners}`}
+            </span>
+          </div>
+        </div>
+
+        {/* Directory */}
+        <div className="section-padding mx-auto flex max-w-6xl flex-col gap-16 py-14">
+          {sections.map((s) => (
+            <section key={s.id} aria-labelledby={`sec-${s.id}`} className="flex flex-col gap-6">
+              <div className="flex flex-wrap items-end justify-between gap-3 border-b border-border pb-5">
+                <div className="flex items-baseline gap-4">
+                  <span className="font-display text-xl text-warm-terracotta">{s.n}</span>
+                  <h2 id={`sec-${s.id}`} className="font-display text-3xl text-foreground md:text-4xl">
+                    {s.name}
+                  </h2>
+                  <span className="whitespace-nowrap rounded-full bg-warm-sand px-2.5 py-1 text-xs font-bold text-foreground/70">
+                    {s.items.length} {s.items.length === 1 ? (isEs ? "socio" : "partner") : isEs ? "socios" : "partners"}
+                  </span>
+                </div>
+                <p className="max-w-lg text-sm leading-relaxed text-foreground/70">{s.description}</p>
+              </div>
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                {s.items.map((p) => (
+                  <PartnerCard key={p.name} partner={p} tag={s.tag} />
+                ))}
+              </div>
+            </section>
+          ))}
+
+          {shown === 0 && (
+            <div className="flex flex-col items-center gap-3 rounded-3xl border-[1.5px] border-dashed border-border px-6 py-16 text-center">
+              <h2 className="font-display text-2xl text-foreground">
+                {isEs ? "Ningún socio coincide con esa búsqueda" : "No partners match that search"}
+              </h2>
+              <p className="text-sm text-foreground/70">
+                {isEs ? "Prueba con otro nombre o explora todos los sectores." : "Try another name, or browse all sectors."}
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setQuery("");
+                  setSector("all");
+                }}
+                className="mt-2 h-[46px] rounded-full bg-cyan-900 px-6 text-sm font-bold text-white"
+              >
+                {isEs ? "Mostrar todos los socios" : "Show all partners"}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Become a partner */}
+        <section id="join" className="section-padding mx-auto max-w-6xl pb-24 pt-4">
+          <div className="relative overflow-hidden rounded-[28px] bg-cyan-900 p-8 text-warm-cream md:p-16">
+            <img
+              src="/world-map.svg"
+              alt=""
+              aria-hidden="true"
+              className="pointer-events-none absolute -bottom-20 -left-16 w-[340px] opacity-[0.06]"
+            />
+            <div className="relative flex flex-wrap items-center gap-10">
+              <div className="flex flex-1 flex-col gap-4" style={{ flexBasis: "420px" }}>
+                <p className="text-xs font-bold tracking-[0.18em] text-warm-gold">
+                  {isEs ? "CONVIÉRTETE EN SOCIO" : "BECOME A PARTNER"}
+                </p>
+                <h2 className="font-display text-3xl leading-tight md:text-4xl">
+                  {isEs ? "Pon el nombre de tu organización detrás de la bondad." : "Put your organization's name behind kindness."}
+                </h2>
+                <p className="text-base leading-relaxed text-warm-cream/75">
+                  {isEs
+                    ? "Únete al movimiento y ayúdanos a pasar la bondad. Cuéntanos sobre tu organización y te contactaremos con los próximos pasos."
+                    : "Join the movement and help us pass kindness forward. Tell us about your organization and we'll follow up with next steps."}
+                </p>
+              </div>
+              <div className="flex flex-1 flex-col gap-3" style={{ flexBasis: "280px", maxWidth: "320px" }}>
+                <a
+                  href="/partners/apply"
+                  className="flex h-14 items-center justify-center rounded-full bg-warm-terracotta text-base font-bold text-white transition-transform duration-200 hover:scale-105"
+                >
+                  {isEs ? "Contáctanos" : "Get in touch"}
+                </a>
+                <a
+                  href="mailto:info@teamopr.org"
+                  className="flex h-14 items-center justify-center rounded-full border-[1.5px] border-warm-cream/40 text-sm font-semibold text-warm-cream"
+                >
+                  info@teamopr.org
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
       <Footer />
     </div>
