@@ -189,6 +189,7 @@ function buildPillars(isEs: boolean): Pillar[] {
         { name: "Million Peacemakers", logo: "nonprofits_million-peacemakers.png" },
         { name: "Peace and Love Inc. Ltd" },
         { name: "Te Amo PR", logo: "nonprofits_te-amo-pr.png", website: "teamopr.org" },
+        { name: "Unify.org", logo: "nonprofits_unify.webp", website: "unify.org" },
       ],
     },
     {
