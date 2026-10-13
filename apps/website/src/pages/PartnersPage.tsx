@@ -187,6 +187,7 @@ function buildPillars(isEs: boolean): Pillar[] {
         { name: "HeartMath Institute", logo: "nonprofits_hmi-logo.png", website: "heartmath.org" },
         { name: "Kids for Peace", logo: "nonprofits_kids-for-peace.png", website: "kidsforpeaceglobal.org" },
         { name: "Million Peacemakers", logo: "nonprofits_million-peacemakers.png" },
+        { name: "Peace and Love Inc. Ltd" },
         { name: "Te Amo PR", logo: "nonprofits_te-amo-pr.png", website: "teamopr.org" },
       ],
     },
@@ -214,10 +215,11 @@ function buildPillars(isEs: boolean): Pillar[] {
   ];
 }
 
+const INITIALS_STOPWORDS = new Set(["and", "of", "the", "&", "de", "la", "el"]);
+
 function initials(name: string) {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
+  const words = name.split(/\s+/).filter((w) => w && !INITIALS_STOPWORDS.has(w.toLowerCase()));
+  return words
     .slice(0, 2)
     .map((w) => w[0]?.toUpperCase() ?? "")
     .join("");
