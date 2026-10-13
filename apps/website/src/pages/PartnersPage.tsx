@@ -203,8 +203,12 @@ function buildPillars(isEs: boolean): Pillar[] {
         { name: "Departamento de Educación PR", logo: "education_departamento-educacion-pr.png", website: "de.pr.gov" },
         { name: "JA Worldwide", logo: "education_ja-worldwide.png", website: "jaworldwide.org" },
         { name: "Learning Planet Institute", logo: "education_learning-planet-institute.png", website: "learning-planet.org" },
-        { name: "MECYS", logo: "education_mecys.png" },
+        { name: "Ministry of Education, Culture, Youth & Sport (MECYS)", logo: "education_mecys.png" },
         { name: "Ministry of Education — Anguilla", logo: "education_ministry-of-education-anguilla.png" },
+        {
+          name: "Ministry of Education, Health & Social Services — Montserrat",
+          logo: "education_ministry-of-education-montserrat.png",
+        },
       ],
     },
   ];
