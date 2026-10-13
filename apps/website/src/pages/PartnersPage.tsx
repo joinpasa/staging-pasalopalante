@@ -128,27 +128,27 @@ function buildPillars(isEs: boolean): Pillar[] {
         : "Businesses and brands that sponsor kindness activations, match their teams' volunteer hours, and help fund the movement's reach.",
       partners: [
         { name: "Animaze", logo: "corporate_animaze.png", website: "animazefestival.com" },
-        { name: "C-Suite Network", logo: "corporate_c-suite-network.png", website: "c-suitenetwork.com" },
-        { name: "Caribbean Cinemas", logo: "corporate_caribbean-cinemas-logo.png", website: "caribbeancinemas.com" },
         { name: "Eucaforest", logo: "corporate_eucaforest-logo1b.png" },
         { name: "Good Pop", logo: "corporate_gdd_goodpop_logo.svg" },
-        { name: "Good News Network", logo: "corporate_goodnewsnetwork_logo.jpg", website: "goodnewsnetwork.org" },
-        { name: "HB CBC News", logo: "corporate_hb-cbc-news.jpg" },
-        { name: "HTS", logo: "corporate_hts.png" },
-        { name: "Laser 101 St Maarten", logo: "corporate_laser101-st-maarteen.png" },
         { name: "Loving AI", logo: "corporate_loving-ai.webp", website: "lovingai.org" },
         { name: "Mone & You", logo: "corporate_mone--you.png" },
         { name: "NuCalm", logo: "corporate_nucalm.png", website: "nucalm.com" },
         { name: "SHRM", logo: "corporate_shrm.png", website: "shrm.org" },
-        { name: "Platea PR", logo: "corporate_platea-pr.png" },
-        { name: "TV15SXM", logo: "corporate_tv15sxm.png" },
-        { name: "The Weather Network", logo: "corporate_the_weather_network_2011.svg", website: "theweathernetwork.com" },
-        { name: "bMedia", logo: "corporate_logo-bmedia--color.svg" },
       ],
     },
     {
-      id: "faith-based",
+      id: "media",
       n: "02",
+      tag: isEs ? "MEDIOS Y PRENSA" : "MEDIA / PRESS",
+      name: isEs ? "Medios y Prensa" : "Media / Press",
+      description: isEs
+        ? "Cadenas y redes de medios que amplifican el movimiento ante sus audiencias y ayudan a correr la voz de la bondad."
+        : "Broadcasters and media networks that amplify the movement to their audiences and help spread the word on kindness.",
+      partners: [{ name: "C-Suite Network", logo: "corporate_c-suite-network.png", website: "c-suitenetwork.com" }],
+    },
+    {
+      id: "faith-based",
+      n: "03",
       tag: isEs ? "FE Y ESPIRITUALIDAD" : "FAITH-BASED",
       name: isEs ? "Fe y Espiritualidad" : "Faith-Based",
       description: isEs
@@ -156,17 +156,14 @@ function buildPillars(isEs: boolean): Pillar[] {
         : "Churches, ministries, and faith communities that mobilize their congregations and weave kindness into their service to others.",
       partners: [
         { name: "Awaken — Michael Krauss", logo: "faith-based_awaken---michael-krauss.jpg" },
-        { name: "Brahma Kumaris", logo: "faith-based_brahma-kumaris.png", website: "brahmakumaris.org" },
-        { name: "ISKCON", logo: "faith-based_iskcon.png", dark: true, website: "iskcon.org" },
         { name: "Oneness", logo: "faith-based_oneness.png" },
         { name: "Purity Weaves Destiny", logo: "faith-based_purity-weaves-destiny-blue-3-1.webp" },
-        { name: "The Art of Living", logo: "faith-based_the-art-of-living.png", website: "artofliving.org" },
         { name: "Yoga Vidya", logo: "faith-based_yoga-vidya.jpg" },
       ],
     },
     {
       id: "government",
-      n: "03",
+      n: "04",
       tag: isEs ? "GOBIERNO" : "GOVERNMENT",
       name: isEs ? "Gobierno" : "Government",
       description: isEs
@@ -174,15 +171,6 @@ function buildPillars(isEs: boolean): Pillar[] {
         : "Municipalities and public agencies that bring the campaign to their cities, proclaim the Kindness Season, and support local activations.",
       partners: [
         { name: "Montserrat", logo: "government_montserrat.png" },
-        { name: "WIPR", logo: "government_wipr6.png" },
-        {
-          name: "Premier Natalio Wheatley",
-          role: isEs ? "Líder Cívico Global Fundador · Islas Vírgenes Británicas" : "Founding Global Civic Leader · British Virgin Islands",
-        },
-        {
-          name: "Premier Cora Richardson-Hodge",
-          role: isEs ? "Líder Cívica Global Fundadora · Anguila" : "Founding Global Civic Leader · Anguilla",
-        },
         {
           name: "Pres. Andrés Pastrana",
           role: isEs ? "Ex Presidente · Líder Cívico Global · Colombia" : "Former President · Global Civic Leader · Colombia",
@@ -192,7 +180,7 @@ function buildPillars(isEs: boolean): Pillar[] {
     },
     {
       id: "nonprofits",
-      n: "04",
+      n: "05",
       tag: isEs ? "ORG. SIN FINES DE LUCRO" : "NONPROFIT",
       name: isEs ? "Organizaciones sin Fines de Lucro" : "Nonprofits",
       description: isEs
@@ -200,24 +188,19 @@ function buildPillars(isEs: boolean): Pillar[] {
         : "Community organizations that co-host activations, share kindness resources, and connect the movement to the people they serve.",
       partners: [
         { name: "WEDU", logo: "nonprofits_70e7b25ec4_wedu_logo_navy_web.png" },
-        { name: "Ad Council", logo: "nonprofits_ad-council.brightspotcdn.png", website: "adcouncil.org" },
-        { name: "AIESEC", logo: "nonprofits_aiesec_logo_black.svg", website: "aiesec.org" },
         { name: "Coquí Charities", logo: "nonprofits_coqui-sq-logo-small-2-1.png" },
-        { name: "HeartMath Institute", logo: "nonprofits_hmi-logo.png", website: "heartmath.org" },
-        { name: "HITN", logo: "nonprofits_hitn.webp", website: "hitn.org" },
         { name: "Good Deeds Day", logo: "nonprofits_good-deeds-day.webp", website: "good-deeds-day.org" },
+        { name: "HeartMath Institute", logo: "nonprofits_hmi-logo.png", website: "heartmath.org" },
         { name: "Kids for Peace", logo: "nonprofits_kids-for-peace.png", website: "kidsforpeaceglobal.org" },
         { name: "Main", logo: "nonprofits_main_logo.png" },
         { name: "Million Peacemakers", logo: "nonprofits_million-peacemakers.png" },
-        { name: "PBS", logo: "nonprofits_pbs_logo_2019.svg", website: "pbs.org" },
         { name: "Rotary Westminster International", logo: "nonprofits_rotary-westminster.png" },
         { name: "Te Amo PR", logo: "nonprofits_te-amo-pr.png", website: "teamopr.org" },
-        { name: "World Kindness Movement", logo: "nonprofits_wkm_wide.png", website: "theworldkindnessmovement.org" },
       ],
     },
     {
       id: "education",
-      n: "05",
+      n: "06",
       tag: isEs ? "EDUCACIÓN" : "EDUCATION",
       name: isEs ? "Educación" : "Education",
       description: isEs
@@ -336,7 +319,7 @@ export default function PartnersPage() {
     <div className="min-h-screen bg-warm-cream">
       <SEO
         title="Our Partners — Pásalo Pa'lante"
-        description="Meet the corporate, faith-based, government, nonprofit, and education partners powering Pásalo Pa'lante and the global kindness movement."
+        description="Meet the corporate, media, faith-based, government, nonprofit, and education partners powering Pásalo Pa'lante and the global kindness movement."
         path="/partners"
       />
       <ScrollToTop />
@@ -360,8 +343,8 @@ export default function PartnersPage() {
               </h1>
               <p className="max-w-xl text-base leading-relaxed text-warm-cream/75 md:text-lg">
                 {isEs
-                  ? "Pásalo Pa'lante avanza gracias a las organizaciones que lo respaldan. A través de cinco pilares, nuestros socios coorganizan activaciones, financian el movimiento y llevan la bondad a cada rincón de sus comunidades."
-                  : "Pásalo Pa'lante moves forward because of the organizations standing behind it. Across five pillars, our partners co-host activations, fund the movement, and carry kindness into every corner of their communities."}
+                  ? "Pásalo Pa'lante avanza gracias a las organizaciones que lo respaldan. A través de seis pilares, nuestros socios coorganizan activaciones, financian el movimiento y llevan la bondad a cada rincón de sus comunidades."
+                  : "Pásalo Pa'lante moves forward because of the organizations standing behind it. Across six pillars, our partners co-host activations, fund the movement, and carry kindness into every corner of their communities."}
               </p>
               <div className="mt-2 flex flex-wrap gap-3">
                 <a
@@ -452,6 +435,11 @@ export default function PartnersPage() {
 
         {/* Directory */}
         <div className="section-padding mx-auto flex max-w-6xl flex-col gap-16 py-14">
+          <p className="-mb-10 max-w-3xl text-sm leading-relaxed text-foreground/60">
+            {isEs
+              ? "Estos son los socios fundadores confirmados para la Temporada de Bondad Global. Hay más organizaciones completando su incorporación y se añadirán a esta lista a medida que se confirmen."
+              : "These are the founding partners confirmed for Global Kindness Season. More organizations are completing onboarding and will be added to this list as they're confirmed."}
+          </p>
           {sections.map((s) => (
             <section key={s.id} aria-labelledby={`sec-${s.id}`} className="flex flex-col gap-6">
               <div className="flex flex-wrap items-end justify-between gap-3 border-b border-border pb-5">
