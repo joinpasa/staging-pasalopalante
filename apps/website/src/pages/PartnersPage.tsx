@@ -165,13 +165,7 @@ function buildPillars(isEs: boolean): Pillar[] {
       description: isEs
         ? "Municipios y agencias públicas que llevan la campaña a sus ciudades, proclaman la Temporada de Bondad y apoyan activaciones locales."
         : "Municipalities and public agencies that bring the campaign to their cities, proclaim the Kindness Season, and support local activations.",
-      partners: [
-        {
-          name: "Pres. Andrés Pastrana",
-          role: isEs ? "Ex Presidente · Líder Cívico Global · Colombia" : "Former President · Global Civic Leader · Colombia",
-        },
-        ...PR_MUNICIPALITIES,
-      ],
+      partners: [...PR_MUNICIPALITIES],
     },
     {
       id: "nonprofits",
