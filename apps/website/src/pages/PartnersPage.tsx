@@ -15,7 +15,7 @@ interface Partner {
   dark?: boolean;
   /** Bare domain, e.g. "jaworldwide.org" — rendered as a link to https://<website>. */
   website?: string;
-  /** For individuals with no org logo (e.g. a head of state) — shown in place of a website link. */
+  /** A title/role line shown above the website link, e.g. "Mayor: Jane Doe" or a civic leader's role — also stands alone when there's no logo. */
   role?: string;
 }
 
@@ -28,92 +28,92 @@ interface Pillar {
   partners: Partner[];
 }
 
-// Each municipality's logo, as the real seal is tracked down. The
-// "Puerto Rico Municipalities Seals and Flags" sheet's Commons links
-// turned out to be dead (confirmed via browser devtools: 404s on
-// commons.wikimedia.org itself, not a hotlink/CORS issue), so most
-// entries have no logo and fall back to the initials placeholder until
-// a real file is found and added. Cayey's link happened to still be
-// correct, so it's the one exception.
+// Mayor, official website, and (where a reliable source exists) coat of
+// arms for each municipality, from the "PR Municipalities Complete
+// Directory V2" sheet. Logos come only from wikimedia.org or the town's
+// own .gov site — entries sourced from encrypted-tbn0.gstatic.com
+// (Google Images cache, not official and prone to expiring), Pinterest,
+// or a malformed URL are left without a logo (falls back to the
+// initials placeholder) rather than risk another broken-link round.
 const PR_MUNICIPALITIES: Partner[] = [
-  { name: "Adjuntas" },
-  { name: "Aguada" },
-  { name: "Aguadilla" },
-  { name: "Aguas Buenas" },
-  { name: "Aibonito" },
-  { name: "Añasco" },
-  { name: "Arecibo" },
-  { name: "Arroyo" },
-  { name: "Barceloneta" },
-  { name: "Barranquitas" },
-  { name: "Bayamón" },
-  { name: "Cabo Rojo" },
-  { name: "Caguas" },
-  { name: "Camuy" },
-  { name: "Canóvanas" },
-  { name: "Carolina" },
-  { name: "Cataño" },
-  { name: "Cayey", logo: "https://commons.wikimedia.org/wiki/Special:FilePath/Escudo_de_Cayey.svg" }, // confirmed working
-  { name: "Ceiba" },
-  { name: "Ciales" },
-  { name: "Cidra" },
-  { name: "Coamo" },
-  { name: "Comerío" },
-  { name: "Corozal" },
-  { name: "Culebra" },
-  { name: "Dorado" },
-  { name: "Fajardo" },
-  { name: "Florida" },
-  { name: "Guánica" },
-  { name: "Guayama" },
-  { name: "Guayanilla" },
-  { name: "Guaynabo" },
-  { name: "Gurabo" },
-  { name: "Hatillo" },
-  { name: "Hormigueros" },
-  { name: "Humacao" },
-  { name: "Isabela" },
-  { name: "Jayuya" },
-  { name: "Juana Díaz" },
-  { name: "Juncos" },
-  { name: "Lajas" },
-  { name: "Lares" },
-  { name: "Las Marías" },
-  { name: "Las Piedras" },
-  { name: "Loíza" },
-  { name: "Luquillo" },
-  { name: "Manatí" },
-  { name: "Maricao" },
-  { name: "Maunabo" },
-  { name: "Mayagüez" },
-  { name: "Moca" },
-  { name: "Morovis" },
-  { name: "Naguabo" },
-  { name: "Naranjito" },
-  { name: "Orocovis" },
-  { name: "Patillas" },
-  { name: "Peñuelas" },
-  { name: "Ponce" },
-  { name: "Quebradillas" },
-  { name: "Rincón" },
-  { name: "Río Grande" },
-  { name: "Sabana Grande" },
-  { name: "Salinas" },
-  { name: "San Germán" },
-  { name: "San Juan" },
-  { name: "San Lorenzo" },
-  { name: "San Sebastián" },
-  { name: "Santa Isabel" },
-  { name: "Toa Alta" },
-  { name: "Toa Baja" },
-  { name: "Trujillo Alto" },
-  { name: "Utuado" },
-  { name: "Vega Alta" },
-  { name: "Vega Baja" },
-  { name: "Vieques" },
-  { name: "Villalba" },
-  { name: "Yabucoa" },
-  { name: "Yauco" },
+  { name: "Adjuntas", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/Escudo_de_Adjuntas%2C_Puerto_Rico.svg/1920px-Escudo_de_Adjuntas%2C_Puerto_Rico.svg.png", role: "Mayor: José Hiram Soto Rivera", website: "adjuntas.pr.gov" },
+  { name: "Aguada", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/54/Escudo_de_Aguada%2C_Puerto_Rico.svg/250px-Escudo_de_Aguada%2C_Puerto_Rico.svg.png", role: "Mayor: Christian Cortés Feliciano", website: "aguada.pr.gov" },
+  { name: "Aguadilla", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/81/Escudo_de_Aguadilla%2C_Puerto_Rico.svg/1920px-Escudo_de_Aguadilla%2C_Puerto_Rico.svg.png", role: "Mayor: Julio Roldán Concepción", website: "aguadilla.pr.gov" },
+  { name: "Aguas Buenas", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/53/Escudo_de_Aguas_Buenas%2C_Puerto_Rico.svg/1920px-Escudo_de_Aguas_Buenas%2C_Puerto_Rico.svg.png", role: "Mayor: Karina Nieves Serrano", website: "aguasbuenas.pr.gov" },
+  { name: "Aibonito", role: "Mayor: William Alicea Pérez", website: "aibonito.pr.gov" },
+  { name: "Añasco", role: "Mayor: Kabir Solares García", website: "anasco.pr.gov" },
+  { name: "Arecibo", role: "Mayor: Carlos Ramírez Irizarry", website: "arecibo.pr.gov" },
+  { name: "Arroyo", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b8/Coat_of_Arms_official_of_Arroyo.svg/960px-Coat_of_Arms_official_of_Arroyo.svg.png", role: "Mayor: Eric Bachier Román", website: "arroyo.pr.gov" },
+  { name: "Barceloneta", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/95/Escudo_de_Barceloneta%2C_Puerto_Rico.svg/1920px-Escudo_de_Barceloneta%2C_Puerto_Rico.svg.png", role: "Mayor: Wanda Soler Rosario", website: "barceloneta.pr.gov" },
+  { name: "Barranquitas", role: "Mayor: Elliot Colón Blanco", website: "barranquitas.pr.gov" },
+  { name: "Bayamón", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Coat_of_arms_of_Bayam%C3%B3n%2C_Puerto_Rico.svg/1280px-Coat_of_arms_of_Bayam%C3%B3n%2C_Puerto_Rico.svg.png", role: "Mayor: Ramón Luis Rivera Cruz", website: "www.bayamonpr.gov" },
+  { name: "Cabo Rojo", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/81/Escudo_de_Cabo_Rojo%2C_Puerto_Rico.svg/330px-Escudo_de_Cabo_Rojo%2C_Puerto_Rico.svg.png", role: "Mayor: Jorge Morales Wiscovitch", website: "caborojo.pr.gov" },
+  { name: "Caguas", logo: "https://upload.wikimedia.org/wikipedia/commons/8/86/Caguas_seal.gif", role: "Mayor: William Miranda Torres", website: "caguas.gov.pr" },
+  { name: "Camuy", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1f/Coat_of_arms_of_Camuy%2C_Puerto_Rico.svg/250px-Coat_of_arms_of_Camuy%2C_Puerto_Rico.svg.png", role: "Mayor: Gabriel Hernández Rodríguez", website: "camuy.pr.gov" },
+  { name: "Canóvanas", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/Escudo_de_Can%C3%B3vanas%2C_Puerto_Rico.svg/1280px-Escudo_de_Can%C3%B3vanas%2C_Puerto_Rico.svg.png", role: "Mayor: Lornna Soto Villanueva", website: "canovanas.pr.gov" },
+  { name: "Carolina", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/Escudo_de_Carolina%2C_Puerto_Rico.svg/500px-Escudo_de_Carolina%2C_Puerto_Rico.svg.png", role: "Mayor: José Carlos Aponte Dalmau", website: "www.carolinapr.gov" },
+  { name: "Cataño", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/df/Escudo_de_Cata%C3%B1o%2C_Puerto_Rico.svg/3840px-Escudo_de_Cata%C3%B1o%2C_Puerto_Rico.svg.png", role: "Mayor: Julio Alicea Vasallo", website: "catano.pr.gov" },
+  { name: "Cayey", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a0/Escudo_de_Cayey%2C_Puerto_Rico.svg/330px-Escudo_de_Cayey%2C_Puerto_Rico.svg.png", role: "Mayor: Rolando Ortiz Velázquez", website: "cayey.pr.gov" },
+  { name: "Ceiba", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9a/Escudo_de_Ceiba%2C_Puerto_Rico.svg/330px-Escudo_de_Ceiba%2C_Puerto_Rico.svg.png", role: "Mayor: Samuel Rivera Báez", website: "ceiba.pr.gov" },
+  { name: "Ciales", role: "Mayor: Alexander Burgos Otero", website: "ciales.pr.gov" },
+  { name: "Cidra", role: "Mayor: David Concepción González", website: "cidra.pr.gov" },
+  { name: "Coamo", role: "Mayor: Juan Carlos García Padilla", website: "coamo.pr.gov" },
+  { name: "Comerío", role: "Mayor: Irvin Rivera González", website: "comerio.pr.gov" },
+  { name: "Corozal", role: "Mayor: Luis García Rolón", website: "corozal.pr.gov" },
+  { name: "Culebra", role: "Mayor: Edilberto Romero Llovet", website: "culebra.pr.gov" },
+  { name: "Dorado", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b2/Escudo_de_Dorado%2C_Puerto_Rico.svg/1920px-Escudo_de_Dorado%2C_Puerto_Rico.svg.png", role: "Mayor: Aníbal José Torres", website: "dorado.pr.gov" },
+  { name: "Fajardo", logo: "https://upload.wikimedia.org/wikipedia/commons/4/49/Escudo_de_Fajardo_%28Puerto_Rico%29.svg", role: "Mayor: José Aníbal Meléndez Méndez", website: "fajardo.pr.gov" },
+  { name: "Florida", logo: "https://upload.wikimedia.org/wikipedia/commons/c/cd/Blason_ville_Florida_%28Porto-Rico%29.svg", role: "Mayor: José Gerena Polanco", website: "florida.pr.gov" },
+  { name: "Guánica", role: "Mayor: Ismael Rodríguez Ramos", website: "guanica.pr.gov" },
+  { name: "Guayama", role: "Mayor: O'Brain Vázquez Molina", website: "guayama.pr.gov" },
+  { name: "Guayanilla", role: "Mayor: Raúl Rivera Rodríguez", website: "guayanilla.pr.gov" },
+  { name: "Guaynabo", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e4/Escudo_de_Guaynabo%2C_Puerto_Rico.svg/330px-Escudo_de_Guaynabo%2C_Puerto_Rico.svg.png", role: "Mayor: Edward O'Neill", website: "guaynabo.pr.gov" },
+  { name: "Gurabo", role: "Mayor: Vimarie Peña Dávila", website: "gurabo.pr.gov" },
+  { name: "Hatillo", role: "Mayor: Carlos Román Román", website: "hatillo.pr.gov" },
+  { name: "Hormigueros", role: "Mayor: Pedro García Figueroa", website: "hormigueros.pr.gov" },
+  { name: "Humacao", role: "Mayor: Rosamar Trujillo Plumey", website: "humacao.pr.gov" },
+  { name: "Isabela", logo: "https://upload.wikimedia.org/wikipedia/commons/7/74/Coat_of_arms_of_Isabela%2C_Puerto_Rico.svg", role: "Mayor: Miguel Méndez Pérez", website: "isabela.pr.gov" },
+  { name: "Jayuya", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3e/Escudo_de_Jayuya%2C_Puerto_Rico.svg/250px-Escudo_de_Jayuya%2C_Puerto_Rico.svg.png", role: "Mayor: Jorge González Otero", website: "jayuya.pr.gov" },
+  { name: "Juana Díaz", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/34/CoA_Municipio_de_Juana_D%C3%ADaz.svg/500px-CoA_Municipio_de_Juana_D%C3%ADaz.svg.png", role: "Mayor: Ramón Hernández Torres", website: "juanadiaz.pr.gov" },
+  { name: "Juncos", role: "Mayor: Alfredo Alejandro Carrión", website: "juncos.pr.gov" },
+  { name: "Lajas", logo: "https://upload.wikimedia.org/wikipedia/commons/0/0b/Coat_of_arms_of_Lajas%2C_Puerto_Rico.svg", role: "Mayor: Jayson Martínez Maldonado", website: "lajas.pr.gov" },
+  { name: "Lares", role: "Mayor: Fabián Arroyo Rodríguez", website: "lares.pr.gov" },
+  { name: "Las Marías", role: "Mayor: Edwin Soto Santiago", website: "lasmarias.pr.gov" },
+  { name: "Las Piedras", role: "Mayor: Miguel López Rivera", website: "laspiedras.pr.gov" },
+  { name: "Loíza", role: "Mayor: Julia Nazario Fuentes", website: "loiza.pr.gov" },
+  { name: "Luquillo", logo: "https://upload.wikimedia.org/wikipedia/commons/d/da/Escudo_de_Luquillo.svg", role: "Mayor: Jesús Márquez Rodríguez", website: "luquillo.pr.gov" },
+  { name: "Manatí", logo: "https://upload.wikimedia.org/wikipedia/commons/c/c7/Coat_of_arms_of_Manat%C3%AD%2C_Puerto_Rico.svg", role: "Mayor: José Sánchez González", website: "manati.pr.gov" },
+  { name: "Maricao", role: "Mayor: Wilfredo Ruiz Feliciano", website: "maricao.pr.gov" },
+  { name: "Maunabo", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7d/Escudo_de_Maunabo%2C_Puerto_Rico.svg/1280px-Escudo_de_Maunabo%2C_Puerto_Rico.svg.png", role: "Mayor: Ángel Omar Lafuente Amaro", website: "maunabo.pr.gov" },
+  { name: "Mayagüez", logo: "https://upload.wikimedia.org/wikipedia/commons/b/b9/Mayag%C3%BCez_seal.JPG", role: "Mayor: Jorge Ramos Ruiz", website: "mayaguez.pr.gov" },
+  { name: "Moca", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/Escudo_de_Moca%2C_Puerto_Rico.svg/250px-Escudo_de_Moca%2C_Puerto_Rico.svg.png", role: "Mayor: Ángel Pérez", website: "moca.pr.gov" },
+  { name: "Morovis", role: "Mayor: Carmen Maldonado González", website: "morovis.pr.gov" },
+  { name: "Naguabo", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/eb/Escudo_de_Naguabo%2C_Puerto_Rico.svg/250px-Escudo_de_Naguabo%2C_Puerto_Rico.svg.png", role: "Mayor: Miraidaliz Rosario Pagán", website: "naguabo.pr.gov" },
+  { name: "Naranjito", role: "Mayor: Orlando Ortiz Chevres", website: "naranjito.pr.gov" },
+  { name: "Orocovis", role: "Mayor: Jesús Colón Berlingeri", website: "orocovis.pr.gov" },
+  { name: "Patillas", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/99/Escudo_de_Patillas%2C_Puerto_Rico.svg/250px-Escudo_de_Patillas%2C_Puerto_Rico.svg.png", role: "Mayor: Maritza Sánchez Neris", website: "patillas.pr.gov" },
+  { name: "Peñuelas", role: "Mayor: Gregory Gonsález Souchet", website: "penuelas.pr.gov" },
+  { name: "Ponce", role: "Mayor: Marlese Sifre", website: "ponce.pr.gov" },
+  { name: "Quebradillas", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/37/Escudo_de_Quebradillas%2C_Puerto_Rico.svg/1920px-Escudo_de_Quebradillas%2C_Puerto_Rico.svg.png", role: "Mayor: Heriberto Vélez Vélez", website: "quebradillas.pr.gov" },
+  { name: "Rincón", logo: "https://rincon.gov.pr/wp-content/uploads/2021/03/Oficial-Escudo-Rincon-Jpg-e1615994103658.jpg", role: "Mayor: Carlos López Bonilla", website: "rincon.pr.gov" },
+  { name: "Río Grande", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2e/Escudo_de_R%C3%ADo_Grande%2C_Puerto_Rico.svg/960px-Escudo_de_R%C3%ADo_Grande%2C_Puerto_Rico.svg.png", role: "Mayor: Ángel González Damudt", website: "riogrande.pr.gov" },
+  { name: "Sabana Grande", role: "Mayor: Marcos Valentín Flores", website: "sabanagrande.pr.gov" },
+  { name: "Salinas", role: "Mayor: Karilyn Bonilla Colón", website: "salinas.pr.gov" },
+  { name: "San Germán", role: "Mayor: Virgilio Olivera Olivera", website: "sangerman.pr.gov" },
+  { name: "San Juan", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/79/Coat_of_arms_of_San_Juan_%28Puerto_Rico%29.svg/500px-Coat_of_arms_of_San_Juan_%28Puerto_Rico%29.svg.png", role: "Mayor: Miguel Romero Lugo", website: "sanjuan.pr.gov" },
+  { name: "San Lorenzo", logo: "https://upload.wikimedia.org/wikipedia/commons/7/72/Coat_of_arms_of_San_Lorenzo%2C_Puerto_Rico.svg", role: "Mayor: Jaime Alverio Ramos", website: "sanlorenzo.pr.gov" },
+  { name: "San Sebastián", role: "Mayor: Eladio Cordona Quiles", website: "sansebastian.pr.gov" },
+  { name: "Santa Isabel", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/73/Escudo_de_Santa_Isabel%2C_Puerto_Rico.svg/1920px-Escudo_de_Santa_Isabel%2C_Puerto_Rico.svg.png", role: "Mayor: Meldwin Rivera Rodríguez", website: "santaisabel.pr.gov" },
+  { name: "Toa Alta", role: "Mayor: Clemente Agosto", website: "toaalta.pr.gov" },
+  { name: "Toa Baja", role: "Mayor: Bernardo Márquez García", website: "toabajo.pr.gov" },
+  { name: "Trujillo Alto", role: "Mayor: Pedro Rodríguez González", website: "trujilloalto.pr.gov" },
+  { name: "Utuado", role: "Mayor: Jorge Pérez Heredia", website: "utuado.pr.gov" },
+  { name: "Vega Alta", role: "Mayor: María Vega Pagán", website: "vegaalta.pr.gov" },
+  { name: "Vega Baja", role: "Mayor: Marcos Cruz Molina", website: "vegabaja.pr.gov" },
+  { name: "Vieques", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b2/Escudo_de_Vieques%2C_Puerto_Rico.svg/1920px-Escudo_de_Vieques%2C_Puerto_Rico.svg.png", role: "Mayor: José Corcino Acevedo", website: "vieques.pr.gov" },
+  { name: "Villalba", role: "Mayor: Danny Santiago Núñez", website: "villalba.pr.gov" },
+  { name: "Yabucoa", logo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4e/Escudo_de_Yabucoa%2C_Puerto_Rico.svg/1920px-Escudo_de_Yabucoa%2C_Puerto_Rico.svg.png", role: "Mayor: Rafael Surillo Ruiz", website: "yabucoa.pr.gov" },
+  { name: "Yauco", role: "Mayor: Ángel Luis Torres Ortiz", website: "yauco.pr.gov" },
 ];
 
 function buildPillars(isEs: boolean): Pillar[] {
@@ -257,8 +257,9 @@ function PartnerCard({ partner, tag }: { partner: Partner; tag: string }) {
       <div className="flex flex-grow flex-col gap-1.5 p-4">
         <span className="text-[10px] font-bold tracking-[0.14em] text-foreground/45">{tag}</span>
         <h3 className="text-sm font-bold leading-snug text-foreground">{partner.name}</h3>
-        <div className="mt-auto pt-2">
-          {partner.website ? (
+        <div className="mt-auto flex flex-col gap-1 pt-2">
+          {partner.role && <span className="text-xs font-medium leading-snug text-foreground/60">{partner.role}</span>}
+          {partner.website && (
             <a
               href={`https://${partner.website}`}
               target="_blank"
@@ -269,9 +270,7 @@ function PartnerCard({ partner, tag }: { partner: Partner; tag: string }) {
               {partner.website}
               <ExternalLink size={12} className="shrink-0" />
             </a>
-          ) : partner.role ? (
-            <span className="text-xs font-medium leading-snug text-foreground/60">{partner.role}</span>
-          ) : null}
+          )}
         </div>
       </div>
     </article>
