@@ -5,7 +5,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import SEO from "@/components/SEO";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useMovementTotals } from "@shared/hooks/useMovementTotals";
-import { ExternalLink, Search } from "lucide-react";
+import { Building2, ExternalLink, Search } from "lucide-react";
 
 interface Partner {
   name: string;
@@ -126,6 +126,7 @@ function buildPillars(isEs: boolean): Pillar[] {
         ? "Empresas y marcas que patrocinan activaciones de bondad, igualan las horas de voluntariado de sus equipos y ayudan a financiar el alcance del movimiento."
         : "Businesses and brands that sponsor kindness activations, match their teams' volunteer hours, and help fund the movement's reach.",
       partners: [
+        { name: "Awaken — Michael Krauss", logo: "corporate_awaken---michael-krauss.jpg" },
         { name: "Eucaforest", logo: "corporate_eucaforest-logo1b.png" },
         { name: "Loving AI", logo: "corporate_loving-ai.webp", website: "lovingai.org" },
         { name: "NuCalm", logo: "corporate_nucalm.png", website: "nucalm.com" },
@@ -151,7 +152,6 @@ function buildPillars(isEs: boolean): Pillar[] {
         ? "Iglesias, ministerios y comunidades de fe que movilizan a sus congregaciones y tejen la bondad en su servicio a los demás."
         : "Churches, ministries, and faith communities that mobilize their congregations and weave kindness into their service to others.",
       partners: [
-        { name: "Awaken — Michael Krauss", logo: "faith-based_awaken---michael-krauss.jpg" },
         { name: "Oneness", logo: "faith-based_oneness.png" },
         { name: "Yoga Vidya", logo: "faith-based_yoga-vidya.jpg" },
       ],
@@ -427,11 +427,27 @@ export default function PartnersPage() {
 
         {/* Directory */}
         <div className="section-padding mx-auto flex max-w-6xl flex-col gap-16 py-14">
-          <p className="-mb-10 max-w-3xl rounded-xl bg-warm-sand px-5 py-4 text-base font-medium leading-relaxed text-foreground">
-            {isEs
-              ? "Estos son los socios fundadores confirmados para la Temporada de Bondad Global. Hay más organizaciones completando su incorporación y se añadirán a esta lista a medida que se confirmen."
-              : "These are the founding partners confirmed for Global Kindness Season. More organizations are completing onboarding and will be added to this list as they're confirmed."}
-          </p>
+          <div
+            className="-mb-10 flex items-center gap-4 rounded-2xl border border-border bg-white py-5 pl-6 pr-6"
+            style={{ borderLeft: "4px solid #0e234b" }}
+          >
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-warm-sand">
+              <Building2 size={22} className="text-cyan-900" />
+            </div>
+            <div>
+              <p className="text-xs font-bold tracking-[0.14em] text-foreground/50">
+                {isEs ? "¿BUSCAS TU ORGANIZACIÓN?" : "LOOKING FOR YOUR ORGANIZATION?"}
+              </p>
+              <h3 className="font-display text-xl leading-snug text-foreground">
+                {isEs ? "Estos son nuestros socios fundadores" : "These are our founding partners"}
+              </h3>
+              <p className="text-sm leading-relaxed text-foreground/70">
+                {isEs
+                  ? "Hay más organizaciones completando su incorporación y se añadirán a esta lista a medida que se confirmen."
+                  : "More organizations are completing onboarding and will be added to this list as they're confirmed."}
+              </p>
+            </div>
+          </div>
           {sections.map((s) => (
             <section key={s.id} aria-labelledby={`sec-${s.id}`} className="flex flex-col gap-6">
               <div className="flex flex-wrap items-end justify-between gap-3 border-b border-border pb-5">
