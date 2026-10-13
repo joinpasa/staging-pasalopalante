@@ -39,6 +39,7 @@ const PILLARS: Pillar[] = [
       { name: "HB CBC News", logo: "corporate_hb-cbc-news.jpg" },
       { name: "HTS", logo: "corporate_hts.png" },
       { name: "Laser 101 St Maarten", logo: "corporate_laser101-st-maarteen.png" },
+      { name: "Loving AI", logo: "corporate_loving-ai.webp" },
       { name: "Mone & You", logo: "corporate_mone--you.png" },
       { name: "Platea PR", logo: "corporate_platea-pr.png" },
       { name: "TV15SXM", logo: "corporate_tv15sxm.png" },
@@ -110,7 +111,9 @@ const PILLARS: Pillar[] = [
     },
     partners: [
       { name: "Departamento de Educación PR", logo: "education_departamento-educacion-pr.png" },
+      { name: "JA Worldwide", logo: "education_ja-worldwide.png" },
       { name: "MECYS", logo: "education_mecys.png" },
+      { name: "Ministry of Education — Anguilla", logo: "education_ministry-of-education-anguilla.png" },
     ],
   },
 ];
