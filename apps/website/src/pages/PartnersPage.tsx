@@ -435,7 +435,7 @@ export default function PartnersPage() {
 
         {/* Directory */}
         <div className="section-padding mx-auto flex max-w-6xl flex-col gap-16 py-14">
-          <p className="-mb-10 max-w-3xl text-sm leading-relaxed text-foreground/60">
+          <p className="-mb-10 max-w-3xl rounded-xl bg-warm-sand px-5 py-4 text-base font-medium leading-relaxed text-foreground">
             {isEs
               ? "Estos son los socios fundadores confirmados para la Temporada de Bondad Global. Hay más organizaciones completando su incorporación y se añadirán a esta lista a medida que se confirmen."
               : "These are the founding partners confirmed for Global Kindness Season. More organizations are completing onboarding and will be added to this list as they're confirmed."}
