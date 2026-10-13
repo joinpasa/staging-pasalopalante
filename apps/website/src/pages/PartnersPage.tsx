@@ -246,7 +246,7 @@ function PartnerCard({ partner, tag }: { partner: Partner; tag: string }) {
   return (
     <article className="flex flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
       <div
-        className={`flex h-28 items-center justify-center border-b border-border p-4 ${
+        className={`flex h-44 items-center justify-center border-b border-border p-5 ${
           partner.dark ? "bg-cyan-900" : "bg-white"
         }`}
       >
@@ -255,11 +255,11 @@ function PartnerCard({ partner, tag }: { partner: Partner; tag: string }) {
             src={logoSrc(partner.logo)}
             alt={partner.name}
             loading="lazy"
-            className="max-h-16 w-auto max-w-[78%] object-contain"
+            className="max-h-32 w-auto max-w-[88%] object-contain"
           />
         ) : (
           <div
-            className="flex h-16 w-16 items-center justify-center rounded-full bg-warm-sand font-display text-lg text-foreground"
+            className="flex h-20 w-20 items-center justify-center rounded-full bg-warm-sand font-display text-2xl text-foreground"
             aria-hidden="true"
           >
             {initials(partner.name)}
@@ -461,7 +461,7 @@ export default function PartnersPage() {
                 </div>
                 <p className="max-w-lg text-sm leading-relaxed text-foreground/70">{s.description}</p>
               </div>
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4">
                 {s.items.map((p) => (
                   <PartnerCard key={p.name} partner={p} tag={s.tag} />
                 ))}
