@@ -267,32 +267,20 @@ const routes: Route[] = [
       <p>Pásalo Pa'lante may remove, decline, or report content that violates these guidelines or harms the integrity of the movement.</p>
     `,
   },
-  // /partners is in draft — not yet approved to go live, so it's left out
-  // of this prerender list on purpose (App.tsx's /partners route also
-  // redirects home for the same reason). Re-add this entry when it ships:
-  // {
-  //   path: "/partners",
-  //   title: "Our Partners | Pásalo Pa'lante",
-  //   description:
-  //     "Meet the corporate, faith-based, government, nonprofit, and education partners powering Pásalo Pa'lante and the global kindness movement.",
-  //   body: `
-  //     <h1>Our Partners</h1>
-  //     ${SISTER}
-  //     <p>Pásalo Pa'lante moves forward because of the organizations standing behind it. Across five pillars, our partners co-host activations, fund the movement, and carry kindness into every corner of their communities.</p>
-  //     <h2>Corporate</h2>
-  //     <p>Businesses and brands that sponsor kindness activations, match their teams' volunteer hours, and help fund the movement's reach: Animaze, C-Suite Network, Caribbean Cinemas, Eucaforest, Good Pop, Good News Network, HB CBC News, HTS, Laser 101 St Maarten, Mone &amp; You, Platea PR, TV15SXM, The Weather Network, bMedia.</p>
-  //     <h2>Faith-Based</h2>
-  //     <p>Churches, ministries, and faith communities that mobilize their congregations and weave kindness into their service to others: Awaken (Michael Krauss), Brahma Kumaris, ISKCON, Oneness, Purity Weaves Destiny, The Art of Living, Yoga Vidya.</p>
-  //     <h2>Government</h2>
-  //     <p>Municipalities and public agencies that bring the campaign to their cities, proclaim the Kindness Season, and support local activations: Montserrat, WIPR.</p>
-  //     <h2>Nonprofits</h2>
-  //     <p>Community organizations that co-host activations, share kindness resources, and connect the movement to the people they serve: WEDU, Ad Council, AIESEC, Coquí, HMI, HITN, Kids for Peace, Million Peacemakers, PBS, Rotary Westminster, WKM.</p>
-  //     <h2>Education</h2>
-  //     <p>Schools, campuses, and educators who bring kindness into classrooms with age-appropriate prompts, activities, and student-led projects: Departamento de Educación PR, MECYS.</p>
-  //     <h2>Become a partner</h2>
-  //     <p>Join the movement and help us pass kindness forward. Tell us about your organization at <a href="/partners/apply">/partners/apply</a> and we'll follow up with next steps.</p>
-  //   `,
-  // },
+  {
+    path: "/partners",
+    title: "Our Partners | Pásalo Pa'lante",
+    description:
+      "Meet the businesses, media, governments, nonprofits, and educators powering Pásalo Pa'lante and the global kindness movement.",
+    body: `
+      <h1>Our Partners</h1>
+      ${SISTER}
+      <p>Pásalo Pa'lante moves forward because of the organizations standing behind it. Our partners co-host activations, fund the movement, and carry kindness into every corner of their communities.</p>
+      <p>The coalition includes businesses, media networks, faith communities, municipalities across Puerto Rico, nonprofits, and schools and ministries of education across the Caribbean and beyond, among them Caribbean Cinemas, WIPR, HeartMath Institute, Good Deeds Day, JA Worldwide, Kids for Peace, Salzburg Global, World Values Day, Rotary Club de Santurce, and the Departamento de Educación de Puerto Rico.</p>
+      <h2>Become a partner</h2>
+      <p>Join the movement and help us pass kindness forward. Tell us about your organization at <a href="/partners/apply">/partners/apply</a> and we'll follow up with next steps.</p>
+    `,
+  },
 ];
 
 function escapeHtml(s: string): string {

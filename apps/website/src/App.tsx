@@ -38,10 +38,10 @@ const PrivacyPage = lazy(() => import("./pages/PrivacyPage.tsx"));
 const CommunityGuidelinesPage = lazy(() => import("./pages/CommunityGuidelinesPage.tsx"));
 const ContactPage = lazy(() => import("./pages/ContactPage.tsx"));
 const AboutPage = lazy(() => import("./pages/AboutPage.tsx"));
-// Unlisted — live at these URLs but not linked from the Navbar, Footer, or
-// prerendered for SEO (see the /partners and /ambassadors routes below).
-// Reachable only by someone who already has the direct link.
 const PartnersPage = lazy(() => import("./pages/PartnersPage.tsx"));
+// Unlisted — live at these URLs but not linked from the Navbar, Footer, or
+// prerendered for SEO (see the /partners/apply and /ambassadors routes below).
+// Reachable only by someone who already has the direct link.
 const PartnersApplyPage = lazy(() => import("./pages/PartnersApplyPage.tsx"));
 const GlobalAmbassadorsPage = lazy(() => import("./pages/GlobalAmbassadorsPage.tsx"));
 const ProgramsPage = lazy(() => import("./pages/ProgramsPage.tsx"));

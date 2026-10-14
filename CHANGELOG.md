@@ -14,6 +14,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 - **Removed leftover Netlify config.** The site moved to Cloudflare a while ago, but two old Netlify settings files were still in the repo. Netlify is now fully disconnected; Cloudflare is the only place the website, app and partners portal deploy from.
 - **Partners portal deploy name fixed.** The portal's settings file used a different name than its Cloudflare project (`partnersportal-pkf`), which Cloudflare needs to match — the likely reason every portal build was failing. Renamed it to match.
 - **New partners added:** WIPR, Salzburg Global, World Values Day, Instituto Brasileiro de Capoeira-Educação (IBCE), and Rotary Club de Santurce (linked to its Facebook page, since it has no website — partner cards can now show a Facebook link). Loving AI's card now uses the LovingIs logo.
+- **Partners page is now live and public.** It's linked under Explore in the top menu and in the footer, listed for search engines, and the menu label is translated in every site language. Until now it was a hidden draft only reachable by direct link.
 
 ## 2026-10-13 — va.deedumlao@gmail.com
 
