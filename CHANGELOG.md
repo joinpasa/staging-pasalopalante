@@ -11,6 +11,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 ## 2026-10-14 — va.deedumlao@gmail.com
 
 - **Partners page is now one list, no categories.** Dropped the six sector sections (Corporate, Media, Faith-Based, etc.), the filter chips, the per-card category label, and the "sectors" stat — some categories only had one or two partners and made the coalition look thin. Every partner now shows in a single grid (organizations A–Z first, then municipalities A–Z), with search still working. The category data is kept in the code so the sector view can come back once each group is big enough.
+- **Removed leftover Netlify config.** The site moved to Cloudflare a while ago, but two old Netlify settings files were still in the repo. Netlify is now fully disconnected; Cloudflare is the only place the website, app and partners portal deploy from.
 
 ## 2026-10-13 — va.deedumlao@gmail.com
 
