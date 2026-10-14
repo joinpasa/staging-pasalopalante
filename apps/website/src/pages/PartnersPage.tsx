@@ -141,7 +141,14 @@ function buildPillars(isEs: boolean): Pillar[] {
       description: isEs
         ? "Cadenas y redes de medios que amplifican el movimiento ante sus audiencias y ayudan a correr la voz de la bondad."
         : "Broadcasters and media networks that amplify the movement to their audiences and help spread the word on kindness.",
-      partners: [{ name: "C-Suite Network", logo: "corporate_c-suite-network.png", website: "c-suitenetwork.com" }],
+      partners: [
+        { name: "C-Suite Network", logo: "corporate_c-suite-network.png", website: "c-suitenetwork.com" },
+        { name: "Caribbean Cinemas", logo: "media_caribbean-cinemas-logo.png", website: "caribbeancinemas.com" },
+        { name: "bMedia", logo: "media_logo-bmedia--color.svg" },
+        { name: "Platea PR", logo: "media_platea-pr.png" },
+        { name: "CBC Barbados", logo: "media_cbc-barbados.jpg" },
+        { name: "Helena TV (HTS)", logo: "media_hts.png" },
+      ],
     },
     {
       id: "faith-based",
