@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-14 — va.deedumlao@gmail.com
+
+- **Partners page is now one list, no categories.** Dropped the six sector sections (Corporate, Media, Faith-Based, etc.), the filter chips, the per-card category label, and the "sectors" stat — some categories only had one or two partners and made the coalition look thin. Every partner now shows in a single grid (organizations A–Z first, then municipalities A–Z), with search still working. The category data is kept in the code so the sector view can come back once each group is big enough.
+
 ## 2026-10-13 — va.deedumlao@gmail.com
 
 - **Redesigned "Our Partners" (`/partners`) into a searchable directory.** New look: a dark navy hero with live stats (partner count, number of sectors, and the real live "acts pledged" total), a sticky search bar with per-sector filter chips showing live counts, and numbered directory sections with a website link on each card where one's known. Still unlisted — not linked from the Navbar, Footer, or Explore menu — until it's approved to go public.

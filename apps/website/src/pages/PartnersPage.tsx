@@ -230,7 +230,7 @@ function logoSrc(logo: string) {
   return logo.startsWith("http") ? logo : `/partners/${logo}`;
 }
 
-function PartnerCard({ partner, tag }: { partner: Partner; tag: string }) {
+function PartnerCard({ partner }: { partner: Partner }) {
   return (
     <article className="flex flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
       <div
@@ -255,7 +255,6 @@ function PartnerCard({ partner, tag }: { partner: Partner; tag: string }) {
         )}
       </div>
       <div className="flex flex-grow flex-col gap-1.5 p-4">
-        <span className="text-[10px] font-bold tracking-[0.14em] text-foreground/45">{tag}</span>
         <h3 className="text-sm font-bold leading-snug text-foreground">{partner.name}</h3>
         <div className="mt-auto flex flex-col gap-1 pt-2">
           {partner.role && <span className="text-xs font-medium leading-snug text-foreground/60">{partner.role}</span>}
@@ -287,38 +286,37 @@ export default function PartnersPage() {
   const locale = isEs ? "es" : "en";
   const { data: totals } = useMovementTotals();
   const [query, setQuery] = useState("");
-  const [sector, setSector] = useState("all");
 
-  const pillars = useMemo(() => buildPillars(isEs), [isEs]);
-  const totalPartners = useMemo(() => pillars.reduce((n, p) => n + p.partners.length, 0), [pillars]);
+  // Categories are hidden for now (some are still too thin to stand on their
+  // own) — every partner renders in one flat list. Organizations come first
+  // A–Z, then the municipalities A–Z, so the long list of towns doesn't bury
+  // them. The data stays grouped in buildPillars() so the sector view can come
+  // back once each category has enough partners.
+  const partners = useMemo(() => {
+    const pillars = buildPillars(isEs);
+    const byName = (a: Partner, b: Partner) => a.name.localeCompare(b.name, locale);
+    const orgs = pillars.filter((p) => p.id !== "government").flatMap((p) => p.partners).sort(byName);
+    const towns = pillars.filter((p) => p.id === "government").flatMap((p) => p.partners).sort(byName);
+    return [...orgs, ...towns];
+  }, [isEs, locale]);
+  const totalPartners = partners.length;
 
   const q = query.trim().toLowerCase();
   const matchesQuery = (p: Partner) => !q || p.name.toLowerCase().includes(q) || (p.website ?? "").includes(q);
 
-  const chips = useMemo(() => {
-    const counts = pillars.map((p) => ({ id: p.id, label: p.name, count: p.partners.filter(matchesQuery).length }));
-    const allCount = counts.reduce((n, c) => n + c.count, 0);
-    return [{ id: "all", label: isEs ? "Todos" : "All", count: allCount }, ...counts];
+  const items = useMemo(
+    () => partners.filter(matchesQuery),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pillars, q, isEs]);
-
-  const sections = useMemo(
-    () =>
-      pillars
-        .filter((p) => sector === "all" || p.id === sector)
-        .map((p) => ({ ...p, items: p.partners.filter(matchesQuery) }))
-        .filter((p) => p.items.length > 0),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [pillars, sector, q],
+    [partners, q],
   );
 
-  const shown = sections.reduce((n, s) => n + s.items.length, 0);
+  const shown = items.length;
 
   return (
     <div className="min-h-screen bg-warm-cream">
       <SEO
         title="Our Partners — Pásalo Pa'lante"
-        description="Meet the corporate, media, faith-based, government, nonprofit, and education partners powering Pásalo Pa'lante and the global kindness movement."
+        description="Meet the businesses, media, governments, nonprofits, and educators powering Pásalo Pa'lante and the global kindness movement."
         path="/partners"
       />
       <ScrollToTop />
@@ -342,8 +340,8 @@ export default function PartnersPage() {
               </h1>
               <p className="max-w-xl text-base leading-relaxed text-warm-cream/75 md:text-lg">
                 {isEs
-                  ? "Pásalo Pa'lante avanza gracias a las organizaciones que lo respaldan. A través de seis pilares, nuestros socios coorganizan activaciones, financian el movimiento y llevan la bondad a cada rincón de sus comunidades."
-                  : "Pásalo Pa'lante moves forward because of the organizations standing behind it. Across six pillars, our partners co-host activations, fund the movement, and carry kindness into every corner of their communities."}
+                  ? "Pásalo Pa'lante avanza gracias a las organizaciones que lo respaldan. Nuestros socios coorganizan activaciones, financian el movimiento y llevan la bondad a cada rincón de sus comunidades."
+                  : "Pásalo Pa'lante moves forward because of the organizations standing behind it. Our partners co-host activations, fund the movement, and carry kindness into every corner of their communities."}
               </p>
               <div className="mt-2 flex flex-wrap gap-3">
                 <a
@@ -360,17 +358,11 @@ export default function PartnersPage() {
                 </a>
               </div>
             </div>
-            <dl className="grid flex-1 grid-cols-3 gap-0 border-t border-warm-cream/20" style={{ flexBasis: "320px" }}>
+            <dl className="grid flex-1 grid-cols-2 gap-0 border-t border-warm-cream/20" style={{ flexBasis: "320px" }}>
               <div className="flex flex-col gap-1.5 pr-4 pt-5">
                 <dd className="font-display text-4xl leading-none md:text-5xl">{totalPartners}</dd>
                 <dt className="text-xs font-semibold leading-tight text-warm-cream/70">
                   {isEs ? "Organizaciones socias" : "Partner organizations"}
-                </dt>
-              </div>
-              <div className="flex flex-col gap-1.5 border-l border-warm-cream/20 px-4 pt-5">
-                <dd className="font-display text-4xl leading-none md:text-5xl">{pillars.length}</dd>
-                <dt className="text-xs font-semibold leading-tight text-warm-cream/70">
-                  {isEs ? "Sectores trabajando juntos" : "Sectors working together"}
                 </dt>
               </div>
               <div className="flex flex-col gap-1.5 border-l border-warm-cream/20 py-5 pl-4">
@@ -408,24 +400,6 @@ export default function PartnersPage() {
                 className="h-12 w-full rounded-full border border-border bg-white pl-11 pr-4 text-sm text-foreground outline-none focus:border-warm-terracotta"
               />
             </div>
-            <div role="group" aria-label={isEs ? "Filtrar por sector" : "Filter by sector"} className="flex flex-[1_1_auto] flex-wrap gap-2">
-              {chips.map((c) => (
-                <button
-                  key={c.id}
-                  type="button"
-                  aria-pressed={sector === c.id}
-                  onClick={() => setSector(c.id)}
-                  className={`flex h-10 items-center gap-1.5 rounded-full border px-4 text-[13px] font-bold transition-colors ${
-                    sector === c.id
-                      ? "border-cyan-900 bg-cyan-900 text-white"
-                      : "border-border bg-white text-foreground hover:border-warm-terracotta"
-                  }`}
-                >
-                  {c.label}
-                  <span className="text-xs font-semibold opacity-75">{c.count}</span>
-                </button>
-              ))}
-            </div>
             <span className="text-[13px] font-semibold text-foreground/70">
               {isEs ? `Mostrando ${shown} de ${totalPartners}` : `Showing ${shown} of ${totalPartners}`}
             </span>
@@ -455,27 +429,13 @@ export default function PartnersPage() {
               </p>
             </div>
           </div>
-          {sections.map((s) => (
-            <section key={s.id} aria-labelledby={`sec-${s.id}`} className="flex flex-col gap-6">
-              <div className="flex flex-wrap items-end justify-between gap-3 border-b border-border pb-5">
-                <div className="flex items-baseline gap-4">
-                  <span className="font-display text-xl text-warm-terracotta">{s.n}</span>
-                  <h2 id={`sec-${s.id}`} className="font-display text-3xl text-foreground md:text-4xl">
-                    {s.name}
-                  </h2>
-                  <span className="whitespace-nowrap rounded-full bg-warm-sand px-2.5 py-1 text-xs font-bold text-foreground/70">
-                    {s.items.length} {s.items.length === 1 ? (isEs ? "socio" : "partner") : isEs ? "socios" : "partners"}
-                  </span>
-                </div>
-                <p className="max-w-lg text-sm leading-relaxed text-foreground/70">{s.description}</p>
-              </div>
-              <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4">
-                {s.items.map((p) => (
-                  <PartnerCard key={p.name} partner={p} tag={s.tag} />
-                ))}
-              </div>
-            </section>
-          ))}
+          {shown > 0 && (
+            <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4">
+              {items.map((p) => (
+                <PartnerCard key={p.name} partner={p} />
+              ))}
+            </div>
+          )}
 
           {shown === 0 && (
             <div className="flex flex-col items-center gap-3 rounded-3xl border-[1.5px] border-dashed border-border px-6 py-16 text-center">
@@ -483,14 +443,11 @@ export default function PartnersPage() {
                 {isEs ? "Ningún socio coincide con esa búsqueda" : "No partners match that search"}
               </h2>
               <p className="text-sm text-foreground/70">
-                {isEs ? "Prueba con otro nombre o explora todos los sectores." : "Try another name, or browse all sectors."}
+                {isEs ? "Prueba con otro nombre." : "Try another name."}
               </p>
               <button
                 type="button"
-                onClick={() => {
-                  setQuery("");
-                  setSector("all");
-                }}
+                onClick={() => setQuery("")}
                 className="mt-2 h-[46px] rounded-full bg-cyan-900 px-6 text-sm font-bold text-white"
               >
                 {isEs ? "Mostrar todos los socios" : "Show all partners"}
