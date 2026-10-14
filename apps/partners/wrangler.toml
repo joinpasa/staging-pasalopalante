@@ -1,4 +1,4 @@
-name = "stagingpartners-pasalopalante"
+name = "partnersportal-pkf"
 compatibility_date = "2024-09-23"
 
 # Pure static-asset deployment, same as apps/app — served as a single-page

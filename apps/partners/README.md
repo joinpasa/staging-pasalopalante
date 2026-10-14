@@ -43,4 +43,4 @@ Send the coordinator `https://partners.passkindnessforward.com/join/<invite_toke
 
 ## Deploy (Cloudflare)
 
-Same as `apps/app`: a static-assets Worker (`wrangler.toml`, name `stagingpartners-pasalopalante`). Create the Cloudflare project from this repo with build command `npm run build:partners`, then add `partners.passkindnessforward.com` as its Custom Domain.
+Same as `apps/app`: a static-assets Worker (`wrangler.toml`, name `partnersportal-pkf` — must match the Cloudflare project name exactly or Workers Builds fails). Create the Cloudflare project from this repo with build command `npm run build:partners`, then add `partners.passkindnessforward.com` as its Custom Domain.
