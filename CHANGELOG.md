@@ -13,7 +13,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 - **Partners page is now one list, no categories.** Dropped the six sector sections (Corporate, Media, Faith-Based, etc.), the filter chips, the per-card category label, and the "sectors" stat — some categories only had one or two partners and made the coalition look thin. Every partner now shows in a single grid (organizations A–Z first, then municipalities A–Z), with search still working. The category data is kept in the code so the sector view can come back once each group is big enough.
 - **Removed leftover Netlify config.** The site moved to Cloudflare a while ago, but two old Netlify settings files were still in the repo. Netlify is now fully disconnected; Cloudflare is the only place the website, app and partners portal deploy from.
 - **Partners portal deploy name fixed.** The portal's settings file used a different name than its Cloudflare project (`partnersportal-pkf`), which Cloudflare needs to match — the likely reason every portal build was failing. Renamed it to match.
-- **New partners added:** WIPR, Salzburg Global, World Values Day, Instituto Brasileiro de Capoeira-Educação (IBCE), and Rotary Club de Santurce (linked to its Facebook page, since it has no website — partner cards can now show a Facebook link). Loving AI's card now uses the LovingIs logo. World Values Day shows initials until its logo file is added.
+- **New partners added:** WIPR, Salzburg Global, World Values Day, Instituto Brasileiro de Capoeira-Educação (IBCE), and Rotary Club de Santurce (linked to its Facebook page, since it has no website — partner cards can now show a Facebook link). Loving AI's card now uses the LovingIs logo.
 
 ## 2026-10-13 — va.deedumlao@gmail.com
 

@@ -199,7 +199,7 @@ function buildPillars(isEs: boolean): Pillar[] {
           facebook: "https://www.facebook.com/p/Rotary-Club-of-Santurce-Puerto-Rico-61578235826624/",
         },
         { name: "Salzburg Global", logo: "nonprofits_salzburg-global.png", website: "salzburgglobal.org" },
-        { name: "World Values Day", website: "worldvaluesday.com" },
+        { name: "World Values Day", logo: "nonprofits_world-values-day.webp", website: "worldvaluesday.com" },
       ],
     },
     {
