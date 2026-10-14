@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Download, Share, X, Plus, Smartphone } from "lucide-react";
 import { useLanguage } from "@shared/contexts/LanguageContext";
@@ -40,6 +40,7 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
   const [deferred, setDeferred] = useState<BIPEvent | null>(null);
   const [isIOS, setIsIOS] = useState(false);
   const isWebsite = variant === "website";
+  const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Already running inside the installed app — nothing to do.
@@ -119,6 +120,21 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
     setOpen(false);
     setExpanded(false);
   };
+
+  // Dismiss on any click outside the card — in particular, clicking the
+  // third-party chat widget bubble (bottom-right, same corner as this card)
+  // closes this instead of the two sitting on top of each other. There's no
+  // way to hook into that widget opening directly (it's an external script
+  // with no public API), so "click landed outside this card" is the
+  // closest reliable proxy.
+  useEffect(() => {
+    if (!open) return;
+    const onClick = (e: MouseEvent) => {
+      if (cardRef.current && !cardRef.current.contains(e.target as Node)) dismiss();
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [open]);
 
   // Full navigation so an installed PWA can take over on supported browsers.
   // getAppBaseUrl() is cross-origin (the app's own subdomain) by default,
@@ -241,10 +257,17 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
           className={
             variant === "app"
               ? "fixed inset-x-4 z-[60] bottom-[calc(4.75rem+env(safe-area-inset-bottom))]"
-              : "fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:w-96 z-[60]"
+              // bottom-24/md:bottom-24 (not the old bottom-4/bottom-6) clears the
+              // ScaleSmart chat bubble this site also loads, same bottom-right
+              // corner — and z-[2147483000] (not z-[60]) keeps this above it even
+              // once that widget's own chat window is open, since it's a
+              // third-party script whose own z-index we don't control and can't
+              // read from here.
+              : "fixed bottom-24 left-4 right-4 md:left-auto md:right-6 md:bottom-24 md:w-96 z-[2147483000]"
           }
           role="dialog"
           aria-label={showFallback ? c.openApp : c.title}
+          ref={cardRef}
         >
           <div className="bg-warm-cream border border-border shadow-xl rounded-2xl overflow-hidden">
             <div className="flex items-start gap-3 p-4">
