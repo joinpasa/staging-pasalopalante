@@ -5,7 +5,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import SEO from "@/components/SEO";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useMovementTotals } from "@shared/hooks/useMovementTotals";
-import { Building2, ExternalLink, Search } from "lucide-react";
+import { Building2, ExternalLink, Facebook, Search } from "lucide-react";
 
 interface Partner {
   name: string;
@@ -17,6 +17,8 @@ interface Partner {
   website?: string;
   /** A title/role line shown above the website link, e.g. "Mayor: Jane Doe" or a civic leader's role — also stands alone when there's no logo. */
   role?: string;
+  /** Full Facebook page URL — rendered as a "Facebook" link with the FB icon, for partners without their own website. */
+  facebook?: string;
 }
 
 interface Pillar {
@@ -128,7 +130,7 @@ function buildPillars(isEs: boolean): Pillar[] {
       partners: [
         { name: "Awaken — Michael Krauss", logo: "corporate_awaken---michael-krauss.jpg" },
         { name: "Eucaforest", logo: "corporate_eucaforest-logo1b.png" },
-        { name: "Loving AI", logo: "corporate_loving-ai.webp", website: "lovingai.org" },
+        { name: "Loving AI", logo: "corporate_lovingis.png", website: "lovingai.org" },
         { name: "NuCalm", logo: "corporate_nucalm.png", website: "nucalm.com" },
         { name: "SHRM", logo: "corporate_shrm.png", website: "shrm.org" },
       ],
@@ -148,6 +150,7 @@ function buildPillars(isEs: boolean): Pillar[] {
         { name: "Platea PR", logo: "media_platea-pr.png" },
         { name: "CBC Barbados", logo: "media_cbc-barbados.jpg" },
         { name: "Helena TV (HTS)", logo: "media_hts.png" },
+        { name: "WIPR", logo: "media_wipr.png", website: "wipr.pr" },
       ],
     },
     {
@@ -190,6 +193,13 @@ function buildPillars(isEs: boolean): Pillar[] {
         { name: "Peace and Love Inc. Ltd" },
         { name: "Te Amo PR", logo: "nonprofits_te-amo-pr.png", website: "teamopr.org" },
         { name: "Unify.org", logo: "nonprofits_unify.webp", website: "unify.org" },
+        {
+          name: "Rotary Club de Santurce",
+          logo: "nonprofits_rotary-santurce.png",
+          facebook: "https://www.facebook.com/p/Rotary-Club-of-Santurce-Puerto-Rico-61578235826624/",
+        },
+        { name: "Salzburg Global", logo: "nonprofits_salzburg-global.png", website: "salzburgglobal.org" },
+        { name: "World Values Day", website: "worldvaluesday.com" },
       ],
     },
     {
@@ -211,6 +221,7 @@ function buildPillars(isEs: boolean): Pillar[] {
           logo: "education_ministry-of-education-montserrat.png",
         },
         { name: "Money & You / Excellerated Business Schools", logo: "education_money-and-you.png" },
+        { name: "Instituto Brasileiro de Capoeira-Educação (IBCE)", logo: "education_ibce.png", website: "capoeiraibce.org" },
       ],
     },
   ];
@@ -268,6 +279,18 @@ function PartnerCard({ partner }: { partner: Partner }) {
             >
               {partner.website}
               <ExternalLink size={12} className="shrink-0" />
+            </a>
+          )}
+          {partner.facebook && (
+            <a
+              href={partner.facebook}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Visit ${partner.name} on Facebook (opens in a new tab)`}
+              className="inline-flex items-center gap-1 text-xs font-bold text-[#0079A8] hover:underline"
+            >
+              <Facebook size={12} className="shrink-0" />
+              Facebook
             </a>
           )}
         </div>
