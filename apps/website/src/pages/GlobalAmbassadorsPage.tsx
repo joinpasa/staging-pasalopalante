@@ -236,30 +236,37 @@ export default function GlobalAmbassadorsPage() {
               {isEs ? `Mostrando ${shown.length} de ${all.length}` : `Showing ${shown.length} of ${all.length}`}
             </span>
           </div>
-          {categories.length > 1 && (
-            <div
-              role="group"
-              aria-label={isEs ? "Filtrar por categoría" : "Filter by category"}
-              className="section-padding mx-auto flex max-w-6xl flex-wrap gap-2 pb-4"
-            >
-              {["All", ...categories].map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => setCategory(c)}
-                  aria-pressed={category === c}
-                  className={`min-h-9 rounded-full border px-4 text-xs font-semibold transition-colors ${
-                    category === c
-                      ? "border-cyan-900 bg-cyan-900 text-white"
-                      : "border-border bg-white text-foreground hover:border-warm-terracotta"
-                  }`}
-                >
-                  {c === "All" ? (isEs ? "Todos" : "All") : c}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
+
+        {/* Category filter — deliberately NOT inside the sticky bar above: with
+            8 categories this wraps to several lines on a phone, and pinning
+            that whole block to the top ate almost the entire viewport while
+            scrolling, leaving just about one row of results visible. This
+            scrolls away normally; on narrow screens it's one horizontally
+            scrollable row instead of wrapping, so it stays compact there too. */}
+        {categories.length > 1 && (
+          <div
+            role="group"
+            aria-label={isEs ? "Filtrar por categoría" : "Filter by category"}
+            className="section-padding mx-auto flex max-w-6xl flex-nowrap gap-2 overflow-x-auto py-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {["All", ...categories].map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => setCategory(c)}
+                aria-pressed={category === c}
+                className={`min-h-9 shrink-0 rounded-full border px-4 text-xs font-semibold transition-colors ${
+                  category === c
+                    ? "border-cyan-900 bg-cyan-900 text-white"
+                    : "border-border bg-white text-foreground hover:border-warm-terracotta"
+                }`}
+              >
+                {c === "All" ? (isEs ? "Todos" : "All") : c}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Directory */}
         <div className="section-padding mx-auto flex max-w-6xl flex-col gap-10 py-14">
