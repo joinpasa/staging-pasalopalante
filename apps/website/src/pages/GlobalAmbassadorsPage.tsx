@@ -59,6 +59,22 @@ function displayCategory(category: string) {
   return MERGED_CATEGORIES.has(category) ? MERGED_CATEGORY_LABEL : category;
 }
 
+// The sheet's Country field is sometimes a dual-country cell ("Brazil /
+// Germany"), a worldwide-scope label ("Global"), or a whole-region
+// designation ("Africa (54 countries)") rather than one real country —
+// counting those as-is inflated "Countries represented" (18, when only 14
+// real countries/territories are actually behind it) and meant picking one
+// specific country from a combo cell in the filter never matched anyone.
+// This splits combo cells into their real countries and drops the two
+// non-country labels, for both the stat and the filter.
+function splitCountries(raw: string | null | undefined): string[] {
+  if (!raw) return [];
+  return raw
+    .split("/")
+    .map((s) => s.trim())
+    .filter((s) => s && s.toLowerCase() !== "global" && !s.includes("("));
+}
+
 function socialIcon(url: string) {
   if (/instagram\.com/i.test(url)) return Instagram;
   if (/facebook\.com/i.test(url)) return Facebook;
@@ -122,7 +138,7 @@ export default function GlobalAmbassadorsPage() {
 
   const all = entries ?? [];
   const countries = useMemo(
-    () => Array.from(new Set(all.map((a) => a.country).filter((c): c is string => !!c))).sort(),
+    () => Array.from(new Set(all.flatMap((a) => splitCountries(a.country)))).sort(),
     [all],
   );
   const categories = useMemo(() => Array.from(new Set(all.map((a) => displayCategory(a.category)))).sort(), [all]);
@@ -130,7 +146,7 @@ export default function GlobalAmbassadorsPage() {
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
     return all.filter((a) => {
-      if (country && a.country !== country) return false;
+      if (country && !splitCountries(a.country).includes(country)) return false;
       if (category !== "All" && displayCategory(a.category) !== category) return false;
       if (q && !`${a.name} ${a.region ?? ""} ${a.country ?? ""}`.toLowerCase().includes(q)) return false;
       return true;
