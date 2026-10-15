@@ -36,3 +36,8 @@ project_id = "tipfbleltjexofsjffwb"
 
   [functions.ghl-form-intake]
     verify_jwt = false
+
+  [functions.sync-ambassador]
+    verify_jwt = false
+  [functions.sync-directory]
+    verify_jwt = false
