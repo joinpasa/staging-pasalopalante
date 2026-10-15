@@ -48,6 +48,17 @@ function displayName(name: string) {
   return lastInitial ? `${words[0]} ${lastInitial}.` : words[0];
 }
 
+// These four sheet tabs all cover the same kind of role at different scopes
+// (worldwide, regional, country, PR-specific) and read as redundant as
+// separate filter chips, so they're grouped into one category on this page
+// only — the sheet itself, and what actually syncs, is untouched.
+const MERGED_CATEGORIES = new Set(["Global Ambassadors", "Regional Leads", "Country Ambassadors", "PR Regional Ambassadors"]);
+const MERGED_CATEGORY_LABEL = "Global Ambassadors of Kindness";
+
+function displayCategory(category: string) {
+  return MERGED_CATEGORIES.has(category) ? MERGED_CATEGORY_LABEL : category;
+}
+
 function socialIcon(url: string) {
   if (/instagram\.com/i.test(url)) return Instagram;
   if (/facebook\.com/i.test(url)) return Facebook;
@@ -57,7 +68,7 @@ function socialIcon(url: string) {
 
 function DirectoryCard({ entry, tint }: { entry: DirectoryEntry; tint: string }) {
   const place = [entry.region, entry.country].filter(Boolean).join(", ") || entry.country || entry.region;
-  const title = entry.designation || entry.category;
+  const title = entry.designation || displayCategory(entry.category);
   const Icon = entry.socialLink ? socialIcon(entry.socialLink) : null;
 
   return (
@@ -114,13 +125,13 @@ export default function GlobalAmbassadorsPage() {
     () => Array.from(new Set(all.map((a) => a.country).filter((c): c is string => !!c))).sort(),
     [all],
   );
-  const categories = useMemo(() => Array.from(new Set(all.map((a) => a.category))).sort(), [all]);
+  const categories = useMemo(() => Array.from(new Set(all.map((a) => displayCategory(a.category)))).sort(), [all]);
 
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
     return all.filter((a) => {
       if (country && a.country !== country) return false;
-      if (category !== "All" && a.category !== category) return false;
+      if (category !== "All" && displayCategory(a.category) !== category) return false;
       if (q && !`${a.name} ${a.region ?? ""} ${a.country ?? ""}`.toLowerCase().includes(q)) return false;
       return true;
     });
