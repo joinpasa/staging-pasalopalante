@@ -241,6 +241,57 @@ export type Database = {
         }
         Relationships: []
       }
+      directory_entries: {
+        Row: {
+          bio: string | null
+          category: string
+          country: string | null
+          designation: string | null
+          handle: string | null
+          id: string
+          image_url: string | null
+          name: string
+          region: string | null
+          social_link: string | null
+          sort_order: number | null
+          status: string
+          subcategory: string | null
+          synced_at: string
+        }
+        Insert: {
+          bio?: string | null
+          category: string
+          country?: string | null
+          designation?: string | null
+          handle?: string | null
+          id: string
+          image_url?: string | null
+          name: string
+          region?: string | null
+          social_link?: string | null
+          sort_order?: number | null
+          status: string
+          subcategory?: string | null
+          synced_at?: string
+        }
+        Update: {
+          bio?: string | null
+          category?: string
+          country?: string | null
+          designation?: string | null
+          handle?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          region?: string | null
+          social_link?: string | null
+          sort_order?: number | null
+          status?: string
+          subcategory?: string | null
+          synced_at?: string
+        }
+        Relationships: []
+      }
       commitments: {
         Row: {
           country: string | null

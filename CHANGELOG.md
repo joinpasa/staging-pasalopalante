@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-15 — va.deedumlao@gmail.com
+
+- **The `/ambassadors` directory now runs on a new, fully automated sheet sync.** It used to show only people who submitted the Ambassador Kit form; it now mirrors a new consolidated team roster (Champions, Global Ambassadors, Regional Leads, Country Ambassadors, PR Regional Ambassadors, Europe Sprint Ambassadors, Education Leads) directly from the sheet, with no manual "add this person" step needed — anyone marked Approved in the sheet appears on the site on the next automatic sync, and flipping someone back to Pending/Hidden removes them just as automatically. Emails and internal notes in the sheet never leave the sheet. Someone with two roles (e.g. a Champion who's also a PR Regional Ambassador) correctly shows up under both. The directory now has a search bar, a country filter, and category filter chips, plus a note up top (matching the one on `/partners`) saying more people are still completing approval.
+
 ## 2026-10-14 — va.deedumlao@gmail.com
 
 - **Partners page is now one list, no categories.** Dropped the six sector sections (Corporate, Media, Faith-Based, etc.), the filter chips, the per-card category label, and the "sectors" stat — some categories only had one or two partners and made the coalition look thin. Every partner now shows in a single grid (organizations A–Z first, then municipalities A–Z), with search still working. The category data is kept in the code so the sector view can come back once each group is big enough.
