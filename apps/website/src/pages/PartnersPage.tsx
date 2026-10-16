@@ -439,16 +439,10 @@ export default function PartnersPage() {
               <Building2 size={22} className="text-cyan-900" />
             </div>
             <div>
-              <p className="text-xs font-bold tracking-[0.14em] text-foreground/50">
-                {isEs ? "¿BUSCAS TU ORGANIZACIÓN?" : "LOOKING FOR YOUR ORGANIZATION?"}
-              </p>
-              <h3 className="font-display text-xl leading-snug text-foreground">
-                {isEs ? "Estos son nuestros socios fundadores" : "These are our founding partners"}
-              </h3>
-              <p className="text-sm leading-relaxed text-foreground/70">
+              <p className="text-base font-bold leading-relaxed text-foreground">
                 {isEs
-                  ? "Estamos muy agradecidos por el enorme apoyo de las organizaciones interesadas en unirse, y estamos actualizando esta página lo antes posible."
-                  : "We are so grateful for the overwhelming support for interested organizations to join and we are updating this page as soon as possible."}
+                  ? "Estamos muy agradecidos por el enorme apoyo de las organizaciones que desean unirse. Estamos actualizando activamente esta página y pronto estará renovada."
+                  : "We are so grateful for the overwhelming support from organizations wanting to join. We are actively updating this page and will have it refreshed soon."}
               </p>
             </div>
           </div>
