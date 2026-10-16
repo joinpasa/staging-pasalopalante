@@ -447,8 +447,8 @@ export default function PartnersPage() {
               </h3>
               <p className="text-sm leading-relaxed text-foreground/70">
                 {isEs
-                  ? "Hay más organizaciones completando su incorporación y se añadirán a esta lista a medida que se confirmen."
-                  : "More organizations are completing onboarding and will be added to this list as they're confirmed."}
+                  ? "Estamos muy agradecidos por el enorme apoyo de las organizaciones interesadas en unirse, y estamos actualizando esta página lo antes posible."
+                  : "We are so grateful for the overwhelming support for interested organizations to join and we are updating this page as soon as possible."}
               </p>
             </div>
           </div>

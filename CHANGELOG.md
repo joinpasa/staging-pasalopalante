@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-10-16 — va.deedumlao@gmail.com
 
+- **Partners page notice reworded** to thank organizations for the overwhelming interest and say the page is being updated as soon as possible.
 - **Install prompt and chat bot no longer share a corner.** On desktop the "Install / Get the app" card now pops up bottom-left; on phones it's a slim ribbon across the top of the screen instead. The ScaleSmart chat bot is set to sit bottom-right.
 
 ## 2026-10-15 — va.deedumlao@gmail.com
