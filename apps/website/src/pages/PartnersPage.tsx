@@ -5,7 +5,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import SEO from "@/components/SEO";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useMovementTotals } from "@shared/hooks/useMovementTotals";
-import { Building2, ExternalLink, Facebook, Search } from "lucide-react";
+import { ExternalLink, Facebook, Search, Sparkles } from "lucide-react";
 
 interface Partner {
   name: string;
@@ -436,14 +436,14 @@ export default function PartnersPage() {
             style={{ borderLeft: "4px solid #0e234b" }}
           >
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-warm-sand">
-              <Building2 size={22} className="text-cyan-900" />
+              <Sparkles size={22} className="text-warm-terracotta" />
             </div>
             <div>
-              <p className="text-base font-bold leading-relaxed text-foreground">
+              <h2 className="text-xl leading-snug text-foreground">
                 {isEs
                   ? "Estamos muy agradecidos por el enorme apoyo de las organizaciones que desean unirse. Estamos actualizando activamente esta página y pronto estará renovada."
                   : "We are so grateful for the overwhelming support from organizations wanting to join. We are actively updating this page and will have it refreshed soon."}
-              </p>
+              </h2>
             </div>
           </div>
           {shown > 0 && (
