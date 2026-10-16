@@ -292,6 +292,48 @@ export type Database = {
         }
         Relationships: []
       }
+      partner_entries: {
+        Row: {
+          category: string
+          dark: boolean
+          facebook: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          role: string | null
+          sort_order: number | null
+          status: string
+          synced_at: string
+          website: string | null
+        }
+        Insert: {
+          category: string
+          dark?: boolean
+          facebook?: string | null
+          id: string
+          logo_url?: string | null
+          name: string
+          role?: string | null
+          sort_order?: number | null
+          status: string
+          synced_at?: string
+          website?: string | null
+        }
+        Update: {
+          category?: string
+          dark?: boolean
+          facebook?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          role?: string | null
+          sort_order?: number | null
+          status?: string
+          synced_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       commitments: {
         Row: {
           country: string | null

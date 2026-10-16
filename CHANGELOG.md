@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-10-16 — va.deedumlao@gmail.com
 
+- **`/partners` now runs on the same kind of automated sheet sync as `/ambassadors`, instead of being hardcoded in the website's code.** Pre-filled a new "PKF_Partners" Google Sheet with every current partner (all orgs plus all 78 PR municipalities, images included), then wired it up: a new `partner_entries` table + `sync-partners` edge function mirror the sheet on every sync — add, edit, or remove a row in the sheet and the site updates automatically, no code change or redeploy needed, same as the Ambassadors sheet. Every current partner is marked Approved already, so nothing changes on the page itself; this only changes where the data lives.
 - **Partners page notice simplified** to a single bold line thanking organizations for the overwhelming interest and saying the page is being refreshed soon (dropped the "Looking for your organization? / founding partners" lines).
 - **Install prompt and chat bot no longer share a corner.** On desktop the "Install / Get the app" card now pops up bottom-left; on phones it's a slim ribbon across the top of the screen instead. The ScaleSmart chat bot is set to sit bottom-right.
 
