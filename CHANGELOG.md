@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-16 — va.deedumlao@gmail.com
+
+- **Install prompt and chat bot no longer share a corner.** On desktop the "Install / Get the app" card now pops up bottom-left; on phones it's a slim ribbon across the top of the screen instead. The ScaleSmart chat bot is set to sit bottom-right.
+
 ## 2026-10-15 — va.deedumlao@gmail.com
 
 - **Header logo now matches in both versions.** The white Kindness Forward logo (shown over the dark hero) had its text in a heavier, larger font than the color logo, so it looked thicker. Rebuilt the white version from the color logo's own lettering so the two are identical apart from color.

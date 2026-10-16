@@ -41,6 +41,20 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
   const [isIOS, setIsIOS] = useState(false);
   const isWebsite = variant === "website";
   const cardRef = useRef<HTMLDivElement>(null);
+  // Website only: on phones the card becomes a slim ribbon pinned to the top
+  // of the screen, so it never competes with the chat bubble down in the
+  // bottom-right corner. Tracks the md breakpoint (768px) live.
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && !!window.matchMedia?.("(max-width: 767px)").matches,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia?.("(max-width: 767px)");
+    if (!mq) return;
+    const onChange = () => setIsMobile(mq.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+  const ribbon = isWebsite && isMobile;
 
   useEffect(() => {
     // Already running inside the installed app — nothing to do.
@@ -122,8 +136,8 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
   };
 
   // Dismiss on any click outside the card — in particular, clicking the
-  // third-party chat widget bubble (bottom-right, same corner as this card)
-  // closes this instead of the two sitting on top of each other. There's no
+  // third-party chat widget bubble closes this instead of the two sitting
+  // on top of each other. There's no
   // way to hook into that widget opening directly (it's an external script
   // with no public API), so "click landed outside this card" is the
   // closest reliable proxy.
@@ -250,26 +264,61 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
     <AnimatePresence>
       {open && !anyShareFlowOpen && !joinPopupOpen && (
         <motion.div
-          initial={{ y: 80, opacity: 0 }}
+          initial={{ y: ribbon ? -80 : 80, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 80, opacity: 0 }}
+          exit={{ y: ribbon ? -80 : 80, opacity: 0 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
           className={
             variant === "app"
               ? "fixed inset-x-4 z-[60] bottom-[calc(4.75rem+env(safe-area-inset-bottom))]"
-              // bottom-24/md:bottom-24 (not the old bottom-4/bottom-6) clears the
-              // ScaleSmart chat bubble this site also loads, same bottom-right
-              // corner — and z-[2147483000] (not z-[60]) keeps this above it even
-              // once that widget's own chat window is open, since it's a
-              // third-party script whose own z-index we don't control and can't
-              // read from here.
-              : "fixed bottom-24 left-4 right-4 md:left-auto md:right-6 md:bottom-24 md:w-96 z-[2147483000]"
+              : ribbon
+                // Phones: full-width ribbon across the top of the screen.
+                ? "fixed inset-x-0 top-0 pt-[env(safe-area-inset-top)] bg-warm-cream z-[2147483000]"
+                // Desktop: bottom-left card, sitting above the scroll-to-top
+                // button in that corner; the ScaleSmart chat bubble lives in
+                // the bottom-right. z-[2147483000] (not z-[60]) keeps this
+                // above that third-party widget even once its chat window is
+                // open, since we don't control or know its z-index.
+                : "fixed bottom-24 left-6 w-96 z-[2147483000]"
           }
           role="dialog"
           aria-label={showFallback ? c.openApp : c.title}
           ref={cardRef}
         >
-          <div className="bg-warm-cream border border-border shadow-xl rounded-2xl overflow-hidden">
+          <div
+            className={
+              ribbon
+                ? "bg-warm-cream border-b border-border shadow-md overflow-hidden"
+                : "bg-warm-cream border border-border shadow-xl rounded-2xl overflow-hidden"
+            }
+          >
+            {ribbon ? (
+              <div className="flex items-center gap-3 px-4 py-2.5">
+                <div className="shrink-0 w-8 h-8 rounded-lg bg-warm-blush flex items-center justify-center">
+                  {showFallback ? (
+                    <Smartphone size={16} className="text-warm-terracotta" />
+                  ) : (
+                    <Download size={16} className="text-warm-terracotta" />
+                  )}
+                </div>
+                <p className="flex-1 min-w-0 font-semibold text-foreground text-sm leading-tight truncate">
+                  {c.title}
+                </p>
+                <button
+                  onClick={handleInstallClick}
+                  className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-warm-terracotta text-warm-cream hover:opacity-90 transition"
+                >
+                  {showFallback ? c.openApp : isIOS && !deferred ? c.show : c.install}
+                </button>
+                <button
+                  onClick={dismiss}
+                  aria-label={c.dismiss}
+                  className="shrink-0 -mr-1 p-1 text-foreground/40 hover:text-foreground/70"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            ) : (
             <div className="flex items-start gap-3 p-4">
               <div className="shrink-0 w-11 h-11 rounded-xl bg-warm-blush flex items-center justify-center">
                 {showFallback ? (
@@ -318,6 +367,7 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
                 <X size={16} />
               </button>
             </div>
+            )}
 
             <AnimatePresence>
               {!showFallback && isIOS && expanded && (
