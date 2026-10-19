@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Flame, Heart, Menu, User, X } from "lucide-react";
+import { ArrowRight, ChevronDown, Flame, Heart, Menu, User, X } from "lucide-react";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { useUI } from "@shared/contexts/UIContext";
@@ -120,9 +120,10 @@ const Navbar = () => {
     >
       <Link
         to="/live"
-        className="flex h-9 items-center justify-center bg-warm-gold px-4 text-center text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#0e234b] transition-colors hover:bg-[#ffc93c] md:text-sm"
+        className="group flex h-9 items-center justify-center bg-warm-gold px-4 text-center text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#0e234b] transition-colors hover:bg-[#ffc93c] md:text-sm"
       >
         <span className="truncate">{t.navbar.liveBanner}</span>
+        <ArrowRight size={16} strokeWidth={2.75} className="ms-2 shrink-0 transition-transform group-hover:translate-x-1 rtl:rotate-180" />
       </Link>
       <div className="section-padding flex items-center justify-between h-20 gap-4">
         <Link to="/" className="shrink-0 flex items-center gap-2 md:gap-2.5">
