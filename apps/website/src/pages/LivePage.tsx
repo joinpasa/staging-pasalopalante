@@ -5,7 +5,7 @@ import { useLanguage } from "@shared/contexts/LanguageContext";
 import { ExternalLink } from "lucide-react";
 
 // /live: the 11.11.2026 global live broadcast, embedded from Awaken's own
-// page. Linked from the Explore menu and the yellow ribbon above the navbar.
+// page. Linked from the Explore menu.
 const AWAKEN_URL = "https://awaken.global/kindness";
 const HIDE_TOP_PX = 85;
 

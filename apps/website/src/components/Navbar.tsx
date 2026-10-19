@@ -118,13 +118,15 @@ const Navbar = () => {
         isSolid ? "bg-warm-cream/95 backdrop-blur-md border-b border-border shadow-sm" : "bg-transparent"
       }`}
     >
-      <Link
-        to="/live"
+      <a
+        href="https://forms.pasalopalante.com/24hr-global-live"
+        target="_blank"
+        rel="noopener noreferrer"
         className="group flex h-9 items-center justify-center bg-warm-gold px-4 text-center text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#0e234b] transition-colors hover:bg-[#ffc93c] md:text-sm"
       >
         <span className="truncate">{t.navbar.liveBanner}</span>
         <ArrowRight size={16} strokeWidth={2.75} className="ms-2 shrink-0 transition-transform group-hover:translate-x-1 rtl:rotate-180" />
-      </Link>
+      </a>
       <div className="section-padding flex items-center justify-between h-20 gap-4">
         <Link to="/" className="shrink-0 flex items-center gap-2 md:gap-2.5">
           <img
