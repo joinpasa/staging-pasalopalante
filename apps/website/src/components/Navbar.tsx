@@ -43,6 +43,7 @@ const Navbar = () => {
     { label: t.mapPage.title, href: "/map" },
     { label: t.navbar.about, href: "/about" },
     { label: t.navbar.partners, href: "/partners" },
+    { label: t.navbar.live, href: "/live" },
     { label: t.navbar.ourStory, anchor: "story" },
     { label: t.navbar.getInvolved, href: "/get-involved" },
     { label: t.navbar.donateNow, href: "/donate" },
@@ -93,6 +94,17 @@ const Navbar = () => {
     }
   }
 
+  // The yellow "live broadcast" ribbon sits above the navbar inside the same
+  // fixed header, so push the page down by its height while the navbar is
+  // mounted — every page's existing top padding (sized for the 80px navbar
+  // alone) then still lines up underneath it.
+  useEffect(() => {
+    document.body.style.paddingTop = "2.25rem";
+    return () => {
+      document.body.style.paddingTop = "";
+    };
+  }, []);
+
   if (anyShareFlowOpen) return null;
 
   const linkClass = isSolid ? "text-foreground/70 hover:text-foreground" : "text-white/80 hover:text-white";
@@ -106,6 +118,12 @@ const Navbar = () => {
         isSolid ? "bg-warm-cream/95 backdrop-blur-md border-b border-border shadow-sm" : "bg-transparent"
       }`}
     >
+      <Link
+        to="/live"
+        className="flex h-9 items-center justify-center bg-warm-gold px-4 text-center text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#0e234b] transition-colors hover:bg-[#ffc93c] md:text-sm"
+      >
+        <span className="truncate">{t.navbar.liveBanner}</span>
+      </Link>
       <div className="section-padding flex items-center justify-between h-20 gap-4">
         <Link to="/" className="shrink-0 flex items-center gap-2 md:gap-2.5">
           <img
