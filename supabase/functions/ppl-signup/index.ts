@@ -14,7 +14,10 @@
  * PPL Contacts: tblzYOQLjXO8qZzqy
  */
 
-// Public endpoint — no Supabase client needed
+// Public endpoint — the only Supabase client use here is the shared rate
+// limiter below; everything else talks to Airtable/GHL directly.
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { checkRateLimit, envInt, getClientIp, rateLimitIpKey, rateLimitMultiplier } from "../_shared/rateLimit.ts";
 
 const CONFIG = {
   airtable: {
@@ -91,6 +94,25 @@ Deno.serve(async (req) => {
 
   // Public endpoint — no JWT required (form submissions from unauthenticated visitors)
 
+  // Fails CLOSED (503) on its own error, unlike submit-act/submit-commitment
+  // which fail open — this endpoint forwards straight to Airtable and GHL
+  // with no moderation step of its own, so a rate-limit outage here is the
+  // only backstop against a script hammering two paid third-party APIs on
+  // its behalf.
+  const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+  const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
+  const clientIp = getClientIp(req);
+  const ipMax = envInt("PPL_SIGNUP_IP_MAX", 30) * rateLimitMultiplier();
+  const ipWindow = envInt("PPL_SIGNUP_IP_WINDOW_SECONDS", 600);
+  const ipCheck = await checkRateLimit(supabase, "ppl-signup:ip", rateLimitIpKey(clientIp), ipMax, ipWindow);
+  if (ipCheck.error) {
+    console.error("rate limit check failed (ip)", ipCheck.error);
+    return json({ error: "Service temporarily unavailable" }, 503);
+  }
+  if (!ipCheck.allowed) {
+    return json({ error: "rate_limited", retry_after_seconds: ipWindow }, 429);
+  }
 
   let body;
   try {

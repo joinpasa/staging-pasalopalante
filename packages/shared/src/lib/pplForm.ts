@@ -1,4 +1,5 @@
 import { supabase } from "@shared/integrations/supabase/client";
+import { isRateLimitedError } from "@shared/lib/rateLimitCheer";
 
 export type FormType = "get-involved" | "pledge" | "course-creator" | "app-join";
 
@@ -69,7 +70,9 @@ export async function submitPPLForm(
 
     if (error) {
       console.error("PPL form error:", error);
-      return { success: false, error: error.message };
+      // "rate_limited" is a sentinel callers check for to show one of several
+      // cheer-phrase toasts instead of a generic error message.
+      return { success: false, error: isRateLimitedError(error) ? "rate_limited" : error.message };
     }
 
     return { success: true };

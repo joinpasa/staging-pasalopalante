@@ -33,6 +33,7 @@ import { COUNTRIES } from "@shared/data/countries";
 import { cn } from "@shared/lib/utils";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { submitPPLForm } from "@shared/lib/pplForm";
+import { pickRateLimitCheer } from "@shared/lib/rateLimitCheer";
 
 interface Props {
   open: boolean;
@@ -146,7 +147,7 @@ const AmbassadorForm = ({ open, onOpenChange }: Props) => {
       reset();
       onOpenChange(false);
     } else {
-      toast.error(res.error || c.error);
+      toast.error(res.error === "rate_limited" ? pickRateLimitCheer(lang) : res.error || c.error);
     }
   }
 

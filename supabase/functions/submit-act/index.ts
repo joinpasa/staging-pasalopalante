@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { checkRateLimit, envInt, getClientIp, rateLimitedResponse, rateLimitIpKey, rateLimitMultiplier } from "../_shared/rateLimit.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -75,37 +76,69 @@ Deno.serve(async (req) => {
     const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
 
     // Audit metadata — computed early (not just for the DB row later) so the
-    // rate-limit check right below can use it too.
-    const fwd = req.headers.get("x-forwarded-for") || "";
-    const ipAddress =
-      req.headers.get("cf-connecting-ip") ||
-      (fwd ? fwd.split(",")[0].trim() : null) ||
-      req.headers.get("x-real-ip") ||
-      null;
+    // rate-limit checks right below can use it too.
+    const clientIp = getClientIp(req);
+    const ipAddress = clientIp === "unknown" ? null : clientIp;
     const userAgent = req.headers.get("user-agent") || null;
 
     // This endpoint is public (verify_jwt=false — guests submit without an
     // account), so without a limit here a script could loop it to fabricate
     // "acts pledged" counts and flood the public Wall, burning a Gemini
     // moderation call on every single try. Checked before moderation runs,
-    // not after, so a blocked caller never costs an AI call either. Generous
-    // enough for anyone actually logging several acts in one sitting;
-    // nowhere near what an abuse loop would need.
-    const RATE_LIMIT_WINDOW_MINUTES = 10;
-    const RATE_LIMIT_MAX_REQUESTS = 20;
-    const { data: allowed, error: rateLimitError } = await supabase.rpc(
-      "check_and_log_act_submit",
-      { _ip_address: ipAddress ?? "unknown", _window_minutes: RATE_LIMIT_WINDOW_MINUTES, _max_requests: RATE_LIMIT_MAX_REQUESTS },
-    );
-    if (rateLimitError) {
-      console.error("rate limit check failed", rateLimitError);
+    // not after, so a blocked caller never costs an AI call either. Defaults
+    // are generous enough for anyone actually logging several acts in one
+    // sitting; nowhere near what an abuse loop would need — and every
+    // number here is env-configurable so an event window can widen them
+    // without a deploy. RATE_LIMIT_MULTIPLIER only scales the per-IP limit,
+    // not the per-email ones below (those cap what one person can do, not
+    // legitimate shared-IP traffic at an event).
+    const ipMax = envInt("SUBMIT_ACT_IP_MAX", 60) * rateLimitMultiplier();
+    const ipWindow = envInt("SUBMIT_ACT_IP_WINDOW_SECONDS", 600);
+    const ipCheck = await checkRateLimit(supabase, "submit-act:ip", rateLimitIpKey(clientIp), ipMax, ipWindow);
+    if (ipCheck.error) {
+      console.error("rate limit check failed (ip)", ipCheck.error);
       // Fail open on our own error (not the caller's fault), same as every
       // other best-effort check in this codebase — a DB hiccup here must
       // never block someone from logging a real act.
-    } else if (!allowed) {
-      return new Response(JSON.stringify({ error: "Too many submissions. Please try again shortly." }), {
-        status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    } else if (!ipCheck.allowed) {
+      return rateLimitedResponse(ipWindow, corsHeaders);
+    }
+
+    // Optionally attach user_id when an Authorization header was sent — moved
+    // ahead of moderation (it used to run after) so a signed-in caller who
+    // omits email from the body but has one on their account still gets
+    // the per-email checks below applied to that resolved address, not
+    // skipped over as if they were anonymous.
+    let userId: string | null = null;
+    const authHeader = req.headers.get("Authorization");
+    if (authHeader?.startsWith("Bearer ")) {
+      try {
+        const { data: u } = await supabase.auth.getUser(authHeader.slice(7));
+        userId = u?.user?.id ?? null;
+        if (!email && u?.user?.email) email = u.user.email.toLowerCase();
+      } catch (_) { /* ignore */ }
+    }
+
+    // Per-email limits only apply when an email was actually given — an
+    // anonymous submission has nothing to key on besides the IP check above.
+    if (email) {
+      const emailMax = envInt("SUBMIT_ACT_EMAIL_MAX", 10);
+      const emailWindow = envInt("SUBMIT_ACT_EMAIL_WINDOW_SECONDS", 600);
+      const emailCheck = await checkRateLimit(supabase, "submit-act:email", email, emailMax, emailWindow);
+      if (emailCheck.error) {
+        console.error("rate limit check failed (email)", emailCheck.error);
+      } else if (!emailCheck.allowed) {
+        return rateLimitedResponse(emailWindow, corsHeaders);
+      }
+
+      const emailDailyMax = envInt("SUBMIT_ACT_EMAIL_DAILY_MAX", 50);
+      const emailDailyWindow = envInt("SUBMIT_ACT_EMAIL_DAILY_WINDOW_SECONDS", 86400);
+      const emailDailyCheck = await checkRateLimit(supabase, "submit-act:email-daily", email, emailDailyMax, emailDailyWindow);
+      if (emailDailyCheck.error) {
+        console.error("rate limit check failed (email daily)", emailDailyCheck.error);
+      } else if (!emailDailyCheck.allowed) {
+        return rateLimitedResponse(emailDailyWindow, corsHeaders);
+      }
     }
 
     // Moderation defaults (when there's no description to scan).
@@ -226,17 +259,6 @@ Deno.serve(async (req) => {
       if (modStatus === "approved" && reasonCodes.length > 0 && confidence < CONFIDENCE_THRESHOLD) {
         modStatus = "rejected";
       }
-    }
-
-    // Optionally attach user_id when an Authorization header was sent.
-    let userId: string | null = null;
-    const authHeader = req.headers.get("Authorization");
-    if (authHeader?.startsWith("Bearer ")) {
-      try {
-        const { data: u } = await supabase.auth.getUser(authHeader.slice(7));
-        userId = u?.user?.id ?? null;
-        if (!email && u?.user?.email) email = u.user.email.toLowerCase();
-      } catch (_) { /* ignore */ }
     }
 
     // to_user_id only ever comes from the /wave hand-off flow: requires a

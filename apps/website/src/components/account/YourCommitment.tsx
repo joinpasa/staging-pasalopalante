@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@shared/integrations/supabase/client";
 import { useLanguage } from "@shared/contexts/LanguageContext";
+import { isRateLimitedError, pickRateLimitCheer } from "@shared/lib/rateLimitCheer";
 import { Button } from "@shared/components/ui/button";
 import { Input } from "@shared/components/ui/input";
 import { Label } from "@shared/components/ui/label";
@@ -31,7 +32,7 @@ function getSeasonTimeLeft() {
 }
 
 const YourCommitment = ({ userId, email }: { userId: string; email: string }) => {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [items, setItems] = useState<Commitment[] | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
   const [draft, setDraft] = useState(0);
@@ -94,15 +95,15 @@ const YourCommitment = ({ userId, email }: { userId: string; email: string }) =>
     if (newCount < 1 || !email) return;
     setSubmitting(true);
     try {
-      const { data, error } = await supabase.functions.invoke("submit-commitment", {
+      const { error } = await supabase.functions.invoke("submit-commitment", {
         body: {
           type: "individual",
           email,
           pledge_count: newCount,
         },
       });
-      if (error || (data as any)?.error) {
-        toast.error((data as any)?.error || error?.message || "Could not save");
+      if (error) {
+        toast.error(isRateLimitedError(error) ? pickRateLimitCheer(lang) : error.message || "Could not save");
         return;
       }
       toast.success(t.account.saved);

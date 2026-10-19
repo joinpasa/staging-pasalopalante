@@ -6,6 +6,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { supabase } from "@shared/integrations/supabase/client";
+import { isRateLimitedError, pickRateLimitCheer } from "@shared/lib/rateLimitCheer";
 import { Button } from "@shared/components/ui/button";
 import { Input } from "@shared/components/ui/input";
 import { Label } from "@shared/components/ui/label";
@@ -39,7 +40,7 @@ const PLEDGE_PRESETS = [50, 100, 200, 500];
 // is individual-only and deliberately short: the fields the primary CTA
 // needs to collect a pledge, nothing more.
 export default function QuickPledgeForm() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { user, signInWithMagicLink } = useAuth();
   const navigate = useNavigate();
 
@@ -83,7 +84,7 @@ export default function QuickPledgeForm() {
     }
     setSubmitting(true);
     try {
-      const { data, error } = await supabase.functions.invoke("submit-commitment", {
+      const { error } = await supabase.functions.invoke("submit-commitment", {
         body: {
           type: "individual",
           first_name: firstName,
@@ -95,8 +96,8 @@ export default function QuickPledgeForm() {
           country,
         },
       });
-      if (error || (data as any)?.error) {
-        const msg = (data as any)?.error || error?.message || t.commit.submitError;
+      if (error) {
+        const msg = isRateLimitedError(error) ? pickRateLimitCheer(lang) : error.message || t.commit.submitError;
         toast.error(msg);
         return;
       }

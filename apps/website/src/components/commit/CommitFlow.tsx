@@ -6,6 +6,7 @@ import { Heart, Info, Check, ChevronsUpDown } from "lucide-react";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { supabase } from "@shared/integrations/supabase/client";
+import { isRateLimitedError, pickRateLimitCheer } from "@shared/lib/rateLimitCheer";
 import { Button } from "@shared/components/ui/button";
 import { Input } from "@shared/components/ui/input";
 import { Label } from "@shared/components/ui/label";
@@ -47,7 +48,7 @@ type OrgType = "school" | "company" | "nonprofit" | "ngo" | "municipality" | "fa
 const GROUP_PRESETS = [100, 1000, 10000];
 
 export default function CommitFlow({ onSuccess, compact = false, prefilledEmail, onClearPrefilledEmail, initialMode = "individual" }: Props) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { user, signInWithMagicLink } = useAuth();
   const navigate = useNavigate();
   const [mode, setMode] = useState<Mode>(initialMode);
@@ -117,11 +118,11 @@ export default function CommitFlow({ onSuccess, compact = false, prefilledEmail,
               org_type: orgType || null,
             };
 
-      const { data, error } = await supabase.functions.invoke("submit-commitment", {
+      const { error } = await supabase.functions.invoke("submit-commitment", {
         body: payload,
       });
-      if (error || (data as any)?.error) {
-        const msg = (data as any)?.error || error?.message || t.commit.submitError;
+      if (error) {
+        const msg = isRateLimitedError(error) ? pickRateLimitCheer(lang) : error.message || t.commit.submitError;
         toast.error(msg);
         return;
       }

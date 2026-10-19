@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { supabase } from "@shared/integrations/supabase/client";
+import { isRateLimitedError, pickRateLimitCheer } from "@shared/lib/rateLimitCheer";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProfileHeader from "@/components/account/ProfileHeader";
@@ -21,7 +22,7 @@ import { Skeleton } from "@shared/components/ui/skeleton";
 import { submitPPLForm } from "@shared/lib/pplForm";
 
 const AccountPage = () => {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -70,7 +71,7 @@ const AccountPage = () => {
     if (!user) return;
     setOnboardingBusy(true);
     try {
-      const { data, error } = await supabase.functions.invoke("submit-commitment", {
+      const { error } = await supabase.functions.invoke("submit-commitment", {
         body: {
           type: "individual",
           first_name: firstName,
@@ -81,8 +82,7 @@ const AccountPage = () => {
           help_role: "do_acts",
         },
       });
-      const failure = (data as { error?: string } | null)?.error ?? error?.message;
-      if (failure) toast.error(failure);
+      if (error) toast.error(isRateLimitedError(error) ? pickRateLimitCheer(lang) : error.message);
       else setHasCommitment(true);
       // PPL Integration — sync to Airtable + GHL (tags get-involved-lead /
       // get-involved-individual). CommitFlow.tsx's individual pledge already

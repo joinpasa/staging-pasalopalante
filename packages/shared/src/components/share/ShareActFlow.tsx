@@ -7,6 +7,7 @@ import { z } from "zod";
 
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useAuth } from "@shared/contexts/AuthContext";
+import { isRateLimitedError, pickRateLimitCheer } from "@shared/lib/rateLimitCheer";
 import { Button } from "@shared/components/ui/button";
 import { Input } from "@shared/components/ui/input";
 import { Textarea } from "@shared/components/ui/textarea";
@@ -53,7 +54,7 @@ interface Props {
 }
 
 export default function ShareActFlow({ onClose, initialMode, initialDescription, redirectTo, toUserId, singleStep }: Props) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -203,9 +204,9 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
       });
 
       if (error) {
-        const msg =
-          (error as { context?: { error?: string } })?.context?.error ||
-          t.share.submitError;
+        const msg = isRateLimitedError(error)
+          ? pickRateLimitCheer(lang)
+          : (error as { context?: { error?: string } })?.context?.error || t.share.submitError;
         toast.error(msg);
         setSubmitting(false);
         return;

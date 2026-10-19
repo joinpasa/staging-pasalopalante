@@ -19,6 +19,7 @@ import { COUNTRIES } from "@shared/data/countries";
 import { cn } from "@shared/lib/utils";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { submitPPLForm } from "@shared/lib/pplForm";
+import { pickRateLimitCheer } from "@shared/lib/rateLimitCheer";
 
 // Mirrors the GoHighLevel form:
 // "Pásalo Pa'lante Ambassador & Core Team Commitment"
@@ -237,7 +238,7 @@ export default function CourseCreatorForm() {
       });
       if (!result.success) {
         console.error("Course-creator submit failed:", result.error);
-        toast.error(c.error);
+        toast.error(result.error === "rate_limited" ? pickRateLimitCheer(lang) : c.error);
         setSubmitting(false);
         return;
       }

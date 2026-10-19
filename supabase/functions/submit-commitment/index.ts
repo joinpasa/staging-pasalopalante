@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { escapeHtml, notifyOps, SITE_NAME } from "../_shared/ops.ts";
+import { checkRateLimit, envInt, getClientIp, rateLimitedResponse, rateLimitIpKey, rateLimitMultiplier } from "../_shared/rateLimit.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -24,6 +25,13 @@ const PLEDGE_REVIEW_THRESHOLD: Record<typeof TYPES[number], number> = {
   individual: 10_000,
   organization: 1_000_000,
 };
+
+// Hard cap on an individual pledge, rejected outright (400) rather than held
+// for review. Set equal to the individual review threshold above by design:
+// nothing above 10,000 is ever accepted from an individual, so the
+// "hold for review" branch for individuals never fires — organizations
+// (threshold 1,000,000, no separate cap) still go through that review path.
+const MAX_INDIVIDUAL_PLEDGE = envInt("MAX_INDIVIDUAL_PLEDGE", 10_000);
 
 interface Body {
   type: string;
@@ -83,6 +91,43 @@ Deno.serve(async (req) => {
       if (!/^https?:\/\//i.test(orgWebsite)) return bad("Website must start with http(s)://");
     } else if (orgWebsite && !/^https?:\/\//i.test(orgWebsite)) {
       return bad("Website must start with http(s)://");
+    }
+
+    if (body.type === "individual" && pledgeCount > MAX_INDIVIDUAL_PLEDGE) {
+      return bad(`An individual pledge can't exceed ${MAX_INDIVIDUAL_PLEDGE.toLocaleString("en-US")} acts.`);
+    }
+
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+    const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
+
+    // This endpoint is public (verify_jwt=false — guests pledge without an
+    // account). Checked before the AI moderation call below, same reasoning
+    // as submit-act: a blocked request shouldn't also burn an AI call.
+    // submit-commitment always inserts a new row per submission rather than
+    // updating one by email (confirmed by reading this function — there's
+    // no upsert/lookup-by-email anywhere here), so there's nothing to dedupe
+    // against; the per-email limit exists purely to cap repeat submissions.
+    const clientIp = getClientIp(req);
+    const ipMax = envInt("SUBMIT_COMMITMENT_IP_MAX", 100) * rateLimitMultiplier();
+    const ipWindow = envInt("SUBMIT_COMMITMENT_IP_WINDOW_SECONDS", 600);
+    const ipCheck = await checkRateLimit(supabase, "submit-commitment:ip", rateLimitIpKey(clientIp), ipMax, ipWindow);
+    if (ipCheck.error) {
+      console.error("rate limit check failed (ip)", ipCheck.error);
+      // Fail open — a DB hiccup here must never block a real pledge.
+    } else if (!ipCheck.allowed) {
+      return rateLimitedResponse(ipWindow, corsHeaders);
+    }
+
+    const emailDailyMax = envInt("SUBMIT_COMMITMENT_EMAIL_DAILY_MAX", 5);
+    const emailDailyWindow = envInt("SUBMIT_COMMITMENT_EMAIL_DAILY_WINDOW_SECONDS", 86400);
+    const emailDailyCheck = await checkRateLimit(
+      supabase, "submit-commitment:email-daily", email.toLowerCase(), emailDailyMax, emailDailyWindow,
+    );
+    if (emailDailyCheck.error) {
+      console.error("rate limit check failed (email daily)", emailDailyCheck.error);
+    } else if (!emailDailyCheck.allowed) {
+      return rateLimitedResponse(emailDailyWindow, corsHeaders);
     }
 
     // Lightweight AI safety check on the message only (optional)
@@ -147,10 +192,6 @@ Deno.serve(async (req) => {
         console.error("AI moderation error", e);
       }
     }
-
-    const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-    const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
 
     let userId: string | null = null;
     const authHeader = req.headers.get("Authorization");

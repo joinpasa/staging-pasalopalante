@@ -9,6 +9,7 @@ import { supabase } from "@shared/integrations/supabase/client";
 import { cn } from "@shared/lib/utils";
 import { detectSocialLink, type DetectedSocialLink } from "@shared/lib/socialLinks";
 import SocialLinkChip from "@shared/components/share/SocialLinkChip";
+import { isRateLimitedError, pickRateLimitCheer } from "@shared/lib/rateLimitCheer";
 
 const CHIP_LABELS = [
   "Helped a neighbor",
@@ -100,9 +101,8 @@ export default function AppLogAct() {
           video_url: socialLink?.url || undefined,
         },
       });
-      const failure = (data as { error?: string } | null)?.error ?? error?.message;
-      if (failure) {
-        toast.error(failure);
+      if (error) {
+        toast.error(isRateLimitedError(error) ? pickRateLimitCheer() : error.message);
         return;
       }
       if (data?.status === "rejected") {

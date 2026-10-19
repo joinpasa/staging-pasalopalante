@@ -13,6 +13,7 @@ import { supabasePublic } from "@shared/integrations/supabase/publicClient";
 import { COUNTRIES } from "@shared/data/countries";
 import { cn } from "@shared/lib/utils";
 import { getAuthErrorMessage } from "@shared/lib/authErrors";
+import { isRateLimitedError, pickRateLimitCheer } from "@shared/lib/rateLimitCheer";
 import { getCanonicalOrigin } from "@shared/lib/canonicalOrigin";
 import { submitPPLForm } from "@shared/lib/pplForm";
 import { storeReferralCode } from "@shared/lib/referral";
@@ -111,7 +112,7 @@ export default function AppJoin() {
   async function finishOnboarding({ pledgeCount }: OnboardingResult) {
     setBusy(true);
     try {
-      const { data, error } = await supabase.functions.invoke("submit-commitment", {
+      const { error } = await supabase.functions.invoke("submit-commitment", {
         body: {
           type: "individual",
           first_name: firstName.trim(),
@@ -122,8 +123,7 @@ export default function AppJoin() {
           help_role: "do_acts",
         },
       });
-      const failure = (data as { error?: string } | null)?.error ?? error?.message;
-      if (failure) toast.error(failure);
+      if (error) toast.error(isRateLimitedError(error) ? pickRateLimitCheer() : error.message);
       // PPL Integration — sync to Airtable + GHL, tagged as an app signup
       try {
         await submitPPLForm("app-join", {

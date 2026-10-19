@@ -27,6 +27,7 @@ import DeleteActDialog from "@/components/app/DeleteActDialog";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { supabase } from "@shared/integrations/supabase/client";
+import { isRateLimitedError, pickRateLimitCheer } from "@shared/lib/rateLimitCheer";
 import {
   useActReactions,
   useActsReceivedByMe,
@@ -93,7 +94,7 @@ function SocialLinkRow({ videoUrl }: { videoUrl: string | null | undefined }) {
 
 export default function AppHome() {
   const { user } = useAuth();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { data: me } = useAppMe();
   const { data: totals } = useMovementTotals();
   const { data: myActs } = useMyRecentActs();
@@ -148,7 +149,7 @@ export default function AppHome() {
     if (!user) return;
     setOnboardingBusy(true);
     try {
-      const { data, error } = await supabase.functions.invoke("submit-commitment", {
+      const { error } = await supabase.functions.invoke("submit-commitment", {
         body: {
           type: "individual",
           first_name: firstName,
@@ -159,8 +160,7 @@ export default function AppHome() {
           help_role: "do_acts",
         },
       });
-      const failure = (data as { error?: string } | null)?.error ?? error?.message;
-      if (failure) toast.error(failure);
+      if (error) toast.error(isRateLimitedError(error) ? pickRateLimitCheer(lang) : error.message);
       // PPL Integration — sync to Airtable + GHL (tags get-involved-lead /
       // get-involved-individual). Was missing entirely for this onboarding
       // pledge, unlike AppJoin's pre-verification pledge which already syncs.
@@ -263,9 +263,8 @@ export default function AppHome() {
           video_url: quickSocialLink?.url || undefined,
         },
       });
-      const failure = (data as { error?: string } | null)?.error ?? error?.message;
-      if (failure) {
-        toast.error(failure);
+      if (error) {
+        toast.error(isRateLimitedError(error) ? pickRateLimitCheer(lang) : error.message);
         return;
       }
       if (data?.status === "rejected") {

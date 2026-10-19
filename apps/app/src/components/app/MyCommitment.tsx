@@ -3,6 +3,7 @@ import { Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@shared/integrations/supabase/client";
 import { useLanguage } from "@shared/contexts/LanguageContext";
+import { isRateLimitedError, pickRateLimitCheer } from "@shared/lib/rateLimitCheer";
 
 interface Commitment {
   id: string;
@@ -30,7 +31,7 @@ const ghostBtn = "rounded-full border border-border bg-app-canvas px-4 py-2 text
  * separate dashboard card (SeasonCountdown) — this always shows progress.
  */
 export default function MyCommitment({ userId, email }: { userId: string; email: string }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [items, setItems] = useState<Commitment[] | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
   const [draft, setDraft] = useState(0);
@@ -85,12 +86,11 @@ export default function MyCommitment({ userId, email }: { userId: string; email:
     if (newCount < 1 || !email) return;
     setSubmitting(true);
     try {
-      const { data, error } = await supabase.functions.invoke("submit-commitment", {
+      const { error } = await supabase.functions.invoke("submit-commitment", {
         body: { type: "individual", email, pledge_count: newCount },
       });
-      const failure = (data as { error?: string } | null)?.error ?? error?.message;
-      if (failure) {
-        toast.error(failure);
+      if (error) {
+        toast.error(isRateLimitedError(error) ? pickRateLimitCheer(lang) : error.message);
         return;
       }
       toast.success(t.account.saved);
