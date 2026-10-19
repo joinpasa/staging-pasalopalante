@@ -11,10 +11,10 @@ export default function AwakenPreviewPage() {
   return (
     <div className="min-h-screen bg-warm-cream">
       <Navbar />
-      <main className="section-padding mx-auto max-w-6xl pb-16 pt-28">
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+      <main className="pb-16 pt-28">
+        <div className="section-padding mb-6 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="eyebrow">Embed preview</p>
+            <p className="eyebrow">Join the global live broadcast on 11.11.2026</p>
             <h1 className="text-3xl text-foreground md:text-4xl">Awaken — Global Kindness</h1>
           </div>
           <a
@@ -27,7 +27,7 @@ export default function AwakenPreviewPage() {
             <ExternalLink size={14} />
           </a>
         </div>
-        <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
+        <div className="overflow-hidden border-y border-border bg-white">
           <iframe
             src={AWAKEN_URL}
             title="Awaken — Global Kindness"
