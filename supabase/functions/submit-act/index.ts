@@ -72,6 +72,41 @@ Deno.serve(async (req) => {
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
+
+    // Audit metadata — computed early (not just for the DB row later) so the
+    // rate-limit check right below can use it too.
+    const fwd = req.headers.get("x-forwarded-for") || "";
+    const ipAddress =
+      req.headers.get("cf-connecting-ip") ||
+      (fwd ? fwd.split(",")[0].trim() : null) ||
+      req.headers.get("x-real-ip") ||
+      null;
+    const userAgent = req.headers.get("user-agent") || null;
+
+    // This endpoint is public (verify_jwt=false — guests submit without an
+    // account), so without a limit here a script could loop it to fabricate
+    // "acts pledged" counts and flood the public Wall, burning a Gemini
+    // moderation call on every single try. Checked before moderation runs,
+    // not after, so a blocked caller never costs an AI call either. Generous
+    // enough for anyone actually logging several acts in one sitting;
+    // nowhere near what an abuse loop would need.
+    const RATE_LIMIT_WINDOW_MINUTES = 10;
+    const RATE_LIMIT_MAX_REQUESTS = 20;
+    const { data: allowed, error: rateLimitError } = await supabase.rpc(
+      "check_and_log_act_submit",
+      { _ip_address: ipAddress ?? "unknown", _window_minutes: RATE_LIMIT_WINDOW_MINUTES, _max_requests: RATE_LIMIT_MAX_REQUESTS },
+    );
+    if (rateLimitError) {
+      console.error("rate limit check failed", rateLimitError);
+      // Fail open on our own error (not the caller's fault), same as every
+      // other best-effort check in this codebase — a DB hiccup here must
+      // never block someone from logging a real act.
+    } else if (!allowed) {
+      return new Response(JSON.stringify({ error: "Too many submissions. Please try again shortly." }), {
+        status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     // Moderation defaults (when there's no description to scan).
     let modStatus: "approved" | "rejected" | "flagged_for_review" = "approved";
@@ -193,8 +228,6 @@ Deno.serve(async (req) => {
       }
     }
 
-    const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
-
     // Optionally attach user_id when an Authorization header was sent.
     let userId: string | null = null;
     const authHeader = req.headers.get("Authorization");
@@ -234,15 +267,6 @@ Deno.serve(async (req) => {
         }
       } catch (_) { /* best effort */ }
     }
-
-    // Audit metadata.
-    const fwd = req.headers.get("x-forwarded-for") || "";
-    const ipAddress =
-      req.headers.get("cf-connecting-ip") ||
-      (fwd ? fwd.split(",")[0].trim() : null) ||
-      req.headers.get("x-real-ip") ||
-      null;
-    const userAgent = req.headers.get("user-agent") || null;
 
     const shouldStore = modStatus !== "rejected";
     const shouldPublish = modStatus === "approved";

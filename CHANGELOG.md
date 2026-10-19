@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-19 — va.deedumlao@gmail.com
+
+- **Added a server-side rate limit to the "submit an act" endpoint**, closing a gap a teammate's AI code-review agent flagged: `submit-act` is public (no login required, by design — guests can share acts) and had no limit on how many times it could be called, so a script could have looped it to fabricate "acts pledged" counts and flood the public Wall, burning an AI moderation check on every try in the process. Now capped per IP address (20 submissions per 10 minutes — generous for anyone genuinely logging several acts in one sitting, nowhere near what an abuse script would need), checked before the moderation call runs so a blocked attempt doesn't cost anything. Same approach already used for photo uploads (`sign-photo-upload`), just extended to act submissions too.
+
 ## 2026-10-16 — va.deedumlao@gmail.com
 
 - **`/partners` now runs on the same kind of automated sheet sync as `/ambassadors`, instead of being hardcoded in the website's code.** Pre-filled a new "PKF_Partners" Google Sheet with every current partner (all orgs plus all 78 PR municipalities, images included), then wired it up: a new `partner_entries` table + `sync-partners` edge function mirror the sheet on every sync — add, edit, or remove a row in the sheet and the site updates automatically, no code change or redeploy needed, same as the Ambassadors sheet. Every current partner is marked Approved already, so nothing changes on the page itself; this only changes where the data lives.
