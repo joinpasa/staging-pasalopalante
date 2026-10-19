@@ -38,6 +38,7 @@ const PrivacyPage = lazy(() => import("./pages/PrivacyPage.tsx"));
 const CommunityGuidelinesPage = lazy(() => import("./pages/CommunityGuidelinesPage.tsx"));
 const ContactPage = lazy(() => import("./pages/ContactPage.tsx"));
 const AboutPage = lazy(() => import("./pages/AboutPage.tsx"));
+const AwakenPreviewPage = lazy(() => import("./pages/AwakenPreviewPage.tsx"));
 const PartnersPage = lazy(() => import("./pages/PartnersPage.tsx"));
 // Unlisted — live at these URLs but not linked from the Navbar, Footer, or
 // prerendered for SEO (see the /partners/apply and /ambassadors routes below).
@@ -128,6 +129,7 @@ const App = () => (
               <Route path="/community-guidelines" element={<CommunityGuidelinesPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/about" element={<AboutPage />} />
+              <Route path="/preview/awaken" element={<AwakenPreviewPage />} />
               {/* Unlisted on purpose — live but not linked from the Navbar,
                   Footer, or Explore menu, and left out of the prerender
                   list in scripts/prerender.ts so it isn't surfaced for SEO
