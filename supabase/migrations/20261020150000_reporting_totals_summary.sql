@@ -11,7 +11,11 @@
 -- current total" style scorecards, use this new single-row view instead:
 -- SUM/MAX/AVG of exactly one row are all the same value, so there's no
 -- aggregation choice left to get wrong.
-create or replace view reporting.acts_per_day as
+-- create or replace view can only append columns, not drop them — these two
+-- need a real drop+recreate since acts_published_running_total /
+-- acts_pledged_running_total are going away, not just changing.
+drop view if exists reporting.acts_per_day;
+create view reporting.acts_per_day as
 select
   created_at::date as day,
   count(*) as acts_submitted,
@@ -20,7 +24,10 @@ from public.acts_of_kindness
 group by 1
 order by 1;
 
-create or replace view reporting.pledges_per_day as
+grant select on reporting.acts_per_day to looker_studio_readonly;
+
+drop view if exists reporting.pledges_per_day;
+create view reporting.pledges_per_day as
 select
   created_at::date as day,
   type,
@@ -30,6 +37,8 @@ from public.commitments
 where status = 'published'
 group by 1, 2
 order by 1, 2;
+
+grant select on reporting.pledges_per_day to looker_studio_readonly;
 
 create or replace view reporting.totals_summary as
 select
