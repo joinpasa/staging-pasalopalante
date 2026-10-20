@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-20 — va.deedumlao@gmail.com
+
+- **Laid the groundwork for an internal "are people using this" dashboard in Looker Studio**, answering Chin's question about whether we can see logs/pledges/signups and site traffic in one place. The database side is ready: a handful of pre-aggregated, no-personal-data views (acts logged per day, pledges per day, signups per day, ambassador/partner directory growth) plus a read-only login that can only see those views, nothing else in the database. Google Analytics (already running on both the website and the app) plugs into Looker Studio directly, no extra setup needed there. Building the actual Looker Studio report/charts and connecting it all up is still a manual, one-time step someone needs to do in Looker Studio's own site.
+
 ## 2026-10-19 — va.deedumlao@gmail.com
 
 - **The yellow broadcast ribbon now opens the 24-hour Global Live sign-up form** (forms.pasalopalante.com/24hr-global-live, in a new tab) instead of the /live page. /live stays available from the Explore menu.
