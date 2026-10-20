@@ -120,7 +120,7 @@ export default function TermsPage() {
             </h2>
             <p>
               Te Amo PR · 550 Av. de la Constitución #905, San Juan, PR · EIN 66-0975633 ·{" "}
-              <a href="mailto:info@teamopr.org" className="text-warm-sky underline">info@teamopr.org</a> · (787) 705-0778
+              <a href="mailto:info@passkindnessforward.com" className="text-warm-sky underline">info@passkindnessforward.com</a> · (787) 705-0778
             </p>
           </section>
         </article>

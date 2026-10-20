@@ -13,7 +13,7 @@ export default function ContactPage() {
     <div className="min-h-screen bg-warm-cream">
       <SEO
         title="Contact Pásalo Pa'lante — Get in Touch With Te Amo PR"
-        description="Contact the Pásalo Pa'lante team at Te Amo PR. Email info@teamopr.org or call (787) 705-0778 — we'd love to hear from you."
+        description="Contact the Pásalo Pa'lante team at Te Amo PR. Email info@passkindnessforward.com or call (787) 705-0778 — we'd love to hear from you."
         path="/contact"
       />
       <Navbar />
@@ -30,14 +30,14 @@ export default function ContactPage() {
           </p>
 
           <div className="bg-card border border-border rounded-2xl p-8 shadow-sm space-y-5 text-left">
-            <a href="mailto:info@teamopr.org" className="flex items-center gap-4 group">
+            <a href="mailto:info@passkindnessforward.com" className="flex items-center gap-4 group">
               <Mail className="text-primary shrink-0" size={22} />
-              <div>
+              <div className="min-w-0">
                 <div className="text-xs uppercase tracking-widest text-foreground/50">
                   {isEs ? "Correo" : "Email"}
                 </div>
-                <div className="text-base font-medium text-foreground group-hover:text-primary transition-colors">
-                  info@teamopr.org
+                <div className="text-base font-medium text-foreground group-hover:text-primary transition-colors break-all">
+                  info@passkindnessforward.com
                 </div>
               </div>
             </a>

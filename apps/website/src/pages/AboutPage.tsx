@@ -93,7 +93,7 @@ export default function AboutPage() {
               {isEs ? "Contacto" : "Contact"}
             </h2>
             <p>
-              Te Amo PR · <a className="text-warm-sky hover:underline" href="mailto:info@teamopr.org">info@teamopr.org</a> · (787) 705-0778 ·{" "}
+              Te Amo PR · <a className="text-warm-sky hover:underline" href="mailto:info@passkindnessforward.com">info@passkindnessforward.com</a> · (787) 705-0778 ·{" "}
               <a className="text-warm-sky hover:underline" href="https://teamopr.org" target="_blank" rel="noopener noreferrer">teamopr.org</a>
             </p>
           </div>

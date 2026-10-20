@@ -90,7 +90,7 @@ export default function PrivacyPage() {
                 <li><strong>{t("Mailing address:", "Dirección postal:")}</strong> 550 Av. de la Constitución #905, San Juan</li>
                 <li>
                   <strong>{t("Email:", "Correo:")}</strong>{" "}
-                  <a href="mailto:info@teamopr.org" className="text-warm-sky underline">info@teamopr.org</a>
+                  <a href="mailto:info@passkindnessforward.com" className="text-warm-sky underline">info@passkindnessforward.com</a>
                   {" · "}
                   <a href="mailto:hello@pasalopalante.com" className="text-warm-sky underline">hello@pasalopalante.com</a>
                 </li>
@@ -329,7 +329,7 @@ export default function PrivacyPage() {
                 <p><strong>Te Amo PR / Pásalo Pa'lante</strong></p>
                 <p>{t("Website:", "Sitio:")} <a href="https://teamopr.org" target="_blank" rel="noopener noreferrer" className="text-warm-sky underline">teamopr.org</a></p>
                 <p>{t("Movement Website:", "Sitio del movimiento:")} <a href="https://pasalopalante.com" className="text-warm-sky underline">pasalopalante.com</a></p>
-                <p>{t("Email:", "Correo:")} <a href="mailto:info@teamopr.org" className="text-warm-sky underline">info@teamopr.org</a> · <a href="mailto:hello@pasalopalante.com" className="text-warm-sky underline">hello@pasalopalante.com</a></p>
+                <p>{t("Email:", "Correo:")} <a href="mailto:info@passkindnessforward.com" className="text-warm-sky underline">info@passkindnessforward.com</a> · <a href="mailto:hello@pasalopalante.com" className="text-warm-sky underline">hello@pasalopalante.com</a></p>
                 <p>{t("Mailing Address:", "Dirección postal:")} 550 Av. de la Constitución #905, San Juan</p>
                 <p>{t("Nonprofit Registration / EIN:", "Registro sin fines de lucro / EIN:")} 66-0975633</p>
               </div>

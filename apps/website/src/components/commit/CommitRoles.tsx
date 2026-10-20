@@ -52,7 +52,7 @@ const CONTENT = {
     ],
     getOutro:
       "This is a movement built by partnership. We're deeply grateful for every person and organization stepping in, and we're open to collaboration of all kinds. If you have questions before you sign up, reach out anytime:",
-    contactEmail: "info@teamopr.org",
+    contactEmail: "info@passkindnessforward.com",
     contactPhone: "(787) 705-0778",
   },
   es: {
@@ -106,7 +106,7 @@ const CONTENT = {
     ],
     getOutro:
       "Este es un movimiento construido por alianzas. Estamos profundamente agradecidos con cada persona y organización que se suma, y estamos abiertos a colaboraciones de todo tipo. Si tienes preguntas antes de inscribirte, escríbenos cuando quieras:",
-    contactEmail: "info@teamopr.org",
+    contactEmail: "info@passkindnessforward.com",
     contactPhone: "(787) 705-0778",
   },
 };

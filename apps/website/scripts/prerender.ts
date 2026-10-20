@@ -39,7 +39,7 @@ const FOOTER = `
     organization based in Puerto Rico.</strong><br />
     Te Amo PR: <a href="https://teamopr.org">teamopr.org</a> ·
     Pásalo Pa'lante: <a href="https://pasalopalante.com">pasalopalante.com</a><br />
-    Email: <a href="mailto:info@teamopr.org">info@teamopr.org</a> ·
+    Email: <a href="mailto:info@passkindnessforward.com">info@passkindnessforward.com</a> ·
     Phone: (787) 705-0778<br />
     EIN: 66-0975633 · 550 Av. de la Constitución #905, San Juan, PR<br />
     © 2026 Te Amo PR / Pásalo Pa'lante. All rights reserved.
@@ -165,9 +165,9 @@ const routes: Route[] = [
       <h3>Other ways to give</h3>
       <ul>
         <li><strong>By check</strong> — payable to <em>Te Amo PR</em>, mailed to 550 Av. de la Constitución #905, San Juan, PR.</li>
-        <li><strong>ACH / wire / sponsorship</strong> — email <a href="mailto:info@teamopr.org">info@teamopr.org</a> for banking instructions and a sponsorship deck.</li>
+        <li><strong>ACH / wire / sponsorship</strong> — email <a href="mailto:info@passkindnessforward.com">info@passkindnessforward.com</a> for banking instructions and a sponsorship deck.</li>
       </ul>
-      <p>For donation questions, contact <a href="mailto:info@teamopr.org">info@teamopr.org</a> or call (787) 705-0778. Donation inquiries may also be submitted through the <a href="/contact">Contact page</a>.</p>
+      <p>For donation questions, contact <a href="mailto:info@passkindnessforward.com">info@passkindnessforward.com</a> or call (787) 705-0778. Donation inquiries may also be submitted through the <a href="/contact">Contact page</a>.</p>
       <h2>Donation Disclaimer</h2>
       <p>Donations are processed through Te Amo PR or its authorized donation providers. Pásalo Pa'lante is the movement platform and sister initiative connected to Te Amo PR. Tax receipts are emailed by Te Amo PR with EIN 66-0975633 and donation details, suitable for U.S. tax purposes. Please consult your tax advisor regarding tax deductibility.</p>
     `,
@@ -182,7 +182,7 @@ const routes: Route[] = [
       ${SISTER}
       <p>For questions about Pásalo Pa'lante, Te Amo PR, partnerships, schools, ambassadors, donations, media, or privacy requests, please contact us.</p>
       <ul>
-        <li>Email: <a href="mailto:info@teamopr.org">info@teamopr.org</a></li>
+        <li>Email: <a href="mailto:info@passkindnessforward.com">info@passkindnessforward.com</a></li>
         <li>Phone: (787) 705-0778</li>
         <li>Website: <a href="https://teamopr.org">teamopr.org</a></li>
         <li>Movement website: <a href="https://pasalopalante.com">pasalopalante.com</a></li>
@@ -215,9 +215,9 @@ const routes: Route[] = [
       <h2>Data security &amp; retention</h2>
       <p>We use reasonable administrative, technical, and organizational safeguards. We keep personal information only as long as reasonably necessary for the purposes described in this policy.</p>
       <h2>Your choices</h2>
-      <p>Request access, correction, or deletion by emailing <a href="mailto:info@teamopr.org">info@teamopr.org</a>.</p>
+      <p>Request access, correction, or deletion by emailing <a href="mailto:info@passkindnessforward.com">info@passkindnessforward.com</a>.</p>
       <h2>Contact</h2>
-      <p>Email: <a href="mailto:info@teamopr.org">info@teamopr.org</a> · Phone: (787) 705-0778 · Address: 550 Av. de la Constitución #905, San Juan, PR.</p>
+      <p>Email: <a href="mailto:info@passkindnessforward.com">info@passkindnessforward.com</a> · Phone: (787) 705-0778 · Address: 550 Av. de la Constitución #905, San Juan, PR.</p>
     `,
   },
   {
@@ -244,7 +244,7 @@ const routes: Route[] = [
       <h2>Disclaimer &amp; limitation of liability</h2>
       <p>Website content is provided "as is" for general educational, inspirational, nonprofit, and community engagement purposes. To the fullest extent permitted by law, Pásalo Pa'lante, Te Amo PR, and their representatives are not liable for damages arising from use of this website or participation in activities promoted through it.</p>
       <h2>Contact</h2>
-      <p>Email: <a href="mailto:info@teamopr.org">info@teamopr.org</a> · Phone: (787) 705-0778 · Address: 550 Av. de la Constitución #905, San Juan, PR.</p>
+      <p>Email: <a href="mailto:info@passkindnessforward.com">info@passkindnessforward.com</a> · Phone: (787) 705-0778 · Address: 550 Av. de la Constitución #905, San Juan, PR.</p>
     `,
   },
   {
@@ -262,7 +262,7 @@ const routes: Route[] = [
         <li>Protect children and vulnerable people.</li>
         <li>Do not use the movement for hate, harassment, politics, exploitation, scams, or unauthorized fundraising.</li>
         <li>Use official branding responsibly.</li>
-        <li>Report concerns to <a href="mailto:info@teamopr.org">info@teamopr.org</a>.</li>
+        <li>Report concerns to <a href="mailto:info@passkindnessforward.com">info@passkindnessforward.com</a>.</li>
       </ul>
       <p>Pásalo Pa'lante may remove, decline, or report content that violates these guidelines or harms the integrity of the movement.</p>
     `,

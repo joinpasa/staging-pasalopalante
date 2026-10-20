@@ -95,7 +95,7 @@ const Footer = () => {
           <div>
             <h4 className="text-sm font-bold tracking-widest uppercase text-warm-cream/40 mb-4">{t.footer.connectHeader}</h4>
             <ul className="space-y-2 text-sm text-warm-cream/70">
-              <li><a href="mailto:info@teamopr.org" className="hover:text-warm-cream transition-colors">info@teamopr.org</a></li>
+              <li><a href="mailto:info@passkindnessforward.com" className="hover:text-warm-cream transition-colors">info@passkindnessforward.com</a></li>
               <li>(787) 705-0778</li>
             </ul>
             <div className="flex items-center gap-3 mt-4">

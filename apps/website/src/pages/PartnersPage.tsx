@@ -288,10 +288,10 @@ export default function PartnersPage() {
                   {isEs ? "Contáctanos" : "Get in touch"}
                 </a>
                 <a
-                  href="mailto:info@teamopr.org"
+                  href="mailto:info@passkindnessforward.com"
                   className="flex h-14 items-center justify-center rounded-full border-[1.5px] border-warm-cream/40 text-sm font-semibold text-warm-cream"
                 >
-                  info@teamopr.org
+                  info@passkindnessforward.com
                 </a>
               </div>
             </div>

@@ -58,7 +58,7 @@ const DonateDialog = ({ open, onOpenChange }: { open: boolean; onOpenChange: (v:
           <a href="https://www.paypal.com/ncp/payment/LQT3G3GLS8SWS" target="_blank" rel="noopener noreferrer" className="btn-primary inline-block px-8 py-3 text-center">Donate Now</a>
         </div>
         <p>For checks, wire transfers, ACH deposits, money orders or other alternative methods, please write to us at:{" "}
-          <a href="mailto:info@teamopr.org" className="text-warm-sky font-medium underline">info@teamopr.org</a>
+          <a href="mailto:info@passkindnessforward.com" className="text-warm-sky font-medium underline">info@passkindnessforward.com</a>
         </p>
         <p>Thank you very much for your generous donation.</p>
         <p className="italic">Sincerely,<br />Te Amo PR Team</p>

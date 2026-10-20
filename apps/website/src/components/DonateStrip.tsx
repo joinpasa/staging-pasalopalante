@@ -93,7 +93,7 @@ const DonateStrip = () => {
             </div>
             <p className="text-warm-cream/60 text-sm italic mt-6">
               {t.donate.altMethods}{" "}
-              <a href="mailto:info@teamopr.org" className="underline hover:text-warm-cream/80">info@teamopr.org</a>
+              <a href="mailto:info@passkindnessforward.com" className="underline hover:text-warm-cream/80">info@passkindnessforward.com</a>
             </p>
             <p className="text-warm-cream/50 text-xs mt-4">
               {t.donate.taxNote}
