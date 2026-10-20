@@ -322,6 +322,7 @@ const translations = {
       thanksBody: "You just added to the global wave.",
       statActs: "Acts pledged",
       statPeople: "Global pledges",
+      statActsLogged: "Acts logged",
       submitError: "Something went wrong. Please try again.",
       afterShareEyebrow: "Take it further",
       afterShareHeading: "Pledge more acts for Global Kindness Season",
