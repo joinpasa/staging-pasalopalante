@@ -1,4 +1,4 @@
-import { adminClient, corsHeaders, json, partnerFromRequest, UUID_RE } from "../_shared/partner.ts";
+import { adminClient, corsHeaders, json, isPlaceholderEmail, partnerFromRequest, UUID_RE } from "../_shared/partner.ts";
 
 /**
  * Log 1 Act / Bulk Log from the partner portal. Saves each row as a pending
@@ -106,6 +106,9 @@ Deno.serve(async (req) => {
   const submitterEmail = String(body?.submitter_email ?? "").trim().toLowerCase().slice(0, 254) || null;
   if (submitterEmail && !EMAIL_RE.test(submitterEmail)) {
     return json({ error: "That email address doesn't look right." }, 400);
+  }
+  if (submitterEmail && isPlaceholderEmail(submitterEmail)) {
+    return json({ error: "That looks like an example address. Use your real email so we can reach you." }, 400);
   }
   if (submitterEmail) {
     // Remember it for this person so the form pre-fills on any device.

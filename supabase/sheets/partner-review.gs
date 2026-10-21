@@ -215,6 +215,13 @@ function escapeHtml_(v) {
  * order), and remembers it was sent in a note on the Status cell, so later
  * edits don't send duplicates. Moving the row off "Needs Changes" resets it.
  */
+/** Same list as the portal's isPlaceholderEmail: valid format, undeliverable. */
+function isPlaceholderEmail_(email) {
+  const domain = (String(email).trim().toLowerCase().split('@')[1] || '');
+  return /(^|\.)(example|test|invalid|localhost)$/.test(domain) ||
+    /^(example|yourdomain|your-domain|yourorg|yourorganization|yourcompany|yourschool|domain|organization)\.[a-z.]+$/.test(domain);
+}
+
 function maybeEmailNeedsChanges_(sh, r) {
   const statusCell = sh.getRange(r, COL['Status']);
   if (statusCell.getValue() !== 'Needs Changes') {
@@ -224,12 +231,20 @@ function maybeEmailNeedsChanges_(sh, r) {
   if (String(statusCell.getNote()).indexOf(EMAILED_MARK) === 0) return;
 
   const note = String(sh.getRange(r, COL['Note']).getValue()).trim();
-  const submitter = String(sh.getRange(r, COL['Submitter email']).getValue()).trim();
-  const orgContact = String(sh.getRange(r, COL['Org contact']).getValue()).trim();
+  const submitterRaw = String(sh.getRange(r, COL['Submitter email']).getValue()).trim();
+  const orgContactRaw = String(sh.getRange(r, COL['Org contact']).getValue()).trim();
+  // Example/test addresses (you@yourdomain.org…) never receive mail; Gmail
+  // would just bounce them back to us for two days. Skip them.
+  const submitter = isPlaceholderEmail_(submitterRaw) ? '' : submitterRaw;
+  const orgContact = isPlaceholderEmail_(orgContactRaw) ? '' : orgContactRaw;
+  const skipped = [submitterRaw, orgContactRaw].filter(function (e) { return e && isPlaceholderEmail_(e); });
   const to = submitter || orgContact;
   const cc = submitter && orgContact && orgContact.toLowerCase() !== submitter.toLowerCase() ? orgContact : '';
   if (!to) {
-    statusCell.setNote('Not emailed: no Submitter email or Org contact on file.');
+    statusCell.setNote(skipped.length
+      ? 'Not emailed: ' + skipped.join(', ') + (skipped.length > 1 ? ' look like example addresses' : ' looks like an example address') +
+        '. Fix the Submitter email or Org contact, then pick Needs Changes again.'
+      : 'Not emailed: no Submitter email or Org contact on file.');
     return;
   }
   if (!note) {

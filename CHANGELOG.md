@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-10-21 — va.deedumlao@gmail.com
 
+- **Example email addresses are blocked in the partner portal and the review Sheet.** The portal rejects example emails like you@yourdomain.org or name@example.com with a friendly "use your real email" message, so test data can't trigger the days-long bounce notices we got before. The Sheet's Needs Changes email also skips them: it falls back to the real org contact, or leaves a note saying why nothing was sent.
 - **The app is now available in all the website's languages** (Spanish, French, German, Portuguese, Russian, Hindi, Arabic, Bengali, Slovenian, Chinese), with a language picker in the user's profile — Moziezez's PR #3, brought up to date with two weeks of app changes made since it was opened.
 - **Fixed the app's "Forgot password?" link firing when tapping the empty space next to it** on the log-in tab — Moziezez's PR #4. Only the link text itself triggers a reset now.
 - **Built a new `/media` press-coverage page**, from last year's 2025 campaign media report — grouped into digital news, video/podcast, and social coverage, with the campaign's impressions and earned-media stats up top and a strategic framing meant to invite people to join or cover the next wave. Not linked from the Navbar or Footer yet — live only at the direct URL for review before it's announced.
