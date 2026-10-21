@@ -212,3 +212,11 @@ export const mediaSummary = {
   placementCount:
     digitalNews.length + videoAndPodcast.length + socialCoverage.length,
 };
+
+/**
+ * URLs (must match an item's `url` in videoAndPodcast or socialCoverage
+ * exactly) to spotlight in the "Featured" section at the top of the page.
+ * Empty until the team picks which ones — the section hides itself while
+ * this is empty, nothing to do on the page side when this fills in.
+ */
+export const featuredUrls: string[] = [];

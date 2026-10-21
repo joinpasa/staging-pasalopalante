@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -18,12 +18,14 @@ import {
 import {
   broadcastOutlets,
   digitalNews,
+  featuredUrls,
   mediaSummary,
   otherOutletsReached,
   socialCoverage,
   videoAndPodcast,
   type MediaItem,
 } from "@/data/mediaCoverage";
+import { loadFacebookSdk, loadInstagramEmbed, loadTwitterWidgets } from "@/lib/socialEmbeds";
 
 // /media: 2025 Pásalo Pa'lante press coverage. Shown on both
 // pasalopalante.com and passkindnessforward.com (shared build — see
@@ -167,20 +169,158 @@ function VideoEmbedCard({ item }: { item: MediaItem }) {
   );
 }
 
+const EMBED_WIDTH = 340;
+
+/** Facebook's own "fb-video" plugin covers reels too — detected from the
+ * URL shape, since the report doesn't separately flag which links are
+ * video vs. a plain post. */
+function isFacebookVideoUrl(url: string): boolean {
+  return /\/(reel|share\/v|videos)\//.test(url);
+}
+
+function extractLinkedInUrn(url: string): string | null {
+  const match = url.match(/\/update\/(urn:li:activity:\d+)/);
+  return match ? match[1] : null;
+}
+
+// Same icon+outlet header every other card on this page uses, plus a
+// working link out to the original post — so a card still shows something
+// useful (not an empty box) if its embed script is blocked, which is
+// common for Facebook/Instagram/X specifically (ad blockers target them
+// by name far more often than YouTube or Spotify).
+function EmbedShell({ item, children }: { item: MediaItem; children: ReactNode }) {
+  const Icon = ICONS[item.type];
+  return (
+    <div className="flex flex-col gap-2 rounded-2xl border border-border bg-white p-4 shadow-sm">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-2 text-foreground/50">
+          <Icon size={16} className="shrink-0" />
+          <span className="text-xs font-bold uppercase tracking-wide text-foreground/50">{item.outlet}</span>
+        </div>
+        <a
+          href={item.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Open original post from ${item.outlet} (opens in a new tab)`}
+        >
+          <ExternalLink size={14} className="shrink-0 text-foreground/30 transition-colors hover:text-warm-terracotta" />
+        </a>
+      </div>
+      {item.title && <p className="text-sm font-semibold leading-snug text-foreground">{item.title}</p>}
+      {item.note && <p className="text-xs leading-snug text-foreground/60">{item.note}</p>}
+      <div className="flex justify-center overflow-hidden rounded-xl">{children}</div>
+    </div>
+  );
+}
+
+function FacebookEmbed({ item }: { item: MediaItem }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    loadFacebookSdk().then(() => window.FB?.XFBML.parse(ref.current ?? undefined));
+  }, []);
+  return (
+    <div ref={ref}>
+      <EmbedShell item={item}>
+        {isFacebookVideoUrl(item.url) ? (
+          <div className="fb-video" data-href={item.url} data-width={EMBED_WIDTH} data-show-text="false" />
+        ) : (
+          <div className="fb-post" data-href={item.url} data-width={EMBED_WIDTH} />
+        )}
+      </EmbedShell>
+    </div>
+  );
+}
+
+function InstagramEmbed({ item }: { item: MediaItem }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    loadInstagramEmbed().then(() => window.instgrm?.Embeds.process());
+  }, []);
+  return (
+    <div ref={ref}>
+      <EmbedShell item={item}>
+        <blockquote
+          className="instagram-media"
+          data-instgrm-permalink={item.url}
+          data-instgrm-version="14"
+          style={{ margin: 0, width: "100%", maxWidth: EMBED_WIDTH }}
+        />
+      </EmbedShell>
+    </div>
+  );
+}
+
+function TwitterEmbed({ item }: { item: MediaItem }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    loadTwitterWidgets().then(() => window.twttr?.widgets.load(ref.current ?? undefined));
+  }, []);
+  return (
+    <div ref={ref}>
+      <EmbedShell item={item}>
+        <blockquote className="twitter-tweet">
+          <a href={item.url}>{item.note ?? item.outlet}</a>
+        </blockquote>
+      </EmbedShell>
+    </div>
+  );
+}
+
+function LinkedInEmbed({ item }: { item: MediaItem }) {
+  const urn = extractLinkedInUrn(item.url);
+  if (!urn) return <MediaCard item={item} />;
+  return (
+    <EmbedShell item={item}>
+      <iframe
+        title={item.outlet}
+        src={`https://www.linkedin.com/embed/feed/update/${urn}`}
+        height={400}
+        width="100%"
+        style={{ border: 0, maxWidth: EMBED_WIDTH }}
+        allowFullScreen
+      />
+    </EmbedShell>
+  );
+}
+
+/** Dispatches every embeddable item to its platform's real embed — YouTube
+ * thumbnail+play, Spotify's own player, or each social platform's official
+ * widget — falling back to a plain link card for anything without one
+ * (plain news articles, or a malformed URL). */
+function RichEmbedCard({ item }: { item: MediaItem }) {
+  switch (item.type) {
+    case "youtube":
+    case "spotify":
+      return <VideoEmbedCard item={item} />;
+    case "facebook":
+      return <FacebookEmbed item={item} />;
+    case "instagram":
+      return <InstagramEmbed item={item} />;
+    case "x":
+      return <TwitterEmbed item={item} />;
+    case "linkedin":
+      return <LinkedInEmbed item={item} />;
+    default:
+      return <MediaCard item={item} />;
+  }
+}
+
 function Section({
   eyebrow,
   items,
   CardComponent = MediaCard,
+  columns = 3,
 }: {
   eyebrow: string;
   items: MediaItem[];
   CardComponent?: typeof MediaCard;
+  columns?: 2 | 3;
 }) {
   if (items.length === 0) return null;
   return (
     <div className="mb-12">
       <p className="eyebrow mb-5">{eyebrow}</p>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className={`grid grid-cols-1 gap-4 sm:grid-cols-2 ${columns === 3 ? "lg:grid-cols-3" : ""}`}>
         {items.map((item, i) => (
           <CardComponent key={`${item.url}-${i}`} item={item} />
         ))}
@@ -212,6 +352,10 @@ export default function MediaPage() {
   const { lang } = useLanguage();
   const isEs = lang === "es";
   const locale = isEs ? "es" : "en";
+
+  const featured = [...videoAndPodcast, ...socialCoverage].filter((item) =>
+    featuredUrls.includes(item.url),
+  );
 
   return (
     <div className="min-h-screen bg-warm-cream">
@@ -313,17 +457,26 @@ export default function MediaPage() {
 
         <div className="section-padding mx-auto max-w-6xl py-14 md:py-16">
           <Section
+            eyebrow={isEs ? "Destacados" : "Featured"}
+            items={featured}
+            CardComponent={RichEmbedCard}
+            columns={2}
+          />
+          <Section
             eyebrow={isEs ? "Noticias y prensa digital" : "Digital news & press"}
             items={digitalNews}
           />
           <Section
             eyebrow={isEs ? "Video y podcast" : "Video & podcast"}
             items={videoAndPodcast}
-            CardComponent={VideoEmbedCard}
+            CardComponent={RichEmbedCard}
+            columns={2}
           />
           <Section
             eyebrow={isEs ? "Cobertura en redes sociales" : "Social media coverage"}
             items={socialCoverage}
+            CardComponent={RichEmbedCard}
+            columns={2}
           />
 
           <div className="grid grid-cols-1 gap-10 border-t border-border pt-10 md:grid-cols-2">
