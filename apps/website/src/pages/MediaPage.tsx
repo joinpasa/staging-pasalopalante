@@ -402,39 +402,45 @@ export default function MediaPage() {
       <main>
         {/* Hero */}
         <section className="relative overflow-hidden bg-cyan-900 text-warm-cream">
-          <div className="section-padding relative mx-auto max-w-6xl pb-10 pt-20 md:pt-24">
-            <div className="flex flex-col gap-4">
+          <div
+            className="section-padding relative mx-auto flex max-w-6xl flex-wrap items-end gap-12"
+            style={{ paddingTop: 80, paddingBottom: 80 }}
+          >
+            <div className="flex flex-1 flex-col gap-6" style={{ flexBasis: "560px" }}>
               <p className="text-xs font-bold tracking-[0.18em] text-warm-gold">
                 {isEs ? "EN LA PRENSA" : "IN THE PRESS"}
               </p>
-              <h1 className="font-display text-3xl leading-[1.05] tracking-tight md:text-4xl lg:text-5xl">
+              <h1 className="font-display text-4xl leading-[1.05] tracking-tight md:text-5xl lg:text-6xl">
                 {isEs
                   ? "Un récord mundial no pasa desapercibido."
                   : "A world record doesn't go unnoticed."}
               </h1>
-              <p className="max-w-xl text-sm leading-relaxed text-warm-cream/75 md:text-base">
+              <p className="max-w-xl text-base leading-relaxed text-warm-cream/75 md:text-lg">
                 {isEs
                   ? "En noviembre de 2025, el movimiento de bondad llegó a cada rincón de Puerto Rico — y la prensa lo cubrió. Esto es apenas una muestra de esa cobertura. La próxima ola será aún más grande."
                   : "In November 2025, the kindness movement reached every corner of Puerto Rico — and the press took notice. This is a sample of that coverage. The next wave is going to be bigger."}
               </p>
-              <div className="mt-1 flex flex-wrap gap-3">
+              <div className="mt-2 flex flex-wrap gap-3">
                 <a
                   href="/get-involved"
-                  className="inline-flex h-11 items-center justify-center rounded-full bg-warm-terracotta px-6 text-sm font-bold text-white transition-transform duration-200 hover:scale-105"
+                  className="inline-flex h-[52px] items-center justify-center rounded-full bg-warm-terracotta px-7 text-sm font-bold text-white transition-transform duration-200 hover:scale-105"
                 >
                   {isEs ? "Únete al movimiento" : "Join the movement"}
                 </a>
                 <a
                   href="mailto:info@passkindnessforward.com?subject=Press%20inquiry"
-                  className="inline-flex h-11 items-center justify-center rounded-full border-[1.5px] border-warm-cream/40 px-6 text-sm font-bold text-warm-cream transition-colors duration-200 hover:border-warm-cream"
+                  className="inline-flex h-[52px] items-center justify-center rounded-full border-[1.5px] border-warm-cream/40 px-7 text-sm font-bold text-warm-cream transition-colors duration-200 hover:border-warm-cream"
                 >
                   {isEs ? "Contacto de prensa" : "Press inquiries"}
                 </a>
               </div>
             </div>
-            <dl className="mt-8 grid grid-cols-2 gap-x-6 gap-y-5 border-t border-warm-cream/20 pt-5 lg:grid-cols-4">
-              <div className="flex flex-col gap-1">
-                <dd className="font-display text-base leading-snug md:text-lg">
+            {/* Same two-column stat layout as before, type sizes stepped
+                down ~20% per the requester's ask (one Tailwind size tier
+                smaller across the board). */}
+            <dl className="grid flex-1 grid-cols-2 gap-0 border-t border-warm-cream/20" style={{ flexBasis: "320px" }}>
+              <div className="flex flex-col gap-1.5 pr-4 pt-5">
+                <dd className="font-display text-lg leading-snug md:text-xl">
                   {isEs ? (
                     <>
                       Puerto Rico registró{" "}
@@ -454,7 +460,7 @@ export default function MediaPage() {
                   )}
                 </dd>
               </div>
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1.5 border-l border-warm-cream/20 py-5 pl-4">
                 <dd className="font-display text-3xl leading-none text-warm-gold md:text-4xl">
                   {compactNumber(mediaSummary.impressions, locale)}+
                 </dd>
@@ -462,7 +468,7 @@ export default function MediaPage() {
                   {isEs ? "Impresiones estimadas" : "Estimated impressions"}
                 </dt>
               </div>
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1.5 pr-4 pt-5">
                 <dd className="font-display text-3xl leading-none md:text-4xl">
                   ${compactNumber(mediaSummary.earnedMediaValue, locale)}+
                 </dd>
@@ -470,7 +476,7 @@ export default function MediaPage() {
                   {isEs ? "Valor en medios ganados" : "Earned media value"}
                 </dt>
               </div>
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1.5 border-l border-warm-cream/20 py-5 pl-4">
                 <dd className="font-display text-3xl leading-none text-warm-gold md:text-4xl">
                   {mediaSummary.placementCount}+
                 </dd>
