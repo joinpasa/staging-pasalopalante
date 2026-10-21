@@ -20,6 +20,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 - **Video & Podcast cards on `/media` redesigned to a compact list style** (small thumbnail, title, short summary — per another reference the team sent), each now linking straight out instead of playing inline. The hero's impact stats went back to the original side-by-side layout (text left, stats right) at a slightly smaller size, with consistent 80px padding top and bottom.
 - **Fixed why the `/media` sub-nav tab bar wasn't showing up for some visitors**: the check for "is this the /media page" didn't match "/media/" with a trailing slash, which is apparently how the page was actually being reached — now it does. Also restored the hero's title/intro text to the smaller size from before (an earlier fix had accidentally reverted that too, not just the stats) and corrected the top padding, since the page's fixed navbar sits on top of the page rather than pushing it down.
 - **5 of the 6 Digital News & Press cards on `/media` now show the team's own branded thumbnails** (outlet logo + event photo) instead of pulled-from-each-outlet's-own-site preview images. The 6th (WIPR TV) is still pending — its image arrived in a way that couldn't be saved as a file, a resend was requested.
+- **All 6 Digital News & Press cards now have a branded thumbnail** (the 6th, WIPR TV, came through on resend), and the two Video & Podcast cards that had no title/description now do, supplied by the team.
 
 ## 2026-10-20 — va.deedumlao@gmail.com
 
