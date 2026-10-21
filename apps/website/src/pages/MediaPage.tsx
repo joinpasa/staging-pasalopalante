@@ -105,7 +105,7 @@ function PressCard({ item }: { item: MediaItem }) {
       rel="noopener noreferrer"
       className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm transition-shadow hover:shadow-md"
     >
-      <div className="aspect-[4/3] w-full overflow-hidden bg-foreground/5">
+      <div className="aspect-video w-full overflow-hidden bg-foreground/5">
         {item.imageUrl ? (
           <img
             src={item.imageUrl}

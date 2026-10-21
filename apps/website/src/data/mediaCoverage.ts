@@ -49,7 +49,7 @@ export const digitalNews: MediaItem[] = [
     },
     url: "https://wipr.pr/puerto-rico-logra-un-record-mundial-con-mas-de-1-millon-de-actos-de-bondad/",
     type: "article",
-    imageUrl: "https://wipr.pr/wp-content/uploads/2025/12/buenas-e1764698892110.jpg",
+    imageUrl: "/press/wipr-notiseis.webp",
   },
   {
     outlet: "Metro Puerto Rico",
@@ -61,10 +61,13 @@ export const digitalNews: MediaItem[] = [
     },
     url: "https://www.metro.pr/entretenimiento/2025/10/21/ola-de-amor-y-bondad-recorrera-toda-la-isla/",
     type: "article",
-    imageUrl: "https://www.metro.pr/api/image/I2UQ5RZ2INE2NKMLYFKIGTBW4E.jpg?w=1200&h=630",
+    imageUrl: "/press/metro.webp",
   },
   // This link wasn't loading in the team's own browsers as of 2026-10-21 —
   // worth checking whether the article's still up before relying on it.
+  // Its branded thumbnail (WIPR 6 Canal Seis logo) is still pending too —
+  // it arrived inline mid-message rather than as a trackable attachment,
+  // so there was no file to save; add imageUrl here once resent properly.
   {
     outlet: "WIPR TV",
     title: "Te Amo PR promueve actos de bondad en Puerto Rico",
@@ -84,8 +87,7 @@ export const digitalNews: MediaItem[] = [
     },
     url: "https://wapa.tv/programas/pegate/tommy-ramos-presenta-la-campa-a-p-salo-pa-lante/article_af1de326-c453-46b6-8385-bc55d27e6c5b.html",
     type: "article",
-    imageUrl:
-      "https://bloximages.newyork1.vip.townnews.com/wapa.tv/content/tncms/assets/v3/editorial/8/9f/89faafb5-ce4d-53e5-8d1b-de74f04b137f/6908de9526b5c.preview.png?crop=1280%2C672%2C0%2C23&resize=1200%2C630&order=crop%2Cresize",
+    imageUrl: "/press/wapa-tv.webp",
   },
   {
     outlet: "Notiuno",
@@ -98,8 +100,7 @@ export const digitalNews: MediaItem[] = [
     },
     url: "https://www.notiuno.com/noticias/ultimo-minuto/buscan-r-cord-mundial-con-actos-de-bondad/article_3a4de192-87ff-11e9-8974-7bff0c71c5ff.html",
     type: "article",
-    imageUrl:
-      "https://bloximages.newyork1.vip.townnews.com/notiuno.com/content/tncms/assets/v3/editorial/7/86/7862fdd9-5926-464f-a2e9-6d6f69c94984/68f7bc1d8f473.image.jpg?crop=1600%2C840%2C0%2C81&resize=1200%2C630&order=crop%2Cresize",
+    imageUrl: "/press/notiuno.webp",
   },
   {
     outlet: "Teleonce",
@@ -111,7 +112,7 @@ export const digitalNews: MediaItem[] = [
     },
     url: "https://teleonce.com/programas/uncategorized/te-amo-pr-convoca-a-puerto-rico-a-unirse-en-un-dia-historico-de-bondad/",
     type: "article",
-    imageUrl: "https://teleonce.com/wp-content/uploads/2025/09/poster-1311.jpg",
+    imageUrl: "/press/teleonce.webp",
   },
 ];
 
