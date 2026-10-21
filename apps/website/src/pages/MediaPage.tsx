@@ -487,8 +487,6 @@ export default function MediaPage() {
           <Section
             eyebrow={isEs ? "Cobertura en redes sociales" : "Social media coverage"}
             items={socialCoverage}
-            CardComponent={RichEmbedCard}
-            columns={2}
           />
 
           <div className="grid grid-cols-1 gap-10 border-t border-border pt-10 md:grid-cols-2">

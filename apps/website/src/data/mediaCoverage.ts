@@ -231,5 +231,12 @@ export const mediaSummary = {
  * exactly) to spotlight in the "Featured" section at the top of the page.
  * Empty until the team picks which ones — the section hides itself while
  * this is empty, nothing to do on the page side when this fills in.
+ *
+ * Prefer youtube/spotify items here: this section still renders real
+ * embeds (unlike socialCoverage below, reverted to plain link cards after
+ * several of its year-old Facebook/Instagram/X posts turned out to be
+ * genuinely deleted or privacy-restricted — "Video Unavailable" / "Not
+ * found" looked worse than a plain link). A facebook/instagram/x URL
+ * picked here risks the same thing.
  */
 export const featuredUrls: string[] = [];
