@@ -10,6 +10,8 @@ export interface PartnerEntry {
   facebook: string | null;
   role: string | null;
   dark: boolean;
+  /** Shown in the Featured Partners section at the top of /partners. */
+  featured: boolean;
 }
 
 /**
@@ -23,7 +25,10 @@ export function usePartnerDirectory() {
     queryFn: async () => {
       const { data, error } = await supabasePublic
         .from("partner_entries")
-        .select("id, category, name, logo_url, website, facebook, role, dark")
+        // "*" rather than a column list so the page keeps working in the
+        // window between a frontend deploy and the migration that adds
+        // newer columns like `featured` — missing ones just read as unset.
+        .select("*")
         .order("sort_order", { ascending: true, nullsFirst: false })
         .order("name", { ascending: true });
       if (error) throw error;
@@ -37,6 +42,7 @@ export function usePartnerDirectory() {
           facebook: e.facebook,
           role: e.role,
           dark: e.dark,
+          featured: (e as { featured?: boolean }).featured === true,
         }),
       );
     },

@@ -25,6 +25,15 @@ export function adminClient(): SupabaseClient {
   });
 }
 
+/** Example/test addresses (you@yourdomain.org, name@example.com…): valid format, undeliverable. Same list as the portal's isPlaceholderEmail. */
+export function isPlaceholderEmail(email: string) {
+  const domain = email.trim().toLowerCase().split("@")[1] ?? "";
+  return (
+    /(^|\.)(example|test|invalid|localhost)$/.test(domain) ||
+    /^(example|yourdomain|your-domain|yourorg|yourorganization|yourcompany|yourschool|domain|organization)\.[a-z.]+$/.test(domain)
+  );
+}
+
 export const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export interface PartnerRow {

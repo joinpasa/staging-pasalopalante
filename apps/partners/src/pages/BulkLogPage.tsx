@@ -201,6 +201,7 @@ export default function BulkLogPage() {
     if (anyMedia && !consent) return setError(t.needConsent);
     const badLink = rows.findIndex((r) => r.description.trim() && !isValidLink(r.link));
     if (badLink >= 0) return setError(t.rowError(badLink + 1, t.badLink));
+    if (submitter.placeholder) return setError(t.placeholderEmail);
     if (!submitter.valid) return setError(t.needEmail);
     try {
       const res = await submit.mutateAsync({

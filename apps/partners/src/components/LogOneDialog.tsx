@@ -43,6 +43,7 @@ function LogOneForm({ onClose, editing }: { onClose: () => void; editing?: Submi
     if (uploads.busy) return setError(t.waitUploads);
     if (uploads.uploaded.length > 0 && !consent) return setError(t.needConsent);
     if (!isValidLink(link)) return setError(t.badLink);
+    if (submitter.placeholder) return setError(t.placeholderEmail);
     if (!submitter.valid) return setError(t.needEmail);
     try {
       const res = await submit.mutateAsync({
