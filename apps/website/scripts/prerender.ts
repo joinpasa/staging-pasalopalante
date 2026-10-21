@@ -281,6 +281,32 @@ const routes: Route[] = [
       <p>Join the movement and help us pass kindness forward. Tell us about your organization at <a href="/partners/apply">/partners/apply</a> and we'll follow up with next steps.</p>
     `,
   },
+  {
+    path: "/media",
+    title: "In the Press | Pásalo Pa'lante",
+    description:
+      "1,135,096 acts of kindness, every municipality, millions of impressions. See the coverage, then join the next wave.",
+    body: `
+      <h1>In the Press</h1>
+      <p>In November 2025, the kindness movement reached every corner of Puerto Rico — 1,135,096 acts of kindness in five days, across all 78 municipalities, with an estimated 12,500,000+ impressions and over $225,000 in earned media value. This is a sample of that coverage, not a complete record.</p>
+      <h2>Digital news &amp; press</h2>
+      <ul>
+        <li><a href="https://wipr.pr/puerto-rico-logra-un-record-mundial-con-mas-de-1-millon-de-actos-de-bondad/">WIPR (Notiséis 360): Puerto Rico logra un récord mundial con más de 1 millón de actos de bondad</a></li>
+        <li><a href="https://www.metro.pr/entretenimiento/2025/10/21/ola-de-amor-y-bondad-recorrera-toda-la-isla/">Metro Puerto Rico: Ola de amor y bondad recorrerá toda la isla</a></li>
+        <li><a href="https://wipr.pr/te-amo-pr-promueve-actos-de-bondad-en-puertorico/">WIPR TV: Te Amo PR promueve actos de bondad en Puerto Rico</a></li>
+        <li><a href="https://wapa.tv/programas/pegate/tommy-ramos-presenta-la-campa-a-p-salo-pa-lante/article_af1de326-c453-46b6-8385-bc55d27e6c5b.html">WAPA TV: Tommy Ramos presenta la campaña Pásalo Pa'lante</a></li>
+      </ul>
+      <h2>Video &amp; podcast</h2>
+      <ul>
+        <li><a href="https://www.youtube.com/watch?v=PAhOrMKwQ4M">Para Servirle Podcast: Buscan lograr 1,000,000 actos de bondad (interview with Javier De Nardo)</a></li>
+        <li><a href="https://www.youtube.com/watch?v=-tnjbAAljVA">WIPR: "Te Amo PR" promotes acts of kindness in Puerto Rico</a></li>
+      </ul>
+      <h2>Broadcast &amp; radio</h2>
+      <p>WIPR Radio &amp; TV, Telemundo, WAPA TV, Teleonce, and regional radio stations across the island — including Viva la Mañana, Waba Radio, Radio Gritos, Radio Universidad, Hoy Día Puerto Rico, El Circo de la Mega, El Poder del Pueblo, Noticentro al Amanecer, and La Calle Digital.</p>
+      <h2>The next wave</h2>
+      <p>Puerto Rico proved it's possible. Now it's the world's turn — join Global Kindness Season at <a href="/get-involved">/get-involved</a>, or reach out about press coverage at <a href="mailto:info@passkindnessforward.com">info@passkindnessforward.com</a>.</p>
+    `,
+  },
 ];
 
 function escapeHtml(s: string): string {

@@ -28,6 +28,7 @@ const translations = {
       explore: "Explore",
       about: "About",
       partners: "Partners",
+      media: "Media",
       live: "Live Broadcast",
       liveBanner: "Join the global live broadcast on 11.11.2026",
       anthem: "Anthem",
