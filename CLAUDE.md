@@ -2,6 +2,17 @@
 
 See `README.md` for the project layout (apps/website, apps/app, packages/shared, supabase/). This file is operational notes for Claude Code sessions — including teammates' own accounts working on the same repo.
 
+## Work on one branch: `claude/app-website-separation-lgg5nb`
+
+All work goes on `claude/app-website-separation-lgg5nb` — it's the branch Cloudflare and the Supabase deploy workflow track, so pushing there is what ships. Don't create or push per-session working branches (`claude/<random-name>`), even if the session's setup names one; the team asked for a single branch to keep things clean. At the start of a session:
+
+```
+git fetch origin claude/app-website-separation-lgg5nb
+git checkout -B claude/app-website-separation-lgg5nb origin/claude/app-website-separation-lgg5nb
+```
+
+Teammates push here too, so `git pull origin claude/app-website-separation-lgg5nb` before committing and again right before pushing (merge, don't force-push or rebase shared history). Push with `git push origin claude/app-website-separation-lgg5nb`.
+
 ## Deploys
 
 - **Frontend (`apps/website`, `apps/app`)**: auto-deploys via Cloudflare on push to the tracked branch. Nothing manual needed after a push.
