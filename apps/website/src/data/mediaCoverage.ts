@@ -120,27 +120,45 @@ export const videoAndPodcast: MediaItem[] = [
     outlet: "Para Servirle Podcast",
     title: "Buscan lograr 1,000,000 actos de bondad",
     note: "Interview with Javier De Nardo",
+    description: {
+      en: "Javier De Nardo joins Para Servirle to talk about the push toward a million acts of kindness in Puerto Rico.",
+      es: "Javier De Nardo visita Para Servirle para hablar sobre la meta de alcanzar un millón de actos de bondad en Puerto Rico.",
+    },
     url: "https://www.youtube.com/watch?v=PAhOrMKwQ4M",
     type: "youtube",
   },
   {
     outlet: "WIPR",
     title: "“Te Amo PR” promotes acts of kindness in Puerto Rico",
+    description: {
+      en: "WIPR sits down with the team behind Te Amo PR to talk about why kindness became a movement in Puerto Rico.",
+      es: "WIPR conversa con el equipo de Te Amo PR sobre cómo la bondad se convirtió en un movimiento en Puerto Rico.",
+    },
     url: "https://www.youtube.com/watch?v=-tnjbAAljVA",
     type: "youtube",
   },
   {
     outlet: "Javier DeNardo Interview",
     note: "Live interview — relevant part starts 18 minutes in",
+    description: {
+      en: "A live, longer-format interview with Javier De Nardo — the kindness-campaign segment starts about 18 minutes in.",
+      es: "Entrevista en vivo con Javier De Nardo — el segmento sobre la campaña de bondad comienza alrededor del minuto 18.",
+    },
     url: "https://www.youtube.com/live/jl8laVX52fY",
     type: "youtube",
   },
   {
     outlet: "Para Servirle PR (Spotify)",
     title: "Episodio #196-T5 Javier DeNardo | Te Amo PR",
+    description: {
+      en: "The podcast version of the Para Servirle interview with Javier De Nardo, on Spotify.",
+      es: "La versión en podcast de la entrevista de Para Servirle con Javier De Nardo, en Spotify.",
+    },
     url: "https://open.spotify.com/episode/4bmepMDVlTHMf4w87U7wJY",
     type: "spotify",
   },
+  // No title/description in the source report for these two — left blank
+  // rather than invented; the card still works fine without them.
   {
     outlet: "YouTube",
     url: "https://youtu.be/5O53JnLee8A",

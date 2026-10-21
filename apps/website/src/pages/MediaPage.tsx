@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -147,91 +147,56 @@ function extractYouTubeId(url: string): string | null {
   return null;
 }
 
-function extractSpotifyEpisodeId(url: string): string | null {
-  const match = url.match(/open\.spotify\.com\/episode\/([^?&]+)/);
-  return match ? match[1] : null;
-}
-
-/** Real thumbnail + play button for YouTube (click reveals the actual
- * player), and Spotify's own official embed for its episode — both work
- * without loading a platform SDK script, unlike Facebook/Instagram/X. */
+/** Compact horizontal card — square thumbnail with a play icon on the
+ * left, outlet/title/description on the right. Matches the podcast-card
+ * reference the requester sent; links straight out to the video/episode
+ * rather than playing inline, since that reference is clearly a "go
+ * listen/watch at the source" link card, not an embedded player. */
 function VideoEmbedCard({ item }: { item: MediaItem }) {
-  const [playing, setPlaying] = useState(false);
+  const { lang } = useLanguage();
+  const description = item.description ? (lang === "es" ? item.description.es : item.description.en) : undefined;
+  const videoId = item.type === "youtube" ? extractYouTubeId(item.url) : null;
+  const thumbnailUrl = videoId ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : null;
 
-  if (item.type === "spotify") {
-    const episodeId = extractSpotifyEpisodeId(item.url);
-    return (
-      <div className="flex flex-col gap-2 rounded-2xl border border-border bg-white p-5 shadow-sm">
-        <div className="flex items-center gap-2 text-foreground/50">
-          <Mic size={16} className="shrink-0" />
-          <span className="text-xs font-bold uppercase tracking-wide text-foreground/50">
-            {item.outlet}
+  return (
+    <a
+      href={item.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group flex items-center gap-4 rounded-2xl border border-border bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
+    >
+      <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-foreground/10">
+        {thumbnailUrl ? (
+          <img
+            src={thumbnailUrl}
+            alt=""
+            loading="lazy"
+            className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center">
+            <Mic size={22} className="text-foreground/40" />
+          </div>
+        )}
+        <span className="absolute inset-0 flex items-center justify-center bg-black/10 transition-colors group-hover:bg-black/20">
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow">
+            <Play size={14} className="ml-0.5 fill-warm-terracotta text-warm-terracotta" />
           </span>
-        </div>
+        </span>
+      </div>
+      <div className="flex min-w-0 flex-col gap-0.5">
+        <p className="text-xs font-bold uppercase tracking-wide text-foreground/50">{item.outlet}</p>
         {item.title && (
           <p className="text-sm font-semibold leading-snug text-foreground">{item.title}</p>
         )}
-        {episodeId ? (
-          <iframe
-            title={item.title ?? item.outlet}
-            src={`https://open.spotify.com/embed/episode/${episodeId}?utm_source=generator`}
-            width="100%"
-            height="152"
-            style={{ borderRadius: 12, border: 0 }}
-            loading="lazy"
-            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          />
-        ) : (
-          <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#0079A8] hover:underline">
-            {item.outlet} <ExternalLink size={12} className="inline" />
-          </a>
+        {description && (
+          <p className="line-clamp-2 text-xs leading-snug text-foreground/60">{description}</p>
+        )}
+        {!description && item.note && (
+          <p className="line-clamp-2 text-xs leading-snug text-foreground/60">{item.note}</p>
         )}
       </div>
-    );
-  }
-
-  const videoId = item.type === "youtube" ? extractYouTubeId(item.url) : null;
-  if (!videoId) return <MediaCard item={item} />;
-
-  return (
-    <div className="flex flex-col gap-2 rounded-2xl border border-border bg-white p-5 shadow-sm">
-      <div className="flex items-center gap-2 text-foreground/50">
-        <Youtube size={16} className="shrink-0" />
-        <span className="text-xs font-bold uppercase tracking-wide text-foreground/50">{item.outlet}</span>
-      </div>
-      {item.title && <p className="text-sm font-semibold leading-snug text-foreground">{item.title}</p>}
-      {item.note && <p className="text-xs leading-snug text-foreground/60">{item.note}</p>}
-      <div className="relative aspect-video overflow-hidden rounded-xl bg-black">
-        {playing ? (
-          <iframe
-            title={item.title ?? item.outlet}
-            src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
-            className="absolute inset-0 h-full w-full"
-            allow="autoplay; encrypted-media; picture-in-picture"
-            allowFullScreen
-          />
-        ) : (
-          <button
-            type="button"
-            onClick={() => setPlaying(true)}
-            aria-label={`Play: ${item.title ?? item.outlet}`}
-            className="group absolute inset-0 h-full w-full"
-          >
-            <img
-              src={`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`}
-              alt=""
-              loading="lazy"
-              className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
-            />
-            <span className="absolute inset-0 flex items-center justify-center bg-black/20 transition-colors group-hover:bg-black/30">
-              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 shadow-lg transition-transform group-hover:scale-110">
-                <Play size={24} className="ml-1 fill-warm-terracotta text-warm-terracotta" />
-              </span>
-            </span>
-          </button>
-        )}
-      </div>
-    </div>
+    </a>
   );
 }
 
@@ -437,43 +402,43 @@ export default function MediaPage() {
       <main>
         {/* Hero */}
         <section className="relative overflow-hidden bg-cyan-900 text-warm-cream">
-          <div className="section-padding relative mx-auto flex max-w-6xl flex-wrap items-end gap-12 pb-16 pt-28 md:pt-32">
-            <div className="flex flex-1 flex-col gap-6" style={{ flexBasis: "560px" }}>
+          <div className="section-padding relative mx-auto max-w-6xl pb-10 pt-20 md:pt-24">
+            <div className="flex flex-col gap-4">
               <p className="text-xs font-bold tracking-[0.18em] text-warm-gold">
                 {isEs ? "EN LA PRENSA" : "IN THE PRESS"}
               </p>
-              <h1 className="font-display text-4xl leading-[1.05] tracking-tight md:text-5xl lg:text-6xl">
+              <h1 className="font-display text-3xl leading-[1.05] tracking-tight md:text-4xl lg:text-5xl">
                 {isEs
                   ? "Un récord mundial no pasa desapercibido."
                   : "A world record doesn't go unnoticed."}
               </h1>
-              <p className="max-w-xl text-base leading-relaxed text-warm-cream/75 md:text-lg">
+              <p className="max-w-xl text-sm leading-relaxed text-warm-cream/75 md:text-base">
                 {isEs
                   ? "En noviembre de 2025, el movimiento de bondad llegó a cada rincón de Puerto Rico — y la prensa lo cubrió. Esto es apenas una muestra de esa cobertura. La próxima ola será aún más grande."
                   : "In November 2025, the kindness movement reached every corner of Puerto Rico — and the press took notice. This is a sample of that coverage. The next wave is going to be bigger."}
               </p>
-              <div className="mt-2 flex flex-wrap gap-3">
+              <div className="mt-1 flex flex-wrap gap-3">
                 <a
                   href="/get-involved"
-                  className="inline-flex h-[52px] items-center justify-center rounded-full bg-warm-terracotta px-7 text-sm font-bold text-white transition-transform duration-200 hover:scale-105"
+                  className="inline-flex h-11 items-center justify-center rounded-full bg-warm-terracotta px-6 text-sm font-bold text-white transition-transform duration-200 hover:scale-105"
                 >
                   {isEs ? "Únete al movimiento" : "Join the movement"}
                 </a>
                 <a
                   href="mailto:info@passkindnessforward.com?subject=Press%20inquiry"
-                  className="inline-flex h-[52px] items-center justify-center rounded-full border-[1.5px] border-warm-cream/40 px-7 text-sm font-bold text-warm-cream transition-colors duration-200 hover:border-warm-cream"
+                  className="inline-flex h-11 items-center justify-center rounded-full border-[1.5px] border-warm-cream/40 px-6 text-sm font-bold text-warm-cream transition-colors duration-200 hover:border-warm-cream"
                 >
                   {isEs ? "Contacto de prensa" : "Press inquiries"}
                 </a>
               </div>
             </div>
-            <dl className="grid flex-1 grid-cols-2 gap-0 border-t border-warm-cream/20" style={{ flexBasis: "320px" }}>
-              <div className="flex flex-col gap-1.5 pr-4 pt-5">
-                <dd className="font-display text-xl leading-snug md:text-2xl">
+            <dl className="mt-8 grid grid-cols-2 gap-x-6 gap-y-5 border-t border-warm-cream/20 pt-5 lg:grid-cols-4">
+              <div className="flex flex-col gap-1">
+                <dd className="font-display text-base leading-snug md:text-lg">
                   {isEs ? (
                     <>
                       Puerto Rico registró{" "}
-                      <span className="text-3xl md:text-4xl">
+                      <span className="text-2xl md:text-3xl">
                         {new Intl.NumberFormat(locale).format(1135096)}
                       </span>{" "}
                       actos de bondad en 5 días.
@@ -481,7 +446,7 @@ export default function MediaPage() {
                   ) : (
                     <>
                       Puerto Rico recorded{" "}
-                      <span className="text-3xl md:text-4xl">
+                      <span className="text-2xl md:text-3xl">
                         {new Intl.NumberFormat(locale).format(1135096)}
                       </span>{" "}
                       acts of kindness in 5 days.
@@ -489,24 +454,24 @@ export default function MediaPage() {
                   )}
                 </dd>
               </div>
-              <div className="flex flex-col gap-1.5 border-l border-warm-cream/20 py-5 pl-4">
-                <dd className="font-display text-4xl leading-none text-warm-gold md:text-5xl">
+              <div className="flex flex-col gap-1">
+                <dd className="font-display text-3xl leading-none text-warm-gold md:text-4xl">
                   {compactNumber(mediaSummary.impressions, locale)}+
                 </dd>
                 <dt className="text-xs font-semibold leading-tight text-warm-cream/70">
                   {isEs ? "Impresiones estimadas" : "Estimated impressions"}
                 </dt>
               </div>
-              <div className="flex flex-col gap-1.5 pr-4 pt-5">
-                <dd className="font-display text-4xl leading-none md:text-5xl">
+              <div className="flex flex-col gap-1">
+                <dd className="font-display text-3xl leading-none md:text-4xl">
                   ${compactNumber(mediaSummary.earnedMediaValue, locale)}+
                 </dd>
                 <dt className="text-xs font-semibold leading-tight text-warm-cream/70">
                   {isEs ? "Valor en medios ganados" : "Earned media value"}
                 </dt>
               </div>
-              <div className="flex flex-col gap-1.5 border-l border-warm-cream/20 py-5 pl-4">
-                <dd className="font-display text-4xl leading-none text-warm-gold md:text-5xl">
+              <div className="flex flex-col gap-1">
+                <dd className="font-display text-3xl leading-none text-warm-gold md:text-4xl">
                   {mediaSummary.placementCount}+
                 </dd>
                 <dt className="text-xs font-semibold leading-tight text-warm-cream/70">
