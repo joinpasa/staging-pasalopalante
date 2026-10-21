@@ -8,7 +8,7 @@
 
 const CONFIG = {
   SYNC_URL: "https://tipfbleltjexofsjffwb.supabase.co/functions/v1/sync-partners",
-  SYNC_SECRET: "PASTE_PARTNERS_SYNC_SECRET_HERE", // real value lives only in the sheet's script + Supabase secret PARTNERS_SYNC_SECRET — never commit it,
+  SYNC_SECRET: "PASTE_PARTNERS_SYNC_SECRET_HERE", // real value lives only in the sheet's script + Supabase secret PARTNERS_SYNC_SECRET — never commit it
 };
 
 // Column order: ID, Status, Featured?, Category, Name, Logo, Website, Facebook, Role, Dark, Sort Order, Internal Notes
