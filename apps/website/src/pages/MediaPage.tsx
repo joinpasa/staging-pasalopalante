@@ -50,24 +50,36 @@ function MediaCard({ item }: { item: MediaItem }) {
       href={item.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex flex-col gap-2 rounded-2xl border border-border bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+      className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm transition-shadow hover:shadow-md"
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-2 text-foreground/50">
-          <Icon size={16} className="shrink-0" />
-          <span className="text-xs font-bold uppercase tracking-wide text-foreground/50">
-            {item.outlet}
-          </span>
+      {item.imageUrl && (
+        <div className="aspect-video w-full overflow-hidden bg-foreground/5">
+          <img
+            src={item.imageUrl}
+            alt=""
+            loading="lazy"
+            className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
+          />
         </div>
-        <ExternalLink
-          size={14}
-          className="shrink-0 text-foreground/30 transition-colors group-hover:text-warm-terracotta"
-        />
-      </div>
-      {item.title && (
-        <p className="text-sm font-semibold leading-snug text-foreground">{item.title}</p>
       )}
-      {item.note && <p className="text-xs leading-snug text-foreground/60">{item.note}</p>}
+      <div className="flex flex-col gap-2 p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-2 text-foreground/50">
+            <Icon size={16} className="shrink-0" />
+            <span className="text-xs font-bold uppercase tracking-wide text-foreground/50">
+              {item.outlet}
+            </span>
+          </div>
+          <ExternalLink
+            size={14}
+            className="shrink-0 text-foreground/30 transition-colors group-hover:text-warm-terracotta"
+          />
+        </div>
+        {item.title && (
+          <p className="text-sm font-semibold leading-snug text-foreground">{item.title}</p>
+        )}
+        {item.note && <p className="text-xs leading-snug text-foreground/60">{item.note}</p>}
+      </div>
     </a>
   );
 }
