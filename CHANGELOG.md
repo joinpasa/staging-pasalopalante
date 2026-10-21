@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-22 — va.deedumlao@gmail.com
+
+- **Partners sheet sync no longer breaks on a duplicate row ID.** If two rows in the PKF_Partners sheet share an ID, the sync now keeps the last one, carries on, and names the duplicate IDs in the script's log, instead of the whole sync failing. Sync failures also now report the actual reason in the log.
+
 ## 2026-10-21 — va.deedumlao@gmail.com
 
 - **Featured Partners section on /partners.** Any partner marked Featured in the PKF_Partners sheet now shows in a highlighted gold-bordered section at the top of the page (they still appear in the full list too); the section hides itself when nobody is featured. Adds a `featured` column to the partners table and teaches the sheet sync to read a Featured column (checkbox or Yes/No). The sheet's Apps Script needs a one-line addition to send it.

@@ -105,11 +105,25 @@ Deno.serve(async (req) => {
     return json({ error: "No valid entries in payload — refusing to wipe the directory" }, 400);
   }
 
+  // Two sheet rows sharing an ID would make the whole upsert fail
+  // ("ON CONFLICT DO UPDATE command cannot affect row a second time"), so
+  // one copy-paste slip used to block every sync. Keep the last occurrence
+  // of each ID (lowest in the sheet) and report the duplicates back so the
+  // script's log says which IDs to fix.
+  const byId = new Map<string, (typeof rows)[number]>();
+  const duplicateIds = new Set<string>();
+  for (const r of rows) {
+    if (byId.has(r.id)) duplicateIds.add(r.id);
+    byId.set(r.id, r);
+  }
+  const uniqueRows = [...byId.values()];
+  const dupes = duplicateIds.size > 0 ? { duplicateIds: [...duplicateIds] } : {};
+
   const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
   const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
 
-  const { error: upsertError } = await supabase.from("partner_entries").upsert(rows, { onConflict: "id" });
+  const { error: upsertError } = await supabase.from("partner_entries").upsert(uniqueRows, { onConflict: "id" });
   if (upsertError) {
     console.error("partner entries upsert failed", upsertError);
     // Detail is returned on purpose: this endpoint is only callable with the
@@ -129,10 +143,10 @@ Deno.serve(async (req) => {
   const { data: existingIds, error: listError } = await supabase.from("partner_entries").select("id");
   if (listError) {
     console.error("partner entries list failed", listError);
-    return json({ ok: true, synced: rows.length, deleted: 0, warning: "Could not check for stale rows" });
+    return json({ ok: true, synced: uniqueRows.length, deleted: 0, warning: "Could not check for stale rows", ...dupes });
   }
 
-  const incomingIds = new Set(rows.map((r) => r.id));
+  const incomingIds = new Set(uniqueRows.map((r) => r.id));
   const staleIds = (existingIds ?? []).map((r) => r.id as string).filter((id) => !incomingIds.has(id));
 
   let deleted = 0;
@@ -140,10 +154,10 @@ Deno.serve(async (req) => {
     const { error: deleteError } = await supabase.from("partner_entries").delete().in("id", staleIds);
     if (deleteError) {
       console.error("partner entries delete failed", deleteError);
-      return json({ ok: true, synced: rows.length, deleted: 0, warning: "Could not remove stale rows" });
+      return json({ ok: true, synced: uniqueRows.length, deleted: 0, warning: "Could not remove stale rows", ...dupes });
     }
     deleted = staleIds.length;
   }
 
-  return json({ ok: true, synced: rows.length, deleted });
+  return json({ ok: true, synced: uniqueRows.length, deleted, ...dupes });
 });
