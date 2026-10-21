@@ -8,6 +8,11 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-21 — va.deedumlao@gmail.com
+
+- **The app is now available in all the website's languages** (Spanish, French, German, Portuguese, Russian, Hindi, Arabic, Bengali, Slovenian, Chinese), with a language picker in the user's profile — Moziezez's PR #3, brought up to date with two weeks of app changes made since it was opened.
+- **Fixed the app's "Forgot password?" link firing when tapping the empty space next to it** on the log-in tab — Moziezez's PR #4. Only the link text itself triggers a reset now.
+
 ## 2026-10-20 — va.deedumlao@gmail.com
 
 - **Contact email switched to info@passkindnessforward.com everywhere on the website** (footer, Contact, Partners, Ambassadors, Donate, About, Privacy, Terms, Community Guidelines, the Get Involved/commit flows, and the search-engine/no-JavaScript copy), replacing info@teamopr.org. The longer address now wraps cleanly on small phones on the Contact page.
