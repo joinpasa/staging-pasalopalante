@@ -112,7 +112,18 @@ Deno.serve(async (req) => {
   const { error: upsertError } = await supabase.from("partner_entries").upsert(rows, { onConflict: "id" });
   if (upsertError) {
     console.error("partner entries upsert failed", upsertError);
-    return json({ error: "Could not sync partner entries" }, 500);
+    // Detail is returned on purpose: this endpoint is only callable with the
+    // sync secret (i.e. by the sheet's own Apps Script), and without it the
+    // script's log can't say *why* a sync failed.
+    return json(
+      {
+        error: "Could not sync partner entries",
+        detail: upsertError.message,
+        code: upsertError.code,
+        hint: upsertError.hint ?? undefined,
+      },
+      500,
+    );
   }
 
   const { data: existingIds, error: listError } = await supabase.from("partner_entries").select("id");
