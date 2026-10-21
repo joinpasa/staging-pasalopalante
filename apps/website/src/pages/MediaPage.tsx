@@ -404,32 +404,37 @@ export default function MediaPage() {
         <section className="relative overflow-hidden bg-cyan-900 text-warm-cream">
           <div
             className="section-padding relative mx-auto flex max-w-6xl flex-wrap items-end gap-12"
-            style={{ paddingTop: 80, paddingBottom: 80 }}
+            style={{ paddingTop: 160, paddingBottom: 80 }}
           >
-            <div className="flex flex-1 flex-col gap-6" style={{ flexBasis: "560px" }}>
+            {/* Navbar is position:fixed (80px tall) and overlays this
+                section rather than pushing it down, so paddingTop here is
+                80px of navbar clearance + the requested 80px of actual
+                visible breathing room — a flat 80px would leave the
+                eyebrow line sitting almost right under the navbar. */}
+            <div className="flex flex-1 flex-col gap-4" style={{ flexBasis: "560px" }}>
               <p className="text-xs font-bold tracking-[0.18em] text-warm-gold">
                 {isEs ? "EN LA PRENSA" : "IN THE PRESS"}
               </p>
-              <h1 className="font-display text-4xl leading-[1.05] tracking-tight md:text-5xl lg:text-6xl">
+              <h1 className="font-display text-3xl leading-[1.05] tracking-tight md:text-4xl lg:text-5xl">
                 {isEs
                   ? "Un récord mundial no pasa desapercibido."
                   : "A world record doesn't go unnoticed."}
               </h1>
-              <p className="max-w-xl text-base leading-relaxed text-warm-cream/75 md:text-lg">
+              <p className="max-w-xl text-sm leading-relaxed text-warm-cream/75 md:text-base">
                 {isEs
                   ? "En noviembre de 2025, el movimiento de bondad llegó a cada rincón de Puerto Rico — y la prensa lo cubrió. Esto es apenas una muestra de esa cobertura. La próxima ola será aún más grande."
                   : "In November 2025, the kindness movement reached every corner of Puerto Rico — and the press took notice. This is a sample of that coverage. The next wave is going to be bigger."}
               </p>
-              <div className="mt-2 flex flex-wrap gap-3">
+              <div className="mt-1 flex flex-wrap gap-3">
                 <a
                   href="/get-involved"
-                  className="inline-flex h-[52px] items-center justify-center rounded-full bg-warm-terracotta px-7 text-sm font-bold text-white transition-transform duration-200 hover:scale-105"
+                  className="inline-flex h-11 items-center justify-center rounded-full bg-warm-terracotta px-6 text-sm font-bold text-white transition-transform duration-200 hover:scale-105"
                 >
                   {isEs ? "Únete al movimiento" : "Join the movement"}
                 </a>
                 <a
                   href="mailto:info@passkindnessforward.com?subject=Press%20inquiry"
-                  className="inline-flex h-[52px] items-center justify-center rounded-full border-[1.5px] border-warm-cream/40 px-7 text-sm font-bold text-warm-cream transition-colors duration-200 hover:border-warm-cream"
+                  className="inline-flex h-11 items-center justify-center rounded-full border-[1.5px] border-warm-cream/40 px-6 text-sm font-bold text-warm-cream transition-colors duration-200 hover:border-warm-cream"
                 >
                   {isEs ? "Contacto de prensa" : "Press inquiries"}
                 </a>

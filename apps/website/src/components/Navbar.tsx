@@ -33,8 +33,12 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const exploreRef = useRef<HTMLDivElement>(null);
-  const isHome = location.pathname === "/";
-  const hasSubNav = isHome || location.pathname === "/ideas" || location.pathname === "/media";
+  // Strip a trailing slash before comparing — "/media/" is the same page as
+  // "/media" to a visitor, but a strict === would treat it as a different
+  // route and silently skip the sub-nav for it.
+  const pathname = location.pathname.length > 1 ? location.pathname.replace(/\/+$/, "") : location.pathname;
+  const isHome = pathname === "/";
+  const hasSubNav = isHome || pathname === "/ideas" || pathname === "/media";
   const isSolid = !isHome || scrolled;
 
   const exploreItems = [

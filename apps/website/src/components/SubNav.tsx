@@ -12,9 +12,13 @@ const SubNav = () => {
   const { t } = useLanguage();
   const location = useLocation();
   const [activeId, setActiveId] = useState<string>("");
+  // Same normalization as Navbar's hasSubNav check — "/media/" must match
+  // "/media" here too, or this picks no items while Navbar still reserves
+  // the slot for them.
+  const pathname = location.pathname.length > 1 ? location.pathname.replace(/\/+$/, "") : location.pathname;
 
   let items: SubNavItem[] = [];
-  if (location.pathname === "/") {
+  if (pathname === "/") {
     items = [
       { id: "how-it-works", label: t.navbar.howItWorks },
       { id: "anthem", label: t.navbar.anthem },
@@ -22,12 +26,12 @@ const SubNav = () => {
       { id: "story", label: t.navbar.ourStory },
       { id: "join", label: t.navbar.joinMovement },
     ];
-  } else if (location.pathname === "/ideas") {
+  } else if (pathname === "/ideas") {
     items = [
       { id: "ideas", label: t.inspiration.anchorIdeas },
       { id: "volunteer", label: t.inspiration.anchorVolunteer },
     ];
-  } else if (location.pathname === "/media") {
+  } else if (pathname === "/media") {
     items = [
       { id: "featured", label: t.navbar.mediaFeatured },
       { id: "digital-press", label: t.navbar.mediaDigitalPress },
