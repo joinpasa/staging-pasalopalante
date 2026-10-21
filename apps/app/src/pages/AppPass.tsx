@@ -367,7 +367,7 @@ function ScanPanel() {
 function TroubleshootPanel() {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
-  const steps = (icon: React.ReactNode, list: string[]) =>
+  const steps = (icon: React.ReactNode, list: readonly string[]) =>
     list.map((s, i) => (
       <li key={i} className="flex gap-2.5">
         <span className="mt-0.5 shrink-0 text-app-coral">{icon}</span>

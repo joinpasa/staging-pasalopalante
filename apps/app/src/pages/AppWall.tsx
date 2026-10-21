@@ -49,7 +49,7 @@ export default function AppWall() {
 
   const showingMine = filter === "My chain";
   const posts = showingMine
-    ? (mine.data ?? []).map((act) => ({ ...act, name: t.appWidgets.you, photoUrl: null as string | null }))
+    ? (mine.data ?? []).map((act) => ({ ...act, name: t.appWall.you, photoUrl: null as string | null }))
     : (worldwide.data ?? []);
   const loading = showingMine ? mine.isLoading : worldwide.isLoading;
 

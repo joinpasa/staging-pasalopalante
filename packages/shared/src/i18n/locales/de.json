@@ -299,6 +299,8 @@
     "tellUsMore": "Erzählen Sie uns mehr",
     "optional": "(freiwillig)",
     "notePlaceholder": "Beschreiben Sie kurz, was passiert ist …",
+    "addCaption": "Bildunterschrift hinzufügen",
+    "captionPlaceholder": "Kurze Bildunterschrift hinzufügen...",
     "addPhotoVideo": "Foto oder Video hinzufügen",
     "attachMedia": "Tippen, um ein Foto oder Video anzuhängen",
     "attachedPreview": "Vorschau des Anhangs",

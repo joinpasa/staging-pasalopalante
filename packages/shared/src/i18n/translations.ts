@@ -300,6 +300,7 @@ const translations = {
       tellUsMore: "Tell us more",
       optional: "(optional)",
       notePlaceholder: "A quick word about what happened...",
+      passedItForwardTo: "Passed it forward to",
       addCaption: "Add a caption",
       captionPlaceholder: "Add a short caption...",
       addPhotoVideo: "Add a photo or video",
