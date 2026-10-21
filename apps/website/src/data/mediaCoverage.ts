@@ -19,10 +19,18 @@ export type MediaLinkType =
   | "linkedin"
   | "spotify";
 
+export interface LocalizedText {
+  en: string;
+  es: string;
+}
+
 export interface MediaItem {
   outlet: string;
   title?: string;
   note?: string;
+  /** Short editorial summary (our own copy, not a quote from the outlet) —
+   * only used by the Digital News & Press cards' Buttah-style layout. */
+  description?: LocalizedText;
   url: string;
   type: MediaLinkType;
   /** Social-share preview image, supplied directly by the team — this
@@ -35,6 +43,10 @@ export const digitalNews: MediaItem[] = [
   {
     outlet: "WIPR (Notiséis 360)",
     title: "Puerto Rico logra un récord mundial con más de 1 millón de actos de bondad",
+    description: {
+      en: "Puerto Rico set a world record with more than one million acts of kindness during the five-day Pásalo Pa'lante campaign, reaching every one of the island's 78 municipalities.",
+      es: "Puerto Rico logró un récord mundial con más de un millón de actos de bondad durante los cinco días de la campaña Pásalo Pa'lante, llegando a los 78 municipios de la isla.",
+    },
     url: "https://wipr.pr/puerto-rico-logra-un-record-mundial-con-mas-de-1-millon-de-actos-de-bondad/",
     type: "article",
     imageUrl: "https://wipr.pr/wp-content/uploads/2025/12/buenas-e1764698892110.jpg",
@@ -43,6 +55,10 @@ export const digitalNews: MediaItem[] = [
     outlet: "Metro Puerto Rico",
     title: "Ola de amor y bondad recorrerá toda la isla",
     note: "Campaign launch, 11/11, Kindness Cards",
+    description: {
+      en: "Metro PR covered the campaign's November 11th launch and the Kindness Cards initiative encouraging small acts across the island.",
+      es: "Metro PR cubrió el lanzamiento de la campaña el 11 de noviembre y la iniciativa de Tarjetas de Bondad que impulsó pequeños actos en toda la isla.",
+    },
     url: "https://www.metro.pr/entretenimiento/2025/10/21/ola-de-amor-y-bondad-recorrera-toda-la-isla/",
     type: "article",
     imageUrl: "https://www.metro.pr/api/image/I2UQ5RZ2INE2NKMLYFKIGTBW4E.jpg?w=1200&h=630",
@@ -52,12 +68,20 @@ export const digitalNews: MediaItem[] = [
   {
     outlet: "WIPR TV",
     title: "Te Amo PR promueve actos de bondad en Puerto Rico",
+    description: {
+      en: "WIPR TV profiled Te Amo PR's work promoting everyday acts of kindness across Puerto Rico.",
+      es: "WIPR TV destacó la labor de Te Amo PR promoviendo actos de bondad cotidianos en Puerto Rico.",
+    },
     url: "https://wipr.pr/te-amo-pr-promueve-actos-de-bondad-en-puertorico/",
     type: "article",
   },
   {
     outlet: "WAPA TV",
     title: "Tommy Ramos presenta la campaña Pásalo Pa'lante",
+    description: {
+      en: "WAPA TV's Tommy Ramos introduced the Pásalo Pa'lante campaign to viewers ahead of the November activation.",
+      es: "Tommy Ramos, de WAPA TV, presentó la campaña Pásalo Pa'lante a la audiencia antes de la activación de noviembre.",
+    },
     url: "https://wapa.tv/programas/pegate/tommy-ramos-presenta-la-campa-a-p-salo-pa-lante/article_af1de326-c453-46b6-8385-bc55d27e6c5b.html",
     type: "article",
     imageUrl:
@@ -65,6 +89,13 @@ export const digitalNews: MediaItem[] = [
   },
   {
     outlet: "Notiuno",
+    // No headline in the source report — derived directly from the URL's
+    // own slug ("buscan-r-cord-mundial-con-actos-de-bondad"), not invented.
+    title: "Buscan récord mundial con actos de bondad",
+    description: {
+      en: "Notiuno reported on the push for a world record in acts of kindness across Puerto Rico.",
+      es: "Notiuno reportó sobre la búsqueda de un récord mundial en actos de bondad en Puerto Rico.",
+    },
     url: "https://www.notiuno.com/noticias/ultimo-minuto/buscan-r-cord-mundial-con-actos-de-bondad/article_3a4de192-87ff-11e9-8974-7bff0c71c5ff.html",
     type: "article",
     imageUrl:
@@ -72,6 +103,12 @@ export const digitalNews: MediaItem[] = [
   },
   {
     outlet: "Teleonce",
+    // Same as Notiuno above — title derived from the URL slug itself.
+    title: "Te Amo PR convoca a Puerto Rico a unirse en un día histórico de bondad",
+    description: {
+      en: "Teleonce covered Te Amo PR's call for Puerto Ricans to take part in a historic day of kindness.",
+      es: "Teleonce cubrió el llamado de Te Amo PR a los puertorriqueños a participar en un día histórico de bondad.",
+    },
     url: "https://teleonce.com/programas/uncategorized/te-amo-pr-convoca-a-puerto-rico-a-unirse-en-un-dia-historico-de-bondad/",
     type: "article",
     imageUrl: "https://teleonce.com/wp-content/uploads/2025/09/poster-1311.jpg",

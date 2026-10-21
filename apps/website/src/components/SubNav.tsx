@@ -27,6 +27,13 @@ const SubNav = () => {
       { id: "ideas", label: t.inspiration.anchorIdeas },
       { id: "volunteer", label: t.inspiration.anchorVolunteer },
     ];
+  } else if (location.pathname === "/media") {
+    items = [
+      { id: "featured", label: t.navbar.mediaFeatured },
+      { id: "digital-press", label: t.navbar.mediaDigitalPress },
+      { id: "videos", label: t.navbar.mediaVideos },
+      { id: "social", label: t.navbar.mediaSocial },
+    ];
   }
 
   useEffect(() => {

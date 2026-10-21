@@ -34,7 +34,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const exploreRef = useRef<HTMLDivElement>(null);
   const isHome = location.pathname === "/";
-  const hasSubNav = isHome || location.pathname === "/ideas";
+  const hasSubNav = isHome || location.pathname === "/ideas" || location.pathname === "/media";
   const isSolid = !isHome || scrolled;
 
   const exploreItems = [

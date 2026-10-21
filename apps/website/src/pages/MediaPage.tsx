@@ -84,6 +84,60 @@ function MediaCard({ item }: { item: MediaItem }) {
   );
 }
 
+/** Digital News & Press only — bigger photo, headline as a link, source
+ * domain, and a short summary underneath, editorial-style. The photo is
+ * expected to already have the outlet's own branding baked in (team
+ * supplies these), so unlike MediaCard this never falls back to an
+ * icon+outlet header when there's no image. */
+function PressCard({ item }: { item: MediaItem }) {
+  const { lang } = useLanguage();
+  const domain = (() => {
+    try {
+      return new URL(item.url).hostname.replace(/^www\./, "");
+    } catch {
+      return item.outlet;
+    }
+  })();
+  return (
+    <a
+      href={item.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm transition-shadow hover:shadow-md"
+    >
+      <div className="aspect-[4/3] w-full overflow-hidden bg-foreground/5">
+        {item.imageUrl ? (
+          <img
+            src={item.imageUrl}
+            alt=""
+            loading="lazy"
+            className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center">
+            <span className="rounded-lg bg-white px-4 py-2 text-sm font-bold text-foreground shadow-sm">
+              {item.outlet}
+            </span>
+          </div>
+        )}
+      </div>
+      <div className="flex flex-col gap-1.5 p-5">
+        {item.title && (
+          <p className="text-base font-semibold leading-snug text-[#0079A8] group-hover:underline">
+            {item.title}
+          </p>
+        )}
+        <p className="text-xs font-medium text-foreground/50">{domain}</p>
+        {item.description && (
+          <p className="mt-1 line-clamp-3 text-sm leading-relaxed text-foreground/65">
+            {lang === "es" ? item.description.es : item.description.en}
+          </p>
+        )}
+      </div>
+    </a>
+  );
+}
+
 function extractYouTubeId(url: string): string | null {
   const patterns = [/youtube\.com\/watch\?v=([^&]+)/, /youtube\.com\/live\/([^?&]+)/, /youtu\.be\/([^?&]+)/];
   for (const pattern of patterns) {
@@ -318,11 +372,13 @@ function RichEmbedCard({ item }: { item: MediaItem }) {
 }
 
 function Section({
+  id,
   eyebrow,
   items,
   CardComponent = MediaCard,
   columns = 3,
 }: {
+  id?: string;
   eyebrow: string;
   items: MediaItem[];
   CardComponent?: typeof MediaCard;
@@ -330,7 +386,7 @@ function Section({
 }) {
   if (items.length === 0) return null;
   return (
-    <div className="mb-12">
+    <div id={id} className="mb-12 scroll-mt-28">
       <p className="eyebrow mb-5">{eyebrow}</p>
       <div className={`grid grid-cols-1 gap-4 sm:grid-cols-2 ${columns === 3 ? "lg:grid-cols-3" : ""}`}>
         {items.map((item, i) => (
@@ -469,22 +525,27 @@ export default function MediaPage() {
 
         <div className="section-padding mx-auto max-w-6xl py-14 md:py-16">
           <Section
+            id="featured"
             eyebrow={isEs ? "Destacados" : "Featured"}
             items={featured}
             CardComponent={RichEmbedCard}
             columns={2}
           />
           <Section
+            id="digital-press"
             eyebrow={isEs ? "Noticias y prensa digital" : "Digital news & press"}
             items={digitalNews}
+            CardComponent={PressCard}
           />
           <Section
+            id="videos"
             eyebrow={isEs ? "Video y podcast" : "Video & podcast"}
             items={videoAndPodcast}
             CardComponent={RichEmbedCard}
             columns={2}
           />
           <Section
+            id="social"
             eyebrow={isEs ? "Cobertura en redes sociales" : "Social media coverage"}
             items={socialCoverage}
           />
