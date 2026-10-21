@@ -6,7 +6,7 @@ import SEO from "@/components/SEO";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useMovementTotals } from "@shared/hooks/useMovementTotals";
 import { Skeleton } from "@shared/components/ui/skeleton";
-import { ExternalLink, Facebook, Search, Sparkles } from "lucide-react";
+import { ExternalLink, Facebook, Search, Sparkles, Star } from "lucide-react";
 import { usePartnerDirectory, type PartnerEntry } from "@/hooks/usePartnerDirectory";
 
 const INITIALS_STOPWORDS = new Set(["and", "of", "the", "&", "de", "la", "el"]);
@@ -19,11 +19,21 @@ function initials(name: string) {
     .join("");
 }
 
-function PartnerCard({ partner }: { partner: PartnerEntry }) {
+function PartnerCard({ partner, featured = false }: { partner: PartnerEntry; featured?: boolean }) {
   return (
-    <article className="flex flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
+    <article
+      className={`relative flex flex-col overflow-hidden rounded-2xl bg-white ${
+        featured ? "border-2 border-warm-gold shadow-md" : "border border-border shadow-sm"
+      }`}
+    >
+      {featured && (
+        <span className="absolute left-3 top-3 z-[1] inline-flex items-center gap-1 rounded-full bg-warm-gold px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#0e234b]">
+          <Star size={11} className="fill-current" />
+          Featured
+        </span>
+      )}
       <div
-        className={`flex h-44 items-center justify-center border-b border-border p-5 ${
+        className={`flex items-center justify-center border-b border-border p-5 ${featured ? "h-40 md:h-56" : "h-44"} ${
           partner.dark ? "bg-cyan-900" : "bg-white"
         }`}
       >
@@ -32,7 +42,7 @@ function PartnerCard({ partner }: { partner: PartnerEntry }) {
             src={partner.logoUrl}
             alt={partner.name}
             loading="lazy"
-            className="max-h-32 w-auto max-w-[88%] object-contain"
+            className={`w-auto max-w-[88%] object-contain ${featured ? "max-h-28 md:max-h-40" : "max-h-32"}`}
           />
         ) : (
           <div
@@ -44,7 +54,7 @@ function PartnerCard({ partner }: { partner: PartnerEntry }) {
         )}
       </div>
       <div className="flex flex-grow flex-col gap-1.5 p-4">
-        <h3 className="text-sm font-bold leading-snug text-foreground">{partner.name}</h3>
+        <h3 className={`font-bold leading-snug text-foreground ${featured ? "text-base" : "text-sm"}`}>{partner.name}</h3>
         <div className="mt-auto flex flex-col gap-1 pt-2">
           {partner.role && <span className="text-xs font-medium leading-snug text-foreground/60">{partner.role}</span>}
           {partner.website && (
@@ -102,6 +112,10 @@ export default function PartnersPage() {
     return [...orgs, ...towns];
   }, [entries, locale]);
   const totalPartners = partners.length;
+  // Sheet order (sort_order, then name) — the team controls the order of
+  // the Featured row from the sheet. Featured partners still also appear in
+  // the full directory below.
+  const featuredPartners = useMemo(() => (entries ?? []).filter((p) => p.featured), [entries]);
 
   const q = query.trim().toLowerCase();
   const matchesQuery = (p: PartnerEntry) => !q || p.name.toLowerCase().includes(q) || (p.website ?? "").includes(q);
@@ -184,6 +198,26 @@ export default function PartnersPage() {
             <span className="flex-1" style={{ background: "#d81b60" }} />
           </div>
         </section>
+
+        {/* Featured partners — only rendered when at least one row in the
+            PKF_Partners sheet is marked Featured. */}
+        {featuredPartners.length > 0 && (
+          <section aria-labelledby="featured-partners" className="section-padding mx-auto max-w-6xl pb-4 pt-14">
+            <div className="mb-6 flex flex-col gap-2">
+              <p className="text-xs font-bold tracking-[0.18em] text-warm-terracotta">
+                {isEs ? "SOCIOS DESTACADOS" : "FEATURED PARTNERS"}
+              </p>
+              <h2 id="featured-partners" className="font-display text-3xl leading-tight text-foreground md:text-4xl">
+                {isEs ? "Liderando el camino de la bondad" : "Leading the way in kindness"}
+              </h2>
+            </div>
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6">
+              {featuredPartners.map((p) => (
+                <PartnerCard key={p.id} partner={p} featured />
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Sticky search / filter bar */}
         <div id="directory" className="sticky top-0 z-10 border-b border-border bg-warm-cream/95 backdrop-blur">

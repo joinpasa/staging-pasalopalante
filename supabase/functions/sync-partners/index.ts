@@ -48,6 +48,15 @@ interface Entry {
   role?: string;
   dark?: boolean;
   sortOrder?: number;
+  /** Sheet's "Featured" column. Accepts a real boolean (checkbox) or a
+   * yes/no-style string so either column type works in the sheet. */
+  featured?: boolean | string;
+}
+
+function isTruthy(v: unknown) {
+  if (v === true) return true;
+  if (typeof v !== "string") return false;
+  return ["yes", "y", "true", "x", "1", "featured"].includes(v.trim().toLowerCase());
 }
 
 interface Body {
@@ -88,6 +97,7 @@ Deno.serve(async (req) => {
       role: e.role?.trim() || null,
       dark: e.dark === true,
       sort_order: typeof e.sortOrder === "number" ? e.sortOrder : null,
+      featured: isTruthy(e.featured),
       synced_at: new Date().toISOString(),
     }));
 

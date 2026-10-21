@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-10-21 — va.deedumlao@gmail.com
 
+- **Featured Partners section on /partners.** Any partner marked Featured in the PKF_Partners sheet now shows in a highlighted gold-bordered section at the top of the page (they still appear in the full list too); the section hides itself when nobody is featured. Adds a `featured` column to the partners table and teaches the sheet sync to read a Featured column (checkbox or Yes/No). The sheet's Apps Script needs a one-line addition to send it.
 - **Example email addresses are blocked in the partner portal and the review Sheet.** The portal rejects example emails like you@yourdomain.org or name@example.com with a friendly "use your real email" message, so test data can't trigger the days-long bounce notices we got before. The Sheet's Needs Changes email also skips them: it falls back to the real org contact, or leaves a note saying why nothing was sent.
 - **The app is now available in all the website's languages** (Spanish, French, German, Portuguese, Russian, Hindi, Arabic, Bengali, Slovenian, Chinese), with a language picker in the user's profile — Moziezez's PR #3, brought up to date with two weeks of app changes made since it was opened.
 - **Fixed the app's "Forgot password?" link firing when tapping the empty space next to it** on the log-in tab — Moziezez's PR #4. Only the link text itself triggers a reset now.
