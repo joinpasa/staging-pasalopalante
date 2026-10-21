@@ -1,5 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 import PasaMark from "./PasaMark";
 
 interface PassQrCodeProps {
@@ -52,6 +53,7 @@ function inlineFillColors(original: SVGSVGElement): SVGSVGElement {
  * design tokens at runtime so the code stays on-theme without hardcoding hex.
  */
 const PassQrCode = forwardRef<PassQrCodeHandle, PassQrCodeProps>(({ value }, ref) => {
+  const { t } = useLanguage();
   const wrapRef = useRef<HTMLDivElement>(null);
   const probeRef = useRef<HTMLDivElement>(null);
   const markWrapRef = useRef<HTMLDivElement>(null);
@@ -125,7 +127,7 @@ const PassQrCode = forwardRef<PassQrCodeHandle, PassQrCodeProps>(({ value }, ref
           fgColor={colors.fg}
           bgColor={colors.bg}
           className="h-full w-full"
-          title="Pásalo Pa'lante pass code"
+          title={t.appPass.qrCodeTitle}
         />
       )}
       {/* High error correction leaves room for the mark in the middle. */}

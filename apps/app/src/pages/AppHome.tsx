@@ -52,14 +52,13 @@ import {
 import SocialLinkChip, { SOCIAL_LINK_ICONS } from "@shared/components/share/SocialLinkChip";
 import { statFontSizeClass } from "@shared/lib/statFontSize";
 
-const nf = new Intl.NumberFormat("en-US");
 const GOAL = 1_000_000_000;
 
-function timeOfDayGreeting() {
+function timeOfDayGreeting(labels: { morning: string; afternoon: string; evening: string }) {
   const h = new Date().getHours();
-  if (h < 12) return "Good morning";
-  if (h < 18) return "Good afternoon";
-  return "Good evening";
+  if (h < 12) return labels.morning;
+  if (h < 18) return labels.afternoon;
+  return labels.evening;
 }
 
 function initials(name: string) {
@@ -95,6 +94,7 @@ function SocialLinkRow({ videoUrl }: { videoUrl: string | null | undefined }) {
 export default function AppHome() {
   const { user } = useAuth();
   const { t, lang } = useLanguage();
+  const nf = new Intl.NumberFormat(lang);
   const { data: me } = useAppMe();
   const { data: totals } = useMovementTotals();
   const { data: myActs } = useMyRecentActs();
@@ -179,7 +179,7 @@ export default function AppHome() {
         // Non-fatal — commitment already succeeded
       }
     } catch {
-      toast.error("Something went wrong saving your pledge. You can set it later from your profile.");
+      toast.error(t.appHome.savingPledgeError);
     } finally {
       await supabase.from("profiles").update({ onboarding_seen: true }).eq("user_id", user.id);
       setOnboardingBusy(false);
@@ -268,11 +268,11 @@ export default function AppHome() {
         return;
       }
       if (data?.status === "rejected") {
-        toast.error(data?.short_reason || "Couldn't log that — please rephrase and try again.");
+        toast.error(data?.short_reason || t.appHome.unableToLogAct);
         return;
       }
       if (!data?.id) {
-        toast.error("Something went wrong. Please try again.");
+        toast.error(t.appHome.genericError);
         return;
       }
       setQuickLogged(true);
@@ -281,7 +281,7 @@ export default function AppHome() {
       queryClient.invalidateQueries({ queryKey: ["app", "my-acts"] });
       queryClient.invalidateQueries({ queryKey: ["app", "badges"] });
     } catch {
-      toast.error("Something went wrong. Please try again.");
+      toast.error(t.appHome.genericError);
     } finally {
       setQuickSubmitting(false);
     }
@@ -294,9 +294,12 @@ export default function AppHome() {
   }
 
   const earned = (badges ?? []).filter((b) => b.earned).slice(0, 6);
+  const badgeName = (badge: NonNullable<typeof badges>[number]) =>
+    (lang === "de" ? badge.name_de : lang === "es" ? badge.name_es : lang === "fr" ? badge.name_fr : null)
+      || badge.name;
   const actsAllTime = totals?.actsAllTime ?? 0;
   const progress = Math.min((actsAllTime / GOAL) * 100, 100);
-  const greetingName = me?.firstName ?? (user ? "friend" : "there");
+  const greetingName = me?.firstName ?? t.appWidgets.friend;
 
   if (showOnboarding) {
     return (
@@ -317,21 +320,21 @@ export default function AppHome() {
         <img
           src="/logo-PKF-horizontal-color.png"
           srcSet="/logo-PKF-horizontal-color.png 1x, /logo-PKF-horizontal-color@2x.png 2x"
-          alt="Pass Kindness Forward"
+          alt={t.appHome.movementName}
           className="h-7 w-auto shrink-0 object-contain"
         />
         <div className="flex items-center gap-2.5">
           {user && (
             <Link
               to="/pass"
-              aria-label="Share my Kindness QR code"
+              aria-label={t.appHome.shareQrAria}
               className={cn(
                 "relative flex h-9 items-center gap-1.5 rounded-full bg-app-sky/10 px-3.5",
                 tourStep === 1 && "z-50 ring-4 ring-app-coral/40",
               )}
             >
               <QrCode className="h-[15px] w-[15px] text-app-sky" strokeWidth={1.9} />
-              <span className="text-xs font-bold text-app-sky">Share QR</span>
+              <span className="text-xs font-bold text-app-sky">{t.appHome.shareQr}</span>
             </Link>
           )}
           <AccountMenu highlighted={tourStep === 0} />
@@ -341,11 +344,13 @@ export default function AppHome() {
       <div className="flex items-start justify-between gap-2.5">
         <div>
           <p className="text-[11.5px] font-bold uppercase tracking-[0.07em] text-muted-foreground">
-            {timeOfDayGreeting()}
+            {timeOfDayGreeting(t.appHome)}
           </p>
-          <p className="mt-0.5 truncate text-[21px] font-bold leading-tight text-foreground">
-            {greetingName}
-          </p>
+          {user && (
+            <p className="mt-0.5 truncate text-[21px] font-bold leading-tight text-foreground">
+              {greetingName}
+            </p>
+          )}
           <p className="text-[11.5px] font-bold uppercase tracking-[0.07em] text-muted-foreground">
             {t.appHome.greetingSubtitle}
           </p>
@@ -356,7 +361,7 @@ export default function AppHome() {
             onClick={() => setTourStep(0)}
             className="mt-1 shrink-0 text-[11.5px] font-bold text-app-sky underline underline-offset-2"
           >
-            Take the tour
+            {t.appHome.takeTour}
           </button>
         )}
       </div>
@@ -374,7 +379,7 @@ export default function AppHome() {
             <div className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[11px] bg-app-surface/20">
               <HeartHandshake className="h-[18px] w-[18px]" />
             </div>
-            <p className="text-[15.5px] font-bold">Log an Act of Kindness</p>
+            <p className="text-[15.5px] font-bold">{t.appHome.logActHeading}</p>
           </div>
 
           {!quickLogged ? (
@@ -402,15 +407,15 @@ export default function AppHome() {
                       setQuickText(value);
                     }
                   }}
-                  placeholder={quickSocialLink ? "Add a short caption (optional)" : "Describe what you did"}
-                  aria-label="Describe what you did"
+                  placeholder={quickSocialLink ? t.appLogAct.captionPlaceholder : t.appHome.describeAct}
+                  aria-label={t.appHome.describeAct}
                   className="min-w-0 flex-1 border-none bg-transparent text-[13.5px] text-app-ink outline-none placeholder:text-app-ink/40"
                 />
                 <button
                   type="button"
                   onClick={submitQuick}
                   disabled={quickSubmitting || (!quickText.trim() && !quickSocialLink)}
-                  aria-label="Log this act"
+                  aria-label={t.appHome.logThisAct}
                   className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full bg-app-ink disabled:opacity-60"
                 >
                   <Check className="h-4 w-4 text-app-surface" />
@@ -420,22 +425,21 @@ export default function AppHome() {
                 to="/log"
                 className="mt-2.5 block text-[11.5px] font-semibold text-app-surface/90 underline underline-offset-2"
               >
-                Add a photo or pick a specific act →
+                {t.appHome.addPhotoOrPickAct}
               </Link>
             </div>
           ) : (
             <div className="mt-3 flex items-center gap-2.5 rounded-2xl bg-app-surface/20 px-3.5 py-2.5">
               <CheckCircle2 className="h-5 w-5 shrink-0 fill-app-surface text-app-coral" />
               <p className="flex-1 text-[12.5px] leading-snug">
-                Logged! That's <strong>{nf.format(quickLoggedTotal ?? 0)}</strong>{" "}
-                {quickLoggedTotal === 1 ? "act" : "acts"} and counting.
+                {t.appHome.quickLogged.replace("{count}", nf.format(quickLoggedTotal ?? 0))}
               </p>
               <button
                 type="button"
                 onClick={resetQuick}
                 className="shrink-0 text-[11.5px] font-bold underline underline-offset-2"
               >
-                Log another
+                {t.appHome.logAnother}
               </button>
             </div>
           )}
@@ -444,20 +448,20 @@ export default function AppHome() {
         <section className="relative overflow-hidden rounded-3xl border-4 border-warm-terracotta bg-app-coral p-6 text-app-surface">
           <div className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-app-surface/10" />
           <p className="relative text-[11px] font-semibold uppercase tracking-[0.18em] text-app-surface/80">
-            Pass Kindness Forward
+            {t.appHome.movementName}
           </p>
           <div className="relative mt-1 flex items-end gap-3">
             <span className="font-sans text-6xl font-extrabold leading-none tracking-tight">
               {nf.format(actsAllTime)}
             </span>
             <span className="max-w-[7rem] pb-1 text-sm font-semibold leading-snug">
-              acts passed forward
+              {t.appHome.actsPassedForward}
             </span>
           </div>
           <div className="relative mt-5 border-t border-app-surface/25 pt-3">
             <div className="flex items-baseline justify-between text-sm font-medium">
-              <span>Toward 1 billion</span>
-              <span className="font-semibold">{nf.format(totals?.actsToday ?? 0)} today</span>
+              <span>{t.appHome.towardGoal}</span>
+              <span className="font-semibold">{nf.format(totals?.actsToday ?? 0)} {t.appHome.today}</span>
             </div>
             <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-app-surface/25">
               <div
@@ -476,18 +480,18 @@ export default function AppHome() {
             <p className={cn("font-extrabold leading-none text-foreground", statFontSizeClass(me?.actsPassedForward ?? 0, "compact"))}>
               {nf.format(me?.actsPassedForward ?? 0)}
             </p>
-            <p className="text-[10.5px] leading-tight text-muted-foreground">Acts passed forward</p>
+            <p className="text-[10.5px] leading-tight text-muted-foreground">{t.appHome.actsPassed}</p>
           </div>
           <div className="flex flex-col gap-1.5 overflow-hidden rounded-2xl bg-app-gold/15 p-3">
             <Flame className="h-[17px] w-[17px] text-app-gold" strokeWidth={1.6} />
             <p className={cn("font-extrabold leading-none text-foreground", statFontSizeClass(me?.dayStreak ?? 0, "compact"))}>
               {nf.format(me?.dayStreak ?? 0)}
             </p>
-            <p className="text-[10.5px] leading-tight text-muted-foreground">Day streak</p>
+            <p className="text-[10.5px] leading-tight text-muted-foreground">{t.appHome.dayStreak}</p>
           </div>
           <Link
             to="/connections"
-            aria-label="Open My Network"
+            aria-label={t.appWidgets.myNetwork}
             className="relative flex flex-col gap-1.5 overflow-hidden rounded-2xl bg-app-magenta/10 p-3"
           >
             <span className="absolute right-2 top-2 flex h-[22px] w-[22px] items-center justify-center rounded-full bg-app-magenta/15">
@@ -497,15 +501,15 @@ export default function AppHome() {
             <p className={cn("font-extrabold leading-none text-foreground", statFontSizeClass(me?.connections ?? 0, "compact"))}>
               {nf.format(me?.connections ?? 0)}
             </p>
-            <p className="text-[10.5px] leading-tight text-muted-foreground">People reached</p>
+            <p className="text-[10.5px] leading-tight text-muted-foreground">{t.appHome.peopleReached}</p>
           </Link>
         </section>
       ) : (
         <section className="grid grid-cols-3 gap-3">
           {[
-            { value: totals?.pledged ?? 0, label: "Acts pledged" },
-            { value: totals?.actsToday ?? 0, label: "Logged today" },
-            { value: actsAllTime, label: "Acts all time" },
+            { value: totals?.pledged ?? 0, label: t.appCommon.actsPledged },
+            { value: totals?.actsToday ?? 0, label: t.appCommon.loggedToday },
+            { value: actsAllTime, label: t.appCommon.actsAllTime },
           ].map((stat) => (
             <div key={stat.label} className="overflow-hidden rounded-2xl bg-app-surface p-4">
               <p className={cn("break-all font-sans font-bold leading-tight text-foreground", statFontSizeClass(stat.value))}>
@@ -524,9 +528,9 @@ export default function AppHome() {
       {user && earned.length > 0 && (
         <section>
           <div className="mb-3 flex items-baseline justify-between">
-            <h2 className="font-sans text-base font-bold text-foreground">Badges earned</h2>
+            <h2 className="font-sans text-base font-bold text-foreground">{t.appHome.badgesEarned}</h2>
             <Link to="/badges" className="text-sm font-semibold text-app-coral">
-              See all
+              {t.appHome.seeAll}
             </Link>
           </div>
           <div className="-mx-5 flex gap-3 overflow-x-auto px-5 pb-1">
@@ -536,7 +540,7 @@ export default function AppHome() {
                   {badge.icon || "🏅"}
                 </div>
                 <p className="mt-2 text-[11px] font-medium leading-tight text-foreground">
-                  {badge.name}
+                  {badgeName(badge)}
                 </p>
               </div>
             ))}
@@ -546,7 +550,7 @@ export default function AppHome() {
 
       {user && (receivedActs?.length ?? 0) > 0 && (
         <section>
-          <h2 className="mb-3 font-sans text-base font-bold text-foreground">Passed to you</h2>
+          <h2 className="mb-3 font-sans text-base font-bold text-foreground">{t.appHome.passedToYou}</h2>
           <ul className="overflow-hidden rounded-2xl bg-app-surface">
             {(receivedActs ?? []).map((act, i) => {
               const thanked = thankedActs?.has(act.id) || justThanked.has(act.id);
@@ -565,14 +569,14 @@ export default function AppHome() {
                       </p>
                       <SocialLinkRow videoUrl={act.videoUrl} />
                       <p className="mt-0.5 text-xs text-muted-foreground">
-                        From {act.fromName} · {timeAgo(act.createdAt)}
+                        {t.appHome.from} {act.fromName} · {timeAgo(act.createdAt, t.appCommon, lang)}
                       </p>
                     </div>
                   </div>
                   <div className="mt-3 pl-[3.25rem]">
                     {thanked ? (
                       <span className="inline-flex items-center gap-1.5 rounded-full bg-app-gold-tint px-3 py-1.5 text-xs font-semibold text-app-gold">
-                        🙏 Thanks sent!
+                        🙏 {t.appHome.thanksSent}
                       </span>
                     ) : (
                       <button
@@ -581,7 +585,7 @@ export default function AppHome() {
                         className="inline-flex items-center gap-1.5 rounded-full bg-app-coral px-3 py-1.5 text-xs font-semibold text-app-surface"
                       >
                         <HeartHandshake className="h-3.5 w-3.5" />
-                        Send thanks
+                        {t.appHome.sendThanks}
                       </button>
                     )}
                   </div>
@@ -594,7 +598,7 @@ export default function AppHome() {
 
       {user && (myActs?.length ?? 0) > 0 && (
         <section>
-          <h2 className="mb-3 font-sans text-base font-bold text-foreground">Your recent kindness</h2>
+          <h2 className="mb-3 font-sans text-base font-bold text-foreground">{t.appHome.yourRecentKindness}</h2>
           <ul className="overflow-hidden rounded-2xl bg-app-surface">
             {(myActs ?? []).map((act, i) => (
               <li
@@ -610,7 +614,7 @@ export default function AppHome() {
                       {act.description}
                     </p>
                     <SocialLinkRow videoUrl={act.videoUrl} />
-                    <p className="mt-0.5 text-xs text-muted-foreground">{timeAgo(act.createdAt)}</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">{timeAgo(act.createdAt, t.appCommon, lang)}</p>
                   </div>
                   <span
                     className={cn(
@@ -620,7 +624,7 @@ export default function AppHome() {
                         : "bg-app-teal-tint text-app-teal",
                     )}
                   >
-                    {modeLabel(act.mode)}
+                    {modeLabel(act.mode, t.appCommon)}
                   </span>
                 </div>
                 <div className="mt-3 flex items-center gap-2 pl-[3.25rem]">
@@ -631,7 +635,7 @@ export default function AppHome() {
                   />
                   {thankedActs?.has(act.id) && (
                     <span className="inline-flex items-center rounded-full bg-app-gold-tint px-2.5 py-1 text-[11px] font-semibold text-app-gold">
-                      🙏 Thanked
+                      🙏 {t.appHome.thanked}
                     </span>
                   )}
                   <DropdownMenu>
@@ -664,9 +668,9 @@ export default function AppHome() {
       {(wallActs?.length ?? 0) > 0 && (
         <section className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <h2 className="font-sans text-[15px] font-bold text-foreground">Recent Acts of Kindness</h2>
+            <h2 className="font-sans text-[15px] font-bold text-foreground">{t.appHome.recentActs}</h2>
             <Link to="/wall" className="text-xs font-bold text-app-sky">
-              See all
+              {t.appHome.seeAll}
             </Link>
           </div>
           {(wallActs ?? []).slice(0, 2).map((act) => (
@@ -680,14 +684,14 @@ export default function AppHome() {
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">
                   <p className="truncate text-[13px] font-bold text-foreground">{act.name}</p>
-                  <p className="shrink-0 text-[10.5px] text-muted-foreground">{timeAgo(act.createdAt)}</p>
+                  <p className="shrink-0 text-[10.5px] text-muted-foreground">{timeAgo(act.createdAt, t.appCommon, lang)}</p>
                 </div>
                 <p className="mt-1 line-clamp-2 text-[12.5px] leading-snug text-foreground/75">
                   {act.description}
                 </p>
                 <SocialLinkRow videoUrl={act.videoUrl} />
                 <span className="mt-2 inline-block rounded-full bg-app-sky/10 px-2.5 py-1 text-[10.5px] font-semibold text-app-sky">
-                  {modeLabel(act.mode)}
+                  {modeLabel(act.mode, t.appCommon)}
                 </span>
               </div>
             </div>
@@ -700,10 +704,10 @@ export default function AppHome() {
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-app-sky/15">
             <Users className="h-[18px] w-[18px] text-app-sky" strokeWidth={1.7} />
           </span>
-          <p className="text-[15px] font-bold text-foreground">Want to do more?</p>
+          <p className="text-[15px] font-bold text-foreground">{t.appHome.wantToDoMore}</p>
         </div>
         <p className="text-[12.5px] leading-relaxed text-foreground/70">
-          Become a volunteer or partner with local drives to help spread kindness even further.
+          {t.appHome.volunteerOrPartner}
         </p>
         <a
           href="https://pasalopalante.com/get-involved"
@@ -711,7 +715,7 @@ export default function AppHome() {
           rel="noopener noreferrer"
           className="mt-0.5 self-start rounded-xl bg-app-sky px-5 py-2.5 text-[13.5px] font-bold text-app-surface"
         >
-          Get Involved
+          {t.appHome.getInvolved}
         </a>
       </section>
 
@@ -721,11 +725,11 @@ export default function AppHome() {
             to="/join"
             className="flex h-14 flex-1 items-center justify-center rounded-2xl bg-app-coral font-semibold text-app-surface"
           >
-            Commit to acts of kindness
+            {t.appHome.commitToActs}
           </Link>
           <Link
             to="/badges"
-            aria-label="See all badges"
+            aria-label={t.appHome.seeAllBadges}
             className="flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-app-surface"
           >
             <LayoutGrid className="h-5 w-5 text-foreground" />
@@ -734,7 +738,7 @@ export default function AppHome() {
       )}
 
       <p className="pb-2 text-center text-xs text-muted-foreground">
-        Part of the movement at{" "}
+        {t.appHome.movementFooter}{" "}
         <a href="https://passkindnessforward.com" className="underline">
           passkindnessforward.com
         </a>

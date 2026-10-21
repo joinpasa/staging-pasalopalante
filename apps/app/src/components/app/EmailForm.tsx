@@ -2,6 +2,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { useAuth } from "@shared/contexts/AuthContext";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 import { supabase } from "@shared/integrations/supabase/client";
 import { getAuthErrorMessage } from "@shared/lib/authErrors";
 
@@ -9,6 +10,7 @@ import { getAuthErrorMessage } from "@shared/lib/authErrors";
  *  new address; the email only actually changes once that link is clicked. */
 export default function EmailForm({ onSaved, onCancel }: { onSaved: () => void; onCancel?: () => void }) {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -16,17 +18,17 @@ export default function EmailForm({ onSaved, onCancel }: { onSaved: () => void; 
     e.preventDefault();
     const trimmed = email.trim();
     if (trimmed.toLowerCase() === (user?.email ?? "").toLowerCase()) {
-      toast.error("That's already your current email.");
+      toast.error(t.appWidgets.emailAlreadyCurrent);
       return;
     }
     setSaving(true);
     const { error } = await supabase.auth.updateUser({ email: trimmed });
     setSaving(false);
     if (error) {
-      toast.error(getAuthErrorMessage(error));
+      toast.error(getAuthErrorMessage(error, t.appJoin.authErrors));
       return;
     }
-    toast.success(`Confirmation link sent to ${trimmed}. Click it to finish changing your email.`);
+    toast.success(t.appWidgets.confirmationSent.replace("{email}", trimmed));
     setEmail("");
     onSaved();
   };
@@ -44,11 +46,11 @@ export default function EmailForm({ onSaved, onCancel }: { onSaved: () => void; 
         maxLength={200}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="New email"
+        placeholder={t.appWidgets.newEmail}
         className={fieldClass}
       />
       <p className="text-[11px] leading-snug text-muted-foreground">
-        We'll send a confirmation link to the new address — your email only changes once you click it.
+        {t.appWidgets.emailConfirmationBody}
       </p>
       <div className="flex items-center gap-2 pt-1">
         <button
@@ -56,7 +58,7 @@ export default function EmailForm({ onSaved, onCancel }: { onSaved: () => void; 
           disabled={saving}
           className="h-9 shrink-0 rounded-lg bg-app-coral px-4 text-xs font-semibold text-app-surface disabled:opacity-60"
         >
-          {saving ? "…" : "Send confirmation"}
+          {saving ? "…" : t.appWidgets.sendConfirmation}
         </button>
         {onCancel && (
           <button
@@ -64,7 +66,7 @@ export default function EmailForm({ onSaved, onCancel }: { onSaved: () => void; 
             onClick={onCancel}
             className="h-9 shrink-0 rounded-lg border border-border bg-app-surface px-4 text-xs font-semibold text-foreground"
           >
-            Cancel
+            {t.appWidgets.cancel}
           </button>
         )}
       </div>

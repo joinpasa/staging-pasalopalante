@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Flag, HelpCircle, LogOut, Settings, Users } from "lucide-react";
 
 import { useAuth } from "@shared/contexts/AuthContext";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useAppMe } from "@/hooks/useAppData";
 import { openSupportChat } from "@/lib/supportChat";
 import { cn } from "@shared/lib/utils";
@@ -19,6 +20,7 @@ const itemClass =
  */
 export default function AccountMenu({ highlighted = false }: { highlighted?: boolean }) {
   const { user, signOut } = useAuth();
+  const { t } = useLanguage();
   const { data: me } = useAppMe();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -39,7 +41,7 @@ export default function AccountMenu({ highlighted = false }: { highlighted?: boo
         to="/join"
         className="rounded-full bg-app-coral px-3 py-1.5 text-xs font-semibold text-app-surface"
       >
-        Join
+        {t.appWidgets.join}
       </Link>
     );
   }
@@ -56,7 +58,7 @@ export default function AccountMenu({ highlighted = false }: { highlighted?: boo
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        aria-label="Account menu"
+        aria-label={t.appWidgets.accountMenu}
         aria-expanded={open}
         className={cn(
           "relative flex h-10 w-10 items-center justify-center rounded-full bg-app-ink text-sm font-bold text-app-surface",
@@ -74,19 +76,19 @@ export default function AccountMenu({ highlighted = false }: { highlighted?: boo
             </span>
             <div className="min-w-0">
               <p className="truncate text-[13.5px] font-bold text-foreground">
-                {me?.displayName || "Friend"}
+                {me?.displayName || t.appWidgets.friend}
               </p>
-              <p className="truncate text-[11.5px] text-muted-foreground">{me?.place ?? "Worldwide"}</p>
+              <p className="truncate text-[11.5px] text-muted-foreground">{me?.place ?? t.appWidgets.worldwide}</p>
             </div>
           </div>
 
           <Link to="/account" onClick={() => setOpen(false)} className={itemClass}>
             <Settings className="h-[17px] w-[17px] shrink-0 text-foreground" strokeWidth={1.8} />
-            My Account
+            {t.appWidgets.myAccount}
           </Link>
           <Link to="/connections" onClick={() => setOpen(false)} className={itemClass}>
             <Users className="h-[17px] w-[17px] shrink-0 text-foreground" strokeWidth={1.8} />
-            My Network
+            {t.appWidgets.myNetwork}
           </Link>
           <button
             type="button"
@@ -97,7 +99,7 @@ export default function AccountMenu({ highlighted = false }: { highlighted?: boo
             className={itemClass}
           >
             <HelpCircle className="h-[17px] w-[17px] shrink-0 text-foreground" strokeWidth={1.8} />
-            Get Support
+            {t.appWidgets.getSupport}
           </button>
           <a
             href={REPORT_ISSUE_URL}
@@ -107,14 +109,14 @@ export default function AccountMenu({ highlighted = false }: { highlighted?: boo
             className={itemClass}
           >
             <Flag className="h-[17px] w-[17px] shrink-0 text-foreground" strokeWidth={1.8} />
-            Report an Issue
+            {t.appWidgets.reportIssue}
           </a>
 
           <div className="my-0.5 h-px bg-border" />
 
           <button type="button" onClick={handleLogout} className={cn(itemClass, "text-app-magenta")}>
             <LogOut className="h-[17px] w-[17px] shrink-0 text-app-magenta" strokeWidth={1.8} />
-            Logout
+            {t.appWidgets.logout}
           </button>
         </div>
       )}
