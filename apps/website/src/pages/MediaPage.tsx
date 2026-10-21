@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -10,7 +11,7 @@ import {
   Linkedin,
   Mic,
   Newspaper,
-  Radio,
+  Play,
   Twitter,
   Youtube,
 } from "lucide-react";
@@ -69,12 +70,111 @@ function MediaCard({ item }: { item: MediaItem }) {
   );
 }
 
+function extractYouTubeId(url: string): string | null {
+  const patterns = [/youtube\.com\/watch\?v=([^&]+)/, /youtube\.com\/live\/([^?&]+)/, /youtu\.be\/([^?&]+)/];
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) return match[1];
+  }
+  return null;
+}
+
+function extractSpotifyEpisodeId(url: string): string | null {
+  const match = url.match(/open\.spotify\.com\/episode\/([^?&]+)/);
+  return match ? match[1] : null;
+}
+
+/** Real thumbnail + play button for YouTube (click reveals the actual
+ * player), and Spotify's own official embed for its episode — both work
+ * without loading a platform SDK script, unlike Facebook/Instagram/X. */
+function VideoEmbedCard({ item }: { item: MediaItem }) {
+  const [playing, setPlaying] = useState(false);
+
+  if (item.type === "spotify") {
+    const episodeId = extractSpotifyEpisodeId(item.url);
+    return (
+      <div className="flex flex-col gap-2 rounded-2xl border border-border bg-white p-5 shadow-sm">
+        <div className="flex items-center gap-2 text-foreground/50">
+          <Mic size={16} className="shrink-0" />
+          <span className="text-xs font-bold uppercase tracking-wide text-foreground/50">
+            {item.outlet}
+          </span>
+        </div>
+        {item.title && (
+          <p className="text-sm font-semibold leading-snug text-foreground">{item.title}</p>
+        )}
+        {episodeId ? (
+          <iframe
+            title={item.title ?? item.outlet}
+            src={`https://open.spotify.com/embed/episode/${episodeId}?utm_source=generator`}
+            width="100%"
+            height="152"
+            style={{ borderRadius: 12, border: 0 }}
+            loading="lazy"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          />
+        ) : (
+          <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#0079A8] hover:underline">
+            {item.outlet} <ExternalLink size={12} className="inline" />
+          </a>
+        )}
+      </div>
+    );
+  }
+
+  const videoId = item.type === "youtube" ? extractYouTubeId(item.url) : null;
+  if (!videoId) return <MediaCard item={item} />;
+
+  return (
+    <div className="flex flex-col gap-2 rounded-2xl border border-border bg-white p-5 shadow-sm">
+      <div className="flex items-center gap-2 text-foreground/50">
+        <Youtube size={16} className="shrink-0" />
+        <span className="text-xs font-bold uppercase tracking-wide text-foreground/50">{item.outlet}</span>
+      </div>
+      {item.title && <p className="text-sm font-semibold leading-snug text-foreground">{item.title}</p>}
+      {item.note && <p className="text-xs leading-snug text-foreground/60">{item.note}</p>}
+      <div className="relative aspect-video overflow-hidden rounded-xl bg-black">
+        {playing ? (
+          <iframe
+            title={item.title ?? item.outlet}
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
+            className="absolute inset-0 h-full w-full"
+            allow="autoplay; encrypted-media; picture-in-picture"
+            allowFullScreen
+          />
+        ) : (
+          <button
+            type="button"
+            onClick={() => setPlaying(true)}
+            aria-label={`Play: ${item.title ?? item.outlet}`}
+            className="group absolute inset-0 h-full w-full"
+          >
+            <img
+              src={`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`}
+              alt=""
+              loading="lazy"
+              className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
+            />
+            <span className="absolute inset-0 flex items-center justify-center bg-black/20 transition-colors group-hover:bg-black/30">
+              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 shadow-lg transition-transform group-hover:scale-110">
+                <Play size={24} className="ml-1 fill-warm-terracotta text-warm-terracotta" />
+              </span>
+            </span>
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function Section({
   eyebrow,
   items,
+  CardComponent = MediaCard,
 }: {
   eyebrow: string;
   items: MediaItem[];
+  CardComponent?: typeof MediaCard;
 }) {
   if (items.length === 0) return null;
   return (
@@ -82,7 +182,7 @@ function Section({
       <p className="eyebrow mb-5">{eyebrow}</p>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((item, i) => (
-          <MediaCard key={`${item.url}-${i}`} item={item} />
+          <CardComponent key={`${item.url}-${i}`} item={item} />
         ))}
       </div>
     </div>
@@ -157,12 +257,25 @@ export default function MediaPage() {
             </div>
             <dl className="grid flex-1 grid-cols-2 gap-0 border-t border-warm-cream/20" style={{ flexBasis: "320px" }}>
               <div className="flex flex-col gap-1.5 pr-4 pt-5">
-                <dd className="font-display text-4xl leading-none md:text-5xl">
-                  {new Intl.NumberFormat(locale).format(1135096)}
+                <dd className="font-display text-xl leading-snug md:text-2xl">
+                  {isEs ? (
+                    <>
+                      Puerto Rico registró{" "}
+                      <span className="text-3xl md:text-4xl">
+                        {new Intl.NumberFormat(locale).format(1135096)}
+                      </span>{" "}
+                      actos de bondad en 5 días.
+                    </>
+                  ) : (
+                    <>
+                      Puerto Rico recorded{" "}
+                      <span className="text-3xl md:text-4xl">
+                        {new Intl.NumberFormat(locale).format(1135096)}
+                      </span>{" "}
+                      acts of kindness in 5 days.
+                    </>
+                  )}
                 </dd>
-                <dt className="text-xs font-semibold leading-tight text-warm-cream/70">
-                  {isEs ? "Actos de bondad en 5 días" : "Acts of kindness in 5 days"}
-                </dt>
               </div>
               <div className="flex flex-col gap-1.5 border-l border-warm-cream/20 py-5 pl-4">
                 <dd className="font-display text-4xl leading-none text-warm-gold md:text-5xl">
@@ -206,6 +319,7 @@ export default function MediaPage() {
           <Section
             eyebrow={isEs ? "Video y podcast" : "Video & podcast"}
             items={videoAndPodcast}
+            CardComponent={VideoEmbedCard}
           />
           <Section
             eyebrow={isEs ? "Cobertura en redes sociales" : "Social media coverage"}
