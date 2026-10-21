@@ -65,9 +65,6 @@ export const digitalNews: MediaItem[] = [
   },
   // This link wasn't loading in the team's own browsers as of 2026-10-21 —
   // worth checking whether the article's still up before relying on it.
-  // Its branded thumbnail (WIPR 6 Canal Seis logo) is still pending too —
-  // it arrived inline mid-message rather than as a trackable attachment,
-  // so there was no file to save; add imageUrl here once resent properly.
   {
     outlet: "WIPR TV",
     title: "Te Amo PR promueve actos de bondad en Puerto Rico",
@@ -77,6 +74,7 @@ export const digitalNews: MediaItem[] = [
     },
     url: "https://wipr.pr/te-amo-pr-promueve-actos-de-bondad-en-puertorico/",
     type: "article",
+    imageUrl: "/press/wipr-tv.png",
   },
   {
     outlet: "WAPA TV",
@@ -158,15 +156,23 @@ export const videoAndPodcast: MediaItem[] = [
     url: "https://open.spotify.com/episode/4bmepMDVlTHMf4w87U7wJY",
     type: "spotify",
   },
-  // No title/description in the source report for these two — left blank
-  // rather than invented; the card still works fine without them.
   {
     outlet: "YouTube",
+    title: "The \"Pass It On\" movement seeks a world record with its acts of kindness campaign.",
+    description: {
+      en: "The nonprofit Te Amo PR launched its historic Pásalo Pa'lante campaign — featuring an official anthem by Sie7e and Choco Orta — to mobilize over 300,000 people across Puerto Rico to perform more than one million acts of kindness and set a new world record.",
+      es: "La organización sin fines de lucro Te Amo PR lanzó su histórica campaña Pásalo Pa'lante —con un himno oficial de Sie7e y Choco Orta— para movilizar a más de 300,000 personas en Puerto Rico a realizar más de un millón de actos de bondad y establecer un nuevo récord mundial.",
+    },
     url: "https://youtu.be/5O53JnLee8A",
     type: "youtube",
   },
   {
     outlet: "YouTube",
+    title: "Jugando Pelota Dura, En Buenas Manos & Cuentas Claras - 2 de octubre de 2025",
+    description: {
+      en: "Puerto Rican public affairs and news commentary program Jugando Pelota Dura, En Buenas Manos & Cuentas Claras (hosted by Ferdinand Pérez), featuring political discussion, interviews, and current-events analysis.",
+      es: "Programa puertorriqueño de asuntos públicos y análisis de noticias Jugando Pelota Dura, En Buenas Manos & Cuentas Claras (presentado por Ferdinand Pérez), con discusiones políticas, entrevistas y análisis de la actualidad.",
+    },
     url: "https://www.youtube.com/watch?v=4xuM7zWZPdE",
     type: "youtube",
   },
