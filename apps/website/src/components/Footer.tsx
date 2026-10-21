@@ -31,9 +31,11 @@ const Footer = () => {
               <img src="/logo-PPL.png" alt="Pásalo Pa'lante" className="h-10 brightness-0 invert cursor-pointer" loading="lazy" />
               <span className="text-lg font-extralight text-warm-cream/30" aria-hidden="true">×</span>
               <img
-                src="/logo-PKF-white.png"
+                src="/logo-PKF-horizontal-dark.webp"
                 alt="Pass Kindness Forward"
-                className="h-16 w-auto object-contain cursor-pointer"
+                width={452}
+                height={132}
+                className="h-10 w-auto object-contain cursor-pointer"
                 loading="lazy"
               />
             </a>
