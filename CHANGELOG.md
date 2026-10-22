@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-10-22 — va.deedumlao@gmail.com
 
+- **SMS Terms "How to opt in" simplified** to just the website consent checkbox (English and Spanish); removed the "text KINDNESS or JOIN to (575) 577-7277" option.
 - **SMS Terms now link to the Privacy Policy on passkindnessforward.com** (the domain the SMS brand is registered to) instead of pasalopalante.com. Both domains serve the same Privacy and Terms pages.
 - **SMS consent checkbox wording updated** to "I agree to receive text messages from Pass Kindness Forward with event reminders, updates and ways to get involved. Msg frequency varies, msg & data rates may apply. Reply STOP to opt out, HELP for help. Privacy Policy & SMS Terms." (with Spanish to match), on every form that has it.
 - **SMS (A2P 10DLC) compliance content for carrier review.** Privacy Policy has a new "SMS / Text Messaging" section (pasalopalante.com/privacy#sms) and Terms has a new "SMS Terms" section (/terms#sms, texting number (575) 577-7277), both in English and Spanish, with STOP/HELP/START/KINDNESS/JOIN kept in English. The homepage pledge form and the Get Involved course-creator form now have an optional, unchecked-by-default SMS consent checkbox above the submit button; its yes/no and a timestamp go to GoHighLevel as `sms_consent` / `sms_consent_at` (plus an `sms-consent` tag when ticked). The footer now says "Pass Kindness Forward is an initiative of Te Amo PR."

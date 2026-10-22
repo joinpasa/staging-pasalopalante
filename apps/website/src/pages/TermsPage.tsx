@@ -108,10 +108,10 @@ export default function TermsPage() {
                 : "We may update these Terms. Material changes will be announced on this site."}
             </p>
 
-            {/* SMS Terms — A2P 10DLC carrier-review language. Wording and the
-                (575) 577-7277 number are fixed by the campaign registration;
+            {/* SMS Terms — A2P 10DLC carrier-review language. Wording is fixed
+                by the campaign registration;
                 linked as /terms#sms from the SMS consent checkbox. The privacy link uses passkindnessforward.com, the domain the 10DLC brand is registered to. Keywords
-                (STOP, HELP, START, KINDNESS, JOIN) stay in English in every
+                (STOP, HELP, START) stay in English in every
                 language — they're what carriers and the platform listen for. */}
             <h2 id="sms" className="font-display text-2xl text-foreground mt-8 scroll-mt-40">
               {es ? "Términos de SMS" : "SMS Terms"}
@@ -125,8 +125,8 @@ export default function TermsPage() {
             <p>
               <strong>{es ? "Cómo suscribirte:" : "How to opt in:"}</strong>{" "}
               {es
-                ? "Marca la casilla opcional de consentimiento de SMS en nuestros formularios de registro o de Involúcrate, o envía un mensaje de texto con KINDNESS o JOIN al (575) 577-7277."
-                : "Check the optional SMS consent box on our sign-up or Get Involved forms, or text KINDNESS or JOIN to (575) 577-7277."}
+                ? "Marca la casilla opcional de consentimiento de SMS en nuestros formularios de registro o de Involúcrate."
+                : "Check the optional SMS consent box on our sign-up or Get Involved forms."}
             </p>
             <p>
               <strong>{es ? "Frecuencia y costo:" : "Frequency and cost:"}</strong>{" "}

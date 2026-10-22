@@ -251,7 +251,7 @@ const routes: Route[] = [
       <p>Website content is provided "as is" for general educational, inspirational, nonprofit, and community engagement purposes. To the fullest extent permitted by law, Pásalo Pa'lante, Te Amo PR, and their representatives are not liable for damages arising from use of this website or participation in activities promoted through it.</p>
       <h2 id="sms">SMS Terms</h2>
       <p><strong>Program:</strong> Pass Kindness Forward, an initiative of Te Amo PR, sends text messages about events (such as the Global Kindness Broadcast), program updates during Global Kindness Season, volunteer opportunities, and invitations to log acts of kindness.</p>
-      <p><strong>How to opt in:</strong> Check the optional SMS consent box on our sign-up or Get Involved forms, or text KINDNESS or JOIN to (575) 577-7277.</p>
+      <p><strong>How to opt in:</strong> Check the optional SMS consent box on our sign-up or Get Involved forms.</p>
       <p><strong>Frequency and cost:</strong> Message frequency varies. Message and data rates may apply.</p>
       <p><strong>Opting out:</strong> Reply STOP to cancel at any time. You will receive one confirmation message and no further texts. Reply START to rejoin.</p>
       <p><strong>Help:</strong> Reply HELP for help, or contact us at <a href="mailto:info@passkindnessforward.com">info@passkindnessforward.com</a>.</p>
