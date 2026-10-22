@@ -1,4 +1,4 @@
-import { Instagram, Facebook, Twitter, Youtube } from "lucide-react";
+import { Instagram, Facebook, Linkedin, Twitter, Youtube } from "lucide-react";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useUI } from "@shared/contexts/UIContext";
 
@@ -102,14 +102,15 @@ const Footer = () => {
             </ul>
             <div className="flex items-center gap-3 mt-4">
               {[
-                { icon: Facebook, href: "https://www.facebook.com/passkindnessforward" },
-                { icon: Instagram, href: "https://www.instagram.com/passkindnessforward/" },
-                { icon: Youtube, href: "https://youtube.com/@passkindnessforward" },
-                { icon: TikTokIcon, href: "https://www.tiktok.com/@kindnessforward" },
-                { icon: PinterestIcon, href: "https://www.pinterest.com/kindnessforward" },
-                { icon: Twitter, href: "https://x.com/kindnessfwd" },
-              ].map(({ icon: Icon, href }) => (
-                <a key={href} href={href} target="_blank" rel="noopener noreferrer" className="text-warm-cream/70 hover:text-warm-cream transition-all duration-300 hover:scale-110">
+                { icon: Facebook, href: "https://www.facebook.com/passkindnessforward", label: "Facebook" },
+                { icon: Instagram, href: "https://www.instagram.com/passkindnessforward/", label: "Instagram" },
+                { icon: Linkedin, href: "https://www.linkedin.com/company/kindness-forward", label: "LinkedIn" },
+                { icon: Youtube, href: "https://youtube.com/@passkindnessforward", label: "YouTube" },
+                { icon: TikTokIcon, href: "https://www.tiktok.com/@kindnessforward", label: "TikTok" },
+                { icon: PinterestIcon, href: "https://www.pinterest.com/kindnessforward", label: "Pinterest" },
+                { icon: Twitter, href: "https://x.com/kindnessfwd", label: "X (Twitter)" },
+              ].map(({ icon: Icon, href, label }) => (
+                <a key={href} href={href} target="_blank" rel="noopener noreferrer" aria-label={`Kindness Forward on ${label} (opens in a new tab)`} className="text-warm-cream/70 hover:text-warm-cream transition-all duration-300 hover:scale-110">
                   <Icon size={18} />
                 </a>
               ))}

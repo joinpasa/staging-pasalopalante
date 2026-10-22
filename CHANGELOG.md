@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-10-22 — va.deedumlao@gmail.com
 
+- **Added the Kindness Forward LinkedIn page** (linkedin.com/company/kindness-forward) to the footer's social icons on every page — there was no LinkedIn link anywhere before. The footer's social icons now also have proper labels for screen readers.
 - **Homepage Anthem section corrected** — it said the anthem "reached over a million people"; it now says it "inspired over a million acts of kindness", matching what actually happened. Updated in all 10 languages. Swept the rest of the site and app for other "million people"-style claims about Puerto Rico; none left (remaining "millions" mentions are about acts, media impressions, or the upcoming global moment).
 - **Homepage "The Proof" heading corrected** from "a Million People Choose Kindness" to "a Million Acts of Kindness Happen in the Same Week" — Puerto Rico logged a million acts, not a million people. Updated in all 10 site languages.
 - **Footer now uses the landscape Kindness Forward logo** (colorful heart beside "Kindness Forward"), sized to match the Pásalo Pa'lante logo next to it — the old stacked white version was too small to read.
