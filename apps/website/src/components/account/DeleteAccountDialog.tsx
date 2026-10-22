@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@shared/contexts/LanguageContext";
+import { supabase } from "@shared/integrations/supabase/client";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -22,18 +24,32 @@ const DeleteAccountDialog = () => {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [typed, setTyped] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const navigate = useNavigate();
   const confirmed = typed.trim().toLowerCase() === CONFIRM_WORD;
 
+  // Everything (data, photos, CRM tag, the login itself) is done server-side
+  // by the delete-account edge function; see its header for what's removed.
   const handleDelete = async () => {
-    // TODO: actually delete the account and all related data (next step).
-    toast(t.account.deleteAccountComingSoon);
-    setOpen(false);
+    setDeleting(true);
+    const { data, error } = await supabase.functions.invoke("delete-account", { method: "POST" });
+    if (error || !data?.success) {
+      console.error("delete-account failed", error ?? data);
+      toast.error(t.account.deleteAccountError);
+      setDeleting(false);
+      return;
+    }
+    // The user no longer exists server-side, so only clear the local session.
+    await supabase.auth.signOut({ scope: "local" });
+    toast.success(t.account.deleteAccountSuccess);
+    navigate("/", { replace: true });
   };
 
   return (
     <AlertDialog
       open={open}
       onOpenChange={(next) => {
+        if (deleting) return;
         setOpen(next);
         if (!next) setTyped("");
       }}
@@ -59,14 +75,16 @@ const DeleteAccountDialog = () => {
             id="delete-account-confirm"
             value={typed}
             onChange={(e) => setTyped(e.target.value)}
+            disabled={deleting}
             autoComplete="off"
             autoCapitalize="off"
             spellCheck={false}
           />
         </div>
         <AlertDialogFooter>
-          <AlertDialogCancel>{t.account.deleteAccountCancel}</AlertDialogCancel>
-          <Button variant="destructive" disabled={!confirmed} onClick={handleDelete}>
+          <AlertDialogCancel disabled={deleting}>{t.account.deleteAccountCancel}</AlertDialogCancel>
+          <Button variant="destructive" disabled={!confirmed || deleting} onClick={handleDelete}>
+            {deleting && <Loader2 size={16} className="mr-2 animate-spin" />}
             {t.account.deleteAccountConfirm}
           </Button>
         </AlertDialogFooter>

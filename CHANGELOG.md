@@ -10,6 +10,8 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-10-22 — M.Schollmeyer@gmx.de
 
+- Website account: "Delete account" now really works. After typing "delete", the person's login, profile, acts (including their uploaded photos), commitments, badges, reactions, reminders, consent and email records are permanently removed, along with any group they were the only member of. Their GoHighLevel contact is kept but tagged `account-deleted` so the team can follow up. Acts other people sent to them stay on the giver's side, just no longer linked to the deleted person. Also fixes a database link that would have blocked deleting anyone who had ever received a /wave hand-off.
+
 - Website account: "Sign out" now sits directly on the /account dashboard, under the "My Account" button, instead of being buried in the settings page. In its old spot on /account/settings there's now a "Delete account" button that opens a confirmation popup (the user has to type "delete" to unlock the final button). The actual deletion isn't wired up yet — for now the final button just shows a "coming soon" message.
 
 ## 2026-10-22 — va.deedumlao@gmail.com
