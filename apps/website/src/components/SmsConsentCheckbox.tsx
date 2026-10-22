@@ -50,13 +50,13 @@ export default function SmsConsentCheckbox({
       >
         {isEs ? (
           <>
-            Acepto recibir mensajes de texto de Pass Kindness Forward sobre eventos, novedades y formas de
-            participar. La frecuencia de los mensajes varía. Pueden aplicar tarifas de mensajes y datos.
-            Responde STOP para cancelar, HELP para obtener ayuda. Consulta nuestra{" "}
+            Acepto recibir mensajes de texto de Pass Kindness Forward con recordatorios de eventos, novedades y
+            formas de participar. La frecuencia de los mensajes varía, pueden aplicar tarifas de mensajes y datos.
+            Responde STOP para cancelar, HELP para obtener ayuda.{" "}
             <a href="/privacy#sms" target="_blank" rel="noopener noreferrer" className={linkClass}>
               Política de Privacidad
             </a>{" "}
-            y los{" "}
+            y{" "}
             <a href="/terms#sms" target="_blank" rel="noopener noreferrer" className={linkClass}>
               Términos de SMS
             </a>
@@ -64,13 +64,13 @@ export default function SmsConsentCheckbox({
           </>
         ) : (
           <>
-            I agree to receive text messages from Pass Kindness Forward about events, updates and ways to get
-            involved. Msg frequency varies. Msg &amp; data rates may apply. Reply STOP to opt out, HELP for help.
-            See our{" "}
+            I agree to receive text messages from Pass Kindness Forward with event reminders, updates and ways to
+            get involved. Msg frequency varies, msg &amp; data rates may apply. Reply STOP to opt out, HELP for
+            help.{" "}
             <a href="/privacy#sms" target="_blank" rel="noopener noreferrer" className={linkClass}>
               Privacy Policy
             </a>{" "}
-            and{" "}
+            &amp;{" "}
             <a href="/terms#sms" target="_blank" rel="noopener noreferrer" className={linkClass}>
               SMS Terms
             </a>
