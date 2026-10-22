@@ -812,7 +812,7 @@ const translations = {
     },
     scienceProof: {
       eyebrow: "The Proof",
-      heading: "What Happens When a Million People Choose Kindness in the Same Week?",
+      heading: "What Happens When a Million Acts of Kindness Happen in the Same Week?",
       bodyPart1: "Puerto Rico answered that question. 1,135,096 acts in November 2025, covering all 78 municipalities and every school. 3rd party verification recorded the highest collective emotional coherence at a 1 in a trillion likelihood of chance.",
       bodyBold: "The proof is in. The global wave is next.",
       bodyPart2: "",

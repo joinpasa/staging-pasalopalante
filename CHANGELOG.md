@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-10-22 — va.deedumlao@gmail.com
 
+- **Homepage "The Proof" heading corrected** from "a Million People Choose Kindness" to "a Million Acts of Kindness Happen in the Same Week" — Puerto Rico logged a million acts, not a million people. Updated in all 10 site languages.
 - **Footer now uses the landscape Kindness Forward logo** (colorful heart beside "Kindness Forward"), sized to match the Pásalo Pa'lante logo next to it — the old stacked white version was too small to read.
 - **Saved a reference copy of the PKF_Partners sheet's Apps Script in the repo** (`apps-script/pkf-partners/`, secret removed), with the sheet's column layout documented, so future column changes can be checked against the website side instead of being discovered when the sync breaks. The sheet's ID generator is now collision-proof too.
 - **Partners sheet sync no longer breaks on a duplicate row ID.** If two rows in the PKF_Partners sheet share an ID, the sync now keeps the last one, carries on, and names the duplicate IDs in the script's log, instead of the whole sync failing. Sync failures also now report the actual reason in the log.
