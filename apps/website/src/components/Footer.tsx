@@ -15,7 +15,7 @@ const PinterestIcon = ({ size = 18 }: { size?: number }) => (
 );
 
 const Footer = () => {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { openShareModal } = useUI();
 
   return (
@@ -61,6 +61,11 @@ const Footer = () => {
               Pásalo Pa'lante is a sister initiative of Te Amo PR, a U.S.
               501(c)(3) nonprofit. EIN 66-0975633 · 550 Av. de la Constitución
               #905, San Juan, PR.
+            </p>
+            <p className="text-warm-cream/40 text-xs leading-relaxed mt-1">
+              {lang === "es"
+                ? "Pass Kindness Forward es una iniciativa de Te Amo PR."
+                : "Pass Kindness Forward is an initiative of Te Amo PR."}
             </p>
           </div>
 

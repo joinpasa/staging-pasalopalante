@@ -19,6 +19,7 @@ import { COUNTRIES } from "@shared/data/countries";
 import { cn } from "@shared/lib/utils";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { submitPPLForm } from "@shared/lib/pplForm";
+import SmsConsentCheckbox from "@/components/SmsConsentCheckbox";
 import { pickRateLimitCheer } from "@shared/lib/rateLimitCheer";
 
 // Mirrors the GoHighLevel form:
@@ -191,6 +192,7 @@ export default function CourseCreatorForm() {
   const [network, setNetwork] = useState("");
   const [consentValues, setConsentValues] = useState(false);
   const [consentComms, setConsentComms] = useState(false);
+  const [smsConsent, setSmsConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -235,6 +237,8 @@ export default function CourseCreatorForm() {
         questions: questions.trim(),
         consentValues,
         consentComms,
+        sms_consent: smsConsent,
+        sms_consent_at: new Date().toISOString(),
       });
       if (!result.success) {
         console.error("Course-creator submit failed:", result.error);
@@ -527,6 +531,8 @@ export default function CourseCreatorForm() {
             </span>
           </label>
         </div>
+
+        <SmsConsentCheckbox id="cc-sms-consent" checked={smsConsent} onCheckedChange={setSmsConsent} />
 
         <Button
           type="submit"

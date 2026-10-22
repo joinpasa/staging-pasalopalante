@@ -1,4 +1,5 @@
 import { useState } from "react";
+import SmsConsentCheckbox from "@/components/SmsConsentCheckbox";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Check, ChevronsUpDown } from "lucide-react";
@@ -58,6 +59,7 @@ export default function QuickPledgeForm() {
     setPledgeText(String(n));
   };
   const [termsAgreed, setTermsAgreed] = useState(false);
+  const [smsConsent, setSmsConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const helpRoleOptions: { value: HelpRole; label: string }[] = [
@@ -111,6 +113,8 @@ export default function QuickPledgeForm() {
           message: `Role: ${helpRole}`,
           mode: "individual",
           helpRole: helpRole || undefined,
+          sms_consent: smsConsent,
+          sms_consent_at: new Date().toISOString(),
         });
       } catch {
         // Non-fatal — commit already succeeded
@@ -301,6 +305,8 @@ export default function QuickPledgeForm() {
           </span>
         </label>
       )}
+
+      <SmsConsentCheckbox id="qp-sms-consent" variant="native" checked={smsConsent} onCheckedChange={setSmsConsent} />
 
       <Button type="submit" disabled={submitting} className="w-full !py-6">
         {submitting ? t.commit.submitting : t.commit.submit}

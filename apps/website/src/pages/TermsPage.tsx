@@ -3,9 +3,12 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import SEO from "@/components/SEO";
 import { useLanguage } from "@shared/contexts/LanguageContext";
+import { useScrollToHash } from "@/hooks/useScrollToHash";
 
 export default function TermsPage() {
   const { lang } = useLanguage();
+  const es = lang === "es";
+  useScrollToHash();
   return (
     <div className="min-h-screen bg-warm-cream">
       <SEO
@@ -103,6 +106,53 @@ export default function TermsPage() {
               {lang === "es"
                 ? "Podemos actualizar estos Términos. Los cambios materiales serán anunciados en este sitio."
                 : "We may update these Terms. Material changes will be announced on this site."}
+            </p>
+
+            {/* SMS Terms — A2P 10DLC carrier-review language. Wording and the
+                (575) 577-7277 number are fixed by the campaign registration;
+                linked as /terms#sms from the SMS consent checkbox. Keywords
+                (STOP, HELP, START, KINDNESS, JOIN) stay in English in every
+                language — they're what carriers and the platform listen for. */}
+            <h2 id="sms" className="font-display text-2xl text-foreground mt-8 scroll-mt-40">
+              {es ? "Términos de SMS" : "SMS Terms"}
+            </h2>
+            <p>
+              <strong>{es ? "Programa:" : "Program:"}</strong>{" "}
+              {es
+                ? "Pass Kindness Forward, una iniciativa de Te Amo PR, envía mensajes de texto sobre eventos (como la Transmisión Global de Bondad), novedades del programa durante la Temporada Global de Bondad, oportunidades de voluntariado e invitaciones a registrar actos de bondad."
+                : "Pass Kindness Forward, an initiative of Te Amo PR, sends text messages about events (such as the Global Kindness Broadcast), program updates during Global Kindness Season, volunteer opportunities, and invitations to log acts of kindness."}
+            </p>
+            <p>
+              <strong>{es ? "Cómo suscribirte:" : "How to opt in:"}</strong>{" "}
+              {es
+                ? "Marca la casilla opcional de consentimiento de SMS en nuestros formularios de registro o de Involúcrate, o envía un mensaje de texto con KINDNESS o JOIN al (575) 577-7277."
+                : "Check the optional SMS consent box on our sign-up or Get Involved forms, or text KINDNESS or JOIN to (575) 577-7277."}
+            </p>
+            <p>
+              <strong>{es ? "Frecuencia y costo:" : "Frequency and cost:"}</strong>{" "}
+              {es
+                ? "La frecuencia de los mensajes varía. Pueden aplicar tarifas de mensajes y datos."
+                : "Message frequency varies. Message and data rates may apply."}
+            </p>
+            <p>
+              <strong>{es ? "Cancelar la suscripción:" : "Opting out:"}</strong>{" "}
+              {es
+                ? "Responde STOP para cancelar en cualquier momento. Recibirás un mensaje de confirmación y ningún otro mensaje de texto. Responde START para volver a suscribirte."
+                : "Reply STOP to cancel at any time. You will receive one confirmation message and no further texts. Reply START to rejoin."}
+            </p>
+            <p>
+              <strong>{es ? "Ayuda:" : "Help:"}</strong>{" "}
+              {es ? "Responde HELP para obtener ayuda, o escríbenos a " : "Reply HELP for help, or contact us at "}
+              <a href="mailto:info@passkindnessforward.com" className="text-warm-sky underline">info@passkindnessforward.com</a>.
+            </p>
+            <p>
+              {es
+                ? "Los operadores no son responsables de mensajes retrasados o no entregados. El consentimiento para recibir mensajes de texto no es una condición para ninguna compra ni participación."
+                : "Carriers are not liable for delayed or undelivered messages. Consent to receive text messages is not a condition of any purchase or participation."}
+            </p>
+            <p>
+              {es ? "Consulta nuestra Política de Privacidad en " : "See our Privacy Policy at "}
+              <a href="https://pasalopalante.com/privacy#sms" className="text-warm-sky underline">https://pasalopalante.com/privacy#sms</a>.
             </p>
 
             <h2 className="font-display text-2xl text-foreground mt-8">

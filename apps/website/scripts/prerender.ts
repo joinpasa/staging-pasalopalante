@@ -37,6 +37,7 @@ const FOOTER = `
     <strong>Pásalo Pa'lante is a global kindness movement and sister
     initiative of Te Amo PR, an IRS-recognized 501(c)(3) nonprofit
     organization based in Puerto Rico.</strong><br />
+    Pass Kindness Forward is an initiative of Te Amo PR.<br />
     Te Amo PR: <a href="https://teamopr.org">teamopr.org</a> ·
     Pásalo Pa'lante: <a href="https://pasalopalante.com">pasalopalante.com</a><br />
     Email: <a href="mailto:info@passkindnessforward.com">info@passkindnessforward.com</a> ·
@@ -206,6 +207,11 @@ const routes: Route[] = [
       <p>To respond to inquiries, coordinate participation, manage ambassador or volunteer interest, provide updates, process donation inquiries, support campaigns, improve the website, measure outreach, protect security, prevent fraud or spam, comply with legal obligations, and communicate about Te Amo PR or Pásalo Pa'lante. <strong>We do not sell personal information.</strong></p>
       <h2>Donations</h2>
       <p>Donations are processed by secure third-party payment processors. We do not directly store full credit card numbers or full payment credentials on this website.</p>
+      <h2 id="sms">SMS / Text Messaging</h2>
+      <p>Pass Kindness Forward, an initiative of Te Amo PR, may send text messages to people who opt in, including event reminders, program updates, volunteer opportunities, and invitations to log acts of kindness.</p>
+      <p><strong>Information we collect:</strong> When you opt in, we collect your mobile phone number and your consent to receive messages. We use it only to send you the messages you signed up for.</p>
+      <p><strong>No sharing:</strong> Mobile information will not be shared with third parties or affiliates for marketing or promotional purposes. Text messaging originator opt-in data and consent will not be shared with any third parties. This excludes service providers that help us deliver messages, such as our messaging platform, who may use it only for that purpose.</p>
+      <p><strong>Opting out:</strong> Reply STOP at any time to stop receiving messages. Reply HELP for help, or contact us at <a href="mailto:info@passkindnessforward.com">info@passkindnessforward.com</a>.</p>
       <h2>Cookies, analytics &amp; Google Ad Grants</h2>
       <p>We may use cookies, Google Analytics, Google Ads, Google Ad Grants, and similar tools to understand website traffic, measure campaign effectiveness, prevent misuse, and support mission-related outreach. We do not use these tools to sell personal information.</p>
       <h2>Sharing</h2>
@@ -243,6 +249,14 @@ const routes: Route[] = [
       <p>By submitting stories, photos, videos, or testimonials, you confirm you have the right to submit them. We may review, edit, decline, or remove submitted content at our discretion.</p>
       <h2>Disclaimer &amp; limitation of liability</h2>
       <p>Website content is provided "as is" for general educational, inspirational, nonprofit, and community engagement purposes. To the fullest extent permitted by law, Pásalo Pa'lante, Te Amo PR, and their representatives are not liable for damages arising from use of this website or participation in activities promoted through it.</p>
+      <h2 id="sms">SMS Terms</h2>
+      <p><strong>Program:</strong> Pass Kindness Forward, an initiative of Te Amo PR, sends text messages about events (such as the Global Kindness Broadcast), program updates during Global Kindness Season, volunteer opportunities, and invitations to log acts of kindness.</p>
+      <p><strong>How to opt in:</strong> Check the optional SMS consent box on our sign-up or Get Involved forms, or text KINDNESS or JOIN to (575) 577-7277.</p>
+      <p><strong>Frequency and cost:</strong> Message frequency varies. Message and data rates may apply.</p>
+      <p><strong>Opting out:</strong> Reply STOP to cancel at any time. You will receive one confirmation message and no further texts. Reply START to rejoin.</p>
+      <p><strong>Help:</strong> Reply HELP for help, or contact us at <a href="mailto:info@passkindnessforward.com">info@passkindnessforward.com</a>.</p>
+      <p>Carriers are not liable for delayed or undelivered messages. Consent to receive text messages is not a condition of any purchase or participation.</p>
+      <p>See our Privacy Policy at <a href="https://pasalopalante.com/privacy#sms">https://pasalopalante.com/privacy#sms</a>.</p>
       <h2>Contact</h2>
       <p>Email: <a href="mailto:info@passkindnessforward.com">info@passkindnessforward.com</a> · Phone: (787) 705-0778 · Address: 550 Av. de la Constitución #905, San Juan, PR.</p>
     `,
@@ -356,9 +370,22 @@ function renderShell(route: Route): string {
     html = html.replace(/<\/head>/, `    <link rel="canonical" href="${url}" />\n  </head>`);
   }
 
-  // Replace #root contents with route-specific visible HTML
-  const rootBlock = `<div id="root"><main>${route.body}${FOOTER}</main></div>`;
-  html = html.replace(/<div id="root">[\s\S]*?<\/div>\s*(?=<noscript|<script)/, `${rootBlock}\n    `);
+  // Swap the route's own content into the crawler fallback. index.html keeps
+  // that fallback in a <noscript> *inside* #root (after the boot splash), so
+  // real browsers never flash it and only non-JS clients — search crawlers,
+  // carrier/compliance reviewers' fetchers — read it. The old pattern looked
+  // for #root closing before a <noscript>, which stopped matching once the
+  // fallback moved inside #root, so every route silently fell back to the
+  // generic homepage text. A function replacer so "$" in page copy is literal.
+  const fallback = `<main>${route.body}${FOOTER}</main>`;
+  const routeHtml = html.replace(
+    /(<div id="root">[\s\S]*?<noscript>)[\s\S]*?(<\/noscript>)/,
+    (_m, open: string, close: string) => `${open}\n      ${fallback}\n      ${close}`,
+  );
+  if (routeHtml === html) {
+    throw new Error(`[prerender] couldn't find the #root <noscript> fallback to fill for ${route.path}`);
+  }
+  html = routeHtml;
 
   return html;
 }
