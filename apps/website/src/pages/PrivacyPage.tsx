@@ -25,8 +25,8 @@ export default function PrivacyPage() {
     <div className="min-h-screen bg-warm-cream">
       <SEO
         title={t(
-          "Privacy Policy & Legal Information — Pásalo Pa'lante",
-          "Política de Privacidad e Información Legal — Pásalo Pa'lante"
+          "Privacy Policy — Pásalo Pa'lante",
+          "Política de Privacidad — Pásalo Pa'lante"
         )}
         description={t(
           "How Pásalo Pa'lante, a sister initiative of Te Amo PR (a 501(c)(3) nonprofit), collects, uses, and protects information across the global kindness movement.",
@@ -40,7 +40,7 @@ export default function PrivacyPage() {
           <header className="mb-10 text-center">
             <p className="eyebrow">Pásalo Pa'lante</p>
             <h1 className="headline-xl text-foreground mt-3">
-              {t("Privacy Policy & Legal Information", "Política de Privacidad e Información Legal")}
+              {t("Privacy Policy", "Política de Privacidad")}
             </h1>
             <p className="text-sm text-foreground/60 mt-3">
               {t("Effective Date: June 17, 2026", "Fecha de vigencia: 17 de junio de 2026")}
@@ -240,8 +240,8 @@ export default function PrivacyPage() {
               <p>
                 <strong>{t("No sharing:", "No compartimos:")}</strong>{" "}
                 {t(
-                  "Mobile information will not be shared with third parties or affiliates for marketing or promotional purposes. Text messaging originator opt-in data and consent will not be shared with any third parties. This excludes service providers that help us deliver messages, such as our messaging platform, who may use it only for that purpose.",
-                  "La información móvil no se compartirá con terceros ni afiliados para fines de mercadeo o promoción. Los datos de suscripción y el consentimiento del remitente de mensajes de texto no se compartirán con terceros. Esto excluye a los proveedores de servicios que nos ayudan a entregar los mensajes, como nuestra plataforma de mensajería, que solo pueden usarlos para ese fin."
+                  "We do not sell or share your SMS opt-in data or personal information with third parties for marketing purposes. Mobile information will not be shared with third parties or affiliates for marketing or promotional purposes. Text messaging originator opt-in data and consent will not be shared with any third parties. This excludes service providers that help us deliver messages, such as our messaging platform, who may use it only for that purpose.",
+                  "No vendemos ni compartimos tus datos de suscripción a SMS ni tu información personal con terceros para fines de mercadeo. La información móvil no se compartirá con terceros ni afiliados para fines de mercadeo o promoción. Los datos de suscripción y el consentimiento del remitente de mensajes de texto no se compartirán con terceros. Esto excluye a los proveedores de servicios que nos ayudan a entregar los mensajes, como nuestra plataforma de mensajería, que solo pueden usarlos para ese fin."
                 )}
               </p>
               <p>

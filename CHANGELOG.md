@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-10-22 — va.deedumlao@gmail.com
 
+- **Privacy Policy: title is now just "Privacy Policy"** (was "Privacy Policy & Legal Information"; Spanish "Política de Privacidad"), and the SMS section adds "We do not sell or share your SMS opt-in data or personal information with third parties for marketing purposes." (with Spanish), for the SMS carrier review.
 - **SMS Terms "How to opt in" simplified** to just the website consent checkbox (English and Spanish); removed the "text KINDNESS or JOIN to (575) 577-7277" option.
 - **SMS Terms now link to the Privacy Policy on passkindnessforward.com** (the domain the SMS brand is registered to) instead of pasalopalante.com. Both domains serve the same Privacy and Terms pages.
 - **SMS consent checkbox wording updated** to "I agree to receive text messages from Pass Kindness Forward with event reminders, updates and ways to get involved. Msg frequency varies, msg & data rates may apply. Reply STOP to opt out, HELP for help. Privacy Policy & SMS Terms." (with Spanish to match), on every form that has it.
