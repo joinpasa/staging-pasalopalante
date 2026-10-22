@@ -256,7 +256,7 @@ const routes: Route[] = [
       <p><strong>Opting out:</strong> Reply STOP to cancel at any time. You will receive one confirmation message and no further texts. Reply START to rejoin.</p>
       <p><strong>Help:</strong> Reply HELP for help, or contact us at <a href="mailto:info@passkindnessforward.com">info@passkindnessforward.com</a>.</p>
       <p>Carriers are not liable for delayed or undelivered messages. Consent to receive text messages is not a condition of any purchase or participation.</p>
-      <p>See our Privacy Policy at <a href="https://pasalopalante.com/privacy#sms">https://pasalopalante.com/privacy#sms</a>.</p>
+      <p>See our Privacy Policy at <a href="https://passkindnessforward.com/privacy#sms">https://passkindnessforward.com/privacy#sms</a>.</p>
       <h2>Contact</h2>
       <p>Email: <a href="mailto:info@passkindnessforward.com">info@passkindnessforward.com</a> · Phone: (787) 705-0778 · Address: 550 Av. de la Constitución #905, San Juan, PR.</p>
     `,

@@ -110,7 +110,7 @@ export default function TermsPage() {
 
             {/* SMS Terms — A2P 10DLC carrier-review language. Wording and the
                 (575) 577-7277 number are fixed by the campaign registration;
-                linked as /terms#sms from the SMS consent checkbox. Keywords
+                linked as /terms#sms from the SMS consent checkbox. The privacy link uses passkindnessforward.com, the domain the 10DLC brand is registered to. Keywords
                 (STOP, HELP, START, KINDNESS, JOIN) stay in English in every
                 language — they're what carriers and the platform listen for. */}
             <h2 id="sms" className="font-display text-2xl text-foreground mt-8 scroll-mt-40">
@@ -152,7 +152,7 @@ export default function TermsPage() {
             </p>
             <p>
               {es ? "Consulta nuestra Política de Privacidad en " : "See our Privacy Policy at "}
-              <a href="https://pasalopalante.com/privacy#sms" className="text-warm-sky underline">https://pasalopalante.com/privacy#sms</a>.
+              <a href="https://passkindnessforward.com/privacy#sms" className="text-warm-sky underline">https://passkindnessforward.com/privacy#sms</a>.
             </p>
 
             <h2 className="font-display text-2xl text-foreground mt-8">
