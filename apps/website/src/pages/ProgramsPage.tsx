@@ -73,8 +73,8 @@ export default function ProgramsPage() {
     <div className="min-h-screen bg-warm-cream">
       <SEO
         title={t(
-          "Programs & How It Works — Pásalo Pa'lante",
-          "Programas y Cómo Funciona — Pásalo Pa'lante"
+          "Programs & How It Works — Kindness Forward",
+          "Programas y Cómo Funciona — Kindness Forward"
         )}
         description={t(
           "Pledges, volunteers, ambassadors, schools, partners, and kindness acts — how Pásalo Pa'lante and Te Amo PR mobilize a global kindness movement.",

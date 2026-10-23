@@ -13,7 +13,7 @@ const DonatePage = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title="Donate — Fund the Global Kindness Movement | Pásalo Pa'lante"
+        title="Donate — Fund the Global Kindness Movement | Kindness Forward"
         description="Support Pásalo Pa'lante with a tax-deductible donation through Te Amo PR, a U.S. 501(c)(3) nonprofit (EIN 66-0975633). Every gift fuels acts of kindness worldwide."
         path="/donate"
       />

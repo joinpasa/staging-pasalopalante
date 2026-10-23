@@ -41,7 +41,7 @@ export default function SharePage() {
   return (
     <div className="min-h-screen bg-warm-cream flex flex-col">
       <SEO
-        title="Share an Act of Kindness — Pásalo Pa'lante"
+        title="Share an Act of Kindness — Kindness Forward"
         description="Share an act of kindness — given, received, or witnessed — and add a new ripple to the global Pásalo Pa'lante wave."
         path="/share"
       />

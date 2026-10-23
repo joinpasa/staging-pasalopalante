@@ -12,7 +12,7 @@ export default function TermsPage() {
   return (
     <div className="min-h-screen bg-warm-cream">
       <SEO
-        title="Terms of Service — Pásalo Pa'lante"
+        title="Terms of Service — Kindness Forward"
         description="Review the Terms of Service for Pásalo Pa'lante and Te Amo PR's global kindness movement platform."
         path="/terms"
       />

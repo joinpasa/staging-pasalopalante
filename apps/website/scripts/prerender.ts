@@ -63,7 +63,7 @@ const SISTER = `<p><strong>Pásalo Pa'lante is a sister initiative of Te Amo PR<
 const routes: Route[] = [
   {
     path: "/about",
-    title: "About Pásalo Pa'lante | Sister Initiative of Te Amo PR",
+    title: "About Kindness Forward | An Initiative of Te Amo PR",
     description:
       "Learn about Pásalo Pa'lante, a global kindness movement connected to Te Amo PR, a 501(c)(3) nonprofit organization based in Puerto Rico.",
     body: `
@@ -92,7 +92,7 @@ const routes: Route[] = [
   },
   {
     path: "/how-it-works",
-    title: "How Pásalo Pa'lante Works | Pass Kindness Forward",
+    title: "How It Works | Kindness Forward",
     description:
       "Discover how individuals, schools, organizations, cities, and ambassadors can participate in the Pásalo Pa'lante kindness movement.",
     body: `
@@ -113,7 +113,7 @@ const routes: Route[] = [
   },
   {
     path: "/programs",
-    title: "Programs & How It Works — Pásalo Pa'lante",
+    title: "Programs & How It Works — Kindness Forward",
     description:
       "Pledges, volunteers, ambassadors, schools, partners, and kindness acts — how Pásalo Pa'lante and Te Amo PR mobilize a global kindness movement.",
     body: `
@@ -135,7 +135,7 @@ const routes: Route[] = [
   },
   {
     path: "/get-involved",
-    title: "Get Involved | Pásalo Pa'lante",
+    title: "Get Involved | Kindness Forward",
     description:
       "Join Pásalo Pa'lante as an individual, school, organization, ambassador, partner, or supporter.",
     body: `
@@ -153,7 +153,7 @@ const routes: Route[] = [
   },
   {
     path: "/donate",
-    title: "Donate | Support Pásalo Pa'lante and Te Amo PR",
+    title: "Donate | Support Kindness Forward and Te Amo PR",
     description:
       "Support Pásalo Pa'lante through Te Amo PR, an IRS-recognized 501(c)(3) nonprofit (EIN 66-0975633). Donations are tax-deductible to the fullest extent allowed by U.S. law.",
     body: `
@@ -175,7 +175,7 @@ const routes: Route[] = [
   },
   {
     path: "/contact",
-    title: "Contact | Pásalo Pa'lante and Te Amo PR",
+    title: "Contact | Kindness Forward and Te Amo PR",
     description:
       "Contact Pásalo Pa'lante and Te Amo PR for partnerships, schools, donations, media, legal, privacy, or general inquiries.",
     body: `
@@ -194,7 +194,7 @@ const routes: Route[] = [
   },
   {
     path: "/privacy",
-    title: "Privacy Policy | Pásalo Pa'lante",
+    title: "Privacy Policy | Kindness Forward",
     description:
       "Read the Privacy Policy for pasalopalante.com, the official movement website for Pásalo Pa'lante, a sister initiative of Te Amo PR.",
     body: `
@@ -228,7 +228,7 @@ const routes: Route[] = [
   },
   {
     path: "/terms",
-    title: "Terms & Legal Information | Pásalo Pa'lante",
+    title: "Terms & Legal Information | Kindness Forward",
     description:
       "Read the Terms and Legal Information for pasalopalante.com, the movement website for Pásalo Pa'lante and Te Amo PR.",
     body: `
@@ -263,7 +263,7 @@ const routes: Route[] = [
   },
   {
     path: "/community-guidelines",
-    title: "Community Guidelines | Pásalo Pa'lante",
+    title: "Community Guidelines | Kindness Forward",
     description:
       "Review the community guidelines for participating in Pásalo Pa'lante with kindness, respect, safety, and integrity.",
     body: `
@@ -283,7 +283,7 @@ const routes: Route[] = [
   },
   {
     path: "/partners",
-    title: "Our Partners | Pásalo Pa'lante",
+    title: "Our Partners | Kindness Forward",
     description:
       "Meet the businesses, media, governments, nonprofits, and educators powering Pásalo Pa'lante and the global kindness movement.",
     body: `
@@ -297,7 +297,7 @@ const routes: Route[] = [
   },
   {
     path: "/media",
-    title: "In the Press | Pásalo Pa'lante",
+    title: "In the Press | Kindness Forward",
     description:
       "1,135,096 acts of kindness, every municipality, millions of impressions. See the coverage, then join the next wave.",
     body: `
