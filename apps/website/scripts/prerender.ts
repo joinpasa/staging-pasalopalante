@@ -307,7 +307,6 @@ const routes: Route[] = [
       <ul>
         <li><a href="https://wipr.pr/puerto-rico-logra-un-record-mundial-con-mas-de-1-millon-de-actos-de-bondad/">WIPR (Notiséis 360): Puerto Rico logra un récord mundial con más de 1 millón de actos de bondad</a></li>
         <li><a href="https://www.metro.pr/entretenimiento/2025/10/21/ola-de-amor-y-bondad-recorrera-toda-la-isla/">Metro Puerto Rico: Ola de amor y bondad recorrerá toda la isla</a></li>
-        <li><a href="https://wipr.pr/te-amo-pr-promueve-actos-de-bondad-en-puertorico/">WIPR TV: Te Amo PR promueve actos de bondad en Puerto Rico</a></li>
         <li><a href="https://wapa.tv/programas/pegate/tommy-ramos-presenta-la-campa-a-p-salo-pa-lante/article_af1de326-c453-46b6-8385-bc55d27e6c5b.html">WAPA TV: Tommy Ramos presenta la campaña Pásalo Pa'lante</a></li>
       </ul>
       <h2>Video &amp; podcast</h2>
