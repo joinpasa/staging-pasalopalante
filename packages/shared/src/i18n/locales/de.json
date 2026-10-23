@@ -412,14 +412,14 @@
         "body": "Tippen Sie auf diese Karte, wenn Sie etwas Freundliches getan haben. Wählen Sie die passende Tat – in wenigen Sekunden sind Sie fertig."
       }
     ],
-    "globalSeason": "Globale Saison der Freundlichkeit",
+    "globalSeason": "Global Kindness Season",
     "seasonDates": "1. Nov. 2026 – 31. Jan. 2027",
     "days": "TAGE",
     "hours": "STD.",
     "minutes": "MIN.",
     "seconds": "SEK.",
     "puertoRicoTime": "Nach der Zeit in Puerto Rico – dort begann die Welle.",
-    "seasonEnded": "Die diesjährige Saison der Freundlichkeit ist vorbei. Danke, dass Sie sie weitergegeben haben.",
+    "seasonEnded": "Die diesjährige Global Kindness Season ist vorbei. Danke, dass Sie sie weitergegeben haben.",
     "joinDialogLabel": "Pásalo Pa'lante beitreten",
     "joinTheChainTitle": "Werden Sie Teil der Kette",
     "joinDialogBody": "Erstellen Sie ein Konto, um Taten zu erfassen, Ihren Pass zu erhalten und Ihre Abzeichen zu sehen.",
@@ -451,20 +451,27 @@
     "joinMovement": "Bewegung beitreten",
     "donateNow": "Spenden",
     "signIn": "Anmelden",
-    "myAccount": "Mein Konto"
+    "myAccount": "Mein Konto",
+    "media": "Medien",
+    "mediaFeatured": "Highlights",
+    "mediaDigitalPress": "Digitale Presse",
+    "mediaVideos": "Videos",
+    "mediaSocial": "Social Media",
+    "live": "Live-Übertragung",
+    "liveBanner": "Seien Sie bei der weltweiten Live-Übertragung am 11.11.2026 dabei"
   },
   "hero": {
     "eyebrow": "Die weltweit größte koordinierte Bewegung der Freundlichkeit",
     "title": "Machen Sie mit und lösen Sie über<br/>\n<em>1 Milliarde Akte der Freundlichkeit</em> weltweit aus",
     "body1": "Was als nachbarschaftliche Hilfe nach dem Hurrikan Fiona begann, wurde zu einem zertifizierten Weltrekord: 1,1 Millionen Akte der Freundlichkeit in ganz Puerto Rico im November 2025.",
-    "body2": "2026 verbreitet sich das weltweit. Wir starten die Globale Saison der Freundlichkeit vom 1. November bis 31. Januar. Ihr einzelner Akt schließt sich der Welle an.",
+    "body2": "2026 verbreitet sich das weltweit. Wir starten die Global Kindness Season vom 1. November bis 31. Januar. Ihr einzelner Akt schließt sich der Welle an.",
     "cta": "Heute mitmachen!",
     "ctaSeeInAction": "In Aktion sehen",
     "pressPlayPrefix": "Läuft gerade, oder",
     "watchOnYouTube": "auf YouTube ansehen",
     "mute": "Video stummschalten",
     "unmute": "Ton einschalten",
-    "countdownLabel": "Die Globale Saison der Freundlichkeit beginnt in",
+    "countdownLabel": "Die Global Kindness Season beginnt in",
     "days": "Tagen",
     "hours": "Stunden",
     "minutes": "Minuten",
@@ -477,7 +484,7 @@
   },
   "getInvolved": {
     "buildHeading": "Baut mit uns",
-    "buildBody": "Machen Sie als Freiwilliger, Botschafter, Berater oder strategischer Partner mit. Oder melden Sie sich einfach an, um während der Globalen Saison der Freundlichkeit (1. Nov. 2026 – 31. Jan. 2027) einen Akt der Freundlichkeit zu vollbringen.",
+    "buildBody": "Machen Sie als Freiwilliger, Botschafter, Berater oder strategischer Partner mit. Oder melden Sie sich einfach an, um während der Global Kindness Season (1. Nov. 2026 – 31. Jan. 2027) einen Akt der Freundlichkeit zu vollbringen.",
     "buildCta": "Bewegung beitreten",
     "fundHeading": "Wirkung finanzieren",
     "fundBody": "Unterstützen Sie die Missionen von Te Amo PR in Puerto Rico und helfen Sie, Pásalo Pa'lante im großen Maßstab auszuweiten. Als 1101a2-, CECFL- und 501(c)(3)-zertifizierte Organisation sorgen wir dafür, dass Ihre Unterstützung echte, dauerhafte Wirkung in Bildung, Gesundheit und Gemeinschaftsentwicklung entfaltet und die puertoricanischen Gemeinden auf der ganzen Insel stärkt.",
@@ -611,7 +618,7 @@
     "takeItFurtherEyebrow": "Gehen Sie weiter",
     "takeItFurtherHeading": "Erstellen Sie ein Konto, um Ihre Akte der Freundlichkeit zu verfolgen",
     "takeItFurtherBullets": [
-      "Machen Sie eine Zusage für die Globale Saison der Freundlichkeit (1. Nov. 2026 – 31. Jan. 2027) und helfen Sie uns, einen Weltrekord von 1 Milliarde Akten der Freundlichkeit aufzustellen."
+      "Machen Sie eine Zusage für die Global Kindness Season (1. Nov. 2026 – 31. Jan. 2027) und helfen Sie uns, einen Weltrekord von 1 Milliarde Akten der Freundlichkeit aufzustellen."
     ],
     "yourPledgeLabel": "Ihre Zusage",
     "actsSharedLabel": "Geteilte Akte",
@@ -663,7 +670,11 @@
       "downloadShort": "Herunterladen",
       "instagramHint": "Bild heruntergeladen und Bildunterschrift kopiert – öffnen Sie Instagram und fügen Sie ein.",
       "shareFailed": "Teilen fehlgeschlagen – versuchen Sie eine andere Option."
-    }
+    },
+    "linkDetected": "{platform}-Link erkannt",
+    "linkCaptionLabel": "Beschreibung hinzufügen (optional)",
+    "linkCaptionPlaceholder": "Kurze Beschreibung hinzufügen…",
+    "removeLink": "Link entfernen"
   },
   "liveWall": {
     "eyebrow": "Live von der Wand",
@@ -682,7 +693,7 @@
     "featuredEyebrow": "Ein Akt der Freundlichkeit, geteilt von",
     "nextStepEyebrow": "Ihr nächster Schritt",
     "nextStepHeading": "Sagen Sie einen Akt der Freundlichkeit zu",
-    "nextStepBody": "Verpflichten Sie sich zu einem (oder mehreren) Akten der Freundlichkeit während der Globalen Saison der Freundlichkeit (1. Nov. 2026 – 31. Jan. 2027). Jede Zusage zählt zum Ziel von einer Milliarde.",
+    "nextStepBody": "Verpflichten Sie sich zu einem (oder mehreren) Akten der Freundlichkeit während der Global Kindness Season (1. Nov. 2026 – 31. Jan. 2027). Jede Zusage zählt zum Ziel von einer Milliarde.",
     "orShare": "Oder teilen Sie Ihren eigenen Akt der Freundlichkeit",
     "shareCta": "Jetzt einen Akt teilen",
     "loading": "Akt der Freundlichkeit wird geladen…",
@@ -697,7 +708,7 @@
   "commit": {
     "sectionEyebrow": "Mitmachen",
     "sectionHeading": "Sagen Sie Ihre Akte zu. Oder helfen Sie, die Bewegung anzuführen.",
-    "sectionBody": "Die Globale Saison der Freundlichkeit läuft vom 1. November 2026 bis 31. Januar 2027, und wir streben eine Milliarde Akte der Freundlichkeit weltweit an. Sagen Sie zu, wie viele Sie (oder Ihre Gruppe) leisten werden, oder übernehmen Sie eine größere Rolle: Länderleiter, Organisationsbotschafter, Freiwilliger oder Gemeinschaftsförderer. Jede Zusage zählt. Jeder Anführer vervielfacht die Welle.",
+    "sectionBody": "Die Global Kindness Season läuft vom 1. November 2026 bis 31. Januar 2027, und wir streben eine Milliarde Akte der Freundlichkeit weltweit an. Sagen Sie zu, wie viele Sie (oder Ihre Gruppe) leisten werden, oder übernehmen Sie eine größere Rolle: Länderleiter, Organisationsbotschafter, Freiwilliger oder Gemeinschaftsförderer. Jede Zusage zählt. Jeder Anführer vervielfacht die Welle.",
     "cta": "Zusage machen",
     "tabIndividual": "Individuell",
     "tabOrganization": "Gruppe",
@@ -711,7 +722,7 @@
     "emailLabel": "E-Mail",
     "emailPlaceholder": "sie@beispiel.com",
     "emailHint": "Verfolgen Sie Ihre Freundlichkeit & Serien!",
-    "pledgeLabel": "Wie viele Akte der Freundlichkeit werden Sie sich verpflichten, während der Globalen Saison der Freundlichkeit (1. November 2026 – 31. Januar 2027) zu leisten? \n",
+    "pledgeLabel": "Wie viele Akte der Freundlichkeit werden Sie sich verpflichten, während der Global Kindness Season (1. November 2026 – 31. Januar 2027) zu leisten? \n",
     "pledgeHint": "Seien Sie ehrgeizig – jeder Akt zieht Kreise.",
     "individualPledgeHint": "Nur 2 Akte der Freundlichkeit pro Tag bringen Sie bis zum 31. Januar auf über 180 — jeder Akt zieht Kreise.",
     "phoneLabel": "Telefonnummer (mit Ländervorwahl)",
@@ -722,7 +733,7 @@
     "chapterPlaceholder": "z. B. Ortsgruppe San Juan",
     "orgWebsiteLabel": "Website",
     "orgWebsitePlaceholder": "z. B. ihreorganisation.de",
-    "orgPledgeLabel": "Gesamtzahl der Akte der Freundlichkeit, zu denen sich Ihre Gruppe während der Globalen Saison der Freundlichkeit (1. November 2026 – 31. Januar 2027) verpflichtet:",
+    "orgPledgeLabel": "Gesamtzahl der Akte der Freundlichkeit, zu denen sich Ihre Gruppe während der Global Kindness Season (1. November 2026 – 31. Januar 2027) verpflichtet:",
     "messageLabel": "Eine kurze Nachricht (optional)",
     "messagePlaceholder": "Warum schließen Sie sich der Welle an?",
     "submit": "Meine Zusage machen",
@@ -735,8 +746,8 @@
     "statPeople": "Globale Zusagen",
     "submitError": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
     "afterShareEyebrow": "Gehen Sie weiter",
-    "afterShareHeading": "Sagen Sie weitere Akte für die Globale Saison der Freundlichkeit zu",
-    "afterShareBody": "Sie haben einen geteilt – verpflichten Sie sich jetzt, wie viele weitere Sie leisten werden, um einen Weltrekord von einer Milliarde Akten der Freundlichkeit während der Globalen Saison der Freundlichkeit (1. November 2026 – 31. Januar 2027) aufzustellen.",
+    "afterShareHeading": "Sagen Sie weitere Akte für die Global Kindness Season zu",
+    "afterShareBody": "Sie haben einen geteilt – verpflichten Sie sich jetzt, wie viele weitere Sie leisten werden, um einen Weltrekord von einer Milliarde Akten der Freundlichkeit während der Global Kindness Season (1. November 2026 – 31. Januar 2027) aufzustellen.",
     "helpRoleLabel": "Wie möchten Sie helfen?",
     "helpRolePlaceholder": "Rolle wählen",
     "helpRoleDoActs": "Selbst Akte der Freundlichkeit vollbringen",
@@ -755,7 +766,8 @@
     "orgTypeNgo": "NGO",
     "orgTypeMunicipality": "Gemeinde / Behörde",
     "orgTypeFaith": "Religiöse / spirituelle Gruppe",
-    "orgTypeOther": "Sonstige"
+    "orgTypeOther": "Sonstige",
+    "statActsLogged": "Erfasste Akte"
   },
   "story": {
     "eyebrow": "Wo alles begann",
@@ -817,7 +829,7 @@
   "globalMap": {
     "eyebrow": "Die Welle breitet sich aus",
     "heading": "Von einer Insel zu 200 Ländern. Wir brauchen Sie, um dorthin zu gelangen.",
-    "body": "Wir erklären die Globale Saison der Freundlichkeit: vom 1. November bis 31. Januar, und wir wollen diese Bewegung in jedes Land der Erde bringen. Das wird nicht ohne Anführer geschehen, die bereit sind, sie nach Hause zu tragen. Wenn Ihr Land noch nicht vertreten ist, ist das keine Lücke. Das ist eine Einladung.",
+    "body": "Wir erklären die Global Kindness Season: vom 1. November bis 31. Januar, und wir wollen diese Bewegung in jedes Land der Erde bringen. Das wird nicht ohne Anführer geschehen, die bereit sind, sie nach Hause zu tragen. Wenn Ihr Land noch nicht vertreten ist, ist das keine Lücke. Das ist eine Einladung.",
     "cta": "Bringen Sie die Bewegung in Ihre Gemeinde"
   },
   "visualTransition": {
@@ -833,7 +845,7 @@
     "indSubtitle": "Sie brauchen keine Erlaubnis, um jemandes Tag zu verändern.",
     "indBody": "Sie brauchen kein Budget, keinen Plan und niemandes Zustimmung. Nur die Entscheidung, eine gute Tat zu vollbringen und sie weiterzugeben. Ihr einzelner Akt schlägt Wellen und bedeutet mehr, als Sie denken.",
     "whatYouGet": "Was Sie bekommen:",
-    "indBullet1": "→ Tragen Sie zu einem Weltrekord von 1 Milliarde Akten der Freundlichkeit während der Globalen Saison der Freundlichkeit bei",
+    "indBullet1": "→ Tragen Sie zu einem Weltrekord von 1 Milliarde Akten der Freundlichkeit während der Global Kindness Season bei",
     "indBullet2": "→ Verfolgen Sie Ihre Akte und würdigen Sie die Freundlichkeit anderer",
     "indBullet3": "→ Nehmen Sie an Freundlichkeits-Challenges teil",
     "indBullet4": "→ Bauen Sie eine tägliche Freundlichkeitsserie auf und verdienen Sie Abzeichen",
@@ -860,9 +872,9 @@
     "body3": "Nicht, weil jemand es uns sagt. Sondern, weil wir es wählen."
   },
   "novemberBand": {
-    "eyebrow": "Globale Saison der Freundlichkeit",
+    "eyebrow": "Global Kindness Season",
     "heading": "Drei Monate. Eine Milliarde Akte. Eine Welt.",
-    "body": "Die Globale Saison der Freundlichkeit läuft vom 1. November 2026 bis 31. Januar 2027 – eine koordinierte Welle der Freundlichkeit, die über jede Zeitzone, jedes Land und jede Gemeinschaft rollt, die bereit ist mitzumachen. Ihr einer Akt ist Teil des Weges zur Milliarde.",
+    "body": "Die Global Kindness Season läuft vom 1. November 2026 bis 31. Januar 2027 – eine koordinierte Welle der Freundlichkeit, die über jede Zeitzone, jedes Land und jede Gemeinschaft rollt, die bereit ist mitzumachen. Ihr einer Akt ist Teil des Weges zur Milliarde.",
     "cta": "Einen Akt der Freundlichkeit teilen"
   },
   "donateBand": {
@@ -1013,9 +1025,9 @@
     },
     "commitmentHeading": "Meine persönliche Verpflichtung",
     "commitmentBody": "Sie haben sich zu {count} Akten der Freundlichkeit im {month} verpflichtet.",
-    "eventMonth": "Globale Saison der Freundlichkeit (1. Nov. 2026 – 31. Jan. 2027)",
+    "eventMonth": "Global Kindness Season (1. Nov. 2026 – 31. Jan. 2027)",
     "progressLabel": "{done} von {total} erfasst",
-    "seasonCountdownEyebrow": "Countdown zur Globalen Saison der Freundlichkeit",
+    "seasonCountdownEyebrow": "Countdown zur Global Kindness Season",
     "seasonCountdownCaption": "In der Zeitzone Puerto Ricos, wo die Welle begann.",
     "emptyCommitment": "Machen Sie Ihre Zusage für 1 Milliarde Akte.",
     "makePersonalCommitment": "Persönliche Verpflichtung eingehen",

@@ -8,6 +8,15 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-23 — M.Schollmeyer@gmx.de
+
+- Translations: "Global Kindness Season" now always appears in English in every language, since it's part of the brand — it had been translated in a dozen different ways (one French text even called it a "week", another a season of "solidarity"). Along the way, fixed a French "How it works" step that showed the wrong step's text, and three Spanish texts that still talked about a "Global Kindness Month in November".
+- Arabic and Bengali: about 360 app texts per language had been saved as unreadable "?????" when those languages were first added, so the whole app showed question marks. They now show English until proper translations are added.
+
+## 2026-10-22 — M.Schollmeyer@gmx.de
+
+- Translations: filled in every missing text in all 10 non-English languages (about 1,100 entries — mostly the media menu, the partner/municipality/company forms, the share-an-act flow, the live wall, login/signup and account pages), so those parts no longer fall back to English. Existing translations were left untouched.
+
 ## 2026-10-22 — va.deedumlao@gmail.com
 
 - **Footer now uses the landscape Kindness Forward logo** (colorful heart beside "Kindness Forward"), sized to match the Pásalo Pa'lante logo next to it — the old stacked white version was too small to read.
