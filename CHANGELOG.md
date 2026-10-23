@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-23 — va.deedumlao@gmail.com
+
+- **Removed a dead link from the /media page.** The WIPR TV article ("Te Amo PR promueve actos de bondad en Puerto Rico") stopped loading — confirmed across multiple browsers — so that card is gone from Digital News & Press, and from the crawler-readable copy of the page.
+
 ## 2026-10-22 — va.deedumlao@gmail.com
 
 - **Privacy Policy: title is now just "Privacy Policy"** (was "Privacy Policy & Legal Information"; Spanish "Política de Privacidad"), and the SMS section adds "We do not sell or share your SMS opt-in data or personal information with third parties for marketing purposes." (with Spanish), for the SMS carrier review.
