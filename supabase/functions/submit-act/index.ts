@@ -8,15 +8,37 @@ const corsHeaders = {
 };
 
 const MODES = ["performed", "witnessed", "received"] as const;
-const TYPE_TAGS = [
-  "hug","listening","encouragement","gift","professional_services",
-  "beautification","food","transport","donation","other",
-];
-const CATEGORIES = ["words", "time_services", "financial"];
 const REASON_CODES = [
   "hate","harassment","threat","sexual","profanity",
   "pii","self_harm","spam","off_topic","other",
 ];
+
+// type_tag/category used to be guessed by the AI from the story text on every
+// call — but the "what did you do" chip on the Log an Act screen already
+// tells us this (AppLogAct.tsx's CHIP_LABELS, sent as act_type), so asking
+// the model to re-derive it was pure redundant spend. This table is the
+// static mapping instead; AI only has to do the part only it can do
+// (moderation), which also shrinks every single call's prompt and output.
+// Values are a judgment call, not a precise science — low-stakes, since
+// neither field drives anything user-facing today (type_tag is stored and
+// returned but not rendered as a label anywhere; category isn't read by the
+// frontend at all). Revisit if that changes.
+const ACT_TYPE_MAP: Record<string, { type_tag: string; category: string }> = {
+  "Helped a neighbor": { type_tag: "other", category: "time_services" },
+  "Gave a compliment": { type_tag: "encouragement", category: "words" },
+  "Volunteered": { type_tag: "other", category: "time_services" },
+  "Donated": { type_tag: "donation", category: "financial" },
+  "Paid for someone": { type_tag: "gift", category: "financial" },
+  "Listened & supported": { type_tag: "listening", category: "words" },
+  "Something else": { type_tag: "other", category: "time_services" },
+};
+const DEFAULT_CLASSIFICATION = { type_tag: "other", category: "time_services" };
+
+// Matches packages/shared/src/i18n/translations.ts's Language union — the
+// language the submitter's UI is actually displayed in is a far more
+// reliable signal than guessing from a short, often-ambiguous story text,
+// and costs nothing (no AI call) to use.
+const VALID_LANGS = ["en", "zh", "hi", "es", "fr", "ar", "bn", "pt", "ru", "de", "sl"];
 
 // Reject on uncertainty. Flip to false to hold borderline content for review instead.
 const STRICT_MODE = true;
@@ -34,6 +56,7 @@ interface SubmitBody {
   to_user_id?: string;
   act_type?: string;
   share_on_wall?: boolean;
+  lang?: string;
 }
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -63,6 +86,9 @@ Deno.serve(async (req) => {
       ? body.photo_paths.filter((p) => typeof p === "string").slice(0, 3)
       : [];
     const actType = (body.act_type ?? "").toString().trim().slice(0, 60) || null;
+    const requestedLang = (body.lang ?? "").toString().trim().toLowerCase();
+    const language = VALID_LANGS.includes(requestedLang) ? requestedLang : "en";
+    const { type_tag: typeTag, category } = (actType && ACT_TYPE_MAP[actType]) || DEFAULT_CLASSIFICATION;
     // Defaults to true (matches the Log an Act screen's own toggle default)
     // when the caller doesn't send it at all — only an explicit `false`
     // opts an act out of the public Wall.
@@ -146,9 +172,6 @@ Deno.serve(async (req) => {
     let reasonCodes: string[] = [];
     let shortReason: string | null = null;
     let confidence = 1;
-    let typeTag = "other";
-    let category = "time_services";
-    let language = "en";
 
     // Whether the moderation call itself could run at all (rate-limited,
     // out of credits, network failure, ...) — distinct from the model
@@ -172,7 +195,7 @@ Deno.serve(async (req) => {
               {
                 role: "system",
                 content:
-                  "You moderate and classify short stories about acts of kindness for a public wall. " +
+                  "You moderate short stories about acts of kindness for a public wall. " +
                   "Reject content that contains hate speech, harassment, threats, sexual content, profanity, " +
                   "personal contact info (phone/email/address), self-harm encouragement, spam, or that is unrelated to kindness. " +
                   "Be strict but fair: positive personal stories about kindness should be approved. " +
@@ -185,7 +208,7 @@ Deno.serve(async (req) => {
                 type: "function",
                 function: {
                   name: "moderate_act",
-                  description: "Moderate and classify an act of kindness.",
+                  description: "Moderate an act of kindness story.",
                   parameters: {
                     type: "object",
                     properties: {
@@ -195,12 +218,9 @@ Deno.serve(async (req) => {
                         type: "array",
                         items: { type: "string", enum: REASON_CODES },
                       },
-                      short_reason: { type: "string", description: "Brief human-readable reason" },
-                      type_tag: { type: "string", enum: TYPE_TAGS },
-                      category: { type: "string", enum: CATEGORIES },
-                      language: { type: "string", description: "ISO 639-1 code" },
+                      short_reason: { type: "string", description: "Brief human-readable reason, under 80 characters" },
                     },
-                    required: ["status", "confidence", "reason_codes", "type_tag", "category", "language"],
+                    required: ["status", "confidence", "reason_codes"],
                     additionalProperties: false,
                   },
                 },
@@ -228,9 +248,6 @@ Deno.serve(async (req) => {
                 ? parsed.reason_codes.filter((r: unknown) => typeof r === "string" && REASON_CODES.includes(r as string)).slice(0, 8)
                 : [];
               shortReason = typeof parsed.short_reason === "string" ? parsed.short_reason.slice(0, 300) : null;
-              typeTag = TYPE_TAGS.includes(parsed.type_tag) ? parsed.type_tag : "other";
-              category = CATEGORIES.includes(parsed.category) ? parsed.category : "time_services";
-              language = (parsed.language || "en").toString().slice(0, 8);
             } catch (_) {
               // Response didn't parse as expected — treat the same as the
               // model being unreachable rather than silently auto-approving.

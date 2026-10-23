@@ -11,6 +11,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 ## 2026-10-23 — va.deedumlao@gmail.com
 
 - **Removed a dead link from the /media page.** The WIPR TV article ("Te Amo PR promueve actos de bondad en Puerto Rico") stopped loading — confirmed across multiple browsers — so that card is gone from Digital News & Press, and from the crawler-readable copy of the page.
+- **Cut the AI moderation cost on every logged act, ahead of the Nov 1 launch.** The act-submission review (`submit-act`) used to ask the AI to both moderate the story *and* re-guess its category/type and language from the text — but we already collect the category from the chip the person taps ("Donated", "Volunteered", etc. on the Log an Act screen) and the language from the app's own UI setting, so asking the AI to re-derive both was pure wasted spend. The AI now does only the part only it can do (the actual safety review); everything else uses data we already have. Still on Gemini for now — this is a same-provider cost cut, not a switch — and measured against our real prompt, it's roughly a 25–30% reduction in tokens (and therefore cost) per moderated submission, with no change in moderation behavior.
 
 ## 2026-10-22 — va.deedumlao@gmail.com
 

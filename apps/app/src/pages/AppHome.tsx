@@ -261,6 +261,7 @@ export default function AppHome() {
           description: trimmed || undefined,
           photo_paths: [],
           video_url: quickSocialLink?.url || undefined,
+          lang,
         },
       });
       if (error) {
