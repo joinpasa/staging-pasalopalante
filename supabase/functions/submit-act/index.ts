@@ -34,6 +34,20 @@ const ACT_TYPE_MAP: Record<string, { type_tag: string; category: string }> = {
 };
 const DEFAULT_CLASSIFICATION = { type_tag: "other", category: "time_services" };
 
+// Sub-type tags — these ARE rendered to users (the emoji + chip row on the
+// Wall and the app's feed), unlike type_tag/category above, so unlike those
+// this isn't a static mapping off act_type; it still needs the AI reading
+// the actual story. What changed: this used to be a *second*, separate
+// Gemini call (classify-act), dispatched fire-and-forget right after this
+// one — meaning every act with a description paid two full round trips,
+// two system prompts, and had its story text sent twice. Folded into this
+// same call instead: one round trip, the story sent once, same tagging
+// quality (classify-act's own wording is reused below almost verbatim).
+// classify-act itself is left in place for its /backfill admin path
+// (reclassifying old acts) — just no longer auto-dispatched per submission.
+const TAGS = ["time", "money", "hands_on", "group", "words", "hug"] as const;
+const TAG_CONFIDENCE_THRESHOLD = Number(Deno.env.get("TAG_CONFIDENCE_THRESHOLD") ?? "0.7");
+
 // Matches packages/shared/src/i18n/translations.ts's Language union — the
 // language the submitter's UI is actually displayed in is a far more
 // reliable signal than guessing from a short, often-ambiguous story text,
@@ -173,6 +187,13 @@ Deno.serve(async (req) => {
     let shortReason: string | null = null;
     let confidence = 1;
 
+    // Tagging defaults. A photo-only/no-description act has nothing to tag —
+    // matches classify-act's own prior behavior of marking those "classified"
+    // with no tags rather than leaving them perpetually unclassified.
+    let tags: string[] | null = null;
+    let tagConfidence: Record<string, number> | null = null;
+    let classifiedAt: string | null = description ? null : new Date().toISOString();
+
     // Whether the moderation call itself could run at all (rate-limited,
     // out of credits, network failure, ...) — distinct from the model
     // actually reviewing the content and being uncertain about it. An AI
@@ -195,11 +216,21 @@ Deno.serve(async (req) => {
               {
                 role: "system",
                 content:
-                  "You moderate short stories about acts of kindness for a public wall. " +
-                  "Reject content that contains hate speech, harassment, threats, sexual content, profanity, " +
-                  "personal contact info (phone/email/address), self-harm encouragement, spam, or that is unrelated to kindness. " +
-                  "Be strict but fair: positive personal stories about kindness should be approved. " +
-                  "Use 'flagged_for_review' only when truly uncertain. Always call moderate_act.",
+                  "You review short real-world stories submitted to a public kindness wall, in one pass:\n\n" +
+                  "1) MODERATE: reject hate speech, harassment, threats, sexual content, profanity, personal contact info " +
+                  "(phone/email/address), self-harm encouragement, spam, or content unrelated to kindness. Be strict but fair — " +
+                  "positive personal stories about kindness should be approved. Use 'flagged_for_review' only when truly uncertain.\n\n" +
+                  "2) TAG (every act, regardless of status): assign a 0-1 confidence score for EVERY tag below, including ones that " +
+                  "don't apply (score them low) — multi-label, one act often has several:\n" +
+                  "- time: the person gave their time or attention (visiting, waiting with someone, tutoring, listening, showing up).\n" +
+                  "- money: money or paid-for goods changed hands (paying for someone, buying a meal, donating, covering a bill).\n" +
+                  "- hands_on: physical effort or labor (carrying, cleaning, cooking, driving, fixing, moving, building).\n" +
+                  "- group: done with or by more than one person, a team, family, class, church, or organization.\n" +
+                  "- words: the kindness was primarily spoken or written (encouragement, a compliment, a thank-you note, advice, saying the thing out loud).\n" +
+                  "- hug: physical affection or comfort (a hug, a hand on the shoulder, holding someone's hand, sitting with someone who is hurting).\n" +
+                  "The story may be in English, Spanish, French, German, or any other language — tag directly in that language, do NOT translate it first. " +
+                  "Be conservative: vague or very short text should score low across the board.\n\n" +
+                  "Always call review_act.",
               },
               { role: "user", content: `Mode: ${body.mode}\nStory: ${description}` },
             ],
@@ -207,8 +238,8 @@ Deno.serve(async (req) => {
               {
                 type: "function",
                 function: {
-                  name: "moderate_act",
-                  description: "Moderate an act of kindness story.",
+                  name: "review_act",
+                  description: "Moderate and tag an act of kindness story in one pass.",
                   parameters: {
                     type: "object",
                     properties: {
@@ -219,14 +250,20 @@ Deno.serve(async (req) => {
                         items: { type: "string", enum: REASON_CODES },
                       },
                       short_reason: { type: "string", description: "Brief human-readable reason, under 80 characters" },
+                      time: { type: "number", description: "0-1 confidence that the act is 'time'" },
+                      money: { type: "number", description: "0-1 confidence that the act is 'money'" },
+                      hands_on: { type: "number", description: "0-1 confidence that the act is 'hands_on'" },
+                      group: { type: "number", description: "0-1 confidence that the act is 'group'" },
+                      words: { type: "number", description: "0-1 confidence that the act is 'words'" },
+                      hug: { type: "number", description: "0-1 confidence that the act is 'hug'" },
                     },
-                    required: ["status", "confidence", "reason_codes"],
+                    required: ["status", "confidence", "reason_codes", ...TAGS],
                     additionalProperties: false,
                   },
                 },
               },
             ],
-            tool_choice: { type: "function", function: { name: "moderate_act" } },
+            tool_choice: { type: "function", function: { name: "review_act" } },
           }),
         });
 
@@ -248,6 +285,13 @@ Deno.serve(async (req) => {
                 ? parsed.reason_codes.filter((r: unknown) => typeof r === "string" && REASON_CODES.includes(r as string)).slice(0, 8)
                 : [];
               shortReason = typeof parsed.short_reason === "string" ? parsed.short_reason.slice(0, 300) : null;
+              const scores: Record<string, number> = {};
+              for (const tag of TAGS) {
+                const v = parsed[tag];
+                scores[tag] = typeof v === "number" && Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : 0;
+              }
+              tagConfidence = scores;
+              classifiedAt = new Date().toISOString();
             } catch (_) {
               // Response didn't parse as expected — treat the same as the
               // model being unreachable rather than silently auto-approving.
@@ -310,6 +354,25 @@ Deno.serve(async (req) => {
     const shouldStore = modStatus !== "rejected";
     const shouldPublish = modStatus === "approved";
     const shouldAlertAdmin = modStatus !== "approved";
+
+    // Tags are only meaningful (and only ever shown) for published acts —
+    // matches classify-act's prior behavior of never classifying anything
+    // that wasn't already 'published'. Pending/rejected acts keep tags null
+    // even though the model scored them in the same call; nothing reads
+    // that data for a non-published row, so there's no reason to store it.
+    if (shouldPublish && tagConfidence) {
+      const picked = TAGS.filter((t) => tagConfidence![t] >= TAG_CONFIDENCE_THRESHOLD);
+      tags = picked.length ? picked : null;
+    } else if (!shouldPublish) {
+      // Leave unclassified (null) rather than tag-less-but-marked-done — if
+      // a pending/flagged act is later manually approved from the Supabase
+      // Table Editor, classify-act's backfill (which looks for
+      // classified_at IS NULL) needs to still pick it up and tag it then,
+      // the same way it would have before this call existed.
+      tags = null;
+      tagConfidence = null;
+      classifiedAt = null;
+    }
 
     // Log rejected decisions immediately (no act row will be created).
     if (modStatus === "rejected") {
@@ -397,6 +460,9 @@ Deno.serve(async (req) => {
         category,
         language,
         act_type: actType,
+        tags,
+        tag_confidence: tagConfidence,
+        classified_at: classifiedAt,
         share_on_wall: shareOnWall,
         status: rowStatus,
         moderation_reason: shortReason,
@@ -438,32 +504,18 @@ Deno.serve(async (req) => {
       } catch (_) { /* best effort */ }
     }
 
-    // Sub-type tag classification: fire-and-forget, never blocks the response.
-    try {
-      const task = fetch(`${SUPABASE_URL}/functions/v1/classify-act`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${SERVICE_ROLE}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ act_id: data.id }),
-      })
-        .then(async (res) => {
-          if (!res.ok) console.error("classify-act dispatch failed", res.status, await res.text());
-        })
-        .catch((e) => console.error("classify-act dispatch failed", e));
-      // @ts-ignore EdgeRuntime is available in Supabase Edge Functions
-      if (typeof EdgeRuntime !== "undefined") EdgeRuntime.waitUntil(task);
-    } catch (e) {
-      console.error("classify-act dispatch error", e);
-    }
+    // Sub-type tags are already computed above (in the same Gemini call as
+    // moderation) and included in the insert — no more separate dispatch to
+    // classify-act here. That function is still around for its /backfill
+    // admin path (reclassifying older acts that predate this change, or
+    // ones a backfill needs to retry), just no longer auto-triggered per
+    // submission.
 
     // Link-preview thumbnail for a non-YouTube social link (Facebook/
     // Instagram/TikTok/X) — YouTube already gets a thumbnail directly from
-    // img.youtube.com with no fetch needed. Fire-and-forget, same dispatch
-    // pattern as classify-act above: never blocks the response, and a
-    // blocked/failed fetch just leaves no preview image, which the Wall
-    // already renders fine as a plain link card.
+    // img.youtube.com with no fetch needed. Fire-and-forget: never blocks
+    // the response, and a blocked/failed fetch just leaves no preview
+    // image, which the Wall already renders fine as a plain link card.
     if (shouldPublish && videoUrl) {
       try {
         const host = new URL(videoUrl).hostname.toLowerCase().replace(/^www\./, "");
@@ -490,7 +542,7 @@ Deno.serve(async (req) => {
     }
 
     // Refresh this contact's GHL totals (acts + pledges) fire-and-forget —
-    // same dispatch pattern as classify-act above, never blocks the response.
+    // same non-blocking dispatch pattern as the link-preview call above.
     if (shouldPublish && email) {
       try {
         const task = fetch(`${SUPABASE_URL}/functions/v1/ghl-sync-totals`, {
