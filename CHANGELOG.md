@@ -10,7 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-10-23 — va.deedumlao@gmail.com
 
-- Every page's browser-tab title (and the title shown when a page is shared on social media or in Google) now says **Kindness Forward** instead of Pásalo Pa'lante, across all website pages and all languages. The app's own title was left as is.
+- Every page's browser-tab title (and the title shown when a page is shared on social media or in Google) now says **Kindness Forward** instead of Pásalo Pa'lante, across all website pages and all languages. The app's tab title and its name on the install screen now say Kindness Forward too.
 - **New Kindness Forward logos everywhere (the star on the heart is gone).** Replaced every Kindness Forward logo across the website (header in both states, footer), the app (home header, Wall, loading splash) and the partners portal (logos, heart, browser/home-screen icons, share image) with the new versions.
 - **Homepage title and share preview now say Kindness Forward.** The browser tab and Facebook/WhatsApp/X previews read "Kindness Forward — Sparking 1 Billion Acts of Kindness Worldwide", and the share image is the new "1 Billion Acts of Kindness" Kindness Forward graphic. It has a new filename so social networks pick it up instead of showing their cached old image.
 - **Removed a dead link from the /media page.** The WIPR TV article ("Te Amo PR promueve actos de bondad en Puerto Rico") stopped loading — confirmed across multiple browsers — so that card is gone from Digital News & Press, and from the crawler-readable copy of the page.
