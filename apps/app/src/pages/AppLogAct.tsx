@@ -111,6 +111,7 @@ export default function AppLogAct() {
           act_type: picked,
           share_on_wall: shareOnWall,
           video_url: socialLink?.url || undefined,
+          lang,
         },
       });
       if (error) {

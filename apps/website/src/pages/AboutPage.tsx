@@ -14,7 +14,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-warm-cream">
       <SEO
-        title="About Pásalo Pa'lante — A Global Kindness Movement by Te Amo PR"
+        title="About Kindness Forward — A Global Kindness Movement by Te Amo PR"
         description="Learn about Pásalo Pa'lante, a global kindness movement created by Te Amo PR — a U.S. 501(c)(3) nonprofit based in Puerto Rico."
         path="/about"
       />

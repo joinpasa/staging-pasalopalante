@@ -3,7 +3,15 @@ import { isRateLimitedError } from "@shared/lib/rateLimitCheer";
 
 export type FormType = "get-involved" | "pledge" | "course-creator" | "app-join";
 
-export interface GetInvolvedData {
+/** Optional A2P 10DLC SMS consent, captured on every form that collects a
+ * phone number. `sms_consent_at` is when the form was submitted, i.e. when
+ * the consent decision (yes or no) was recorded. */
+export interface SmsConsentFields {
+  sms_consent?: boolean;
+  sms_consent_at?: string;
+}
+
+export interface GetInvolvedData extends SmsConsentFields {
   fullName: string;
   email: string;
   phone?: string;
@@ -14,7 +22,7 @@ export interface GetInvolvedData {
   message?: string;
 }
 
-export interface PledgeData {
+export interface PledgeData extends SmsConsentFields {
   fullName: string;
   email: string;
   phone?: string;
@@ -33,7 +41,7 @@ export interface PledgeData {
   pledgeContext?: "commit" | "onboarding";
 }
 
-export interface CourseCreatorData {
+export interface CourseCreatorData extends SmsConsentFields {
   fullName: string;
   email: string;
   phone?: string;

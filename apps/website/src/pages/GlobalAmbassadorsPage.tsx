@@ -156,7 +156,7 @@ export default function GlobalAmbassadorsPage() {
   return (
     <div className="min-h-screen bg-warm-cream">
       <SEO
-        title="Global Kindness Ambassadors — Pásalo Pa'lante"
+        title="Global Kindness Ambassadors — Kindness Forward"
         description="Find the Global Kindness Ambassador leading kindness in your country, connect with them, and plan acts of kindness together."
         path="/ambassadors"
       />

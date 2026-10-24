@@ -104,6 +104,7 @@ export default function CommitFlow({ onSuccess, compact = false, prefilledEmail,
               pledge_count: pledgeCount,
               help_role: helpRole || null,
               country,
+              lang,
             }
           : {
               type: mode,
@@ -116,6 +117,7 @@ export default function CommitFlow({ onSuccess, compact = false, prefilledEmail,
               country,
               pledge_count: pledgeCount,
               org_type: orgType || null,
+              lang,
             };
 
       const { error } = await supabase.functions.invoke("submit-commitment", {

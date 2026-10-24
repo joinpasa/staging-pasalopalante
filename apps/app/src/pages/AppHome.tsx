@@ -158,6 +158,7 @@ export default function AppHome() {
           pledge_count: pledgeCount,
           country,
           help_role: "do_acts",
+          lang,
         },
       });
       if (error) toast.error(isRateLimitedError(error) ? pickRateLimitCheer(lang) : error.message);
@@ -261,6 +262,7 @@ export default function AppHome() {
           description: trimmed || undefined,
           photo_paths: [],
           video_url: quickSocialLink?.url || undefined,
+          lang,
         },
       });
       if (error) {

@@ -112,7 +112,7 @@ export default function PortalHeader({ minimal = false }: { minimal?: boolean })
     <header className="sticky top-0 z-30 bg-navy" ref={mobileRef}>
       <div className="flex h-16 items-center justify-between px-4 lg:h-[72px] lg:px-10 xl:px-40">
         <Link to="/" className="flex items-center gap-3 no-underline">
-          <img src="/kf-logo-on-dark.webp" alt="Kindness Forward" width={123} height={40} className="h-9 w-auto lg:h-10" />
+          <img src="/kf-logo-on-dark.webp" alt="Kindness Forward" width={137} height={40} className="h-9 w-auto lg:h-10" />
           <span className="hidden border-s border-white/25 ps-3 text-base font-bold text-white sm:inline">{t.portal}</span>
         </Link>
 

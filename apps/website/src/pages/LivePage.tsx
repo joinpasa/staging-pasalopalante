@@ -14,7 +14,7 @@ export default function LivePage() {
   return (
     <div className="min-h-screen bg-warm-cream">
       <SEO
-        title="Global Live Broadcast — 11.11.2026 | Pásalo Pa'lante"
+        title="Global Live Broadcast — 11.11.2026 | Kindness Forward"
         description="Join the global live kindness broadcast on 11.11.2026, together with Awaken and Pass Kindness Forward."
         path="/live"
       />

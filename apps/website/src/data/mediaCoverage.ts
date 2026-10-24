@@ -63,19 +63,6 @@ export const digitalNews: MediaItem[] = [
     type: "article",
     imageUrl: "/press/metro.webp",
   },
-  // This link wasn't loading in the team's own browsers as of 2026-10-21 —
-  // worth checking whether the article's still up before relying on it.
-  {
-    outlet: "WIPR TV",
-    title: "Te Amo PR promueve actos de bondad en Puerto Rico",
-    description: {
-      en: "WIPR TV profiled Te Amo PR's work promoting everyday acts of kindness across Puerto Rico.",
-      es: "WIPR TV destacó la labor de Te Amo PR promoviendo actos de bondad cotidianos en Puerto Rico.",
-    },
-    url: "https://wipr.pr/te-amo-pr-promueve-actos-de-bondad-en-puertorico/",
-    type: "article",
-    imageUrl: "/press/wipr-tv.png",
-  },
   {
     outlet: "WAPA TV",
     title: "Tommy Ramos presenta la campaña Pásalo Pa'lante",
