@@ -15,17 +15,8 @@ import {
   Twitter,
   Youtube,
 } from "lucide-react";
-import {
-  articles,
-  broadcastOutlets,
-  digitalNews,
-  featuredUrls,
-  mediaSummary,
-  otherOutletsReached,
-  socialCoverage,
-  videoAndPodcast,
-  type MediaItem,
-} from "@/data/mediaCoverage";
+import { mediaSummary, type MediaItem } from "@/data/mediaCoverage";
+import { staticMediaCoverage, useMediaCoverage } from "@/hooks/useMediaCoverage";
 import { loadFacebookSdk, loadInstagramEmbed, loadTwitterWidgets } from "@/lib/socialEmbeds";
 
 // /media: 2025 Pásalo Pa'lante press coverage. Shown on both
@@ -33,6 +24,10 @@ import { loadFacebookSdk, loadInstagramEmbed, loadTwitterWidgets } from "@/lib/s
 // apps/website/index.html) since Pass Kindness Forward uses this coverage
 // too, even though the record itself is Puerto Rico–specific — copy below
 // is kept brand-neutral for that reason, no on-page explanation needed.
+//
+// Content comes from the PKF_Media Google Sheet (via useMediaCoverage);
+// the hardcoded lists in data/mediaCoverage.ts are the fallback while it
+// loads or if the read fails.
 
 const ICONS: Record<MediaItem["type"], typeof Newspaper> = {
   article: Newspaper,
@@ -387,9 +382,17 @@ export default function MediaPage() {
   const tx = t.mediaPage;
   const locale = lang;
 
-  const featured = [...videoAndPodcast, ...socialCoverage].filter((item) =>
-    featuredUrls.includes(item.url),
-  );
+  const { data: live } = useMediaCoverage();
+  const {
+    featured,
+    articles,
+    digitalNews,
+    videoAndPodcast,
+    socialCoverage,
+    broadcastOutlets,
+    otherOutletsReached,
+  } = live ?? staticMediaCoverage;
+  const placementCount = digitalNews.length + videoAndPodcast.length + socialCoverage.length;
 
   return (
     <div className="min-h-screen bg-warm-cream">
@@ -470,7 +473,7 @@ export default function MediaPage() {
               </div>
               <div className="flex flex-col gap-1.5 border-l border-warm-cream/20 py-5 pl-4">
                 <dd className="font-display text-3xl leading-none text-warm-gold md:text-4xl">
-                  {mediaSummary.placementCount}+
+                  {placementCount}+
                 </dd>
                 <dt className="text-xs font-semibold leading-tight text-warm-cream/70">
                   {tx.mediaPlacements}
