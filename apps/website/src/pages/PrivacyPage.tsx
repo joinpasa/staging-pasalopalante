@@ -3,10 +3,12 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import SEO from "@/components/SEO";
 import { useLanguage } from "@shared/contexts/LanguageContext";
+import { useScrollToHash } from "@/hooks/useScrollToHash";
 
 export default function PrivacyPage() {
   const { lang } = useLanguage();
   const isEs = lang === "es";
+  useScrollToHash();
 
   const t = (en: string, es: string) => (isEs ? es : en);
 
@@ -23,8 +25,8 @@ export default function PrivacyPage() {
     <div className="min-h-screen bg-warm-cream">
       <SEO
         title={t(
-          "Privacy Policy & Legal Information — Pásalo Pa'lante",
-          "Política de Privacidad e Información Legal — Pásalo Pa'lante"
+          "Privacy Policy — Kindness Forward",
+          "Política de Privacidad — Kindness Forward"
         )}
         description={t(
           "How Pásalo Pa'lante, a sister initiative of Te Amo PR (a 501(c)(3) nonprofit), collects, uses, and protects information across the global kindness movement.",
@@ -38,7 +40,7 @@ export default function PrivacyPage() {
           <header className="mb-10 text-center">
             <p className="eyebrow">Pásalo Pa'lante</p>
             <h1 className="headline-xl text-foreground mt-3">
-              {t("Privacy Policy & Legal Information", "Política de Privacidad e Información Legal")}
+              {t("Privacy Policy", "Política de Privacidad")}
             </h1>
             <p className="text-sm text-foreground/60 mt-3">
               {t("Effective Date: June 17, 2026", "Fecha de vigencia: 17 de junio de 2026")}
@@ -214,6 +216,43 @@ export default function PrivacyPage() {
               <p>{t("Email addresses collected through the Chatbot will not be used for newsletters, marketing campaigns, or promotional communications unrelated to Pass Kindness Forward.", "Las direcciones de correo electrónico recopiladas a través del Chatbot no se utilizarán para newsletters, campañas de marketing ni comunicaciones promocionales no relacionadas con Pass Kindness Forward.")}</p>
               <p>{t("Conversations held through the Chatbot are stored on the Marketing Hub AI Agent platform. Contact data is retained in GoHighLevel (GHL) for as long as reasonably necessary to fulfill the purposes described in this Policy.", "Las conversaciones realizadas a través del Chatbot se almacenan en la plataforma Marketing Hub AI Agent. Los datos de contacto se conservan en GoHighLevel (GHL) durante el tiempo que sea razonablemente necesario para cumplir con los propósitos descritos en esta Política.")}</p>
             </Section>
+
+            {/* SMS / Text Messaging — A2P 10DLC carrier-review language. Wording
+                is fixed by the campaign registration; linked as /privacy#sms
+                from the SMS consent checkbox and the Terms page. Unnumbered
+                so the existing section numbers stay as they are. STOP/HELP
+                stay in English in every language (carrier keywords). */}
+            <h2 id="sms" className="font-display text-2xl text-foreground mt-10 scroll-mt-40">
+              {t("SMS / Text Messaging", "SMS / Mensajes de texto")}
+            </h2>
+            <div className="space-y-4">
+              <p>{t(
+                "Pass Kindness Forward, an initiative of Te Amo PR, may send text messages to people who opt in, including event reminders, program updates, volunteer opportunities, and invitations to log acts of kindness.",
+                "Pass Kindness Forward, una iniciativa de Te Amo PR, puede enviar mensajes de texto a las personas que acepten recibirlos, incluidos recordatorios de eventos, novedades del programa, oportunidades de voluntariado e invitaciones a registrar actos de bondad."
+              )}</p>
+              <p>
+                <strong>{t("Information we collect:", "Información que recopilamos:")}</strong>{" "}
+                {t(
+                  "When you opt in, we collect your mobile phone number and your consent to receive messages. We use it only to send you the messages you signed up for.",
+                  "Cuando aceptas recibir mensajes, recopilamos tu número de teléfono móvil y tu consentimiento para recibir mensajes. Los usamos únicamente para enviarte los mensajes a los que te suscribiste."
+                )}
+              </p>
+              <p>
+                <strong>{t("No sharing:", "No compartimos:")}</strong>{" "}
+                {t(
+                  "We do not sell or share your SMS opt-in data or personal information with third parties for marketing purposes. Mobile information will not be shared with third parties or affiliates for marketing or promotional purposes. Text messaging originator opt-in data and consent will not be shared with any third parties. This excludes service providers that help us deliver messages, such as our messaging platform, who may use it only for that purpose.",
+                  "No vendemos ni compartimos tus datos de suscripción a SMS ni tu información personal con terceros para fines de mercadeo. La información móvil no se compartirá con terceros ni afiliados para fines de mercadeo o promoción. Los datos de suscripción y el consentimiento del remitente de mensajes de texto no se compartirán con terceros. Esto excluye a los proveedores de servicios que nos ayudan a entregar los mensajes, como nuestra plataforma de mensajería, que solo pueden usarlos para ese fin."
+                )}
+              </p>
+              <p>
+                <strong>{t("Opting out:", "Cancelar la suscripción:")}</strong>{" "}
+                {t(
+                  "Reply STOP at any time to stop receiving messages. Reply HELP for help, or contact us at ",
+                  "Responde STOP en cualquier momento para dejar de recibir mensajes. Responde HELP para obtener ayuda, o escríbenos a "
+                )}
+                <a href="mailto:info@passkindnessforward.com" className="text-warm-sky underline">info@passkindnessforward.com</a>.
+              </p>
+            </div>
 
             <Section n={9} title={t("Cookies and Analytics", "Cookies y analíticas")}>
               <p>{t("Pásalo Pa'lante may use cookies, pixels, analytics tools, or similar technologies to understand website traffic, improve performance, measure campaign effectiveness, prevent spam, remember preferences, and support outreach connected to the nonprofit mission. These tools may include Google Analytics, Google Ads conversion tracking, Meta tools, email marketing analytics, or similar services. Users may control cookies through browser settings; disabling them may affect some functionality.", "Pásalo Pa'lante puede usar cookies, pixeles, herramientas de analítica o tecnologías similares para entender el tráfico, mejorar el desempeño, medir la efectividad de campañas, prevenir spam, recordar preferencias y apoyar el alcance de la misión. Estas herramientas pueden incluir Google Analytics, seguimiento de conversiones de Google Ads, herramientas de Meta, analíticas de correo o servicios similares. Los usuarios pueden controlar las cookies desde su navegador; deshabilitarlas puede afectar funcionalidad.")}</p>

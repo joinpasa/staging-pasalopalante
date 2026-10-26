@@ -12,7 +12,7 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-warm-cream">
       <SEO
-        title="Contact Pásalo Pa'lante — Get in Touch With Te Amo PR"
+        title="Contact Kindness Forward — Get in Touch With Te Amo PR"
         description="Contact the Pásalo Pa'lante team at Te Amo PR. Email info@passkindnessforward.com or call (787) 705-0778 — we'd love to hear from you."
         path="/contact"
       />

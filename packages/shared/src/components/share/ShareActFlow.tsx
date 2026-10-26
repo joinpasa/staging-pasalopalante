@@ -200,6 +200,7 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
           photo_paths: photoPaths,
           to_user_id: toUserId || undefined,
           video_url: socialLink?.url || undefined,
+          lang,
         },
       });
 

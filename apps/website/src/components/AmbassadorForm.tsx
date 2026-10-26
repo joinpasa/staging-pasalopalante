@@ -1,4 +1,5 @@
 import { useState } from "react";
+import SmsConsentCheckbox from "@/components/SmsConsentCheckbox";
 import { toast } from "sonner";
 import { Check, ChevronsUpDown } from "lucide-react";
 
@@ -111,6 +112,7 @@ const AmbassadorForm = ({ open, onOpenChange }: Props) => {
   const [participantType, setParticipantType] =
     useState<(typeof PARTICIPANT_TYPES)[number] | "">("Ambassador");
   const [message, setMessage] = useState("");
+  const [smsConsent, setSmsConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   function reset() {
@@ -122,6 +124,7 @@ const AmbassadorForm = ({ open, onOpenChange }: Props) => {
     setOrganization("");
     setParticipantType("Ambassador");
     setMessage("");
+    setSmsConsent(false);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -140,6 +143,8 @@ const AmbassadorForm = ({ open, onOpenChange }: Props) => {
       organization: organization.trim() || undefined,
       participantType: participantType || undefined,
       message: message.trim() || undefined,
+      sms_consent: smsConsent,
+      sms_consent_at: new Date().toISOString(),
     });
     setSubmitting(false);
     if (res.success) {
@@ -285,6 +290,8 @@ const AmbassadorForm = ({ open, onOpenChange }: Props) => {
               onChange={(e) => setMessage(e.target.value)}
             />
           </div>
+
+          <SmsConsentCheckbox id="amb-sms-consent" checked={smsConsent} onCheckedChange={setSmsConsent} />
 
           <Button type="submit" disabled={submitting} className="w-full !py-6">
             {submitting ? c.submitting : c.submit}

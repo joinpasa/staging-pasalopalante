@@ -87,7 +87,7 @@ export default function MyCommitment({ userId, email }: { userId: string; email:
     setSubmitting(true);
     try {
       const { error } = await supabase.functions.invoke("submit-commitment", {
-        body: { type: "individual", email, pledge_count: newCount },
+        body: { type: "individual", email, pledge_count: newCount, lang },
       });
       if (error) {
         toast.error(isRateLimitedError(error) ? pickRateLimitCheer(lang) : t.appHome.savingPledgeError);

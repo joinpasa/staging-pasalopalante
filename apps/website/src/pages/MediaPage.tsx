@@ -393,7 +393,7 @@ export default function MediaPage() {
   return (
     <div className="min-h-screen bg-warm-cream">
       <SEO
-        title="In the Press — Pásalo Pa'lante"
+        title="In the Press — Kindness Forward"
         description="1,135,096 acts of kindness, every municipality, millions of impressions. See the coverage, then join the next wave."
         path="/media"
       />
