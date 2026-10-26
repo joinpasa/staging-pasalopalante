@@ -978,6 +978,9 @@
   "loginRequired": "{feature} का उपयोग करने के लिए लॉग इन करें।"
  },
  "appCommon": {
+  "translate": "अनुवाद करें",
+  "showOriginal": "मूल देखें",
+  "translateFailed": "अभी अनुवाद नहीं हो सका। कृपया फिर से कोशिश करें।",
   "actsPledged": "संकल्पित काम",
   "loggedToday": "आज दर्ज किए",
   "actsAllTime": "अब तक के कुल काम",

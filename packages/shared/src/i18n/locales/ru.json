@@ -978,6 +978,9 @@
   "loginRequired": "Войдите, чтобы пользоваться разделом «{feature}»."
  },
  "appCommon": {
+  "translate": "Перевести",
+  "showOriginal": "Показать оригинал",
+  "translateFailed": "Сейчас не удалось перевести. Попробуйте ещё раз.",
   "actsPledged": "Обещанные поступки",
   "loggedToday": "Записано сегодня",
   "actsAllTime": "Всего поступков",

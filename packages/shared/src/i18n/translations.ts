@@ -109,6 +109,9 @@ const translations = {
       loginRequired: "Please log in to use {feature}.",
     },
     appCommon: {
+      translate: "Translate",
+      showOriginal: "Show original",
+      translateFailed: "Couldn't translate this right now. Please try again.",
       actsPledged: "Acts pledged",
       loggedToday: "Logged today",
       actsAllTime: "Acts all time",

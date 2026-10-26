@@ -1029,6 +1029,9 @@
     "loginRequired": "Inicia sesión para usar {feature}."
   },
   "appCommon": {
+    "translate": "Traducir",
+    "showOriginal": "Ver original",
+    "translateFailed": "No se pudo traducir ahora. Inténtalo de nuevo.",
     "actsPledged": "Actos comprometidos",
     "loggedToday": "Registrados hoy",
     "actsAllTime": "Actos en total",

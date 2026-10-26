@@ -1161,6 +1161,9 @@
   "loginRequired": "سجّل الدخول لاستخدام {feature}."
  },
  "appCommon": {
+  "translate": "ترجمة",
+  "showOriginal": "عرض النص الأصلي",
+  "translateFailed": "تعذّرت الترجمة الآن. يُرجى المحاولة مرة أخرى.",
   "actsPledged": "أعمال متعهَّد بها",
   "loggedToday": "سُجّلت اليوم",
   "actsAllTime": "إجمالي الأعمال",

@@ -978,6 +978,9 @@
   "loginRequired": "请登录以使用{feature}。"
  },
  "appCommon": {
+  "translate": "翻译",
+  "showOriginal": "查看原文",
+  "translateFailed": "暂时无法翻译，请重试。",
   "actsPledged": "承诺的善举",
   "loggedToday": "今日已记录",
   "actsAllTime": "累计善举",

@@ -30,14 +30,25 @@ export default function WallDialogBody({
 }: Props) {
   const { t, lang } = useLanguage();
   const original = (description ?? "").trim();
+  // Original first; translated only once the reader asks for it.
+  const [requested, setRequested] = useState(false);
   const { translation, loading, needed, sourceLang } = useActTranslation(
     id,
     original,
     language,
     lang,
+    requested,
   );
-  const [showOriginal, setShowOriginal] = useState(false);
-  const display = needed && translation && !showOriginal ? translation : original;
+  const display = requested && translation ? translation : original;
+  const toggleButton = (label: string) => (
+    <button
+      type="button"
+      onClick={() => setRequested((v) => !v)}
+      className="underline underline-offset-2 hover:opacity-70 transition-opacity font-semibold"
+    >
+      {label}
+    </button>
+  );
 
   const translatedLabel =
     sourceLang === "en"
@@ -58,22 +69,17 @@ export default function WallDialogBody({
       )}
       {needed && (
         <div className="mt-3 text-xs" style={{ color: "hsl(20 25% 30%)" }}>
-          {loading && !translation ? (
+          {!requested ? (
+            toggleButton(t.inspiration.seeTranslation)
+          ) : loading && !translation ? (
             <span className="inline-flex items-center gap-1 italic">
               <Loader2 size={12} className="animate-spin" />
               {t.inspiration.translating}
             </span>
           ) : translation ? (
             <>
-              <span className="italic">{translatedLabel}</span>
-              {" · "}
-              <button
-                type="button"
-                onClick={() => setShowOriginal((v) => !v)}
-                className="underline underline-offset-2 hover:opacity-70 transition-opacity font-semibold"
-              >
-                {showOriginal ? t.inspiration.seeTranslation : t.inspiration.seeOriginal}
-              </button>
+              {translatedLabel && <span className="italic">{translatedLabel} · </span>}
+              {toggleButton(t.inspiration.seeOriginal)}
             </>
           ) : null}
         </div>

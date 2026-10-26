@@ -870,6 +870,9 @@
     "loginRequired": "Za uporabo funkcije {feature} se prijavi."
   },
   "appCommon": {
+    "translate": "Prevedi",
+    "showOriginal": "Pokaži izvirnik",
+    "translateFailed": "Prevod trenutno ni uspel. Poskusi znova.",
     "actsPledged": "Obljubljena dejanja",
     "loggedToday": "Zabeleženo danes",
     "actsAllTime": "Dejanja skupaj",

@@ -1073,6 +1073,9 @@
   "loginRequired": "{feature} ব্যবহার করতে লগ ইন করুন।"
  },
  "appCommon": {
+  "translate": "অনুবাদ করুন",
+  "showOriginal": "মূল দেখুন",
+  "translateFailed": "এখন অনুবাদ করা যায়নি। আবার চেষ্টা করুন।",
   "actsPledged": "অঙ্গীকারকৃত কাজ",
   "loggedToday": "আজ লগ করা",
   "actsAllTime": "সর্বমোট কাজ",

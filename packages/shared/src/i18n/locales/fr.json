@@ -978,6 +978,9 @@
     "loginRequired": "Connectez-vous pour utiliser {feature}."
   },
   "appCommon": {
+    "translate": "Traduire",
+    "showOriginal": "Voir l'original",
+    "translateFailed": "Impossible de traduire pour le moment. Veuillez réessayer.",
     "actsPledged": "Actes auxquels vous vous êtes engagé",
     "loggedToday": "Consignés aujourd’hui",
     "actsAllTime": "Actes au total",

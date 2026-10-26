@@ -6,6 +6,8 @@ import { ExternalLink, MoreVertical, Trash2 } from "lucide-react";
 
 import ReactionButton from "@/components/app/ReactionButton";
 import DeleteActDialog from "@/components/app/DeleteActDialog";
+import TranslateButton from "@/components/app/TranslateButton";
+import { useActTranslations } from "@/hooks/useActTranslations";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { supabase } from "@shared/integrations/supabase/client";
 import { useLanguage } from "@shared/contexts/LanguageContext";
@@ -54,6 +56,7 @@ export default function AppWall() {
   const loading = showingMine ? mine.isLoading : worldwide.isLoading;
 
   const { reactions, toggle } = useActReactions(posts.map((p) => p.id));
+  const translations = useActTranslations();
   const onToggleReact = (actId: string) => {
     if (!user) {
       toast(t.appWall.joinToReact);
@@ -239,9 +242,18 @@ export default function AppWall() {
                       {t.appWall.modeOfKindness.replace("{mode}", modeLabel(post.mode, t.appCommon))}
                     </p>
                   </div>
-                  <span className="shrink-0 text-xs text-muted-foreground">
-                    {timeAgo(post.createdAt, t.appCommon, lang)}
-                  </span>
+                  <div className="flex shrink-0 flex-col items-end gap-0.5">
+                    <span className="text-xs text-muted-foreground">
+                      {timeAgo(post.createdAt, t.appCommon, lang)}
+                    </span>
+                    {post.hasDescription && (
+                      <TranslateButton
+                        translated={translations.isTranslated(post.id)}
+                        loading={translations.isLoading(post.id)}
+                        onClick={() => translations.toggle(post)}
+                      />
+                    )}
+                  </div>
                   {showingMine && (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -266,7 +278,7 @@ export default function AppWall() {
                   )}
                 </div>
 
-                <p className="mt-3 text-sm leading-relaxed text-foreground">{post.description}</p>
+                <p className="mt-3 text-sm leading-relaxed text-foreground">{translations.textFor(post)}</p>
 
                 {post.tags.length > 0 && (
                   <div className="mt-4 flex flex-wrap gap-2">

@@ -979,6 +979,9 @@
   "loginRequired": "Faça login para usar {feature}."
  },
  "appCommon": {
+  "translate": "Traduzir",
+  "showOriginal": "Ver original",
+  "translateFailed": "Não foi possível traduzir agora. Tente novamente.",
   "actsPledged": "Atos assumidos",
   "loggedToday": "Registrados hoje",
   "actsAllTime": "Atos no total",

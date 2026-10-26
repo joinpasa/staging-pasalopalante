@@ -108,6 +108,9 @@
     "loginRequired": "Bitte melden Sie sich an, um {feature} zu nutzen."
   },
   "appCommon": {
+    "translate": "Übersetzen",
+    "showOriginal": "Original anzeigen",
+    "translateFailed": "Die Übersetzung hat gerade nicht geklappt. Bitte versuchen Sie es erneut.",
     "actsPledged": "Zugesagte Taten",
     "loggedToday": "Heute erfasst",
     "actsAllTime": "Taten insgesamt",

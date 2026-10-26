@@ -7,7 +7,7 @@ interface Result {
   translation: string | null;
   loading: boolean;
   error: boolean;
-  /** True when source and target differ and we attempted/produced a translation. */
+  /** True when source and target differ, i.e. a translation can be offered. */
   needed: boolean;
   sourceLang: Lang | null;
 }
@@ -25,29 +25,33 @@ function normalize(lang: string | null | undefined): Lang | null {
 }
 
 /**
- * Translates an act's text into the current UI language when its stored
- * `language` differs. Returns the cached translation immediately on
- * subsequent renders.
+ * Translates an act's text into the current UI language, but only once
+ * `requested` is true (the reader tapped "See translation") — most acts are
+ * never read in most languages, so nothing is fetched up front. translate-text
+ * then serves it from translation_cache if anyone asked before, and only
+ * calls Gemini the first time.
  */
 export function useActTranslation(
   actId: string,
   text: string | null | undefined,
   sourceLangRaw: string | null | undefined,
   targetLang: Lang,
+  requested: boolean,
 ): Result {
   const sourceLang = normalize(sourceLangRaw);
   const trimmed = (text ?? "").trim();
   const needed = !!trimmed && !!sourceLang && sourceLang !== targetLang;
+  const fetchNow = needed && requested;
   const key = `${actId}:${targetLang}`;
 
   const [translation, setTranslation] = useState<string | null>(
-    needed ? cache.get(key) ?? null : null,
+    fetchNow ? cache.get(key) ?? null : null,
   );
-  const [loading, setLoading] = useState<boolean>(needed && !cache.has(key));
+  const [loading, setLoading] = useState<boolean>(fetchNow && !cache.has(key));
   const [error, setError] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!needed) {
+    if (!fetchNow) {
       setTranslation(null);
       setLoading(false);
       setError(false);
@@ -110,7 +114,7 @@ export function useActTranslation(
     return () => {
       cancelled = true;
     };
-  }, [key, needed, trimmed, sourceLang, targetLang]);
+  }, [key, fetchNow, trimmed, sourceLang, targetLang]);
 
   return { translation, loading, error, needed, sourceLang };
 }
