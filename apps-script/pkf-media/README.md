@@ -22,10 +22,15 @@ lists in `apps/website/src/data/mediaCoverage.ts`.
    with that value.
 3. In the sheet: Extensions → Apps Script → paste `Code.gs`, then replace
    `PASTE_MEDIA_SYNC_SECRET_HERE` with the same value. Save.
-4. In the script editor, pick `createTimeTrigger` from the function dropdown
-   → ▶ Run (approve the permissions prompt). Syncs every 15 min from then on.
+4. **Signed in as the sheet's owner**, pick `createTimeTrigger` from the
+   function dropdown → ▶ Run (approve the permissions prompt). This installs
+   the 15-minute sync and the edit trigger (both run as the owner).
 5. Reload the sheet → **Media → Sync now** for the first sync. Check
    Executions in the script editor for `Sync OK`.
+6. Lock approvals: select columns **B:C** (Status, Featured?) on the Media
+   tab (and on `_Influencers`) → Data → Protect sheets and ranges → Set
+   permissions → **Only you**. The team can still add rows; only the owner
+   can approve or feature them.
 
 ## Secret
 
@@ -38,13 +43,29 @@ into the sheet, keep the sheet's existing secret line.
 
 - `syncMedia()` — sends every row from every non-`_` tab to `sync-media`
   (time-driven, every 15 min; also **Media → Sync now**).
-- `onEdit()` — auto-generates the ID in column A when Section (column D)
-  changes. Collision-proof: next free number per prefix across all tabs
-  (`ART-`, `DIG-`, `VID-`, `SOC-`, `BRO-`, `OTH-`).
+- `handleEdit()` — installed edit trigger (runs as the owner, so it works
+  even with Status/Featured? locked). When Section (column D) changes it
+  auto-generates the ID in column A — collision-proof, next free number per
+  prefix across all tabs (`ART-`, `DIG-`, `VID-`, `SOC-`, `BRO-`, `OTH-`) —
+  and on a new row sets Status to **Pending** and Featured? to **No**, so
+  nothing goes live until the owner approves it.
 - `fixDuplicateIds()` — one-off repair for duplicate/missing IDs
   (**Media → Fix duplicate IDs**). The sync itself also drops duplicate IDs
   instead of failing, and lists them in the log.
-- `createTimeTrigger()` — one-time setup of the 15-minute trigger.
+- `createTimeTrigger()` — one-time setup of both triggers (safe to re-run).
+
+## Tabs
+
+- **Media** — synced to `/media`.
+- **`_Contacts`** — private ops-team contact log (name, outlet, email,
+  phone, contact status, last contacted, related Media ID). Never synced:
+  any tab starting with `_` is ignored by the sync and by ID numbering.
+- **`_Influencers`** — influencers/celebrities, for future use. Columns
+  A–N are identical to Media, plus team-only columns O–U (Person Type,
+  Instagram, TikTok, X, YouTube, Facebook, Followers) that the site never
+  reads. To take it live, rename it to `Influencers` (drop the `_`) and run
+  **Media → Fix duplicate IDs** to give its rows IDs; Approved rows then
+  show on `/media` under whatever Section they're set to.
 
 ## Column layout (must match `COLS` in Code.gs)
 

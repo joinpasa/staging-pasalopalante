@@ -34,6 +34,8 @@ const COLS = {
 // two can never drift apart if a column is added later.
 const ID_COLUMN = COLS.ID + 1;           // Column A
 const SECTION_COLUMN = COLS.SECTION + 1; // Column D
+const STATUS_COLUMN = COLS.STATUS + 1;     // Column B
+const FEATURED_COLUMN = COLS.FEATURED + 1; // Column C
 const FIRST_DATA_ROW = 2;                // Row 1 = headers
 
 /** Tabs whose name starts with "_" are ignored everywhere (notes, scratch, etc.). */
@@ -99,15 +101,22 @@ function syncMedia() {
   Logger.log("Sync OK: " + body); // lists duplicateIds here if any slipped through
 }
 
-/** One-time setup: run this once from the editor's function dropdown. It
- * installs a trigger that runs syncMedia automatically every 15 minutes
- * from then on — you only need to run this once, ever. */
+/** One-time setup: run this once from the editor's function dropdown,
+ * signed in as the sheet's OWNER. It installs two triggers:
+ *  - syncMedia every 15 minutes;
+ *  - handleEdit on every edit. This is an installed trigger (not a simple
+ *    onEdit) on purpose: it runs as the owner, so it can still fill in the
+ *    ID and default Status/Featured? when Status and Featured? are
+ *    protected so only the owner can change them.
+ * Safe to re-run — it removes its own old triggers first. */
 function createTimeTrigger() {
   ScriptApp.getProjectTriggers().forEach((t) => {
-    if (t.getHandlerFunction() === "syncMedia") ScriptApp.deleteTrigger(t);
+    const fn = t.getHandlerFunction();
+    if (fn === "syncMedia" || fn === "handleEdit") ScriptApp.deleteTrigger(t);
   });
   ScriptApp.newTrigger("syncMedia").timeBased().everyMinutes(15).create();
-  Logger.log("Installed: syncMedia will now run every 15 minutes.");
+  ScriptApp.newTrigger("handleEdit").forSpreadsheet(SpreadsheetApp.getActive()).onEdit().create();
+  Logger.log("Installed: syncMedia every 15 minutes + handleEdit on every edit.");
 }
 
 /** Manual "Media" menu for testing without waiting 15 minutes. */
@@ -123,14 +132,16 @@ function onOpen() {
 /* ------------------------------------------------------------------ */
 
 /**
- * Auto-generates the ID in Column A when Section (Column D) is entered or
- * changed. New IDs use the next free number for that prefix (highest
+ * Runs on every edit (installed trigger — see createTimeTrigger). When
+ * Section (Column D) is entered or changed, auto-generates the ID in
+ * Column A, and on a new row defaults Status to "Pending" and Featured? to
+ * "No" — so nothing the team adds goes live until the owner approves it. New IDs use the next free number for that prefix (highest
  * existing + 1, across ALL data tabs), so inserting / sorting / deleting
  * rows can never create a duplicate. A row keeps its existing ID as long as
  * the ID's prefix still matches its section. Editing any other column —
  * including "Featured?" — never touches IDs.
  */
-function onEdit(e) {
+function handleEdit(e) {
   if (!e) return;
   const range = e.range;
   const sheet = range.getSheet();
@@ -150,6 +161,7 @@ function onEdit(e) {
     const endRow = range.getLastRow();
     for (let row = startRow; row <= endRow; row++) {
       assignId_(sheet, row);
+      setDefaults_(sheet, row);
     }
   } finally {
     lock.releaseLock();
@@ -173,6 +185,16 @@ function assignId_(sheet, row) {
   if (new RegExp("^" + prefix + "-\\d+$").test(currentId)) return;
 
   idCell.setValue(prefix + "-" + nextNumber_(prefix, sheet, row));
+}
+
+/** New rows start hidden: blank Status -> "Pending", blank Featured? -> "No". */
+function setDefaults_(sheet, row) {
+  const section = String(sheet.getRange(row, SECTION_COLUMN).getValue()).trim();
+  if (section === "") return;
+  const status = sheet.getRange(row, STATUS_COLUMN);
+  if (String(status.getValue()).trim() === "") status.setValue("Pending");
+  const featured = sheet.getRange(row, FEATURED_COLUMN);
+  if (String(featured.getValue()).trim() === "") featured.setValue("No");
 }
 
 /** "Articles" -> "ART", "Digital Press" -> "DIG", "Other Outlets" -> "OTH" (letters only, 3 chars). */
