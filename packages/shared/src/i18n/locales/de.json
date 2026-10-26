@@ -797,6 +797,8 @@
     "appStripHeading": "Nimm sie mit",
     "appStripBody": "Holen Sie sich die App, um Akte zu protokollieren, Pass-Codes zu scannen und Ihre Serie zu verfolgen.",
     "appStripCta": "App öffnen",
+    "appStripDownload": "App herunterladen",
+    "installUnavailable": "Die App ist bereits installiert, oder dieser Browser kann sie nicht installieren.",
     "inlineFormEyebrow": "Schritt 1, gleich hier",
     "inlineFormHeading": "Machen Sie Ihre Zusage",
     "inlineFormBody": "Verpflichten Sie sich, wie viele Akte der Freundlichkeit Sie in dieser Global Kindness Season vollbringen werden. Es dauert weniger als eine Minute, und jede Zusage bringt uns näher an eine Milliarde.",

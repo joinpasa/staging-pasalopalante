@@ -535,6 +535,8 @@
   "appStripHeading": "随身携带",
   "appStripBody": "下载应用，记录善举、扫描传递码并追踪您的连续记录。",
   "appStripCta": "打开应用",
+  "appStripDownload": "下载应用",
+  "installUnavailable": "应用已安装，或此浏览器无法安装该应用。",
   "inlineFormEyebrow": "第 1 步，就在这里",
   "inlineFormHeading": "做出您的承诺",
   "inlineFormBody": "承诺您将在本次Global Kindness Season中完成多少个善举。不到一分钟即可完成，每一个承诺都让我们离 10 亿更近一步。",

@@ -420,6 +420,8 @@
   "appStripHeading": "خذه معك",
   "appStripBody": "احصل على التطبيق لتسجيل الأعمال ومسح رموز التمرير ومتابعة أيامك المتتالية.",
   "appStripCta": "افتح التطبيق",
+  "appStripDownload": "نزّل التطبيق",
+  "installUnavailable": "التطبيق مثبّت بالفعل، أو أن هذا المتصفح لا يستطيع تثبيته.",
   "inlineFormEyebrow": "الخطوة 1، هنا مباشرة",
   "inlineFormHeading": "قدّم تعهدك",
   "inlineFormBody": "تعهّد بعدد الأعمال اللطيفة التي ستقوم بها خلال Global Kindness Season هذا. يستغرق الأمر أقل من دقيقة، وكل تعهد يقرّبنا من المليار.",

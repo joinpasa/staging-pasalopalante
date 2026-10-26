@@ -49,3 +49,25 @@ export async function triggerAppInstall() {
   }
   window.location.assign(getAppBaseUrl());
 }
+
+/** Always just opens the app in this browser tab — never an install dialog. */
+export function openAppInBrowser() {
+  window.location.assign(getAppBaseUrl());
+}
+
+/**
+ * Shows the native install dialog if the browser has one ready; never
+ * navigates. "unavailable" when it doesn't (iOS, Firefox, already
+ * installed, or the dialog was already used this page load).
+ */
+export async function promptAppInstall(): Promise<"accepted" | "dismissed" | "unavailable"> {
+  const evt = deferred;
+  if (!evt) return "unavailable";
+  deferred = null;
+  try {
+    await evt.prompt();
+    return (await evt.userChoice).outcome;
+  } catch {
+    return "unavailable";
+  }
+}

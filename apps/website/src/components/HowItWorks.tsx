@@ -4,7 +4,11 @@ import { ArrowUpRight, Check, Heart, ArrowRight, Smartphone, Sparkles } from "lu
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import QuickPledgeForm from "@/components/commit/QuickPledgeForm";
 import PledgeCounter from "@/components/commit/PledgeCounter";
-import { triggerAppInstall } from "@shared/lib/installTrigger";
+import { openAppInBrowser } from "@shared/lib/installTrigger";
+import DownloadAppButton from "@/components/DownloadAppButton";
+
+const appStripButton =
+  "inline-flex items-center justify-center gap-2 rounded-full bg-cyan-900 px-6 py-3.5 text-sm font-semibold text-warm-cream hover:bg-cyan-900/90 transition-colors";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -153,14 +157,14 @@ const HowItWorks = () => {
               <p className="text-sm text-muted-foreground">{t.howItWorks.appStripBody}</p>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={() => triggerAppInstall()}
-            className="inline-flex items-center gap-2 rounded-full bg-cyan-900 px-6 py-3.5 text-sm font-semibold text-warm-cream hover:bg-cyan-900/90 transition-colors shrink-0"
-          >
-            {t.howItWorks.appStripCta}
-            <ArrowUpRight size={17} />
-          </button>
+          {/* Stacked on phones, side by side from sm up. */}
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto shrink-0">
+            <button type="button" onClick={openAppInBrowser} className={appStripButton}>
+              {t.howItWorks.appStripCta}
+              <ArrowUpRight size={17} />
+            </button>
+            <DownloadAppButton className={appStripButton} />
+          </div>
         </motion.div>
 
         {/* Inline pledge form — the primary CTA's scroll target */}

@@ -62,6 +62,8 @@
     "appStripHeading": "Vzemi jo s seboj",
     "appStripBody": "Prenesi aplikacijo, da beležiš dejanja, skeniraš kode za podajanje in spremljaš svoj niz.",
     "appStripCta": "Odpri aplikacijo",
+    "appStripDownload": "Prenesi aplikacijo",
+    "installUnavailable": "Aplikacija je že nameščena ali pa je ta brskalnik ne more namestiti.",
     "inlineFormEyebrow": "1. korak, kar tukaj",
     "inlineFormHeading": "Podaj svojo zavezo",
     "inlineFormBody": "Zaveži se, koliko dejanj prijaznosti boš storil/-a v tej Global Kindness Season. Vzame manj kot minuto in vsaka zaveza nas približa milijardi.",
