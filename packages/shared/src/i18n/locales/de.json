@@ -104,7 +104,8 @@
     "badges": "Abzeichen",
     "shareScan": "Teilen und scannen",
     "sections": "App-Bereiche",
-    "shareScanAria": "Ihren Freundlichkeitscode teilen oder den Code einer anderen Person scannen"
+    "shareScanAria": "Ihren Freundlichkeitscode teilen oder den Code einer anderen Person scannen",
+    "loginRequired": "Bitte melden Sie sich an, um {feature} zu nutzen."
   },
   "appCommon": {
     "actsPledged": "Zugesagte Taten",

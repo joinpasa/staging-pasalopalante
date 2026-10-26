@@ -973,7 +973,8 @@
   "badges": "Distintivos",
   "shareScan": "Compartilhar e escanear",
   "sections": "Seções do aplicativo",
-  "shareScanAria": "Compartilhe seu código de gentileza ou escaneie o de outra pessoa"
+  "shareScanAria": "Compartilhe seu código de gentileza ou escaneie o de outra pessoa",
+  "loginRequired": "Faça login para usar {feature}."
  },
  "appCommon": {
   "actsPledged": "Atos assumidos",

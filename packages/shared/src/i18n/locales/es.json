@@ -1023,7 +1023,8 @@
     "badges": "Insignias",
     "shareScan": "Compartir y escanear",
     "sections": "Secciones de la app",
-    "shareScanAria": "Comparte tu código de bondad o escanea el de otra persona"
+    "shareScanAria": "Comparte tu código de bondad o escanea el de otra persona",
+    "loginRequired": "Inicia sesión para usar {feature}."
   },
   "appCommon": {
     "actsPledged": "Actos comprometidos",

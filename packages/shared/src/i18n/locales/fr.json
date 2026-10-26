@@ -972,7 +972,8 @@
     "badges": "Insignes",
     "shareScan": "Partager et scanner",
     "sections": "Rubriques de l’application",
-    "shareScanAria": "Partagez votre code de gentillesse ou scannez celui d’une autre personne"
+    "shareScanAria": "Partagez votre code de gentillesse ou scannez celui d’une autre personne",
+    "loginRequired": "Connectez-vous pour utiliser {feature}."
   },
   "appCommon": {
     "actsPledged": "Actes auxquels vous vous êtes engagé",

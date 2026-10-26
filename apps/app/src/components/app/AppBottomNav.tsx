@@ -1,14 +1,18 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Home, LayoutGrid, ScanLine, Radio, Sparkles } from "lucide-react";
+import { toast } from "sonner";
 import { cn } from "@shared/lib/utils";
+import { useAuth } from "@shared/contexts/AuthContext";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 
+// `needsLogin` tabs are wrapped in RequireVerified, which would silently
+// bounce a signed-out visitor to the Wall — explain why instead.
 const TABS = [
-  { to: "/", label: "home", Icon: Home, end: true },
-  { to: "/wall", label: "wall", Icon: LayoutGrid, end: false },
-  { to: "/map", label: "map", Icon: Radio, end: false },
-  { to: "/badges", label: "badges", Icon: Sparkles, end: false },
-];
+  { to: "/", label: "home", Icon: Home, end: true, needsLogin: false },
+  { to: "/wall", label: "wall", Icon: LayoutGrid, end: false, needsLogin: false },
+  { to: "/map", label: "map", Icon: Radio, end: false, needsLogin: true },
+  { to: "/badges", label: "badges", Icon: Sparkles, end: false, needsLogin: true },
+] as const;
 
 /**
  * Five-slot tab bar with the Pass action raised into the middle, matching the
@@ -16,13 +20,34 @@ const TABS = [
  */
 export default function AppBottomNav() {
   const { t } = useLanguage();
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  const blockIfSignedOut = (needsLogin: boolean, label: string) =>
+    needsLogin && !loading && !user
+      ? (e: React.MouseEvent) => {
+          e.preventDefault();
+          toast.error(t.appNavigation.loginRequired.replace("{feature}", label), {
+            id: "nav-login-required",
+            action: { label: t.appWidgets.logIn, onClick: () => navigate("/join") },
+          });
+        }
+      : undefined;
+
   return (
     <nav
       aria-label={t.appNavigation.sections}
       className="fixed inset-x-0 bottom-0 z-40 mx-auto flex w-full items-end justify-around border-t border-border bg-app-surface/95 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur 2xl:max-w-3xl"
     >
-      {TABS.slice(0, 2).map(({ to, label, Icon, end }) => (
-        <Tab key={to} to={to} label={t.appNavigation[label]} Icon={Icon} end={end} />
+      {TABS.slice(0, 2).map(({ to, label, Icon, end, needsLogin }) => (
+        <Tab
+          key={to}
+          to={to}
+          label={t.appNavigation[label]}
+          Icon={Icon}
+          end={end}
+          onClick={blockIfSignedOut(needsLogin, t.appNavigation[label])}
+        />
       ))}
 
       <NavLink
@@ -53,8 +78,15 @@ export default function AppBottomNav() {
         )}
       </NavLink>
 
-      {TABS.slice(2).map(({ to, label, Icon, end }) => (
-        <Tab key={to} to={to} label={t.appNavigation[label]} Icon={Icon} end={end} />
+      {TABS.slice(2).map(({ to, label, Icon, end, needsLogin }) => (
+        <Tab
+          key={to}
+          to={to}
+          label={t.appNavigation[label]}
+          Icon={Icon}
+          end={end}
+          onClick={blockIfSignedOut(needsLogin, t.appNavigation[label])}
+        />
       ))}
     </nav>
   );
@@ -65,14 +97,16 @@ function Tab({
   label,
   Icon,
   end,
+  onClick,
 }: {
   to: string;
   label: string;
   Icon: typeof Home;
   end: boolean;
+  onClick?: (e: React.MouseEvent) => void;
 }) {
   return (
-    <NavLink to={to} end={end} className="flex w-16 flex-col items-center gap-1 py-1">
+    <NavLink to={to} end={end} onClick={onClick} className="flex w-16 flex-col items-center gap-1 py-1">
       {({ isActive }) => (
         <>
           <Icon

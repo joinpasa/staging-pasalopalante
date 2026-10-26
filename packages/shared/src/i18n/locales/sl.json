@@ -864,7 +864,8 @@
     "badges": "Značke",
     "shareScan": "Deli in skeniraj",
     "sections": "Razdelki aplikacije",
-    "shareScanAria": "Deli svojo kodo prijaznosti ali skeniraj kodo nekoga drugega"
+    "shareScanAria": "Deli svojo kodo prijaznosti ali skeniraj kodo nekoga drugega",
+    "loginRequired": "Za uporabo funkcije {feature} se prijavi."
   },
   "appCommon": {
     "actsPledged": "Obljubljena dejanja",

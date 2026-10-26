@@ -972,7 +972,8 @@
   "badges": "徽章",
   "shareScan": "分享和扫描",
   "sections": "应用栏目",
-  "shareScanAria": "分享您的善意码，或扫描他人的善意码"
+  "shareScanAria": "分享您的善意码，或扫描他人的善意码",
+  "loginRequired": "请登录以使用{feature}。"
  },
  "appCommon": {
   "actsPledged": "承诺的善举",

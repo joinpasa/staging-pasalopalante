@@ -106,6 +106,7 @@ const translations = {
       shareScan: "Share and Scan",
       sections: "App sections",
       shareScanAria: "Share your Kindness code or scan someone else's",
+      loginRequired: "Please log in to use {feature}.",
     },
     appCommon: {
       actsPledged: "Acts pledged",

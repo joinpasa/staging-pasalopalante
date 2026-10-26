@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-26 — M.Schollmeyer@gmx.de
+
+- **Tapping "Map" or "Badges" in the app while signed out now explains why** instead of quietly jumping back to the Wall: a pop-up says "Please log in to use Map/Badges." with a "Log in" button. Translated into all app languages.
+
 ## 2026-10-26 — va.deedumlao@gmail.com
 
 - **New "Articles" section at the top of the In the Press page** with the 10 outlets that ran the Global Kindness Season launch press release (AP News, Yahoo Finance, Business Insider, Benzinga, KTLA, FOX 8, PIX11, WFLA, KXAN, WAVY). Each card links to the article, and there's an "Articles" link in the page's sub-menu.

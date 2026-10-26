@@ -1155,7 +1155,8 @@
   "badges": "الشارات",
   "shareScan": "مشاركة ومسح",
   "sections": "أقسام التطبيق",
-  "shareScanAria": "شارك رمز اللطف الخاص بك أو امسح رمز شخص آخر"
+  "shareScanAria": "شارك رمز اللطف الخاص بك أو امسح رمز شخص آخر",
+  "loginRequired": "سجّل الدخول لاستخدام {feature}."
  },
  "appCommon": {
   "actsPledged": "أعمال متعهَّد بها",
