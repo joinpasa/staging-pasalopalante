@@ -48,10 +48,13 @@ const DEFAULT_CLASSIFICATION = { type_tag: "other", category: "time_services" };
 const TAGS = ["time", "money", "hands_on", "group", "words", "hug"] as const;
 const TAG_CONFIDENCE_THRESHOLD = Number(Deno.env.get("TAG_CONFIDENCE_THRESHOLD") ?? "0.7");
 
-// Matches packages/shared/src/i18n/translations.ts's Language union — the
-// language the submitter's UI is actually displayed in is a far more
-// reliable signal than guessing from a short, often-ambiguous story text,
-// and costs nothing (no AI call) to use.
+// Matches packages/shared/src/i18n/translations.ts's Language union. The
+// moderation call below also reports which of these the story is actually
+// written in (no extra AI call) — people often write in a different
+// language than their UI is set to, and a wrong value here means readers
+// in the UI's language are never offered a translation. The submitter's UI
+// language is only the fallback: no text, AI unavailable, or a language
+// outside this list.
 const VALID_LANGS = ["en", "zh", "hi", "es", "fr", "ar", "bn", "pt", "ru", "de", "sl"];
 
 // Reject on uncertainty. Flip to false to hold borderline content for review instead.
@@ -101,7 +104,7 @@ Deno.serve(async (req) => {
       : [];
     const actType = (body.act_type ?? "").toString().trim().slice(0, 60) || null;
     const requestedLang = (body.lang ?? "").toString().trim().toLowerCase();
-    const language = VALID_LANGS.includes(requestedLang) ? requestedLang : "en";
+    let language = VALID_LANGS.includes(requestedLang) ? requestedLang : "en";
     const { type_tag: typeTag, category } = (actType && ACT_TYPE_MAP[actType]) || DEFAULT_CLASSIFICATION;
     // Defaults to true (matches the Log an Act screen's own toggle default)
     // when the caller doesn't send it at all — only an explicit `false`
@@ -230,6 +233,7 @@ Deno.serve(async (req) => {
                   "- hug: physical affection or comfort (a hug, a hand on the shoulder, holding someone's hand, sitting with someone who is hurting).\n" +
                   "The story may be in English, Spanish, French, German, or any other language — tag directly in that language, do NOT translate it first. " +
                   "Be conservative: vague or very short text should score low across the board.\n\n" +
+                  "3) LANGUAGE: report the language the story is written in (the dominant one if mixed), or 'other' if it isn't one of the listed ones.\n\n" +
                   "Always call review_act.",
               },
               { role: "user", content: `Mode: ${body.mode}\nStory: ${description}` },
@@ -256,8 +260,13 @@ Deno.serve(async (req) => {
                       group: { type: "number", description: "0-1 confidence that the act is 'group'" },
                       words: { type: "number", description: "0-1 confidence that the act is 'words'" },
                       hug: { type: "number", description: "0-1 confidence that the act is 'hug'" },
+                      language: {
+                        type: "string",
+                        enum: [...VALID_LANGS, "other"],
+                        description: "ISO 639-1 code of the language the story is written in",
+                      },
                     },
-                    required: ["status", "confidence", "reason_codes", ...TAGS],
+                    required: ["status", "confidence", "reason_codes", ...TAGS, "language"],
                     additionalProperties: false,
                   },
                 },
@@ -292,6 +301,7 @@ Deno.serve(async (req) => {
               }
               tagConfidence = scores;
               classifiedAt = new Date().toISOString();
+              if (VALID_LANGS.includes(parsed.language)) language = parsed.language;
             } catch (_) {
               // Response didn't parse as expected — treat the same as the
               // model being unreachable rather than silently auto-approving.
