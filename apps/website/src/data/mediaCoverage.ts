@@ -56,6 +56,7 @@ export const articles: MediaItem[] = [
     title: "Kindness Forward Launches Global Kindness Season, Calling on 195 Countries to Inspire One Billion Acts of Kindness",
     url: "https://finance.yahoo.com/media-advertising/articles/kindness-forward-launches-global-kindness-120000728.html",
     type: "article",
+    imageUrl: "/press/yahoo-finance.webp",
   },
   {
     outlet: "Business Insider",
@@ -90,24 +91,28 @@ export const articles: MediaItem[] = [
     title: "Kindness Forward Launches Global Kindness Season, Calling on 195 Countries to Inspire One Billion Acts of Kindness",
     url: "https://pix11.com/business/press-releases/globenewswire/9843808/kindness-forward-launches-global-kindness-season-calling-on-195-countries-to-inspire-one-billion-acts-of-kindness/",
     type: "article",
+    imageUrl: "/press/pix11.webp",
   },
   {
     outlet: "WFLA News Channel 8",
     title: "Kindness Forward Launches Global Kindness Season, Calling on 195 Countries to Inspire One Billion Acts of Kindness",
     url: "https://www.wfla.com/business/press-releases/globenewswire/9843808/kindness-forward-launches-global-kindness-season-calling-on-195-countries-to-inspire-one-billion-acts-of-kindness/",
     type: "article",
+    imageUrl: "/press/wfla.webp",
   },
   {
     outlet: "KXAN",
     title: "Kindness Forward Launches Global Kindness Season, Calling on 195 Countries to Inspire One Billion Acts of Kindness",
     url: "https://www.kxan.com/business/press-releases/globenewswire/9843808/kindness-forward-launches-global-kindness-season-calling-on-195-countries-to-inspire-one-billion-acts-of-kindness/",
     type: "article",
+    imageUrl: "/press/kxan.webp",
   },
   {
     outlet: "WAVY 10",
     title: "Kindness Forward Launches Global Kindness Season, Calling on 195 Countries to Inspire One Billion Acts of Kindness",
     url: "https://www.wavy.com/business/press-releases/globenewswire/9843808/kindness-forward-launches-global-kindness-season-calling-on-195-countries-to-inspire-one-billion-acts-of-kindness/",
     type: "article",
+    imageUrl: "/press/wavy.webp",
   },
 ];
 
