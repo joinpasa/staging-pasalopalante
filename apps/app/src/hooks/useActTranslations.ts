@@ -48,8 +48,13 @@ export function useActTranslations() {
     setShown((s) => ({ ...s, [act.id]: lang }));
   };
 
+  // Nothing to translate when there's no real text, or it's already written
+  // in the reader's language. An unknown language still gets the button.
+  const canTranslate = (act: TranslatableAct & { hasDescription: boolean }) =>
+    act.hasDescription && act.language !== lang;
+
   const textFor = (act: TranslatableAct) =>
     (isTranslated(act.id) && cache.get(`${act.id}:${lang}`)) || act.description;
 
-  return { toggle, textFor, isTranslated, isLoading: (id: string) => !!loading[id] };
+  return { toggle, textFor, canTranslate, isTranslated, isLoading: (id: string) => !!loading[id] };
 }

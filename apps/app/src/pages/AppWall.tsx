@@ -246,7 +246,7 @@ export default function AppWall() {
                     <span className="text-xs text-muted-foreground">
                       {timeAgo(post.createdAt, t.appCommon, lang)}
                     </span>
-                    {post.hasDescription && (
+                    {translations.canTranslate(post) && (
                       <TranslateButton
                         translated={translations.isTranslated(post.id)}
                         loading={translations.isLoading(post.id)}

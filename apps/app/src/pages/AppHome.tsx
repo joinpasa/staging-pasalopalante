@@ -691,7 +691,7 @@ export default function AppHome() {
                   <p className="truncate text-[13px] font-bold text-foreground">{act.name}</p>
                   <div className="flex shrink-0 flex-col items-end gap-0.5">
                     <p className="text-[10.5px] text-muted-foreground">{timeAgo(act.createdAt, t.appCommon, lang)}</p>
-                    {act.hasDescription && (
+                    {translations.canTranslate(act) && (
                       <TranslateButton
                         translated={translations.isTranslated(act.id)}
                         loading={translations.isLoading(act.id)}

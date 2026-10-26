@@ -314,7 +314,7 @@ export default function AppMap() {
                 </div>
                 <div className="flex shrink-0 flex-col items-end gap-0.5">
                   <span className="text-xs font-bold text-app-teal">{timeAgo(act.createdAt, t.appCommon, lang)}</span>
-                  {act.hasDescription && (
+                  {translations.canTranslate(act) && (
                     <TranslateButton
                       translated={translations.isTranslated(act.id)}
                       loading={translations.isLoading(act.id)}
