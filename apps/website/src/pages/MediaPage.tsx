@@ -488,17 +488,17 @@ export default function MediaPage() {
 
         <div className="section-padding mx-auto max-w-6xl py-14 md:py-16">
           <Section
-            id="articles"
-            eyebrow={t.navbar.mediaArticles}
-            items={articles}
-            CardComponent={PressCard}
-          />
-          <Section
             id="featured"
             eyebrow={tx.featured}
             items={featured}
             CardComponent={RichEmbedCard}
             columns={2}
+          />
+          <Section
+            id="articles"
+            eyebrow={t.navbar.mediaArticles}
+            items={articles}
+            CardComponent={PressCard}
           />
           <Section
             id="digital-press"
