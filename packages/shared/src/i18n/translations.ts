@@ -448,6 +448,7 @@ const translations = {
       about: "About",
       partners: "Partners",
       media: "Media",
+      mediaArticles: "Articles",
       mediaFeatured: "Featured",
       mediaDigitalPress: "Digital Press",
       mediaVideos: "Videos",

@@ -39,6 +39,78 @@ export interface MediaItem {
   imageUrl?: string;
 }
 
+// 2026 Global Kindness Season launch press release (GlobeNewswire,
+// October 2026), as picked up by each outlet. Same headline everywhere —
+// it's one syndicated release — so cards show the outlet logo, headline and
+// domain without a per-card summary. Newest coverage, shown first on /media.
+export const articles: MediaItem[] = [
+  {
+    outlet: "AP News",
+    title: "Kindness Forward Launches Global Kindness Season, Calling on 195 Countries to Inspire One Billion Acts of Kindness",
+    url: "https://apnews.com/press-release/globenewswire-mobile/press-release-64188d83a9632e258dcca86c4dd37fd5",
+    type: "article",
+    imageUrl: "/press/ap-news.webp",
+  },
+  {
+    outlet: "Yahoo Finance",
+    title: "Kindness Forward Launches Global Kindness Season, Calling on 195 Countries to Inspire One Billion Acts of Kindness",
+    url: "https://finance.yahoo.com/media-advertising/articles/kindness-forward-launches-global-kindness-120000728.html",
+    type: "article",
+  },
+  {
+    outlet: "Business Insider",
+    title: "Kindness Forward Launches Global Kindness Season, Calling on 195 Countries to Inspire One Billion Acts of Kindness",
+    url: "https://markets.businessinsider.com/news/stocks/kindness-forward-launches-global-kindness-season-calling-on-195-countries-to-inspire-one-billion-acts-of-kindness-1036616317",
+    type: "article",
+    imageUrl: "/press/business-insider.webp",
+  },
+  {
+    outlet: "Benzinga",
+    title: "Kindness Forward Launches Global Kindness Season, Calling on 195 Countries to Inspire One Billion Acts of Kindness",
+    url: "https://www.benzinga.com/pressreleases/26/10/g62295537/kindness-forward-launches-global-kindness-season-calling-195-countries-inspire-one-billion-acts-kind",
+    type: "article",
+    imageUrl: "/press/benzinga.webp",
+  },
+  {
+    outlet: "KTLA 5",
+    title: "Kindness Forward Launches Global Kindness Season, Calling on 195 Countries to Inspire One Billion Acts of Kindness",
+    url: "https://ktla.com/business/press-releases/globenewswire/9843808/kindness-forward-launches-global-kindness-season-calling-on-195-countries-to-inspire-one-billion-acts-of-kindness/",
+    type: "article",
+    imageUrl: "/press/ktla.webp",
+  },
+  {
+    outlet: "FOX 8",
+    title: "Kindness Forward Launches Global Kindness Season, Calling on 195 Countries to Inspire One Billion Acts of Kindness",
+    url: "https://fox8.com/business/press-releases/globenewswire/9843808/kindness-forward-launches-global-kindness-season-calling-on-195-countries-to-inspire-one-billion-acts-of-kindness/",
+    type: "article",
+    imageUrl: "/press/fox8.webp",
+  },
+  {
+    outlet: "PIX11",
+    title: "Kindness Forward Launches Global Kindness Season, Calling on 195 Countries to Inspire One Billion Acts of Kindness",
+    url: "https://pix11.com/business/press-releases/globenewswire/9843808/kindness-forward-launches-global-kindness-season-calling-on-195-countries-to-inspire-one-billion-acts-of-kindness/",
+    type: "article",
+  },
+  {
+    outlet: "WFLA News Channel 8",
+    title: "Kindness Forward Launches Global Kindness Season, Calling on 195 Countries to Inspire One Billion Acts of Kindness",
+    url: "https://www.wfla.com/business/press-releases/globenewswire/9843808/kindness-forward-launches-global-kindness-season-calling-on-195-countries-to-inspire-one-billion-acts-of-kindness/",
+    type: "article",
+  },
+  {
+    outlet: "KXAN",
+    title: "Kindness Forward Launches Global Kindness Season, Calling on 195 Countries to Inspire One Billion Acts of Kindness",
+    url: "https://www.kxan.com/business/press-releases/globenewswire/9843808/kindness-forward-launches-global-kindness-season-calling-on-195-countries-to-inspire-one-billion-acts-of-kindness/",
+    type: "article",
+  },
+  {
+    outlet: "WAVY 10",
+    title: "Kindness Forward Launches Global Kindness Season, Calling on 195 Countries to Inspire One Billion Acts of Kindness",
+    url: "https://www.wavy.com/business/press-releases/globenewswire/9843808/kindness-forward-launches-global-kindness-season-calling-on-195-countries-to-inspire-one-billion-acts-of-kindness/",
+    type: "article",
+  },
+];
+
 export const digitalNews: MediaItem[] = [
   {
     outlet: "WIPR (Notiséis 360)",

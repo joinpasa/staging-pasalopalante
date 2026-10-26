@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-10-26 — va.deedumlao@gmail.com
 
+- **New "Articles" section at the top of the In the Press page** with the 10 outlets that ran the Global Kindness Season launch press release (AP News, Yahoo Finance, Business Insider, Benzinga, KTLA, FOX 8, PIX11, WFLA, KXAN, WAVY). Each card links to the article, and there's an "Articles" link in the page's sub-menu.
 - **The app's label under its home-screen icon now says "Kindness"** (was "Pásalo"), on both iPhone and Android. It's kept short so phones don't cut it off.
 - **About, Contact, Community Guidelines, In the Press and Global Ambassadors pages now show in every language**, the same fix as the Partners page. Before, they only switched between English and Spanish. The "Get the app" popup is also translated into all 11 languages now, and its title says Kindness Forward. Privacy and Terms stay English/Spanish only on purpose, since they're legal text.
 - **Partners page now shows in every language.** It used to switch only between English and Spanish, so Bengali, Arabic, Chinese and other visitors saw it in English. All its text is now translated into all 11 site languages.
