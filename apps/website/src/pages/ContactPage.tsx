@@ -6,8 +6,8 @@ import SEO from "@/components/SEO";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 
 export default function ContactPage() {
-  const { lang } = useLanguage();
-  const isEs = lang === "es";
+  const { t } = useLanguage();
+  const tx = t.contactPage;
 
   return (
     <div className="min-h-screen bg-warm-cream">
@@ -21,12 +21,10 @@ export default function ContactPage() {
         <div className="max-w-2xl mx-auto text-center">
           <p className="eyebrow">Pásalo Pa'lante</p>
           <h1 className="headline-xl text-foreground mt-3 mb-4">
-            {isEs ? "Contáctanos" : "Contact us"}
+            {tx.contactUs}
           </h1>
           <p className="text-base md:text-lg text-foreground/75 leading-relaxed mb-10">
-            {isEs
-              ? "¿Preguntas, ideas, prensa, alianzas o solicitudes legales? Escríbenos. El equipo de Te Amo PR responde personalmente."
-              : "Questions, ideas, press, partnerships, or legal requests? Reach out. The Te Amo PR team responds personally."}
+            {tx.intro}
           </p>
 
           <div className="bg-card border border-border rounded-2xl p-8 shadow-sm space-y-5 text-left">
@@ -34,7 +32,7 @@ export default function ContactPage() {
               <Mail className="text-primary shrink-0" size={22} />
               <div className="min-w-0">
                 <div className="text-xs uppercase tracking-widest text-foreground/50">
-                  {isEs ? "Correo" : "Email"}
+                  {tx.email}
                 </div>
                 <div className="text-base font-medium text-foreground group-hover:text-primary transition-colors break-all">
                   info@passkindnessforward.com
@@ -45,7 +43,7 @@ export default function ContactPage() {
               <Globe className="text-primary shrink-0" size={22} />
               <div>
                 <div className="text-xs uppercase tracking-widest text-foreground/50">
-                  {isEs ? "Sitio web" : "Website"}
+                  {tx.website}
                 </div>
                 <div className="text-base font-medium text-foreground group-hover:text-primary transition-colors">
                   teamopr.org
@@ -56,7 +54,7 @@ export default function ContactPage() {
               <Phone className="text-primary shrink-0" size={22} />
               <div>
                 <div className="text-xs uppercase tracking-widest text-foreground/50">
-                  {isEs ? "Teléfono" : "Phone"}
+                  {tx.phone}
                 </div>
                 <div className="text-base font-medium text-foreground">(787) 705-0778</div>
               </div>

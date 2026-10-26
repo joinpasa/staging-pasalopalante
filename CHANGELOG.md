@@ -8,6 +8,12 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-26 — va.deedumlao@gmail.com
+
+- **About, Contact, Community Guidelines, In the Press and Global Ambassadors pages now show in every language**, the same fix as the Partners page. Before, they only switched between English and Spanish. The "Get the app" popup is also translated into all 11 languages now, and its title says Kindness Forward. Privacy and Terms stay English/Spanish only on purpose, since they're legal text.
+- **Partners page now shows in every language.** It used to switch only between English and Spanish, so Bengali, Arabic, Chinese and other visitors saw it in English. All its text is now translated into all 11 site languages.
+- **Arabic and Bengali app screens are now fully translated.** About 370 app texts per language had been broken ("?????") and were removed, which left those screens in English; they now have proper Arabic and Bengali translations. Also made sure the new translations use the Kindness Forward page titles.
+
 ## 2026-10-23 — va.deedumlao@gmail.com
 
 - Every page's browser-tab title (and the title shown when a page is shared on social media or in Google) now says **Kindness Forward** instead of Pásalo Pa'lante, across all website pages and all languages. The app's tab title and its name on the install screen now say Kindness Forward too.
@@ -18,11 +24,17 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 - **Found and fixed a second, bigger redundancy in the same pipeline: every logged act was quietly making *two* separate AI calls, not one.** Alongside the moderation check above, a second function (`classify-act`) ran right after it to tag the act for the Wall's little emoji/category chips — re-sending the same story text to the AI a second time, with its own separate overhead. The two are now one single AI call that does both jobs at once, so the story is only sent once and we pay one call's overhead instead of two. No change to what shows on the Wall — tags are exactly as accurate as before, just computed in the same pass instead of a separate follow-up call. Combined with the first fix above, total AI cost per logged act is down roughly 20% from where it started this week, with the per-act plan ready to hand to Chin.
 - **Removed a dead, never-firing AI call from the pledge form (`submit-commitment`).** It had an "AI safety check" on a `message` field that, it turns out, no pledge form actually sends anymore (confirmed across all 8 places that call it) — so it was costing nothing today, but was confusing dead code that would've wasted someone's time during the cost review. Deleted it; pledges behave exactly as before.
 
+## 2026-10-23 — M.Schollmeyer@gmx.de
+
+- Translations: "Global Kindness Season" now always appears in English in every language, since it's part of the brand — it had been translated in a dozen different ways (one French text even called it a "week", another a season of "solidarity"). Along the way, fixed a French "How it works" step that showed the wrong step's text, and three Spanish texts that still talked about a "Global Kindness Month in November".
+- Arabic and Bengali: about 360 app texts per language had been saved as unreadable "?????" when those languages were first added, so the whole app showed question marks. They now show English until proper translations are added.
+
 ## 2026-10-22 — M.Schollmeyer@gmx.de
 
 - Website account: "Delete account" now really works. After typing "delete", the person's login, profile, acts (including their uploaded photos), commitments, badges, reactions, reminders, consent and email records are permanently removed, along with any group they were the only member of. Their GoHighLevel contact is kept but tagged `account-deleted` so the team can follow up. Acts other people sent to them stay on the giver's side, just no longer linked to the deleted person. Also fixes a database link that would have blocked deleting anyone who had ever received a /wave hand-off.
 
 - Website account: "Sign out" now sits directly on the /account dashboard, under the "My Account" button, instead of being buried in the settings page. In its old spot on /account/settings there's now a "Delete account" button that opens a confirmation popup (the user has to type "delete" to unlock the final button). The actual deletion isn't wired up yet — for now the final button just shows a "coming soon" message.
+- Translations: filled in every missing text in all 10 non-English languages (about 1,100 entries — mostly the media menu, the partner/municipality/company forms, the share-an-act flow, the live wall, login/signup and account pages), so those parts no longer fall back to English. Existing translations were left untouched.
 
 ## 2026-10-22 — va.deedumlao@gmail.com
 

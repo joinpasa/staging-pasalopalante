@@ -129,8 +129,8 @@ function DirectoryCard({ entry, tint }: { entry: DirectoryEntry; tint: string })
 }
 
 export default function GlobalAmbassadorsPage() {
-  const { lang } = useLanguage();
-  const isEs = lang === "es";
+  const { t } = useLanguage();
+  const tx = t.ambassadorsPage;
   const { data: entries, isLoading } = useDirectory();
   const [query, setQuery] = useState("");
   const [country, setCountry] = useState("");
@@ -174,28 +174,26 @@ export default function GlobalAmbassadorsPage() {
           <div className="section-padding relative mx-auto flex max-w-6xl flex-wrap items-end gap-12 pb-16 pt-28 md:pt-32">
             <div className="flex flex-1 flex-col gap-6" style={{ flexBasis: "560px" }}>
               <p className="text-xs font-bold tracking-[0.18em] text-warm-gold">
-                {isEs ? "NUESTROS EMBAJADORES · LA COALICIÓN DE BONDAD" : "OUR AMBASSADORS · THE KINDNESS COALITION"}
+                {tx.ourAmbassadorsTheKindness}
               </p>
               <h1 className="font-display text-4xl leading-[1.05] tracking-tight md:text-5xl lg:text-6xl">
-                {isEs ? "Las voces que llevan la bondad adelante." : "The voices carrying kindness forward."}
+                {tx.theVoicesCarryingKindness}
               </h1>
               <p className="max-w-xl text-base leading-relaxed text-warm-cream/75 md:text-lg">
-                {isEs
-                  ? "Encuentra al embajador o campeón que lidera la bondad en tu país, conecta con ellos y planifiquen juntos actos de bondad."
-                  : "Find the ambassador or champion leading kindness in your country, connect with them, and plan acts of kindness together."}
+                {tx.findTheAmbassadorOr}
               </p>
               <div className="mt-2 flex flex-wrap gap-3">
                 <a
                   href="#directory"
                   className="inline-flex h-[52px] items-center justify-center rounded-full bg-warm-terracotta px-7 text-sm font-bold text-white transition-transform duration-200 hover:scale-105"
                 >
-                  {isEs ? "Explora el directorio" : "Explore the directory"}
+                  {tx.exploreTheDirectory}
                 </a>
                 <a
                   href="/get-involved/ambassadors"
                   className="inline-flex h-[52px] items-center justify-center rounded-full border-[1.5px] border-warm-cream/40 px-7 text-sm font-bold text-warm-cream transition-colors duration-200 hover:border-warm-cream"
                 >
-                  {isEs ? "Sé Embajador" : "Become an Ambassador"}
+                  {tx.becomeAnAmbassador}
                 </a>
               </div>
             </div>
@@ -203,7 +201,7 @@ export default function GlobalAmbassadorsPage() {
               <div className="flex flex-col gap-1.5 pr-4 pt-5">
                 <dd className="font-display text-4xl leading-none md:text-5xl">{!isLoading ? all.length : "—"}</dd>
                 <dt className="text-xs font-semibold leading-tight text-warm-cream/70">
-                  {isEs ? "Embajadores y campeones" : "Ambassadors & champions"}
+                  {tx.ambassadorsChampions}
                 </dt>
               </div>
               <div className="flex flex-col gap-1.5 border-l border-warm-cream/20 py-5 pl-4">
@@ -211,7 +209,7 @@ export default function GlobalAmbassadorsPage() {
                   {!isLoading ? countries.length : "—"}
                 </dd>
                 <dt className="text-xs font-semibold leading-tight text-warm-cream/70">
-                  {isEs ? "Países representados" : "Countries represented"}
+                  {tx.countriesRepresented}
                 </dt>
               </div>
             </dl>
@@ -230,20 +228,20 @@ export default function GlobalAmbassadorsPage() {
             <div className="relative min-w-[220px] flex-[999_1_300px]">
               <Search size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40" />
               <label htmlFor="ambassador-search" className="sr-only">
-                {isEs ? "Buscar embajadores" : "Search ambassadors"}
+                {tx.searchAmbassadors}
               </label>
               <input
                 id="ambassador-search"
                 type="search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder={isEs ? "Buscar por nombre, país o ciudad" : "Search by name, country or city"}
+                placeholder={tx.searchByNameCountry}
                 className="h-12 w-full rounded-full border border-border bg-white pl-11 pr-4 text-sm text-foreground outline-none focus:border-warm-terracotta"
               />
             </div>
             <div className="min-w-[180px] flex-[1_1_200px]">
               <label htmlFor="ambassador-country" className="sr-only">
-                {isEs ? "País" : "Country"}
+                {tx.country}
               </label>
               <select
                 id="ambassador-country"
@@ -251,7 +249,7 @@ export default function GlobalAmbassadorsPage() {
                 onChange={(e) => setCountry(e.target.value)}
                 className="h-12 w-full rounded-full border border-border bg-white px-4 text-sm text-foreground outline-none focus:border-warm-terracotta"
               >
-                <option value="">{isEs ? "Todos los países" : "All countries"}</option>
+                <option value="">{tx.allCountries}</option>
                 {countries.map((c) => (
                   <option key={c} value={c}>
                     {c}
@@ -260,7 +258,7 @@ export default function GlobalAmbassadorsPage() {
               </select>
             </div>
             <span className="text-[13px] font-semibold text-foreground/70">
-              {isEs ? `Mostrando ${shown.length} de ${all.length}` : `Showing ${shown.length} of ${all.length}`}
+              {tx.showing.replace("{shown}", String(shown.length)).replace("{total}", String(all.length))}
             </span>
           </div>
         </div>
@@ -274,7 +272,7 @@ export default function GlobalAmbassadorsPage() {
         {categories.length > 1 && (
           <div
             role="group"
-            aria-label={isEs ? "Filtrar por categoría" : "Filter by category"}
+            aria-label={tx.filterByCategory}
             className="section-padding mx-auto flex max-w-6xl flex-nowrap gap-2 overflow-x-auto py-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {["All", ...categories].map((c) => (
@@ -289,7 +287,7 @@ export default function GlobalAmbassadorsPage() {
                     : "border-border bg-white text-foreground hover:border-warm-terracotta"
                 }`}
               >
-                {c === "All" ? (isEs ? "Todos" : "All") : c}
+                {c === "All" ? (tx.all) : c}
               </button>
             ))}
           </div>
@@ -306,17 +304,13 @@ export default function GlobalAmbassadorsPage() {
             </div>
             <div>
               <p className="text-xs font-bold tracking-[0.14em] text-foreground/50">
-                {isEs ? "MÁS EN CAMINO" : "MORE JOINING SOON"}
+                {tx.moreJoiningSoon}
               </p>
               <h3 className="font-display text-xl leading-snug text-foreground">
-                {isEs
-                  ? "Estos son nuestros embajadores confirmados"
-                  : "These are our confirmed ambassadors and champions"}
+                {tx.theseAreOurConfirmed}
               </h3>
               <p className="text-sm leading-relaxed text-foreground/70">
-                {isEs
-                  ? "Hay más personas completando su aprobación y se añadirán a este directorio en cuanto se confirmen."
-                  : "More people are completing approval and will be added to this directory as they're confirmed."}
+                {tx.morePeopleAreCompleting}
               </p>
             </div>
           </div>
@@ -330,18 +324,16 @@ export default function GlobalAmbassadorsPage() {
           ) : all.length === 0 ? (
             <div className="flex flex-col items-center gap-3 rounded-3xl border-[1.5px] border-dashed border-border px-6 py-16 text-center">
               <h2 className="font-display text-2xl text-foreground">
-                {isEs ? "Aún no hay embajadores aquí" : "No ambassador here yet"}
+                {tx.noAmbassadorHereYet}
               </h2>
               <p className="max-w-md text-sm leading-relaxed text-foreground/70">
-                {isEs
-                  ? "Tu país o ciudad podría ser el próximo. Sé el primer Embajador Global de Bondad y lidera el movimiento donde vives."
-                  : "Your country or city could be next. Be the first Global Kindness Ambassador and lead the movement where you live."}
+                {tx.yourCountryOrCity}
               </p>
               <a
                 href="/get-involved/ambassadors"
                 className="mt-2 inline-flex h-[46px] items-center justify-center rounded-full bg-cyan-900 px-6 text-sm font-bold text-white"
               >
-                {isEs ? "Sé el primer embajador" : "Become the first ambassador"}
+                {tx.becomeTheFirstAmbassador}
               </a>
             </div>
           ) : shown.length > 0 ? (
@@ -353,10 +345,10 @@ export default function GlobalAmbassadorsPage() {
           ) : (
             <div className="flex flex-col items-center gap-3 rounded-3xl border-[1.5px] border-dashed border-border px-6 py-16 text-center">
               <h2 className="font-display text-2xl text-foreground">
-                {isEs ? "Nadie coincide con tu búsqueda" : "No one matches your search"}
+                {tx.noOneMatchesYour}
               </h2>
               <p className="text-sm text-foreground/70">
-                {isEs ? "Prueba con otro país, categoría o término de búsqueda." : "Try a different country, category or search term."}
+                {tx.tryADifferentCountry}
               </p>
               <button
                 type="button"
@@ -367,44 +359,36 @@ export default function GlobalAmbassadorsPage() {
                 }}
                 className="mt-2 h-[46px] rounded-full bg-cyan-900 px-6 text-sm font-bold text-white"
               >
-                {isEs ? "Mostrar todos" : "Show everyone"}
+                {tx.showEveryone}
               </button>
             </div>
           )}
 
           {!isLoading && all.length > 0 && (
             <section className="mt-6 text-center">
-              <p className="eyebrow">{isEs ? "Conecta" : "Connect"}</p>
+              <p className="eyebrow">{tx.connect}</p>
               <h2 className="headline-xl text-foreground mt-3 mb-4" style={{ fontSize: "2.25rem" }}>
-                {isEs ? "Tres pasos para la bondad en conjunto" : "Three Steps to Kindness Together"}
+                {tx.threeStepsToKindness}
               </h2>
               <p className="text-foreground/75 leading-relaxed max-w-xl mx-auto mb-10">
-                {isEs
-                  ? "Nuestros embajadores están aquí para ayudarte a comprometerte, planificar y multiplicar la bondad donde estás."
-                  : "Our ambassadors are here to help you pledge, plan and multiply kindness where you are."}
+                {tx.ourAmbassadorsAreHere}
               </p>
               <div className="grid gap-4 text-left sm:grid-cols-3">
                 {[
                   {
-                    step: isEs ? "PASO 1" : "STEP 1",
-                    title: isEs ? "Encuentra tu país" : "Find your country",
-                    body: isEs
-                      ? "Busca o filtra para ver quién lidera la bondad cerca de ti."
-                      : "Search or filter to see who is leading kindness near you.",
+                    step: tx.step1,
+                    title: tx.findYourCountry,
+                    body: tx.searchOrFilterTo,
                   },
                   {
-                    step: isEs ? "PASO 2" : "STEP 2",
-                    title: isEs ? "Saluda" : "Say hello",
-                    body: isEs
-                      ? "Síguelos o envíales un mensaje a través de los enlaces en su tarjeta."
-                      : "Follow them or send a message through the links on their card.",
+                    step: tx.step2,
+                    title: tx.sayHello,
+                    body: tx.followThemOrSend,
                   },
                   {
-                    step: isEs ? "PASO 3" : "STEP 3",
-                    title: isEs ? "Comprométanse juntos" : "Pledge together",
-                    body: isEs
-                      ? "Únanse para realizar actos de bondad en su escuela, ciudad o trabajo."
-                      : "Team up on acts of kindness for your school, city or workplace.",
+                    step: tx.step3,
+                    title: tx.pledgeTogether,
+                    body: tx.teamUpOnActs,
                   },
                 ].map((s) => (
                   <div key={s.step} className="rounded-2xl border border-border bg-white p-6 shadow-sm">
@@ -430,17 +414,13 @@ export default function GlobalAmbassadorsPage() {
             <div className="relative flex flex-wrap items-center gap-10">
               <div className="flex flex-1 flex-col gap-4" style={{ flexBasis: "420px" }}>
                 <p className="text-xs font-bold tracking-[0.18em] text-warm-gold">
-                  {isEs ? "SÉ EMBAJADOR" : "BECOME AN AMBASSADOR"}
+                  {tx.becomeAnAmbassador2}
                 </p>
                 <h2 className="font-display text-3xl leading-tight md:text-4xl">
-                  {isEs
-                    ? "Pon tu nombre detrás de la bondad, donde vives."
-                    : "Put your name behind kindness, right where you live."}
+                  {tx.putYourNameBehind}
                 </h2>
                 <p className="text-base leading-relaxed text-warm-cream/75">
-                  {isEs
-                    ? "Conviértete en Embajador Global de Bondad y ayúdanos a inspirar mil millones de actos de bondad, comenzando donde vives."
-                    : "Become a Global Kindness Ambassador and help inspire 1 billion acts of kindness, starting where you live."}
+                  {tx.becomeAGlobalKindness}
                 </p>
               </div>
               <div className="flex flex-1 flex-col gap-3" style={{ flexBasis: "280px", maxWidth: "320px" }}>
@@ -448,7 +428,7 @@ export default function GlobalAmbassadorsPage() {
                   href="/get-involved/ambassadors"
                   className="flex h-14 items-center justify-center rounded-full bg-warm-terracotta text-base font-bold text-white transition-transform duration-200 hover:scale-105"
                 >
-                  {isEs ? "Sé Embajador Global" : "Become a Global Ambassador"}
+                  {tx.becomeAGlobalAmbassador}
                 </a>
                 <a
                   href="mailto:info@passkindnessforward.com"
