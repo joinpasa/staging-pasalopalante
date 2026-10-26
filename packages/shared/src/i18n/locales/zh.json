@@ -1311,5 +1311,26 @@
   "dayAgo": "1 天前",
   "daysAgo": "{n} 天前",
   "statLine": "今天已分享 {n} 个善举"
+ },
+ "partnersPage": {
+  "eyebrow": "我们的合作伙伴 · 善意联盟",
+  "heading": "传递善意的联盟。",
+  "intro": "Pásalo Pa'lante 之所以不断前进，是因为有众多组织在背后支持。我们的合作伙伴共同举办活动、资助这项运动，并将善意带到社区的每一个角落。",
+  "exploreDirectory": "浏览名录",
+  "becomePartner": "成为合作伙伴",
+  "statPartners": "合作伙伴组织",
+  "statActs": "善举，同一个目标",
+  "featuredEyebrow": "重点合作伙伴",
+  "featuredHeading": "引领善意之路",
+  "searchPartners": "搜索合作伙伴",
+  "showing": "显示 {shown} / {total}",
+  "updatingNotice": "非常感谢众多希望加入的组织给予的大力支持。我们正在积极更新此页面，很快就会焕然一新。",
+  "noMatchHeading": "没有符合该搜索的合作伙伴",
+  "noMatchBody": "试试其他名称。",
+  "showAll": "显示所有合作伙伴",
+  "joinEyebrow": "成为合作伙伴",
+  "joinHeading": "让您的组织为善意代言。",
+  "joinBody": "加入这项运动，帮助我们传递善意。告诉我们您的组织情况，我们会与您联系并告知后续步骤。",
+  "getInTouch": "联系我们"
  }
 }

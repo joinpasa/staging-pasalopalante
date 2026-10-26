@@ -1203,5 +1203,26 @@
     "dayAgo": "pred enim dnem",
     "daysAgo": "pred {n} dnevi",
     "statLine": "Danes deljenih dejanj: {n}"
+  },
+  "partnersPage": {
+    "eyebrow": "NAŠI PARTNERJI · KOALICIJA PRIJAZNOSTI",
+    "heading": "Koalicija, ki prijaznost nosi naprej.",
+    "intro": "Pásalo Pa'lante gre naprej zaradi organizacij, ki stojijo za njim. Naši partnerji soorganizirajo aktivnosti, financirajo gibanje in nosijo prijaznost v vsak kotiček svojih skupnosti.",
+    "exploreDirectory": "Razišči imenik",
+    "becomePartner": "Postani partner",
+    "statPartners": "Partnerskih organizacij",
+    "statActs": "Dejanj prijaznosti, en skupen cilj",
+    "featuredEyebrow": "IZPOSTAVLJENI PARTNERJI",
+    "featuredHeading": "Utirajo pot prijaznosti",
+    "searchPartners": "Išči partnerje",
+    "showing": "Prikazano {shown} od {total}",
+    "updatingNotice": "Zelo smo hvaležni za izjemno podporo organizacij, ki se želijo pridružiti. To stran aktivno posodabljamo in kmalu bo prenovljena.",
+    "noMatchHeading": "Nobeden od partnerjev ne ustreza iskanju",
+    "noMatchBody": "Poskusi z drugim imenom.",
+    "showAll": "Pokaži vse partnerje",
+    "joinEyebrow": "POSTANI PARTNER",
+    "joinHeading": "Postavi ime svoje organizacije za prijaznost.",
+    "joinBody": "Pridruži se gibanju in nam pomagaj prijaznost podajati naprej. Povej nam o svoji organizaciji in oglasili se bomo z naslednjimi koraki.",
+    "getInTouch": "Stopi v stik"
   }
 }

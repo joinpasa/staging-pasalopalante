@@ -1312,5 +1312,26 @@
   "dayAgo": "há um dia",
   "daysAgo": "há {n} dias",
   "statLine": "{n} atos compartilhados hoje"
+ },
+ "partnersPage": {
+  "eyebrow": "NOSSOS PARCEIROS · A COALIZÃO DA GENTILEZA",
+  "heading": "A coalizão que leva a gentileza adiante.",
+  "intro": "Pásalo Pa'lante avança graças às organizações que o apoiam. Nossos parceiros coorganizam ativações, financiam o movimento e levam a gentileza a cada canto de suas comunidades.",
+  "exploreDirectory": "Explorar o diretório",
+  "becomePartner": "Seja um parceiro",
+  "statPartners": "Organizações parceiras",
+  "statActs": "Atos de gentileza, uma meta compartilhada",
+  "featuredEyebrow": "PARCEIROS EM DESTAQUE",
+  "featuredHeading": "Liderando o caminho da gentileza",
+  "searchPartners": "Buscar parceiros",
+  "showing": "Mostrando {shown} de {total}",
+  "updatingNotice": "Somos muito gratos pelo enorme apoio das organizações que querem participar. Estamos atualizando esta página ativamente e em breve ela será renovada.",
+  "noMatchHeading": "Nenhum parceiro corresponde a essa busca",
+  "noMatchBody": "Tente outro nome.",
+  "showAll": "Mostrar todos os parceiros",
+  "joinEyebrow": "SEJA UM PARCEIRO",
+  "joinHeading": "Coloque o nome da sua organização ao lado da gentileza.",
+  "joinBody": "Junte-se ao movimento e ajude-nos a passar a gentileza adiante. Conte-nos sobre sua organização e entraremos em contato com os próximos passos.",
+  "getInTouch": "Fale conosco"
  }
 }

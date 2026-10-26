@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-10-26 — va.deedumlao@gmail.com
 
+- **Partners page now shows in every language.** It used to switch only between English and Spanish, so Bengali, Arabic, Chinese and other visitors saw it in English. All its text is now translated into all 11 site languages.
 - **Arabic and Bengali app screens are now fully translated.** About 370 app texts per language had been broken ("?????") and were removed, which left those screens in English; they now have proper Arabic and Bengali translations. Also made sure the new translations use the Kindness Forward page titles.
 
 ## 2026-10-23 — va.deedumlao@gmail.com

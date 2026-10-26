@@ -1311,5 +1311,26 @@
     "dayAgo": "il y a un jour",
     "daysAgo": "il y a {n} jours",
     "statLine": "{n} actes partagés aujourd'hui"
+  },
+  "partnersPage": {
+    "eyebrow": "NOS PARTENAIRES · LA COALITION DE LA GENTILLESSE",
+    "heading": "La coalition qui fait avancer la gentillesse.",
+    "intro": "Pásalo Pa'lante avance grâce aux organisations qui le soutiennent. Nos partenaires co-organisent des activations, financent le mouvement et portent la gentillesse dans chaque recoin de leurs communautés.",
+    "exploreDirectory": "Parcourir l'annuaire",
+    "becomePartner": "Devenir partenaire",
+    "statPartners": "Organisations partenaires",
+    "statActs": "Actes de gentillesse, un objectif commun",
+    "featuredEyebrow": "PARTENAIRES À LA UNE",
+    "featuredHeading": "Ils montrent la voie de la gentillesse",
+    "searchPartners": "Rechercher des partenaires",
+    "showing": "{shown} sur {total} affichés",
+    "updatingNotice": "Nous sommes très reconnaissants du formidable soutien des organisations qui souhaitent nous rejoindre. Nous mettons activement cette page à jour et elle sera bientôt renouvelée.",
+    "noMatchHeading": "Aucun partenaire ne correspond à cette recherche",
+    "noMatchBody": "Essayez un autre nom.",
+    "showAll": "Afficher tous les partenaires",
+    "joinEyebrow": "DEVENIR PARTENAIRE",
+    "joinHeading": "Associez le nom de votre organisation à la gentillesse.",
+    "joinBody": "Rejoignez le mouvement et aidez-nous à faire passer la gentillesse. Parlez-nous de votre organisation et nous reviendrons vers vous avec les prochaines étapes.",
+    "getInTouch": "Nous contacter"
   }
 }

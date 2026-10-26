@@ -1303,5 +1303,26 @@
         }
       ]
     }
+  },
+  "partnersPage": {
+    "eyebrow": "UNSERE PARTNER · DIE KOALITION DER FREUNDLICHKEIT",
+    "heading": "Die Koalition, die Freundlichkeit weiterträgt.",
+    "intro": "Pásalo Pa'lante kommt voran dank der Organisationen, die dahinterstehen. Unsere Partner veranstalten gemeinsam Aktionen, finanzieren die Bewegung und tragen Freundlichkeit in jeden Winkel ihrer Gemeinschaften.",
+    "exploreDirectory": "Verzeichnis ansehen",
+    "becomePartner": "Partner werden",
+    "statPartners": "Partnerorganisationen",
+    "statActs": "Akte der Freundlichkeit, ein gemeinsames Ziel",
+    "featuredEyebrow": "AUSGEWÄHLTE PARTNER",
+    "featuredHeading": "Vorreiter der Freundlichkeit",
+    "searchPartners": "Partner suchen",
+    "showing": "{shown} von {total} angezeigt",
+    "updatingNotice": "Wir sind sehr dankbar für die überwältigende Unterstützung von Organisationen, die mitmachen möchten. Wir aktualisieren diese Seite gerade und werden sie bald erneuern.",
+    "noMatchHeading": "Keine Partner passen zu dieser Suche",
+    "noMatchBody": "Versuchen Sie einen anderen Namen.",
+    "showAll": "Alle Partner anzeigen",
+    "joinEyebrow": "PARTNER WERDEN",
+    "joinHeading": "Stellen Sie den Namen Ihrer Organisation hinter die Freundlichkeit.",
+    "joinBody": "Werden Sie Teil der Bewegung und helfen Sie uns, Freundlichkeit weiterzugeben. Erzählen Sie uns von Ihrer Organisation, und wir melden uns mit den nächsten Schritten.",
+    "getInTouch": "Kontakt aufnehmen"
   }
 }

@@ -1303,5 +1303,26 @@
     "linkResent": "Enlace de inicio de sesión reenviado; revisa tu correo.",
     "setupPassword": "Configura una contraseña para iniciar sesión más rápido.",
     "setPassword": "Crear contraseña"
+  },
+  "partnersPage": {
+    "eyebrow": "NUESTROS SOCIOS · LA COALICIÓN DE BONDAD",
+    "heading": "La coalición que pasa la bondad hacia adelante.",
+    "intro": "Pásalo Pa'lante avanza gracias a las organizaciones que lo respaldan. Nuestros socios coorganizan activaciones, financian el movimiento y llevan la bondad a cada rincón de sus comunidades.",
+    "exploreDirectory": "Explora el directorio",
+    "becomePartner": "Conviértete en socio",
+    "statPartners": "Organizaciones socias",
+    "statActs": "Actos de bondad, una meta compartida",
+    "featuredEyebrow": "SOCIOS DESTACADOS",
+    "featuredHeading": "Liderando el camino de la bondad",
+    "searchPartners": "Buscar socios",
+    "showing": "Mostrando {shown} de {total}",
+    "updatingNotice": "Estamos muy agradecidos por el enorme apoyo de las organizaciones que desean unirse. Estamos actualizando activamente esta página y pronto estará renovada.",
+    "noMatchHeading": "Ningún socio coincide con esa búsqueda",
+    "noMatchBody": "Prueba con otro nombre.",
+    "showAll": "Mostrar todos los socios",
+    "joinEyebrow": "CONVIÉRTETE EN SOCIO",
+    "joinHeading": "Pon el nombre de tu organización detrás de la bondad.",
+    "joinBody": "Únete al movimiento y ayúdanos a pasar la bondad. Cuéntanos sobre tu organización y te contactaremos con los próximos pasos.",
+    "getInTouch": "Contáctanos"
   }
 }
