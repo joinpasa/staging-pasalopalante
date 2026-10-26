@@ -9,6 +9,10 @@
 // left undefined for those rather than inventing one; the page shows just
 // the outlet/platform in that case. Not exhaustive: the report itself
 // notes other clips, reposts, and international pickup aren't included.
+//
+// Live content now comes from the PKF_Media Google Sheet (see
+// apps-script/pkf-media and hooks/useMediaCoverage.ts). These lists are
+// only the /media fallback if that read fails — edit the sheet, not this.
 
 export type MediaLinkType =
   | "article"

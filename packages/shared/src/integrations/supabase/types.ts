@@ -292,6 +292,57 @@ export type Database = {
         }
         Relationships: []
       }
+      media_entries: {
+        Row: {
+          description_en: string | null
+          description_es: string | null
+          featured: boolean
+          id: string
+          image_url: string | null
+          note: string | null
+          outlet: string
+          section: string
+          sort_order: number | null
+          status: string
+          synced_at: string
+          title: string | null
+          type: string
+          url: string | null
+        }
+        Insert: {
+          description_en?: string | null
+          description_es?: string | null
+          featured?: boolean
+          id: string
+          image_url?: string | null
+          note?: string | null
+          outlet: string
+          section: string
+          sort_order?: number | null
+          status: string
+          synced_at?: string
+          title?: string | null
+          type?: string
+          url?: string | null
+        }
+        Update: {
+          description_en?: string | null
+          description_es?: string | null
+          featured?: boolean
+          id?: string
+          image_url?: string | null
+          note?: string | null
+          outlet?: string
+          section?: string
+          sort_order?: number | null
+          status?: string
+          synced_at?: string
+          title?: string | null
+          type?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
       partner_entries: {
         Row: {
           category: string
