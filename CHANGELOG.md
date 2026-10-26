@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-26 — va.deedumlao@gmail.com
+
+- **Arabic and Bengali app screens are now fully translated.** About 370 app texts per language had been broken ("?????") and were removed, which left those screens in English; they now have proper Arabic and Bengali translations. Also made sure the new translations use the Kindness Forward page titles.
+
 ## 2026-10-23 — va.deedumlao@gmail.com
 
 - Every page's browser-tab title (and the title shown when a page is shared on social media or in Google) now says **Kindness Forward** instead of Pásalo Pa'lante, across all website pages and all languages. The app's tab title and its name on the install screen now say Kindness Forward too.
@@ -17,6 +21,15 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 - **Cut the AI moderation cost on every logged act, ahead of the Nov 1 launch.** The act-submission review (`submit-act`) used to ask the AI to both moderate the story *and* re-guess its category/type and language from the text — but we already collect the category from the chip the person taps ("Donated", "Volunteered", etc. on the Log an Act screen) and the language from the app's own UI setting, so asking the AI to re-derive both was pure wasted spend. The AI now does only the part only it can do (the actual safety review); everything else uses data we already have. Still on Gemini for now — this is a same-provider cost cut, not a switch — and measured against our real prompt, it's roughly a 25–30% reduction in tokens (and therefore cost) per moderated submission, with no change in moderation behavior.
 - **Found and fixed a second, bigger redundancy in the same pipeline: every logged act was quietly making *two* separate AI calls, not one.** Alongside the moderation check above, a second function (`classify-act`) ran right after it to tag the act for the Wall's little emoji/category chips — re-sending the same story text to the AI a second time, with its own separate overhead. The two are now one single AI call that does both jobs at once, so the story is only sent once and we pay one call's overhead instead of two. No change to what shows on the Wall — tags are exactly as accurate as before, just computed in the same pass instead of a separate follow-up call. Combined with the first fix above, total AI cost per logged act is down roughly 20% from where it started this week, with the per-act plan ready to hand to Chin.
 - **Removed a dead, never-firing AI call from the pledge form (`submit-commitment`).** It had an "AI safety check" on a `message` field that, it turns out, no pledge form actually sends anymore (confirmed across all 8 places that call it) — so it was costing nothing today, but was confusing dead code that would've wasted someone's time during the cost review. Deleted it; pledges behave exactly as before.
+
+## 2026-10-23 — M.Schollmeyer@gmx.de
+
+- Translations: "Global Kindness Season" now always appears in English in every language, since it's part of the brand — it had been translated in a dozen different ways (one French text even called it a "week", another a season of "solidarity"). Along the way, fixed a French "How it works" step that showed the wrong step's text, and three Spanish texts that still talked about a "Global Kindness Month in November".
+- Arabic and Bengali: about 360 app texts per language had been saved as unreadable "?????" when those languages were first added, so the whole app showed question marks. They now show English until proper translations are added.
+
+## 2026-10-22 — M.Schollmeyer@gmx.de
+
+- Translations: filled in every missing text in all 10 non-English languages (about 1,100 entries — mostly the media menu, the partner/municipality/company forms, the share-an-act flow, the live wall, login/signup and account pages), so those parts no longer fall back to English. Existing translations were left untouched.
 
 ## 2026-10-22 — va.deedumlao@gmail.com
 
