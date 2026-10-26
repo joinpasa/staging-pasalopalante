@@ -33,6 +33,10 @@ const PLEDGE_REVIEW_THRESHOLD: Record<typeof TYPES[number], number> = {
 // (threshold 1,000,000, no separate cap) still go through that review path.
 const MAX_INDIVIDUAL_PLEDGE = envInt("MAX_INDIVIDUAL_PLEDGE", 10_000);
 
+// Matches packages/shared/src/i18n/translations.ts's Language union — see
+// the same reasoning in submit-act/index.ts for why this beats guessing.
+const VALID_LANGS = ["en", "zh", "hi", "es", "fr", "ar", "bn", "pt", "ru", "de", "sl"];
+
 interface Body {
   type: string;
   first_name?: string;
@@ -47,6 +51,7 @@ interface Body {
   help_role?: string | null;
   country?: string | null;
   org_type?: string | null;
+  lang?: string;
 }
 
 function bad(msg: string, status = 400) {
@@ -130,68 +135,17 @@ Deno.serve(async (req) => {
       return rateLimitedResponse(emailDailyWindow, corsHeaders);
     }
 
-    // Lightweight AI safety check on the message only (optional)
-    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
-    let safe = true;
-    let reason: string | null = null;
-    let language = "en";
-
-    if (message && GEMINI_API_KEY) {
-      try {
-        const aiRes = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${GEMINI_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model: Deno.env.get("GEMINI_MODEL") || "gemini-3.6-flash",
-            messages: [
-              {
-                role: "system",
-                content:
-                  "You moderate short pledge messages on a public kindness wall. Reject hateful, sexually explicit, harassing content, personal contact info, or spam. Always call moderate_message.",
-              },
-              { role: "user", content: message },
-            ],
-            tools: [
-              {
-                type: "function",
-                function: {
-                  name: "moderate_message",
-                  description: "Moderate a pledge message.",
-                  parameters: {
-                    type: "object",
-                    properties: {
-                      safe: { type: "boolean" },
-                      reason: { type: "string" },
-                      language: { type: "string" },
-                    },
-                    required: ["safe", "language"],
-                    additionalProperties: false,
-                  },
-                },
-              },
-            ],
-            tool_choice: { type: "function", function: { name: "moderate_message" } },
-          }),
-        });
-        if (aiRes.status === 429) return bad("Too many requests, please retry shortly.", 429);
-        if (aiRes.status === 402) return bad("AI credits exhausted.", 402);
-        if (aiRes.ok) {
-          const data = await aiRes.json();
-          const args = data.choices?.[0]?.message?.tool_calls?.[0]?.function?.arguments;
-          if (args) {
-            const parsed = JSON.parse(args);
-            safe = parsed.safe !== false;
-            reason = parsed.reason ?? null;
-            language = (parsed.language || "en").toString().slice(0, 8);
-          }
-        }
-      } catch (e) {
-        console.error("AI moderation error", e);
-      }
-    }
+    // No caller actually sends a free-text `message` here any more (checked
+    // all 8 call sites: it's either omitted entirely, or what looked like a
+    // message is really a separate CRM-sync payload, not this function's
+    // body) — `message` is only ever a synthetic string built from an
+    // already-validated enum (help_role) or omitted. An AI moderation call
+    // on that was pure dead weight and never actually ran in production;
+    // removed rather than left as unreachable code. `language` now comes
+    // from the caller's active UI language (same reasoning as submit-act),
+    // not a hardcoded "en".
+    const requestedLang = (body.lang ?? "").toString().trim().toLowerCase();
+    const language = VALID_LANGS.includes(requestedLang) ? requestedLang : "en";
 
     let userId: string | null = null;
     const authHeader = req.headers.get("Authorization");
@@ -204,12 +158,10 @@ Deno.serve(async (req) => {
 
     const reviewThreshold = PLEDGE_REVIEW_THRESHOLD[body.type as typeof TYPES[number]];
     const needsPledgeReview = pledgeCount > reviewThreshold;
-    const status = !safe ? "rejected" : needsPledgeReview ? "pending" : "published";
-    const moderationReason = !safe
-      ? reason
-      : needsPledgeReview
-        ? `Pledge count ${pledgeCount.toLocaleString("en-US")} exceeds the ${reviewThreshold.toLocaleString("en-US")} auto-publish threshold for ${body.type} commitments — held for review.`
-        : null;
+    const status = needsPledgeReview ? "pending" : "published";
+    const moderationReason = needsPledgeReview
+      ? `Pledge count ${pledgeCount.toLocaleString("en-US")} exceeds the ${reviewThreshold.toLocaleString("en-US")} auto-publish threshold for ${body.type} commitments — held for review.`
+      : null;
 
     const helpRole = body.help_role && HELP_ROLES.includes(body.help_role as any) ? body.help_role : null;
     const country = (body.country ?? "").toString().trim().slice(0, 80) || null;
@@ -242,10 +194,6 @@ Deno.serve(async (req) => {
     if (error) {
       console.error("DB error", error);
       return bad("Could not save commitment", 500);
-    }
-
-    if (!safe) {
-      return bad("Your message couldn't be published. Please rephrase and try again.", 422);
     }
 
     if (needsPledgeReview) {

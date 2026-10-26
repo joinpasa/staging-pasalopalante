@@ -59,7 +59,7 @@ export default function ResetPasswordPage() {
   return (
     <div className="min-h-screen bg-warm-cream">
       <SEO
-        title="Reset your password | Pásalo Pa'lante"
+        title="Reset your password | Kindness Forward"
         description="Set a new password for your Pásalo Pa'lante account."
         path="/reset-password"
       />

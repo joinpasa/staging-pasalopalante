@@ -71,6 +71,8 @@ describe("App translations", () => {
       "appJoin.passwordResetSentSuffix",
       "appJoin.passwordResetInstructionsSuffix",
       "appJoin.signInLinkSentSuffix",
+      // Brand name — kept in English in every language on purpose.
+      "appWidgets.globalSeason",
     ]);
 
     for (const { code } of LANGUAGES) {

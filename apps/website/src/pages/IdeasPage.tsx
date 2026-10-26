@@ -22,7 +22,7 @@ export default function IdeasPage() {
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title="Kindness Ideas — Pásalo Pa'lante"
+        title="Kindness Ideas — Kindness Forward"
         description="Browse curated kindness ideas you can do today — at home, with strangers, online, or in your community. Pick one and pass it on."
         path="/ideas"
       />

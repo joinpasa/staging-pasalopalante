@@ -11,7 +11,7 @@ export default function CommunityGuidelinesPage() {
   return (
     <div className="min-h-screen bg-warm-cream">
       <SEO
-        title="Community Guidelines — Pásalo Pa'lante"
+        title="Community Guidelines — Kindness Forward"
         description="Our community guidelines help keep Pásalo Pa'lante a safe, welcoming, and respectful space for sharing acts of kindness."
         path="/community-guidelines"
       />

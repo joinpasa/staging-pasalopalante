@@ -100,6 +100,7 @@ const YourCommitment = ({ userId, email }: { userId: string; email: string }) =>
           type: "individual",
           email,
           pledge_count: newCount,
+          lang,
         },
       });
       if (error) {

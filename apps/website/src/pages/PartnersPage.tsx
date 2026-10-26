@@ -131,7 +131,7 @@ export default function PartnersPage() {
   return (
     <div className="min-h-screen bg-warm-cream">
       <SEO
-        title="Our Partners — Pásalo Pa'lante"
+        title="Our Partners — Kindness Forward"
         description="Meet the businesses, media, governments, nonprofits, and educators powering Pásalo Pa'lante and the global kindness movement."
         path="/partners"
       />

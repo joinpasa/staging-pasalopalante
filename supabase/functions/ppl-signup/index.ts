@@ -194,8 +194,10 @@ Deno.serve(async (req) => {
           form_source:          "course-creator",
           utm_source:           data.utm_source || "",
           utm_campaign:         data.utm_campaign || "",
+          ...smsConsentFields(data),
         },
       });
+      await tagSmsConsent(data, ghlContactId);
       return json({ success: true, ghlContactId });
     } catch (err) {
       console.error("Course-creator GHL sync failed:", err);
@@ -216,6 +218,9 @@ Deno.serve(async (req) => {
     pledge_count:     data.pledgeCount ? parseInt(data.pledgeCount) : 0,
     message:          data.message || null,
     signup_date:      now,
+    ...(typeof data.sms_consent === "boolean"
+      ? { sms_consent: data.sms_consent, sms_consent_at: smsConsentFields(data).sms_consent_at }
+      : {}),
   });
 
   // Airtable and GHL are configured independently (you may have keys for
@@ -269,6 +274,7 @@ Deno.serve(async (req) => {
         utm_source:       data.utm_source || "",
         utm_campaign:     data.utm_campaign || "",
         ...pledgeCustomFields(formType, data),
+        ...smsConsentFields(data),
       },
     });
   } catch (ghlError) {
@@ -294,6 +300,8 @@ Deno.serve(async (req) => {
       console.error("Get Involved category tag sync failed (non-fatal):", tagError);
     }
   }
+
+  if (ghlContactId) await tagSmsConsent(data, ghlContactId);
 
   let contactRecordId: string | null = null;
   try {
@@ -443,11 +451,27 @@ async function airtableUpsertContact({ email, fullName, phone, country, city,
   }
 }
 
-async function ghlUpsertContact(contact: {
+type GHLContactInput = {
   firstName: string; lastName: string; email: string; phone: string;
   country: string; city: string; companyName: string; tags: string[];
   source: string; customFields: Record<string, unknown>;
-}) {
+};
+
+// If GHL rejects the update and it carried the newer sms_consent fields
+// (e.g. those custom fields haven't been created in GHL yet), retry once
+// without them, so a missing SMS field can never break a sign-up.
+async function ghlUpsertContact(contact: GHLContactInput) {
+  try {
+    return await ghlUpsertContactOnce(contact);
+  } catch (err) {
+    const { sms_consent, sms_consent_at, ...rest } = contact.customFields || {};
+    if (sms_consent === undefined && sms_consent_at === undefined) throw err;
+    console.error("GHL upsert failed with sms_consent fields — retrying without them:", err);
+    return await ghlUpsertContactOnce({ ...contact, customFields: rest });
+  }
+}
+
+async function ghlUpsertContactOnce(contact: GHLContactInput) {
   const headers = {
     Authorization: `Bearer ${CONFIG.ghl.apiKey}`,
     "Content-Type": "application/json",
@@ -613,6 +637,42 @@ const FORM_SOURCE_LABELS: Record<string, string> = {
 
 function formSourceLabel(formType: string): string {
   return FORM_SOURCE_LABELS[formType] ?? "Get Involved";
+}
+
+// Optional A2P 10DLC SMS consent from the website forms' "I agree to receive
+// text messages…" checkbox. Only included when the form actually sent it
+// (a boolean), so flows without the checkbox — app join, onboarding — never
+// overwrite a contact's existing consent. Values are strings because GHL
+// custom fields are stored as text; sms_consent_at is the ISO time the form
+// was submitted (when the yes/no decision was recorded).
+// deno-lint-ignore no-explicit-any
+function smsConsentFields(data: any): Record<string, string> {
+  if (typeof data?.sms_consent !== "boolean") return {};
+  const at = typeof data.sms_consent_at === "string" && !Number.isNaN(Date.parse(data.sms_consent_at))
+    ? data.sms_consent_at
+    : new Date().toISOString();
+  return { sms_consent: data.sms_consent ? "true" : "false", sms_consent_at: at };
+}
+
+// Adds an "sms-consent" tag (additively, never removing other tags) when the
+// person ticked the box, so GHL workflows/segments can target opted-in
+// contacts. Non-fatal: the custom fields above are the record of consent.
+// deno-lint-ignore no-explicit-any
+async function tagSmsConsent(data: any, ghlContactId: string | null) {
+  if (data?.sms_consent !== true || !ghlContactId) return;
+  try {
+    await ghlAddTags(
+      data.email,
+      ["sms-consent"],
+      {
+        firstName: data.fullName?.split(" ")[0] || "",
+        lastName: data.fullName?.split(" ").slice(1).join(" ") || "",
+      },
+      ghlContactId,
+    );
+  } catch (err) {
+    console.error("SMS consent tag sync failed (non-fatal):", err);
+  }
 }
 
 function buildGHLTags(formType: string, data: Record<string, string>) {
