@@ -11,9 +11,9 @@ import ChangeEmailCard from "@/components/account/ChangeEmailCard";
 import SetPasswordCard from "@/components/account/SetPasswordCard";
 import RemindersCard from "@/components/account/RemindersCard";
 import DeleteAccountDialog from "@/components/account/DeleteAccountDialog";
-import { Button } from "@shared/components/ui/button";
+import { buttonVariants } from "@shared/components/ui/button";
 import { Skeleton } from "@shared/components/ui/skeleton";
-import { triggerAppInstall } from "@shared/lib/installTrigger";
+import DownloadAppButton from "@/components/DownloadAppButton";
 
 /**
  * Account settings: profile, password, notifications, and account deletion — split
@@ -106,9 +106,7 @@ const AccountSettingsPage = () => {
               <p className="text-sm text-foreground/60">app.pasalopalante.com</p>
             </div>
           </div>
-          <Button variant="outline" onClick={() => triggerAppInstall()}>
-            {t.account.downloadApp}
-          </Button>
+          <DownloadAppButton className={buttonVariants({ variant: "outline" })} />
         </div>
 
         <DeleteAccountDialog />

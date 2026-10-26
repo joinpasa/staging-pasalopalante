@@ -10,7 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-10-26 — M.Schollmeyer@gmx.de
 
-- **The homepage's "Open the app" button is now two buttons with one job each.** "Open App" always opens the app in the browser; "Download App" always shows the browser's install pop-up (or a short note that the app is already installed or the browser can't install it). Before, the single button did one or the other depending on the browser, which was confusing.
+- **The homepage's "Open the app" button is now two buttons with one job each.** "Open App" always opens the app in the browser; "Download App" always shows the browser's install pop-up (or a short note that the app is already installed or the browser can't install it). Before, the single button did one or the other depending on the browser, which was confusing. The "Download App" button on the Account Settings page now works the same way.
 
 - **Tapping "Map" or "Badges" in the app while signed out now explains why** instead of quietly jumping back to the Wall: a pop-up says "Please log in to use Map/Badges." with a "Log in" button. Translated into all app languages.
 

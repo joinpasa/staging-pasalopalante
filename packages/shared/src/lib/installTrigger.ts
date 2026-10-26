@@ -1,9 +1,7 @@
-// Shared by every "Download/Get/Open the app" button across the website
-// (the floating InstallPrompt card, the How It Works app strip, the
-// Account Settings page, etc.) so a tap anywhere triggers the SAME real
-// native install dialog InstallPrompt already uses — not a plain link
-// that just opens app.pasalopalante.com in a new tab, which never
-// triggers an install at all.
+// Shared by the website's "Open App" and "Download App" buttons (the How It
+// Works app strip and the Account Settings page): one always opens the app,
+// the other only ever shows the browser's real native install dialog — the
+// same one the floating InstallPrompt card uses.
 //
 // beforeinstallprompt fires once per page load, before install, and any
 // number of independent listeners can each hold their own reference to
@@ -25,29 +23,6 @@ if (typeof window !== "undefined") {
     e.preventDefault();
     deferred = e as BIPEvent;
   });
-}
-
-/**
- * Call this from any "download/get/open the app" button's onClick. Shows
- * the real native install dialog when the browser has one ready; falls
- * back to a same-tab navigation to the app itself (so iOS, or a visit
- * before beforeinstallprompt has fired yet, still lands somewhere useful)
- * when no native prompt is available.
- */
-export async function triggerAppInstall() {
-  const evt = deferred;
-  if (evt) {
-    deferred = null;
-    try {
-      await evt.prompt();
-      await evt.userChoice;
-      return;
-    } catch {
-      // Event already used elsewhere, or the browser refused — fall
-      // through to the direct-navigation fallback below.
-    }
-  }
-  window.location.assign(getAppBaseUrl());
 }
 
 /** Always just opens the app in this browser tab — never an install dialog. */
