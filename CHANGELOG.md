@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-27 — M.Schollmeyer@gmx.de
+
+- **Sharing an act on the website now matches the app.** Every place on the website where you share an act (the Share popup, the /share page, and the idea cards) uses the same single screen: pick Gave / Received / Witnessed, optionally tap a preset like "Gave a compliment", add text or photos, and choose whether it appears on the public Wall. The old two-step version is gone. In the app, picking a preset is now optional too; you can log an act with just text, a photo or a link.
+
 ## 2026-10-26 — M.Schollmeyer@gmx.de
 
 - **Deleting one of your acts in the app no longer requires typing "DELETE".** The confirmation pop-up stays; you just tap "Delete" in it.
