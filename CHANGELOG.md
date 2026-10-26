@@ -11,6 +11,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 ## 2026-10-26 — M.Schollmeyer@gmx.de
 
 - **Acts on the app's Wall can now be translated with one tap.** A small translate icon under each post's time switches its text into the reader's app language, and tapping it again shows the original. A translation is only created the first time someone asks for it in a language; after that it's stored and loads instantly for everyone, so we only pay for translations people actually read. The website's Wall now works the same way: posts show in their original language with a "See translation" link, instead of being translated automatically on every visit (the homepage's top-acts cards show the original, with the link in their detail popup).
+- **The same translate icon is now on the app's Home screen and Map list**, under each act's time. The Home section "Recent Acts of Kindness" is renamed to "Latest kindness", matching the identical list on the Map.
 
 - **The homepage's "Open the app" button is now two buttons with one job each.** "Open App" always opens the app in the browser; "Download App" always shows the browser's install pop-up (or a short note that the app is already installed or the browser can't install it). Before, the single button did one or the other depending on the browser, which was confusing. The "Download App" button on the Account Settings page now works the same way.
 

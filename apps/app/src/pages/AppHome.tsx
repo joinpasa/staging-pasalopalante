@@ -24,6 +24,8 @@ import SeasonCountdown from "@/components/app/SeasonCountdown";
 import FirstTimeTour from "@/components/app/FirstTimeTour";
 import OnboardingWalkthrough, { type OnboardingResult } from "@/components/app/OnboardingWalkthrough";
 import DeleteActDialog from "@/components/app/DeleteActDialog";
+import TranslateButton from "@/components/app/TranslateButton";
+import { useActTranslations } from "@/hooks/useActTranslations";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { supabase } from "@shared/integrations/supabase/client";
@@ -101,6 +103,7 @@ export default function AppHome() {
   const { data: badges } = useAppBadges();
   const { data: receivedActs } = useActsReceivedByMe();
   const { data: wallActs } = useWallActs(3);
+  const translations = useActTranslations();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -684,12 +687,21 @@ export default function AppHome() {
                 {initials(act.name) || "PP"}
               </span>
               <div className="min-w-0 flex-1">
-                <div className="flex items-center justify-between gap-2">
+                <div className="flex items-start justify-between gap-2">
                   <p className="truncate text-[13px] font-bold text-foreground">{act.name}</p>
-                  <p className="shrink-0 text-[10.5px] text-muted-foreground">{timeAgo(act.createdAt, t.appCommon, lang)}</p>
+                  <div className="flex shrink-0 flex-col items-end gap-0.5">
+                    <p className="text-[10.5px] text-muted-foreground">{timeAgo(act.createdAt, t.appCommon, lang)}</p>
+                    {act.hasDescription && (
+                      <TranslateButton
+                        translated={translations.isTranslated(act.id)}
+                        loading={translations.isLoading(act.id)}
+                        onClick={() => translations.toggle(act)}
+                      />
+                    )}
+                  </div>
                 </div>
                 <p className="mt-1 line-clamp-2 text-[12.5px] leading-snug text-foreground/75">
-                  {act.description}
+                  {translations.textFor(act)}
                 </p>
                 <SocialLinkRow videoUrl={act.videoUrl} />
                 <span className="mt-2 inline-block rounded-full bg-app-sky/10 px-2.5 py-1 text-[10.5px] font-semibold text-app-sky">

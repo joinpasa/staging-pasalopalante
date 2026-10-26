@@ -3,6 +3,8 @@ import { ComposableMap, Geographies, Geography, Marker, ZoomableGroup } from "re
 import { geoCentroid } from "d3-geo";
 import { Loader2, LocateFixed, Minus, Plus, Search } from "lucide-react";
 import { useKindnessMapCounts, useMovementTotals, useWallActs } from "@/hooks/useAppData";
+import { useActTranslations } from "@/hooks/useActTranslations";
+import TranslateButton from "@/components/app/TranslateButton";
 // Bundled locally instead of fetched from cdn.jsdelivr.net at runtime - that
 // CDN is blocked or unreliable on some networks (confirmed blocked outright
 // from this project's own dev sandbox), which made the map silently fail to
@@ -47,6 +49,7 @@ export default function AppMap() {
   const { data: totals } = useMovementTotals();
   const { data: rows = [], isLoading } = useKindnessMapCounts();
   const { data: acts = [] } = useWallActs(8);
+  const translations = useActTranslations();
 
   const [centroids, setCentroids] = useState<Record<string, [number, number]>>({});
   const [center, setCenter] = useState<[number, number]>([0, 20]);
@@ -306,10 +309,19 @@ export default function AppMap() {
                   ✨
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-foreground">{act.description}</p>
+                  <p className="truncate text-sm font-semibold text-foreground">{translations.textFor(act)}</p>
                   <p className="truncate text-xs text-muted-foreground">{act.name}</p>
                 </div>
-                <span className="shrink-0 text-xs font-bold text-app-teal">{timeAgo(act.createdAt, t.appCommon, lang)}</span>
+                <div className="flex shrink-0 flex-col items-end gap-0.5">
+                  <span className="text-xs font-bold text-app-teal">{timeAgo(act.createdAt, t.appCommon, lang)}</span>
+                  {act.hasDescription && (
+                    <TranslateButton
+                      translated={translations.isTranslated(act.id)}
+                      loading={translations.isLoading(act.id)}
+                      onClick={() => translations.toggle(act)}
+                    />
+                  )}
+                </div>
               </li>
             ))}
           </ul>

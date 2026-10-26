@@ -336,7 +336,7 @@ const translations = {
       zoomOut: "Zoom out",
       acts: "acts",
       commitments: "commitments",
-      latestKindness: "Latest kindness",
+      latestKindness: "Recent Acts of Kindness",
       noActs: "No acts published yet — be the first.",
     },
     appWave: {
