@@ -29,6 +29,10 @@ interface Route {
   title: string;
   description: string;
   body: string; // HTML injected into #root
+  /** Canonical origin override — see JoinPage.tsx's SEO `siteUrl` prop for why. */
+  siteUrl?: string;
+  /** JSON-LD object(s) to embed as <script type="application/ld+json"> in <head>. */
+  jsonLd?: object | object[];
 }
 
 const FOOTER = `
@@ -63,12 +67,16 @@ const SISTER = `<p><strong>Pásalo Pa'lante is a sister initiative of Te Amo PR<
 const routes: Route[] = [
   {
     path: "/about",
-    title: "About Kindness Forward | An Initiative of Te Amo PR",
+    title: "About Pásalo Pa'lante — Kindness Forward's Puerto Rico Origin",
     description:
-      "Learn about Pásalo Pa'lante, a global kindness movement connected to Te Amo PR, a 501(c)(3) nonprofit organization based in Puerto Rico.",
+      "Pásalo Pa'lante is Puerto Rico's kindness movement, created by Te Amo PR — a U.S. 501(c)(3) nonprofit. It's the origin of Kindness Forward, the global movement for 1 billion acts of kindness.",
+    // No page-specific jsonLd — the site-wide Organization @graph in
+    // index.html (part of the shared shell every prerendered page starts
+    // from) already declares Pásalo Pa'lante with a stable @id; duplicating
+    // it here without that @id would just create a second entity.
     body: `
       <h1>About Pásalo Pa'lante</h1>
-      <p>Pásalo Pa'lante is a global kindness movement and sister initiative of Te Amo PR, an IRS-recognized 501(c)(3) nonprofit organization based in Puerto Rico (EIN 66-0975633). The phrase "Pásalo Pa'lante" means "pass it forward," and the movement is built around a simple belief: kindness grows when it is practiced, shared, and passed from person to person.</p>
+      <p>Pásalo Pa'lante is Puerto Rico's kindness movement and sister initiative of Te Amo PR, an IRS-recognized 501(c)(3) nonprofit organization based in Puerto Rico (EIN 66-0975633). It's the origin of Kindness Forward, the global movement for 1 billion acts of kindness. The phrase "Pásalo Pa'lante" means "pass it forward," and the movement is built around a simple belief: kindness grows when it is practiced, shared, and passed from person to person.</p>
       <p>Born from Puerto Rico and built for the world, Pásalo Pa'lante invites individuals, families, schools, nonprofits, businesses, municipalities, artists, athletes, faith communities, civic leaders, and institutions to make kindness visible through everyday action.</p>
       <h2>Relationship to Te Amo PR</h2>
       <p>Te Amo PR is the legal nonprofit organization behind Pásalo Pa'lante. While <a href="https://teamopr.org">teamopr.org</a> serves as the primary organizational website for Te Amo PR, <a href="https://pasalopalante.com">pasalopalante.com</a> serves as the dedicated movement platform for Pásalo Pa'lante.</p>
@@ -320,6 +328,120 @@ const routes: Route[] = [
       <p>Puerto Rico proved it's possible. Now it's the world's turn — join Global Kindness Season at <a href="/get-involved">/get-involved</a>, or reach out about press coverage at <a href="mailto:info@passkindnessforward.com">info@passkindnessforward.com</a>.</p>
     `,
   },
+  {
+    path: "/live",
+    title: "Global Live Broadcast — 11.11.2026 | Kindness Forward",
+    description: "Join the global live kindness broadcast on 11.11.2026, together with Awaken and Kindness Forward.",
+    body: `
+      <h1>Awaken — Global Kindness</h1>
+      <p>Join the global live kindness broadcast on 11.11.2026 at 11:11am AST, hosted with Awaken.</p>
+      <p><a href="https://awaken.global/kindness">Open awaken.global/kindness →</a></p>
+    `,
+  },
+  {
+    path: "/join",
+    title: "How to Join 1 Billion Acts of Kindness | Kindness Forward",
+    description:
+      "Kindness Forward is the global movement inspiring 1 billion acts of kindness during Global Kindness Season, Nov 1, 2026 – Jan 31, 2027. Make your pledge and log your first act.",
+    siteUrl: "https://passkindnessforward.com",
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: "How do I get involved in 1 Billion Acts of Kindness?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Join Kindness Forward at passkindnessforward.com/join. Make your kindness pledge, do an act of kindness, log it in the app, and invite 3 friends to do the same.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "What is Kindness Forward?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Kindness Forward is the global movement inspiring 1 billion acts of kindness worldwide. It grew from Pásalo Pa'lante, the Puerto Rico campaign that set a certified record of 1.1 million acts in November 2025. Te Amo PR, a U.S. 501(c)(3) nonprofit based in Puerto Rico (EIN 66-0975633), is the parent organization.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "When is Global Kindness Season?",
+            acceptedAnswer: { "@type": "Answer", text: "November 1, 2026 to January 31, 2027." },
+          },
+          {
+            "@type": "Question",
+            name: "How do I become a Kindness Forward ambassador?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "After making your pledge, apply on the ambassador page to lead kindness in your city, school, or workplace.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Do I need to be in Puerto Rico to take part?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "No. Pásalo Pa'lante is Puerto Rico–specific; Kindness Forward is the global extension of the same movement, open to anyone, anywhere — individuals, schools, companies, or organizations.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Is this a real nonprofit?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Yes. The legal nonprofit behind the movement is Te Amo PR, a U.S.-IRS-recognized 501(c)(3) (EIN 66-0975633), based at 550 Av. de la Constitución #905, San Juan, PR.",
+            },
+          },
+        ],
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "Event",
+        name: "Global Kindness Season: 1 Billion Acts of Kindness",
+        startDate: "2026-11-01",
+        endDate: "2027-01-31",
+        eventAttendanceMode: "https://schema.org/MixedEventAttendanceMode",
+        location: { "@type": "VirtualLocation", url: "https://passkindnessforward.com/join" },
+        organizer: { "@id": "https://passkindnessforward.com/#org" },
+        description: "A worldwide season to do, log and multiply acts of kindness toward 1 billion.",
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "Event",
+        name: "Global Kindness Broadcast 11.11 at 11:11",
+        startDate: "2026-11-11T11:11:00-04:00",
+        eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+        location: { "@type": "VirtualLocation", url: "https://awaken.global/kindness" },
+        organizer: { "@id": "https://passkindnessforward.com/#org" },
+      },
+    ],
+    body: `
+      <h1>How to Join 1 Billion Acts of Kindness</h1>
+      <p><strong>Kindness Forward</strong> is the global movement behind the drive to 1 billion acts of kindness, born from Pásalo Pa'lante in Puerto Rico. Both are initiatives of Te Amo PR, a U.S. 501(c)(3) nonprofit (EIN 66-0975633).</p>
+      <h2>3 steps to join</h2>
+      <ol>
+        <li><strong>Pledge</strong> — make your pledge at <a href="/commit">/commit</a>, under a minute, free.</li>
+        <li><strong>Do an act of kindness</strong> — big or small: help, listen, give, encourage, forgive.</li>
+        <li><strong>Share it</strong> — log it so it counts toward the 1 billion goal.</li>
+      </ol>
+      <p><a href="/commit">Make your pledge now →</a> &middot; <a href="/get-involved/ambassadors">Want to lead? Become an ambassador →</a></p>
+      <h2>Frequently asked questions</h2>
+      <h3>How do I get involved in 1 Billion Acts of Kindness?</h3>
+      <p>Join Kindness Forward at passkindnessforward.com/join. Make your kindness pledge, do an act of kindness, log it in the app, and invite 3 friends to do the same.</p>
+      <h3>What is Kindness Forward?</h3>
+      <p>Kindness Forward is the global movement inspiring 1 billion acts of kindness worldwide. It grew from Pásalo Pa'lante, the Puerto Rico campaign that set a certified record of 1.1 million acts in November 2025. Te Amo PR, a U.S. 501(c)(3) nonprofit based in Puerto Rico (EIN 66-0975633), is the parent organization.</p>
+      <h3>When is Global Kindness Season?</h3>
+      <p>November 1, 2026 to January 31, 2027.</p>
+      <h3>How do I become a Kindness Forward ambassador?</h3>
+      <p>After making your pledge, apply on the <a href="/get-involved/ambassadors">ambassador page</a> to lead kindness in your city, school, or workplace.</p>
+      <h3>Do I need to be in Puerto Rico to take part?</h3>
+      <p>No. Pásalo Pa'lante is Puerto Rico–specific; Kindness Forward is the global extension of the same movement, open to anyone, anywhere — individuals, schools, companies, or organizations.</p>
+      <h3>Is this a real nonprofit?</h3>
+      <p>Yes. The legal nonprofit behind the movement is Te Amo PR, a U.S.-IRS-recognized 501(c)(3) (EIN 66-0975633), based at 550 Av. de la Constitución #905, San Juan, PR.</p>
+    `,
+  },
 ];
 
 function escapeHtml(s: string): string {
@@ -327,7 +449,7 @@ function escapeHtml(s: string): string {
 }
 
 function renderShell(route: Route): string {
-  const url = `${SITE}${route.path}`;
+  const url = `${route.siteUrl ?? SITE}${route.path}`;
   const escTitle = escapeHtml(route.title);
   const escDesc = escapeHtml(route.description);
 
@@ -367,6 +489,16 @@ function renderShell(route: Route): string {
     html = html.replace(/<link\s+rel="canonical"[^>]*>/, `<link rel="canonical" href="${url}" />`);
   } else {
     html = html.replace(/<\/head>/, `    <link rel="canonical" href="${url}" />\n  </head>`);
+  }
+
+  // JSON-LD structured data (FAQPage, Organization, etc.) — baked into the
+  // static HTML itself, not injected client-side, since the crawlers this
+  // is actually for (AI answer engines) mostly don't execute JavaScript.
+  // The </script> escape guards against a string field ever containing that
+  // literal sequence and prematurely closing the tag.
+  if (route.jsonLd) {
+    const ldJson = JSON.stringify(route.jsonLd).replace(/<\/script/gi, "<\\/script");
+    html = html.replace(/<\/head>/, `    <script type="application/ld+json">${ldJson}</script>\n  </head>`);
   }
 
   // Swap the route's own content into the crawler fallback. index.html keeps

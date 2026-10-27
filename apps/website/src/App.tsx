@@ -40,6 +40,7 @@ const ContactPage = lazy(() => import("./pages/ContactPage.tsx"));
 const AboutPage = lazy(() => import("./pages/AboutPage.tsx"));
 const LivePage = lazy(() => import("./pages/LivePage.tsx"));
 const MediaPage = lazy(() => import("./pages/MediaPage.tsx"));
+const JoinPage = lazy(() => import("./pages/JoinPage.tsx"));
 const PartnersPage = lazy(() => import("./pages/PartnersPage.tsx"));
 // Unlisted — live at these URLs but not linked from the Navbar, Footer, or
 // prerendered for SEO (see the /partners/apply and /ambassadors routes below).
@@ -135,6 +136,7 @@ const App = () => (
                   or Footer while this is still in review. Only reachable
                   by direct URL. */}
               <Route path="/media" element={<MediaPage />} />
+              <Route path="/join" element={<JoinPage />} />
               {/* Unlisted on purpose — live but not linked from the Navbar,
                   Footer, or Explore menu, and left out of the prerender
                   list in scripts/prerender.ts so it isn't surfaced for SEO

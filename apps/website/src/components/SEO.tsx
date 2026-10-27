@@ -5,10 +5,20 @@ interface SEOProps {
   description: string;
   path: string;
   image?: string;
+  /**
+   * Canonical origin override — e.g. a page that should always declare
+   * itself canonical to https://passkindnessforward.com regardless of
+   * which domain actually served the bytes (both domains serve the same
+   * static build; see canonicalDomain.ts). Defaults to pasalopalante.com.
+   */
+  siteUrl?: string;
+  /** One or more JSON-LD objects (e.g. FAQPage, Organization) to embed. */
+  schema?: object | object[];
 }
 
 const SITE_URL = "https://pasalopalante.com";
 const DEFAULT_IMAGE = `${SITE_URL}/social-share-kf.webp`;
+const JSON_LD_ID = "seo-json-ld";
 
 function setMeta(attr: "name" | "property", key: string, content: string) {
   let el = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);
@@ -30,8 +40,9 @@ function setLink(rel: string, href: string) {
   el.setAttribute("href", href);
 }
 
-export default function SEO({ title, description, path, image }: SEOProps) {
-  const url = `${SITE_URL}${path}`;
+export default function SEO({ title, description, path, image, siteUrl, schema }: SEOProps) {
+  const origin = siteUrl ?? SITE_URL;
+  const url = `${origin}${path}`;
   const img = image ?? DEFAULT_IMAGE;
 
   useEffect(() => {
@@ -45,7 +56,20 @@ export default function SEO({ title, description, path, image }: SEOProps) {
     setMeta("name", "twitter:title", title);
     setMeta("name", "twitter:description", description);
     setMeta("name", "twitter:image", img);
-  }, [title, description, url, img]);
+
+    let script = document.head.querySelector<HTMLScriptElement>(`script[data-id="${JSON_LD_ID}"]`);
+    if (schema) {
+      if (!script) {
+        script = document.createElement("script");
+        script.type = "application/ld+json";
+        script.dataset.id = JSON_LD_ID;
+        document.head.appendChild(script);
+      }
+      script.textContent = JSON.stringify(schema);
+    } else if (script) {
+      script.remove();
+    }
+  }, [title, description, url, img, schema]);
 
   return null;
 }

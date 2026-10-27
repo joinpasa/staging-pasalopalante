@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kindness Forward — Sparking 1 Billion Acts of Kindness Worldwide</title>
-    <meta name="description" content="Pásalo Pa'lante is a global kindness movement by Te Amo PR, a 501(c)(3) nonprofit. Join us to spark 1 billion acts of kindness from November 1 to January 31." />
+    <title>Kindness Forward | Join 1 Billion Acts of Kindness – Global Kindness Season</title>
+    <meta name="description" content="Kindness Forward is the global movement inspiring 1 billion acts of kindness during Global Kindness Season, Nov 1, 2026 – Jan 31, 2027. Make your pledge and log your first act." />
     <meta name="author" content="Te Amo PR" />
 
     <!-- Domain verification (e.g. Pinterest). This build is shared by both
@@ -60,57 +60,75 @@
 
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://pasalopalante.com/" />
-    <meta property="og:title" content="Kindness Forward — Sparking 1 Billion Acts of Kindness Worldwide" />
-    <meta property="og:description" content="A global kindness movement by Te Amo PR, a 501(c)(3) nonprofit. Join us to spark 1 billion acts of kindness from November 1 to January 31." />
+    <meta property="og:title" content="Kindness Forward | Join 1 Billion Acts of Kindness – Global Kindness Season" />
+    <meta property="og:description" content="Kindness Forward is the global movement inspiring 1 billion acts of kindness during Global Kindness Season, Nov 1, 2026 – Jan 31, 2027. Make your pledge and log your first act." />
     <meta property="og:image" content="https://pasalopalante.com/social-share-kf.webp" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@PasaloPalante" />
-    <meta name="twitter:title" content="Kindness Forward — Sparking 1 Billion Acts of Kindness Worldwide" />
-    <meta name="twitter:description" content="A global kindness movement by Te Amo PR, a 501(c)(3) nonprofit. Join us to spark 1 billion acts of kindness from November 1 to January 31." />
+    <meta name="twitter:title" content="Kindness Forward | Join 1 Billion Acts of Kindness – Global Kindness Season" />
+    <meta name="twitter:description" content="Kindness Forward is the global movement inspiring 1 billion acts of kindness during Global Kindness Season, Nov 1, 2026 – Jan 31, 2027. Make your pledge and log your first act." />
     <meta name="twitter:image" content="https://pasalopalante.com/social-share-kf.webp" />
 
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "NGO",
-        "name": "Pásalo Pa'lante",
-        "alternateName": "PPL",
-        "url": "https://pasalopalante.com/",
-        "logo": "https://pasalopalante.com/favicon.ico",
-        "description": "A global kindness movement by Te Amo PR, sparking 1 billion acts of kindness worldwide each Kindness Season (Nov 1 – Jan 31).",
-        "parentOrganization": {
-          "@type": "NGO",
-          "name": "Te Amo PR",
-          "url": "https://teamopr.org",
-          "nonprofitStatus": "Nonprofit501c3"
-        },
-        "contactPoint": {
-          "@type": "ContactPoint",
-          "email": "info@passkindnessforward.com",
-          "telephone": "+1-787-705-0778",
-          "contactType": "customer support",
-          "areaServed": "Worldwide",
-          "availableLanguage": ["English", "Spanish"]
-        },
-        "address": {
-          "@type": "PostalAddress",
-          "addressCountry": "PR"
-        }
+        "@graph": [
+          {
+            "@type": "NGO",
+            "@id": "https://passkindnessforward.com/#org",
+            "name": "Kindness Forward",
+            "alternateName": ["Pass Kindness Forward", "1 Billion Acts of Kindness"],
+            "url": "https://passkindnessforward.com",
+            "logo": "https://passkindnessforward.com/logo-PKF-icon.png",
+            "description": "Kindness Forward is the global movement inspiring 1 billion acts of kindness. It grew from Pásalo Pa'lante, the Puerto Rico campaign that set a certified record of 1.1 million acts in November 2025.",
+            "areaServed": "Worldwide",
+            "parentOrganization": {
+              "@type": "NGO",
+              "name": "Te Amo PR",
+              "url": "https://teamopr.org",
+              "nonprofitStatus": "Nonprofit501c3"
+            },
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "email": "info@passkindnessforward.com",
+              "telephone": "+1-787-705-0778",
+              "contactType": "customer support",
+              "areaServed": "Worldwide",
+              "availableLanguage": ["English", "Spanish"]
+            },
+            "sameAs": [
+              "https://www.instagram.com/passkindnessforward/",
+              "https://www.facebook.com/passkindnessforward",
+              "https://www.linkedin.com/company/kindness-forward"
+            ]
+          },
+          {
+            "@type": "NGO",
+            "@id": "https://pasalopalante.com/#org",
+            "name": "Pásalo Pa'lante",
+            "url": "https://pasalopalante.com",
+            "description": "Puerto Rico's kindness movement by Te Amo PR, which set a record of 1,135,096 acts of kindness in 5 days in November 2025.",
+            "areaServed": "Puerto Rico",
+            "parentOrganization": {
+              "@type": "NGO",
+              "name": "Te Amo PR",
+              "url": "https://teamopr.org",
+              "nonprofitStatus": "Nonprofit501c3"
+            },
+            "address": { "@type": "PostalAddress", "addressCountry": "PR" }
+          }
+        ]
       }
     </script>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "WebSite",
-        "name": "Pásalo Pa'lante",
-        "url": "https://pasalopalante.com/",
+        "name": "Kindness Forward",
+        "url": "https://passkindnessforward.com/",
         "inLanguage": ["en", "es"],
-        "publisher": {
-          "@type": "NGO",
-          "name": "Te Amo PR",
-          "url": "https://teamopr.org"
-        }
+        "publisher": { "@id": "https://passkindnessforward.com/#org" }
       }
     </script>
 
