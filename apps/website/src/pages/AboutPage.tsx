@@ -17,6 +17,21 @@ export default function AboutPage() {
         title="About Pásalo Pa'lante — A Global Kindness Movement by Te Amo PR"
         description="Learn about Pásalo Pa'lante, a global kindness movement created by Te Amo PR — a U.S. 501(c)(3) nonprofit based in Puerto Rico."
         path="/about"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "NGO",
+          name: "Pásalo Pa'lante",
+          url: "https://pasalopalante.com",
+          description: "Puerto Rico's kindness movement, which set a record of 1,135,096 acts of kindness in 5 days in November 2025.",
+          areaServed: "Puerto Rico",
+          parentOrganization: {
+            "@type": "NGO",
+            name: "Te Amo PR",
+            taxID: "66-0975633",
+            address: "550 Av. de la Constitución #905, San Juan, PR",
+            url: "https://teamopr.org",
+          },
+        }}
       />
       <Navbar />
       <main className="pt-32 pb-20 section-padding">
