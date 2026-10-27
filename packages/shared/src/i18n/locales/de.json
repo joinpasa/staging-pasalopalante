@@ -807,7 +807,10 @@
     "inlineFormBody": "Verpflichten Sie sich, wie viele Akte der Freundlichkeit Sie in dieser Global Kindness Season vollbringen werden. Es dauert weniger als eine Minute, und jede Zusage bringt uns näher an eine Milliarde.",
     "inlineFormCheck1": "Kein Konto erforderlich, um zu starten",
     "inlineFormCheck2": "Zählt sofort zum globalen Ziel",
-    "inlineFormCheck3": "Wir senden Ihnen eine E-Mail zur Bestätigung — das war's"
+    "inlineFormCheck3": "Wir senden Ihnen eine E-Mail zur Bestätigung — das war's",
+    "individualFormTitle": "Formular für Einzelzusagen",
+    "groupPledgePrompt": "Gehören Sie zu einer größeren Gruppe?",
+    "groupPledgeLink": "Klicken Sie hier, um Ihre Zusage einzureichen"
   },
   "anthem": {
     "eyebrow": "Die Hymne",

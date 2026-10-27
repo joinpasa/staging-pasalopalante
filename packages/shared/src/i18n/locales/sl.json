@@ -69,7 +69,10 @@
     "inlineFormBody": "Zaveži se, koliko dejanj prijaznosti boš storil/-a v tej Global Kindness Season. Vzame manj kot minuto in vsaka zaveza nas približa milijardi.",
     "inlineFormCheck1": "Za začetek ne potrebuješ računa",
     "inlineFormCheck2": "Takoj šteje v globalni cilj",
-    "inlineFormCheck3": "Poslali ti bomo e-pošto za potrditev — to je vse"
+    "inlineFormCheck3": "Poslali ti bomo e-pošto za potrditev — to je vse",
+    "individualFormTitle": "Obrazec za osebno zavezo",
+    "groupPledgePrompt": "Si del večje skupine?",
+    "groupPledgeLink": "Klikni tukaj in oddaj svojo zavezo"
   },
   "footer": {
     "brand": "Največje usklajeno gibanje prijaznosti na svetu. Rojeno v Portoriku. Raste v več kot 200 državah.",

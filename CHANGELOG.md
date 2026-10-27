@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-27 — va.deedumlao@gmail.com
+
+- **Homepage pledge form now says "Individual Pledge Form"** at the top, with a smaller line under it: "Are you part of a bigger group? Click here to submit your pledge", linking to the group/partner application at passkindnessforward.com/partners/apply. Translated in all 11 languages.
+
 ## 2026-10-26 — M.Schollmeyer@gmx.de
 
 - **Deleting one of your acts in the app no longer requires typing "DELETE".** The confirmation pop-up stays; you just tap "Delete" in it.

@@ -542,7 +542,10 @@
   "inlineFormBody": "承诺您将在本次Global Kindness Season中完成多少个善举。不到一分钟即可完成，每一个承诺都让我们离 10 亿更近一步。",
   "inlineFormCheck1": "无需注册即可开始",
   "inlineFormCheck2": "立即计入全球目标",
-  "inlineFormCheck3": "我们会发邮件确认——仅此而已"
+  "inlineFormCheck3": "我们会发邮件确认——仅此而已",
+  "individualFormTitle": "个人承诺表",
+  "groupPledgePrompt": "您是某个更大团体的一员吗？",
+  "groupPledgeLink": "点击这里提交您的承诺"
  },
  "anthem": {
   "eyebrow": "主题曲",

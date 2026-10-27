@@ -539,7 +539,10 @@
   "inlineFormBody": "Comprometa-se com quantos atos de gentileza você fará nesta Global Kindness Season. Leva menos de um minuto, e cada promessa nos aproxima de um bilhão.",
   "inlineFormCheck1": "Não é preciso conta para começar",
   "inlineFormCheck2": "Conta para a meta global na hora",
-  "inlineFormCheck3": "Enviaremos um e-mail de confirmação — só isso"
+  "inlineFormCheck3": "Enviaremos um e-mail de confirmação — só isso",
+  "individualFormTitle": "Formulário de compromisso individual",
+  "groupPledgePrompt": "Você faz parte de um grupo maior?",
+  "groupPledgeLink": "Clique aqui para enviar seu compromisso"
  },
  "anthem": {
   "eyebrow": "O Hino",

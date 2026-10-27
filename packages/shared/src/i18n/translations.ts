@@ -810,6 +810,9 @@ const translations = {
       inlineFormCheck1: "No account required to start",
       inlineFormCheck2: "Counts toward the global goal instantly",
       inlineFormCheck3: "We'll email you to confirm — that's it",
+      individualFormTitle: "Individual Pledge Form",
+      groupPledgePrompt: "Are you part of a bigger group?",
+      groupPledgeLink: "Click here to submit your pledge",
     },
     anthem: {
       eyebrow: "The Anthem",

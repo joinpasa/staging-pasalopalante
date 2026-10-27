@@ -371,7 +371,10 @@
     "inlineFormBody": "Engagez-vous sur le nombre d'actes de gentillesse que vous ferez pendant cette Global Kindness Season. Cela prend moins d'une minute, et chaque engagement nous rapproche du milliard.",
     "inlineFormCheck1": "Aucun compte requis pour commencer",
     "inlineFormCheck2": "Compte immédiatement pour l'objectif mondial",
-    "inlineFormCheck3": "Nous vous enverrons un e-mail de confirmation — c'est tout"
+    "inlineFormCheck3": "Nous vous enverrons un e-mail de confirmation — c'est tout",
+    "individualFormTitle": "Formulaire d'engagement individuel",
+    "groupPledgePrompt": "Vous faites partie d'un groupe plus grand ?",
+    "groupPledgeLink": "Cliquez ici pour soumettre votre engagement"
   },
   "anthem": {
     "eyebrow": "L'hymne",

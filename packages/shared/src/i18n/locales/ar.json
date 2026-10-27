@@ -427,7 +427,10 @@
   "inlineFormBody": "تعهّد بعدد الأعمال اللطيفة التي ستقوم بها خلال Global Kindness Season هذا. يستغرق الأمر أقل من دقيقة، وكل تعهد يقرّبنا من المليار.",
   "inlineFormCheck1": "لا حاجة إلى حساب للبدء",
   "inlineFormCheck2": "يُحتسب فورًا ضمن الهدف العالمي",
-  "inlineFormCheck3": "سنرسل لك بريدًا للتأكيد — هذا كل شيء"
+  "inlineFormCheck3": "سنرسل لك بريدًا للتأكيد — هذا كل شيء",
+  "individualFormTitle": "نموذج التعهد الفردي",
+  "groupPledgePrompt": "هل أنت جزء من مجموعة أكبر؟",
+  "groupPledgeLink": "اضغط هنا لإرسال تعهدك"
  },
  "anthem": {
   "eyebrow": "النشيد",

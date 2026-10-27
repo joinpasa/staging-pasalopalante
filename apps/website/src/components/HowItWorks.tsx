@@ -197,6 +197,18 @@ const HowItWorks = () => {
             </div>
           </div>
           <div className="bg-warm-cream px-6 py-8 md:px-12 md:py-13">
+            <div className="mb-6">
+              <h4 className="font-display text-2xl text-[#0E234B]">{t.howItWorks.individualFormTitle}</h4>
+              <p className="mt-1.5 text-sm text-foreground/60">
+                {t.howItWorks.groupPledgePrompt}{" "}
+                <a
+                  href="https://passkindnessforward.com/partners/apply"
+                  className="font-medium text-warm-sky underline underline-offset-2 hover:text-[#0E234B]"
+                >
+                  {t.howItWorks.groupPledgeLink}
+                </a>
+              </p>
+            </div>
             <QuickPledgeForm />
           </div>
         </motion.div>
