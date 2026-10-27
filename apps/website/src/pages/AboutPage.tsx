@@ -13,25 +13,16 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen bg-warm-cream">
+      {/* No page-specific `schema` prop here — the site-wide Organization
+          @graph in index.html already declares Pásalo Pa'lante (areaServed
+          Puerto Rico, Te Amo PR as parentOrganization) with a stable @id,
+          present on every page including this one. Re-declaring it here
+          without that @id would just create a second, duplicate entity in
+          crawlers' eyes instead of referencing the same one. */}
       <SEO
-        title="About Kindness Forward — A Global Kindness Movement by Te Amo PR"
-        description="Learn about Pásalo Pa'lante, a global kindness movement created by Te Amo PR — a U.S. 501(c)(3) nonprofit based in Puerto Rico."
+        title="About Pásalo Pa'lante — Kindness Forward's Puerto Rico Origin"
+        description="Pásalo Pa'lante is Puerto Rico's kindness movement, created by Te Amo PR — a U.S. 501(c)(3) nonprofit. It's the origin of Kindness Forward, the global movement for 1 billion acts of kindness."
         path="/about"
-        schema={{
-          "@context": "https://schema.org",
-          "@type": "NGO",
-          name: "Pásalo Pa'lante",
-          url: "https://pasalopalante.com",
-          description: "Puerto Rico's kindness movement, which set a record of 1,135,096 acts of kindness in 5 days in November 2025.",
-          areaServed: "Puerto Rico",
-          parentOrganization: {
-            "@type": "NGO",
-            name: "Te Amo PR",
-            taxID: "66-0975633",
-            address: "550 Av. de la Constitución #905, San Juan, PR",
-            url: "https://teamopr.org",
-          },
-        }}
       />
       <Navbar />
       <main className="pt-32 pb-20 section-padding">
