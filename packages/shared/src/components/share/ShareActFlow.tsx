@@ -316,7 +316,7 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
   const detailsFields = (
     <>
       <div className="space-y-2.5">
-        <Label>{t.appLogAct.whatDidYouDo}</Label>
+        <Label>{t.appLogAct.whatDidYouDo} <span className="font-medium text-muted-foreground">{t.appLogAct.optional}</span></Label>
         <div className="flex flex-wrap gap-2">
           {ACT_TYPES.map(({ value, labelKey }) => (
             <button
@@ -336,7 +336,10 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="desc">{socialLink ? t.share.linkCaptionLabel : t.share.descriptionLabel}</Label>
+        <Label htmlFor="desc">
+          {socialLink ? t.appLogAct.addCaption : t.appLogAct.tellUsMore}{" "}
+          <span className="font-medium text-muted-foreground">{t.appLogAct.optional}</span>
+        </Label>
         {socialLink && (
           <SocialLinkChip
             link={socialLink}
@@ -414,7 +417,7 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
       )}
 
       <div className="space-y-3">
-        <Label>{t.share.mediaOptionalLabel}</Label>
+        <Label>{t.appLogAct.addPhotoVideo} <span className="font-medium text-muted-foreground">{t.appLogAct.optional}</span></Label>
 
         {files.map((f, i) => (
           <div key={i} className="relative w-full h-48 rounded-2xl overflow-hidden border border-border bg-warm-cream">
