@@ -12,6 +12,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 - **Shorter app button labels.** The homepage's "Open App" and "Download App" buttons (and the "Download App" button on Account Settings) now just say "Open" and "Download", in every language.
 - **Rearranged the Account page.** Your shared acts now appear first, right under your profile, followed by your badges; the movement-wide stats moved down into the main column below the inspiration card. The "+ Share another" link on that page is now a proper orange button, so it's easier to spot.
+- **One photo per shared act.** In the "Share an act of kindness" form, once you add a photo or video it takes the place of the upload box, shown large, with an X to remove it and pick a different one. Before, you could keep adding up to six files.
 
 - **Sharing an act on the website now matches the app.** Every place on the website where you share an act (the Share popup, the /share page, and the idea cards) uses the same single screen: pick Gave / Received / Witnessed, optionally tap a preset like "Gave a compliment", add text or photos, and choose whether it appears on the public Wall. The old two-step version is gone. In the app, picking a preset is now optional too; you can log an act with just text, a photo or a link.
 

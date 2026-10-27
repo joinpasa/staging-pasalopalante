@@ -21,7 +21,8 @@ import SocialLinkChip from "./SocialLinkChip";
 
 type Mode = "performed" | "witnessed" | "received";
 
-const MAX_FILES = 6;
+// One photo or video per act — once picked, its preview replaces the dropzone.
+const MAX_FILES = 1;
 const MAX_FILE_SIZE = 25 * 1024 * 1024;
 
 const detailsSchema = z.object({
@@ -415,29 +416,25 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
       <div className="space-y-3">
         <Label>{t.share.mediaOptionalLabel}</Label>
 
-        {files.length > 0 && (
-          <div className="flex flex-wrap gap-3">
-            {files.map((f, i) => (
-              <div key={i} className="relative w-[84px] h-[84px] rounded-xl overflow-hidden border">
-                {f.isVideo ? (
-                  <div className="w-full h-full bg-muted flex items-center justify-center">
-                    <Play size={22} className="text-muted-foreground fill-current" />
-                  </div>
-                ) : (
-                  <img src={f.preview} alt="" className="w-full h-full object-cover" />
-                )}
-                <button
-                  type="button"
-                  onClick={() => removeFile(i)}
-                  className="absolute top-1 end-1 w-[22px] h-[22px] rounded-full bg-black/65 text-white flex items-center justify-center"
-                  aria-label="Remove"
-                >
-                  <X size={13} />
-                </button>
+        {files.map((f, i) => (
+          <div key={i} className="relative w-full h-48 rounded-2xl overflow-hidden border border-border bg-warm-cream">
+            {f.isVideo ? (
+              <div className="w-full h-full bg-muted flex items-center justify-center">
+                <Play size={32} className="text-muted-foreground fill-current" />
               </div>
-            ))}
+            ) : (
+              <img src={f.preview} alt="" className="w-full h-full object-contain" />
+            )}
+            <button
+              type="button"
+              onClick={() => removeFile(i)}
+              className="absolute top-2 end-2 w-[28px] h-[28px] rounded-full bg-black/65 text-white flex items-center justify-center"
+              aria-label="Remove"
+            >
+              <X size={15} />
+            </button>
           </div>
-        )}
+        ))}
 
         {files.length < MAX_FILES && (
           <div
@@ -466,7 +463,6 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
               ref={fileInputRef}
               type="file"
               accept="image/*,video/*"
-              multiple
               className="hidden"
               onChange={(e) => addFiles(e.target.files)}
             />
