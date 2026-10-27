@@ -11,16 +11,7 @@ import { cn } from "@shared/lib/utils";
 import { detectSocialLink, type DetectedSocialLink } from "@shared/lib/socialLinks";
 import SocialLinkChip from "@shared/components/share/SocialLinkChip";
 import { isRateLimitedError, pickRateLimitCheer } from "@shared/lib/rateLimitCheer";
-
-const CHIP_LABELS = [
-  "Helped a neighbor",
-  "Gave a compliment",
-  "Volunteered",
-  "Donated",
-  "Paid for someone",
-  "Listened & supported",
-  "Something else",
-];
+import { ACT_TYPES } from "@shared/lib/actTypes";
 
 const MAX_FILE_SIZE = 25 * 1024 * 1024;
 
@@ -52,15 +43,8 @@ export default function AppLogAct() {
   const [submitted, setSubmitted] = useState(false);
   const [newTotal, setNewTotal] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const chipTranslations: Record<(typeof CHIP_LABELS)[number], string> = {
-    "Helped a neighbor": t.appLogAct.helpedNeighbor,
-    "Gave a compliment": t.appLogAct.gaveCompliment,
-    Volunteered: t.appLogAct.volunteered,
-    Donated: t.appLogAct.donated,
-    "Paid for someone": t.appLogAct.paidForSomeone,
-    "Listened & supported": t.appLogAct.listenedSupported,
-    "Something else": t.appLogAct.somethingElse,
-  };
+  // A preset is optional — but something has to describe the act.
+  const canSubmit = !!picked || !!note.trim() || !!file || !!socialLink;
   const nf = new Intl.NumberFormat(lang);
 
   function pickFile(list: FileList | null) {
@@ -82,7 +66,7 @@ export default function AppLogAct() {
   }
 
   async function submit() {
-    if (!picked || submitting) return;
+    if (!canSubmit || submitting) return;
     setSubmitting(true);
     try {
       let photoPaths: string[] = [];
@@ -108,7 +92,7 @@ export default function AppLogAct() {
           description: note.trim() || undefined,
           photo_paths: photoPaths,
           to_user_id: toUserId || undefined,
-          act_type: picked,
+          act_type: picked || undefined,
           share_on_wall: shareOnWall,
           video_url: socialLink?.url || undefined,
           lang,
@@ -179,19 +163,19 @@ export default function AppLogAct() {
         <div>
           <p className="mb-2.5 text-sm font-bold text-foreground">{t.appLogAct.whatDidYouDo}</p>
           <div className="flex flex-wrap gap-2">
-            {CHIP_LABELS.map((label) => (
+            {ACT_TYPES.map(({ value, labelKey }) => (
               <button
-                key={label}
+                key={value}
                 type="button"
-                onClick={() => setPicked(label)}
+                onClick={() => setPicked((p) => (p === value ? null : value))}
                 className={cn(
                   "rounded-full border-[1.5px] px-4 py-2.5 text-[13px] font-semibold",
-                  picked === label
+                  picked === value
                     ? "border-app-coral bg-app-coral text-app-surface"
                     : "border-app-ink/[0.14] bg-app-surface text-foreground",
                 )}
               >
-                {chipTranslations[label]}
+                {t.appLogAct[labelKey]}
               </button>
             ))}
           </div>
@@ -302,10 +286,10 @@ export default function AppLogAct() {
         <button
           type="button"
           onClick={submit}
-          disabled={!picked || submitting}
+          disabled={!canSubmit || submitting}
           className={cn(
             "w-full rounded-2xl py-4 text-[15px] font-bold text-app-surface",
-            picked ? "bg-app-coral" : "bg-app-ink/25",
+            canSubmit ? "bg-app-coral" : "bg-app-ink/25",
           )}
         >
           {submitting ? "…" : t.appLogAct.logThisAct}
