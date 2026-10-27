@@ -96,6 +96,7 @@ export default function QuickPledgeForm() {
           pledge_count: pledgeCount,
           help_role: helpRole || null,
           country,
+          lang,
         },
       });
       if (error) {

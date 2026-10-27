@@ -9,6 +9,10 @@
 // left undefined for those rather than inventing one; the page shows just
 // the outlet/platform in that case. Not exhaustive: the report itself
 // notes other clips, reposts, and international pickup aren't included.
+//
+// Live content now comes from the PKF_Media Google Sheet (see
+// apps-script/pkf-media and hooks/useMediaCoverage.ts). These lists are
+// only the /media fallback if that read fails — edit the sheet, not this.
 
 export type MediaLinkType =
   | "article"
@@ -39,6 +43,83 @@ export interface MediaItem {
   imageUrl?: string;
 }
 
+// 2026 Global Kindness Season launch press release (GlobeNewswire,
+// October 2026), as picked up by each outlet. Same headline everywhere —
+// it's one syndicated release — so cards show the outlet logo, headline and
+// domain without a per-card summary. Newest coverage, shown first on /media.
+export const articles: MediaItem[] = [
+  {
+    outlet: "AP News",
+    title: "Kindness Forward Launches Global Kindness Season, Calling on 195 Countries to Inspire One Billion Acts of Kindness",
+    url: "https://apnews.com/press-release/globenewswire-mobile/press-release-64188d83a9632e258dcca86c4dd37fd5",
+    type: "article",
+    imageUrl: "/press/ap-news.webp",
+  },
+  {
+    outlet: "Yahoo Finance",
+    title: "Kindness Forward Launches Global Kindness Season, Calling on 195 Countries to Inspire One Billion Acts of Kindness",
+    url: "https://finance.yahoo.com/media-advertising/articles/kindness-forward-launches-global-kindness-120000728.html",
+    type: "article",
+    imageUrl: "/press/yahoo-finance.webp",
+  },
+  {
+    outlet: "Business Insider",
+    title: "Kindness Forward Launches Global Kindness Season, Calling on 195 Countries to Inspire One Billion Acts of Kindness",
+    url: "https://markets.businessinsider.com/news/stocks/kindness-forward-launches-global-kindness-season-calling-on-195-countries-to-inspire-one-billion-acts-of-kindness-1036616317",
+    type: "article",
+    imageUrl: "/press/business-insider.webp",
+  },
+  {
+    outlet: "Benzinga",
+    title: "Kindness Forward Launches Global Kindness Season, Calling on 195 Countries to Inspire One Billion Acts of Kindness",
+    url: "https://www.benzinga.com/pressreleases/26/10/g62295537/kindness-forward-launches-global-kindness-season-calling-195-countries-inspire-one-billion-acts-kind",
+    type: "article",
+    imageUrl: "/press/benzinga.webp",
+  },
+  {
+    outlet: "KTLA 5",
+    title: "Kindness Forward Launches Global Kindness Season, Calling on 195 Countries to Inspire One Billion Acts of Kindness",
+    url: "https://ktla.com/business/press-releases/globenewswire/9843808/kindness-forward-launches-global-kindness-season-calling-on-195-countries-to-inspire-one-billion-acts-of-kindness/",
+    type: "article",
+    imageUrl: "/press/ktla.webp",
+  },
+  {
+    outlet: "FOX 8",
+    title: "Kindness Forward Launches Global Kindness Season, Calling on 195 Countries to Inspire One Billion Acts of Kindness",
+    url: "https://fox8.com/business/press-releases/globenewswire/9843808/kindness-forward-launches-global-kindness-season-calling-on-195-countries-to-inspire-one-billion-acts-of-kindness/",
+    type: "article",
+    imageUrl: "/press/fox8.webp",
+  },
+  {
+    outlet: "PIX11",
+    title: "Kindness Forward Launches Global Kindness Season, Calling on 195 Countries to Inspire One Billion Acts of Kindness",
+    url: "https://pix11.com/business/press-releases/globenewswire/9843808/kindness-forward-launches-global-kindness-season-calling-on-195-countries-to-inspire-one-billion-acts-of-kindness/",
+    type: "article",
+    imageUrl: "/press/pix11.webp",
+  },
+  {
+    outlet: "WFLA News Channel 8",
+    title: "Kindness Forward Launches Global Kindness Season, Calling on 195 Countries to Inspire One Billion Acts of Kindness",
+    url: "https://www.wfla.com/business/press-releases/globenewswire/9843808/kindness-forward-launches-global-kindness-season-calling-on-195-countries-to-inspire-one-billion-acts-of-kindness/",
+    type: "article",
+    imageUrl: "/press/wfla.webp",
+  },
+  {
+    outlet: "KXAN",
+    title: "Kindness Forward Launches Global Kindness Season, Calling on 195 Countries to Inspire One Billion Acts of Kindness",
+    url: "https://www.kxan.com/business/press-releases/globenewswire/9843808/kindness-forward-launches-global-kindness-season-calling-on-195-countries-to-inspire-one-billion-acts-of-kindness/",
+    type: "article",
+    imageUrl: "/press/kxan.webp",
+  },
+  {
+    outlet: "WAVY 10",
+    title: "Kindness Forward Launches Global Kindness Season, Calling on 195 Countries to Inspire One Billion Acts of Kindness",
+    url: "https://www.wavy.com/business/press-releases/globenewswire/9843808/kindness-forward-launches-global-kindness-season-calling-on-195-countries-to-inspire-one-billion-acts-of-kindness/",
+    type: "article",
+    imageUrl: "/press/wavy.webp",
+  },
+];
+
 export const digitalNews: MediaItem[] = [
   {
     outlet: "WIPR (Notiséis 360)",
@@ -62,19 +143,6 @@ export const digitalNews: MediaItem[] = [
     url: "https://www.metro.pr/entretenimiento/2025/10/21/ola-de-amor-y-bondad-recorrera-toda-la-isla/",
     type: "article",
     imageUrl: "/press/metro.webp",
-  },
-  // This link wasn't loading in the team's own browsers as of 2026-10-21 —
-  // worth checking whether the article's still up before relying on it.
-  {
-    outlet: "WIPR TV",
-    title: "Te Amo PR promueve actos de bondad en Puerto Rico",
-    description: {
-      en: "WIPR TV profiled Te Amo PR's work promoting everyday acts of kindness across Puerto Rico.",
-      es: "WIPR TV destacó la labor de Te Amo PR promoviendo actos de bondad cotidianos en Puerto Rico.",
-    },
-    url: "https://wipr.pr/te-amo-pr-promueve-actos-de-bondad-en-puertorico/",
-    type: "article",
-    imageUrl: "/press/wipr-tv.png",
   },
   {
     outlet: "WAPA TV",

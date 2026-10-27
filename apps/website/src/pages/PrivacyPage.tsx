@@ -25,8 +25,8 @@ export default function PrivacyPage() {
     <div className="min-h-screen bg-warm-cream">
       <SEO
         title={t(
-          "Privacy Policy — Pásalo Pa'lante",
-          "Política de Privacidad — Pásalo Pa'lante"
+          "Privacy Policy — Kindness Forward",
+          "Política de Privacidad — Kindness Forward"
         )}
         description={t(
           "How Pásalo Pa'lante, a sister initiative of Te Amo PR (a 501(c)(3) nonprofit), collects, uses, and protects information across the global kindness movement.",

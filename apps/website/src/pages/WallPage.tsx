@@ -8,7 +8,7 @@ export default function WallPage() {
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title="Wall of Kindness — Real Stories of Acts Creating Ripples"
+        title="Wall of Kindness — Real Stories of Acts Creating Ripples | Kindness Forward"
         description="Read real acts of kindness shared by people around the world. Get inspired and add your own story to the global Wall of Kindness."
         path="/wall"
       />

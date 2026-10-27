@@ -92,9 +92,9 @@ function compactNumber(n: number, locale: string) {
 }
 
 export default function PartnersPage() {
-  const { lang } = useLanguage();
-  const isEs = lang === "es";
-  const locale = isEs ? "es" : "en";
+  const { lang, t } = useLanguage();
+  const tp = t.partnersPage;
+  const locale = lang;
   const { data: totals } = useMovementTotals();
   const { data: entries, isLoading } = usePartnerDirectory();
   const [query, setQuery] = useState("");
@@ -131,7 +131,7 @@ export default function PartnersPage() {
   return (
     <div className="min-h-screen bg-warm-cream">
       <SEO
-        title="Our Partners — Pásalo Pa'lante"
+        title="Our Partners — Kindness Forward"
         description="Meet the businesses, media, governments, nonprofits, and educators powering Pásalo Pa'lante and the global kindness movement."
         path="/partners"
       />
@@ -149,28 +149,26 @@ export default function PartnersPage() {
           <div className="section-padding relative mx-auto flex max-w-6xl flex-wrap items-end gap-12 pb-16 pt-28 md:pt-32">
             <div className="flex flex-1 flex-col gap-6" style={{ flexBasis: "560px" }}>
               <p className="text-xs font-bold tracking-[0.18em] text-warm-gold">
-                {isEs ? "NUESTROS SOCIOS · LA COALICIÓN DE BONDAD" : "OUR PARTNERS · THE KINDNESS COALITION"}
+                {tp.eyebrow}
               </p>
               <h1 className="font-display text-4xl leading-[1.05] tracking-tight md:text-5xl lg:text-6xl">
-                {isEs ? "La coalición que pasa la bondad hacia adelante." : "The coalition carrying kindness forward."}
+                {tp.heading}
               </h1>
               <p className="max-w-xl text-base leading-relaxed text-warm-cream/75 md:text-lg">
-                {isEs
-                  ? "Pásalo Pa'lante avanza gracias a las organizaciones que lo respaldan. Nuestros socios coorganizan activaciones, financian el movimiento y llevan la bondad a cada rincón de sus comunidades."
-                  : "Pásalo Pa'lante moves forward because of the organizations standing behind it. Our partners co-host activations, fund the movement, and carry kindness into every corner of their communities."}
+                {tp.intro}
               </p>
               <div className="mt-2 flex flex-wrap gap-3">
                 <a
                   href="#directory"
                   className="inline-flex h-[52px] items-center justify-center rounded-full bg-warm-terracotta px-7 text-sm font-bold text-white transition-transform duration-200 hover:scale-105"
                 >
-                  {isEs ? "Explora el directorio" : "Explore the directory"}
+                  {tp.exploreDirectory}
                 </a>
                 <a
                   href="#join"
                   className="inline-flex h-[52px] items-center justify-center rounded-full border-[1.5px] border-warm-cream/40 px-7 text-sm font-bold text-warm-cream transition-colors duration-200 hover:border-warm-cream"
                 >
-                  {isEs ? "Conviértete en socio" : "Become a partner"}
+                  {tp.becomePartner}
                 </a>
               </div>
             </div>
@@ -178,7 +176,7 @@ export default function PartnersPage() {
               <div className="flex flex-col gap-1.5 pr-4 pt-5">
                 <dd className="font-display text-4xl leading-none md:text-5xl">{!isLoading ? totalPartners : "—"}</dd>
                 <dt className="text-xs font-semibold leading-tight text-warm-cream/70">
-                  {isEs ? "Organizaciones socias" : "Partner organizations"}
+                  {tp.statPartners}
                 </dt>
               </div>
               <div className="flex flex-col gap-1.5 border-l border-warm-cream/20 py-5 pl-4">
@@ -186,7 +184,7 @@ export default function PartnersPage() {
                   {totals ? compactNumber(totals.pledged, locale) : "—"}
                 </dd>
                 <dt className="text-xs font-semibold leading-tight text-warm-cream/70">
-                  {isEs ? "Actos de bondad, una meta compartida" : "Acts of kindness, one shared goal"}
+                  {tp.statActs}
                 </dt>
               </div>
             </dl>
@@ -205,10 +203,10 @@ export default function PartnersPage() {
           <section aria-labelledby="featured-partners" className="section-padding mx-auto max-w-6xl pb-4 pt-14">
             <div className="mb-6 flex flex-col gap-2">
               <p className="text-xs font-bold tracking-[0.18em] text-warm-terracotta">
-                {isEs ? "SOCIOS DESTACADOS" : "FEATURED PARTNERS"}
+                {tp.featuredEyebrow}
               </p>
               <h2 id="featured-partners" className="font-display text-3xl leading-tight text-foreground md:text-4xl">
-                {isEs ? "Liderando el camino de la bondad" : "Leading the way in kindness"}
+                {tp.featuredHeading}
               </h2>
             </div>
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6">
@@ -225,19 +223,19 @@ export default function PartnersPage() {
             <div className="relative min-w-[220px] flex-[999_1_300px]">
               <Search size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40" />
               <label htmlFor="partner-search" className="sr-only">
-                {isEs ? "Buscar socios" : "Search partners"}
+                {tp.searchPartners}
               </label>
               <input
                 id="partner-search"
                 type="search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder={isEs ? "Buscar socios" : "Search partners"}
+                placeholder={tp.searchPartners}
                 className="h-12 w-full rounded-full border border-border bg-white pl-11 pr-4 text-sm text-foreground outline-none focus:border-warm-terracotta"
               />
             </div>
             <span className="text-[13px] font-semibold text-foreground/70">
-              {isEs ? `Mostrando ${shown} de ${totalPartners}` : `Showing ${shown} of ${totalPartners}`}
+              {tp.showing.replace("{shown}", String(shown)).replace("{total}", String(totalPartners))}
             </span>
           </div>
         </div>
@@ -253,9 +251,7 @@ export default function PartnersPage() {
             </div>
             <div>
               <h2 className="text-xl leading-snug text-foreground">
-                {isEs
-                  ? "Estamos muy agradecidos por el enorme apoyo de las organizaciones que desean unirse. Estamos actualizando activamente esta página y pronto estará renovada."
-                  : "We are so grateful for the overwhelming support from organizations wanting to join. We are actively updating this page and will have it refreshed soon."}
+                {tp.updatingNotice}
               </h2>
             </div>
           </div>
@@ -275,17 +271,17 @@ export default function PartnersPage() {
           ) : (
             <div className="flex flex-col items-center gap-3 rounded-3xl border-[1.5px] border-dashed border-border px-6 py-16 text-center">
               <h2 className="font-display text-2xl text-foreground">
-                {isEs ? "Ningún socio coincide con esa búsqueda" : "No partners match that search"}
+                {tp.noMatchHeading}
               </h2>
               <p className="text-sm text-foreground/70">
-                {isEs ? "Prueba con otro nombre." : "Try another name."}
+                {tp.noMatchBody}
               </p>
               <button
                 type="button"
                 onClick={() => setQuery("")}
                 className="mt-2 h-[46px] rounded-full bg-cyan-900 px-6 text-sm font-bold text-white"
               >
-                {isEs ? "Mostrar todos los socios" : "Show all partners"}
+                {tp.showAll}
               </button>
             </div>
           )}
@@ -303,15 +299,13 @@ export default function PartnersPage() {
             <div className="relative flex flex-wrap items-center gap-10">
               <div className="flex flex-1 flex-col gap-4" style={{ flexBasis: "420px" }}>
                 <p className="text-xs font-bold tracking-[0.18em] text-warm-gold">
-                  {isEs ? "CONVIÉRTETE EN SOCIO" : "BECOME A PARTNER"}
+                  {tp.joinEyebrow}
                 </p>
                 <h2 className="font-display text-3xl leading-tight md:text-4xl">
-                  {isEs ? "Pon el nombre de tu organización detrás de la bondad." : "Put your organization's name behind kindness."}
+                  {tp.joinHeading}
                 </h2>
                 <p className="text-base leading-relaxed text-warm-cream/75">
-                  {isEs
-                    ? "Únete al movimiento y ayúdanos a pasar la bondad. Cuéntanos sobre tu organización y te contactaremos con los próximos pasos."
-                    : "Join the movement and help us pass kindness forward. Tell us about your organization and we'll follow up with next steps."}
+                  {tp.joinBody}
                 </p>
               </div>
               <div className="flex flex-1 flex-col gap-3" style={{ flexBasis: "280px", maxWidth: "320px" }}>
@@ -319,8 +313,11 @@ export default function PartnersPage() {
                   href="/partners/apply"
                   className="flex h-14 items-center justify-center rounded-full bg-warm-terracotta text-base font-bold text-white transition-transform duration-200 hover:scale-105"
                 >
-                  {isEs ? "Contáctanos" : "Get in touch"}
+                  {tp.becomePartner}
                 </a>
+                <p className="mt-2 text-center text-xs font-semibold uppercase tracking-[0.14em] text-warm-cream/60">
+                  {tp.emailQuestion}
+                </p>
                 <a
                   href="mailto:info@passkindnessforward.com"
                   className="flex h-14 items-center justify-center rounded-full border-[1.5px] border-warm-cream/40 text-sm font-semibold text-warm-cream"

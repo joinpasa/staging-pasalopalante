@@ -62,7 +62,7 @@ export default function CommitPage() {
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title="Commit to Kindness — Join the Pásalo Pa'lante Wave"
+        title="Commit to Kindness — Join the Kindness Forward Wave"
         description="Pledge an act of kindness and join thousands creating ripples worldwide. Choose your role: Mover, Ambassador, or Leader."
         path="/commit"
       />

@@ -8,6 +8,63 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-27 — va.deedumlao@gmail.com
+
+- **Partners page, bottom section:** the main button now says "Become a partner" (was "Get in touch", which sounded like a general enquiry), and the email address now has a small "Got a question? Email us" label above it. Translated in all 11 languages.
+- **Homepage pledge form now says "Individual Pledge Form"** at the top, with a smaller line under it: "Are you part of a bigger group? Click here to submit your pledge", linking to the group/partner application at passkindnessforward.com/partners/apply. Translated in all 11 languages.
+
+## 2026-10-27 — M.Schollmeyer@gmx.de
+
+- **Shorter app button labels.** The homepage's "Open App" and "Download App" buttons (and the "Download App" button on Account Settings) now just say "Open" and "Download", in every language.
+- **Rearranged the Account page.** Your shared acts now appear first, right under your profile, followed by your badges; the movement-wide stats moved down into the main column below the inspiration card. The "+ Share another" link on that page is now a proper orange button, so it's easier to spot.
+- **One photo per shared act.** In the "Share an act of kindness" form, once you add a photo or video it takes the place of the upload box, shown large, with an X to remove it and pick a different one. Before, you could keep adding up to six files.
+
+- **Sharing an act on the website now matches the app.** Every place on the website where you share an act (the Share popup, the /share page, and the idea cards) uses the same single screen: pick Gave / Received / Witnessed, optionally tap a preset like "Gave a compliment", add text or photos, and choose whether it appears on the public Wall. The old two-step version is gone. In the app, picking a preset is now optional too; you can log an act with just text, a photo or a link.
+
+## 2026-10-26 — M.Schollmeyer@gmx.de
+
+- **Deleting one of your acts in the app no longer requires typing "DELETE".** The confirmation pop-up stays; you just tap "Delete" in it.
+
+- **Acts on the app's Wall can now be translated with one tap.** A small translate icon under each post's time switches its text into the reader's app language, and tapping it again shows the original. A translation is only created the first time someone asks for it in a language; after that it's stored and loads instantly for everyone, so we only pay for translations people actually read. The website's Wall now works the same way: posts show in their original language with a "See translation" link, instead of being translated automatically on every visit (the homepage's top-acts cards show the original, with the link in their detail popup).
+- **The same translate icon is now on the app's Home screen and Map list**, under each act's time. The Home section "Recent Acts of Kindness" is renamed to "Latest kindness", matching the identical list on the Map. The icon only appears on acts written in a different language than the reader's.
+- **New acts now remember the language they're actually written in**, not just the language the poster's screen was set to. The AI check every new act already goes through now also reports its language, at no extra cost. This fixes cases like someone with an English app writing in German, whose act was never offered as a translation to German readers. Acts posted before this change keep their old value.
+
+- **The homepage's "Open the app" button is now two buttons with one job each.** "Open App" always opens the app in the browser; "Download App" always shows the browser's install pop-up (or a short note that the app is already installed or the browser can't install it). Before, the single button did one or the other depending on the browser, which was confusing. The "Download App" button on the Account Settings page now works the same way.
+
+- **Tapping "Map" or "Badges" in the app while signed out now explains why** instead of quietly jumping back to the Wall: a pop-up says "Please log in to use Map/Badges." with a "Log in" button. Translated into all app languages.
+
+## 2026-10-26 — va.deedumlao@gmail.com
+
+- **The In the Press (/media) page is now edited from a Google Sheet, "PKF_Media", instead of code** — same setup as Partners. Anyone on the team can add, hide, reorder or feature a press item there; it syncs every 15 minutes (or instantly via Media → Sync now) and only rows marked Approved show. The sheet is pre-filled with everything currently on the page, and if the sheet ever can't be reached the page falls back to the old built-in list. New logos can be uploaded to a new `media-images` storage folder in Supabase, or any image link can be pasted in.
+- **The PKF_Media sheet is now safe to share with the whole ops team.** New rows they add start as "Pending" (hidden from the site) until the owner approves them, and the Status/Featured columns can be locked to the owner. Added a private "_Contacts" tab for logging the people the team talks to (never shown on the site) and an "_Influencers" tab for influencers and celebrities with their social handles, ready for future use.
+- **New "Articles" section at the top of the In the Press page** with the 10 outlets that ran the Global Kindness Season launch press release (AP News, Yahoo Finance, Business Insider, Benzinga, KTLA, FOX 8, PIX11, WFLA, KXAN, WAVY). Each card links to the article, and there's an "Articles" link in the page's sub-menu.
+- **The app's label under its home-screen icon now says "Kindness"** (was "Pásalo"), on both iPhone and Android. It's kept short so phones don't cut it off.
+- **About, Contact, Community Guidelines, In the Press and Global Ambassadors pages now show in every language**, the same fix as the Partners page. Before, they only switched between English and Spanish. The "Get the app" popup is also translated into all 11 languages now, and its title says Kindness Forward. Privacy and Terms stay English/Spanish only on purpose, since they're legal text.
+- **Partners page now shows in every language.** It used to switch only between English and Spanish, so Bengali, Arabic, Chinese and other visitors saw it in English. All its text is now translated into all 11 site languages.
+- **Arabic and Bengali app screens are now fully translated.** About 370 app texts per language had been broken ("?????") and were removed, which left those screens in English; they now have proper Arabic and Bengali translations. Also made sure the new translations use the Kindness Forward page titles.
+
+## 2026-10-23 — va.deedumlao@gmail.com
+
+- Every page's browser-tab title (and the title shown when a page is shared on social media or in Google) now says **Kindness Forward** instead of Pásalo Pa'lante, across all website pages and all languages. The app's tab title and its name on the install screen now say Kindness Forward too.
+- **New Kindness Forward logos everywhere (the star on the heart is gone).** Replaced every Kindness Forward logo across the website (header in both states, footer), the app (home header, Wall, loading splash) and the partners portal (logos, heart, browser/home-screen icons, share image) with the new versions.
+- **Homepage title and share preview now say Kindness Forward.** The browser tab and Facebook/WhatsApp/X previews read "Kindness Forward — Sparking 1 Billion Acts of Kindness Worldwide", and the share image is the new "1 Billion Acts of Kindness" Kindness Forward graphic. It has a new filename so social networks pick it up instead of showing their cached old image.
+- **Removed a dead link from the /media page.** The WIPR TV article ("Te Amo PR promueve actos de bondad en Puerto Rico") stopped loading — confirmed across multiple browsers — so that card is gone from Digital News & Press, and from the crawler-readable copy of the page.
+- **Cut the AI moderation cost on every logged act, ahead of the Nov 1 launch.** The act-submission review (`submit-act`) used to ask the AI to both moderate the story *and* re-guess its category/type and language from the text — but we already collect the category from the chip the person taps ("Donated", "Volunteered", etc. on the Log an Act screen) and the language from the app's own UI setting, so asking the AI to re-derive both was pure wasted spend. The AI now does only the part only it can do (the actual safety review); everything else uses data we already have. Still on Gemini for now — this is a same-provider cost cut, not a switch — and measured against our real prompt, it's roughly a 25–30% reduction in tokens (and therefore cost) per moderated submission, with no change in moderation behavior.
+- **Found and fixed a second, bigger redundancy in the same pipeline: every logged act was quietly making *two* separate AI calls, not one.** Alongside the moderation check above, a second function (`classify-act`) ran right after it to tag the act for the Wall's little emoji/category chips — re-sending the same story text to the AI a second time, with its own separate overhead. The two are now one single AI call that does both jobs at once, so the story is only sent once and we pay one call's overhead instead of two. No change to what shows on the Wall — tags are exactly as accurate as before, just computed in the same pass instead of a separate follow-up call. Combined with the first fix above, total AI cost per logged act is down roughly 20% from where it started this week, with the per-act plan ready to hand to Chin.
+- **Removed a dead, never-firing AI call from the pledge form (`submit-commitment`).** It had an "AI safety check" on a `message` field that, it turns out, no pledge form actually sends anymore (confirmed across all 8 places that call it) — so it was costing nothing today, but was confusing dead code that would've wasted someone's time during the cost review. Deleted it; pledges behave exactly as before.
+
+## 2026-10-23 — M.Schollmeyer@gmx.de
+
+- Translations: "Global Kindness Season" now always appears in English in every language, since it's part of the brand — it had been translated in a dozen different ways (one French text even called it a "week", another a season of "solidarity"). Along the way, fixed a French "How it works" step that showed the wrong step's text, and three Spanish texts that still talked about a "Global Kindness Month in November".
+- Arabic and Bengali: about 360 app texts per language had been saved as unreadable "?????" when those languages were first added, so the whole app showed question marks. They now show English until proper translations are added.
+
+## 2026-10-22 — M.Schollmeyer@gmx.de
+
+- Website account: "Delete account" now really works. After typing "delete", the person's login, profile, acts (including their uploaded photos), commitments, badges, reactions, reminders, consent and email records are permanently removed, along with any group they were the only member of. Their GoHighLevel contact is kept but tagged `account-deleted` so the team can follow up. Acts other people sent to them stay on the giver's side, just no longer linked to the deleted person. Also fixes a database link that would have blocked deleting anyone who had ever received a /wave hand-off.
+
+- Website account: "Sign out" now sits directly on the /account dashboard, under the "My Account" button, instead of being buried in the settings page. In its old spot on /account/settings there's now a "Delete account" button that opens a confirmation popup (the user has to type "delete" to unlock the final button). The actual deletion isn't wired up yet — for now the final button just shows a "coming soon" message.
+- Translations: filled in every missing text in all 10 non-English languages (about 1,100 entries — mostly the media menu, the partner/municipality/company forms, the share-an-act flow, the live wall, login/signup and account pages), so those parts no longer fall back to English. Existing translations were left untouched.
+
 ## 2026-10-22 — va.deedumlao@gmail.com
 
 - **Privacy Policy: title is now just "Privacy Policy"** (was "Privacy Policy & Legal Information"; Spanish "Política de Privacidad"), and the SMS section adds "We do not sell or share your SMS opt-in data or personal information with third parties for marketing purposes." (with Spanish), for the SMS carrier review.

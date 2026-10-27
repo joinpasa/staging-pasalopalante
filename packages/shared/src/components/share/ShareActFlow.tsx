@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Heart, Loader2, Play, Upload, X } from "lucide-react";
+import { Loader2, Play, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -12,16 +11,18 @@ import { Button } from "@shared/components/ui/button";
 import { Input } from "@shared/components/ui/input";
 import { Textarea } from "@shared/components/ui/textarea";
 import { Label } from "@shared/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@shared/components/ui/select";
+import { Switch } from "@shared/components/ui/switch";
 import { supabase } from "@shared/integrations/supabase/client";
 import { logConsent } from "@shared/lib/legal";
 import { getAuthErrorMessage } from "@shared/lib/authErrors";
 import { detectSocialLink, type DetectedSocialLink } from "@shared/lib/socialLinks";
+import { ACT_TYPES } from "@shared/lib/actTypes";
 import SocialLinkChip from "./SocialLinkChip";
 
 type Mode = "performed" | "witnessed" | "received";
 
-const MAX_FILES = 6;
+// One photo or video per act — once picked, its preview replaces the dropzone.
+const MAX_FILES = 1;
 const MAX_FILE_SIZE = 25 * 1024 * 1024;
 
 const detailsSchema = z.object({
@@ -46,10 +47,9 @@ interface Props {
    *  specific person it's being passed to. Lets the recipient later send a
    *  one-tap "thanks" back. Never set for a regular act. */
   toUserId?: string;
-  /** Render mode-select and details as one screen (a compact radio row)
-   *  instead of the two-step wizard. Used by the site-wide share popup;
-   *  other call sites (the app's /log flow, inline inspiration cards) keep
-   *  the wizard unchanged. */
+  /** Compact variant for the site-wide share popup: name and email side by
+   *  side, shorter helper texts and submit label. Every call site uses the
+   *  same single-screen layout either way. */
   singleStep?: boolean;
 }
 
@@ -58,8 +58,10 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [step, setStep] = useState<1 | 2>(initialMode || singleStep ? 2 : 1);
-  const [mode, setMode] = useState<Mode | null>(initialMode ?? (singleStep ? "performed" : null));
+  const [mode, setMode] = useState<Mode>(initialMode ?? "performed");
+  // Optional preset, same chips as the app's Log an Act screen.
+  const [actType, setActType] = useState<string | null>(null);
+  const [shareOnWall, setShareOnWall] = useState(true);
   const [description, setDescription] = useState(initialDescription ?? "");
   const [socialLink, setSocialLink] = useState<DetectedSocialLink | null>(null);
   const [firstName, setFirstName] = useState("");
@@ -90,12 +92,6 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
     })();
     return () => { cancelled = true; };
   }, [user]);
-
-
-  function handlePick(m: Mode) {
-    setMode(m);
-    setStep(2);
-  }
 
   function addFiles(list: FileList | File[] | null) {
     if (!list) return;
@@ -149,10 +145,6 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
   }
 
   async function handleSubmit() {
-    if (!mode) {
-      toast.error(t.share.chooseModeError);
-      return;
-    }
     const parsed = detailsSchema.safeParse({
       description,
       first_name: firstName,
@@ -200,6 +192,9 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
           photo_paths: photoPaths,
           to_user_id: toUserId || undefined,
           video_url: socialLink?.url || undefined,
+          act_type: actType || undefined,
+          share_on_wall: shareOnWall,
+          lang,
         },
       });
 
@@ -320,6 +315,26 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
 
   const detailsFields = (
     <>
+      <div className="space-y-2.5">
+        <Label>{t.appLogAct.whatDidYouDo}</Label>
+        <div className="flex flex-wrap gap-2">
+          {ACT_TYPES.map(({ value, labelKey }) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setActType((v) => (v === value ? null : value))}
+              className={`rounded-full border-2 px-4 py-2 text-sm font-semibold transition-all ${
+                actType === value
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border bg-warm-cream text-foreground hover:border-primary/40"
+              }`}
+            >
+              {t.appLogAct[labelKey]}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="space-y-2">
         <Label htmlFor="desc">{socialLink ? t.share.linkCaptionLabel : t.share.descriptionLabel}</Label>
         {socialLink && (
@@ -401,29 +416,25 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
       <div className="space-y-3">
         <Label>{t.share.mediaOptionalLabel}</Label>
 
-        {files.length > 0 && (
-          <div className="flex flex-wrap gap-3">
-            {files.map((f, i) => (
-              <div key={i} className="relative w-[84px] h-[84px] rounded-xl overflow-hidden border">
-                {f.isVideo ? (
-                  <div className="w-full h-full bg-muted flex items-center justify-center">
-                    <Play size={22} className="text-muted-foreground fill-current" />
-                  </div>
-                ) : (
-                  <img src={f.preview} alt="" className="w-full h-full object-cover" />
-                )}
-                <button
-                  type="button"
-                  onClick={() => removeFile(i)}
-                  className="absolute top-1 end-1 w-[22px] h-[22px] rounded-full bg-black/65 text-white flex items-center justify-center"
-                  aria-label="Remove"
-                >
-                  <X size={13} />
-                </button>
+        {files.map((f, i) => (
+          <div key={i} className="relative w-full h-48 rounded-2xl overflow-hidden border border-border bg-warm-cream">
+            {f.isVideo ? (
+              <div className="w-full h-full bg-muted flex items-center justify-center">
+                <Play size={32} className="text-muted-foreground fill-current" />
               </div>
-            ))}
+            ) : (
+              <img src={f.preview} alt="" className="w-full h-full object-contain" />
+            )}
+            <button
+              type="button"
+              onClick={() => removeFile(i)}
+              className="absolute top-2 end-2 w-[28px] h-[28px] rounded-full bg-black/65 text-white flex items-center justify-center"
+              aria-label="Remove"
+            >
+              <X size={15} />
+            </button>
           </div>
-        )}
+        ))}
 
         {files.length < MAX_FILES && (
           <div
@@ -452,7 +463,6 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
               ref={fileInputRef}
               type="file"
               accept="image/*,video/*"
-              multiple
               className="hidden"
               onChange={(e) => addFiles(e.target.files)}
             />
@@ -471,6 +481,14 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
           </label>
         )}
       </div>
+
+      <label className="flex items-center justify-between gap-4 rounded-2xl border border-border bg-warm-cream/60 p-4 cursor-pointer">
+        <span>
+          <span className="block text-sm font-semibold text-foreground">{t.appLogAct.shareOnWall}</span>
+          <span className="block text-xs text-muted-foreground mt-0.5">{t.appLogAct.inspireOthers}</span>
+        </span>
+        <Switch checked={shareOnWall} onCheckedChange={setShareOnWall} />
+      </label>
 
       {!user && (
         <p className="text-sm text-foreground/85 leading-relaxed bg-warm-cream/60 border border-border rounded-xl p-4">
@@ -510,126 +528,40 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
     </>
   );
 
-  if (singleStep) {
-    const modeOptions: { key: Mode; label: string }[] = [
-      { key: "performed", label: t.share.modeGaveShort },
-      { key: "received", label: t.share.modeReceivedShort },
-      { key: "witnessed", label: t.share.modeWitnessedShort },
-    ];
-    return (
-      <div className="w-full max-w-2xl mx-auto space-y-6">
+  const modeOptions: { key: Mode; label: string }[] = [
+    { key: "performed", label: t.share.modeGaveShort },
+    { key: "received", label: t.share.modeReceivedShort },
+    { key: "witnessed", label: t.share.modeWitnessedShort },
+  ];
+
+  return (
+    <div className="w-full max-w-2xl mx-auto space-y-6">
+      {/* The other call sites sit under their own page/dialog title. */}
+      {singleStep && (
         <div className="space-y-2.5">
           <p className="text-xs uppercase tracking-[0.18em] text-primary font-semibold">{t.share.formEyebrow}</p>
           <h2 className="headline-md text-foreground">{t.share.formHeading}</h2>
         </div>
+      )}
 
-        <div className="space-y-2.5">
-          <Label>{t.share.modeToggleLabel}</Label>
-          <div className="grid grid-cols-3 gap-2.5">
-            {modeOptions.map((m) => (
-              <button
-                key={m.key}
-                type="button"
-                onClick={() => setMode(m.key)}
-                className={`rounded-xl px-2 py-3.5 text-sm font-semibold transition-all ${
-                  mode === m.key
-                    ? "border-2 border-primary bg-primary text-primary-foreground"
-                    : "border-2 border-border bg-warm-cream text-foreground hover:border-primary/40"
-                }`}
-              >
-                {m.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {detailsFields}
+      <div className="grid grid-cols-3 gap-2.5">
+        {modeOptions.map((m) => (
+          <button
+            key={m.key}
+            type="button"
+            onClick={() => setMode(m.key)}
+            className={`rounded-xl px-2 py-3.5 text-sm font-semibold transition-all ${
+              mode === m.key
+                ? "border-2 border-primary bg-primary text-primary-foreground"
+                : "border-2 border-border bg-warm-cream text-foreground hover:border-primary/40"
+            }`}
+          >
+            {m.label}
+          </button>
+        ))}
       </div>
-    );
-  }
 
-  return (
-    <div className="w-full max-w-2xl mx-auto">
-      <AnimatePresence mode="wait">
-        {step === 1 ? (
-          <motion.div
-            key="step1"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.3 }}
-            className="text-center space-y-8"
-          >
-            <h2 className="headline-lg text-foreground">{t.share.modeQuestion}</h2>
-            <div className="space-y-4">
-              <button
-                onClick={() => handlePick("performed")}
-                className="group w-full rounded-2xl border-2 border-primary bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 px-8 py-10 text-center hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-3"
-              >
-                <Heart size={24} className="fill-current" />
-                <span className="block text-2xl sm:text-3xl font-medium" style={{ fontFamily: "'DM Serif Display', serif" }}>
-                  {t.share.modePerformed}
-                </span>
-              </button>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {[
-                  { key: "received" as Mode, label: t.share.modeReceived },
-                  { key: "witnessed" as Mode, label: t.share.modeWitnessed },
-                ].map((m) => (
-                  <button
-                    key={m.key}
-                    onClick={() => handlePick(m.key)}
-                    className="group rounded-2xl border-2 border-border hover:border-primary bg-card hover:bg-warm-cream transition-all duration-200 p-6 text-center hover:shadow-lg hover:-translate-y-0.5"
-                  >
-                    <span className="block text-xl font-medium text-foreground group-hover:text-primary" style={{ fontFamily: "'DM Serif Display', serif" }}>
-                      {m.label}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="step2"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.3 }}
-            className="space-y-6"
-          >
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setStep(1)}
-                className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-              >
-                <ArrowLeft size={16} /> {t.share.back}
-              </button>
-
-              {mode && (
-                // A dropdown, not a button back to step 1 — switches which
-                // kind of act this is in place, without leaving this screen
-                // or losing anything already typed below.
-                <Select value={mode} onValueChange={(v) => setMode(v as Mode)}>
-                  <SelectTrigger className="h-auto w-auto gap-1.5 rounded-full border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary hover:border-primary hover:bg-primary/20">
-                    <Heart size={12} className="fill-current shrink-0" />
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="performed">{t.share.modePerformed}</SelectItem>
-                    <SelectItem value="received">{t.share.modeReceived}</SelectItem>
-                    <SelectItem value="witnessed">{t.share.modeWitnessed}</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-            </div>
-
-            <h2 className="headline-md text-foreground">{t.share.detailsHeading}</h2>
-
-            {detailsFields}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {detailsFields}
     </div>
   );
 }

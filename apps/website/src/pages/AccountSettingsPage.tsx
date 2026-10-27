@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, LogOut, Smartphone } from "lucide-react";
+import { ArrowLeft, Smartphone } from "lucide-react";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { supabase } from "@shared/integrations/supabase/client";
@@ -10,12 +10,13 @@ import ProfileSettingsCard from "@/components/account/ProfileSettingsCard";
 import ChangeEmailCard from "@/components/account/ChangeEmailCard";
 import SetPasswordCard from "@/components/account/SetPasswordCard";
 import RemindersCard from "@/components/account/RemindersCard";
-import { Button } from "@shared/components/ui/button";
+import DeleteAccountDialog from "@/components/account/DeleteAccountDialog";
+import { buttonVariants } from "@shared/components/ui/button";
 import { Skeleton } from "@shared/components/ui/skeleton";
-import { triggerAppInstall } from "@shared/lib/installTrigger";
+import DownloadAppButton from "@/components/DownloadAppButton";
 
 /**
- * Account settings: profile, password, notifications, and sign out — split
+ * Account settings: profile, password, notifications, and account deletion — split
  * out from the activity dashboard at /account so that page stays focused on
  * acts/badges/commitment, and this one on managing the account itself.
  */
@@ -31,7 +32,7 @@ interface Profile {
 
 const AccountSettingsPage = () => {
   const { t } = useLanguage();
-  const { user, loading, signOut } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
@@ -105,21 +106,10 @@ const AccountSettingsPage = () => {
               <p className="text-sm text-foreground/60">app.pasalopalante.com</p>
             </div>
           </div>
-          <Button variant="outline" onClick={() => triggerAppInstall()}>
-            {t.account.downloadApp}
-          </Button>
+          <DownloadAppButton className={buttonVariants({ variant: "outline" })} />
         </div>
 
-        <Button
-          variant="ghost"
-          onClick={async () => {
-            await signOut();
-            navigate("/");
-          }}
-        >
-          <LogOut size={16} className="mr-2" />
-          {t.account.signOut}
-        </Button>
+        <DeleteAccountDialog />
       </div>
       <Footer />
     </div>

@@ -162,7 +162,7 @@ const MapPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title={`${t.mapPage.title} — Pásalo Pa'lante`}
+        title={`${t.mapPage.title} — Kindness Forward`}
         description={t.mapPage.description}
         path="/map"
       />

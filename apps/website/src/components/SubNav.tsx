@@ -34,6 +34,7 @@ const SubNav = () => {
   } else if (pathname === "/media") {
     items = [
       { id: "featured", label: t.navbar.mediaFeatured },
+      { id: "articles", label: t.navbar.mediaArticles },
       { id: "digital-press", label: t.navbar.mediaDigitalPress },
       { id: "videos", label: t.navbar.mediaVideos },
       { id: "social", label: t.navbar.mediaSocial },

@@ -100,6 +100,10 @@ export interface AppAct {
   tags: string[];
   videoUrl: string | null;
   linkPreviewImage: string | null;
+  /** False when `description` is just the "An act of kindness" placeholder. */
+  hasDescription: boolean;
+  /** Language the act was written in — the translate button's source hint. */
+  language: string | null;
 }
 
 /** The signed-in user's own most recent acts. */
@@ -112,7 +116,7 @@ export function useMyRecentActs(limit = 5) {
     queryFn: async (): Promise<AppAct[]> => {
       const { data, error } = await supabase
         .from("acts_of_kindness")
-        .select("id, description, created_at, mode, tags, video_url, link_preview_image")
+        .select("id, description, language, created_at, mode, tags, video_url, link_preview_image")
         .eq("user_id", user!.id)
         .order("created_at", { ascending: false })
         .limit(limit);
@@ -120,6 +124,8 @@ export function useMyRecentActs(limit = 5) {
       return (data ?? []).map((row) => ({
         id: row.id,
         description: row.description ?? "An act of kindness",
+        hasDescription: !!row.description,
+        language: row.language ?? null,
         createdAt: row.created_at,
         mode: row.mode,
         tags: row.tags ?? [],
@@ -143,7 +149,7 @@ export function useWallActs(limit = 20) {
     queryFn: async (): Promise<WallAct[]> => {
       const { data, error } = await supabasePublic
         .from("acts_of_kindness")
-        .select("id, description, created_at, mode, tags, first_name, photo_paths, video_url, link_preview_image")
+        .select("id, description, language, created_at, mode, tags, first_name, photo_paths, video_url, link_preview_image")
         .eq("status", "published")
         .order("created_at", { ascending: false })
         .limit(limit);
@@ -153,6 +159,8 @@ export function useWallActs(limit = 20) {
         return {
           id: row.id,
           description: row.description ?? "An act of kindness",
+          hasDescription: !!row.description,
+          language: row.language ?? null,
           createdAt: row.created_at,
           mode: row.mode,
           tags: row.tags ?? [],
@@ -283,7 +291,7 @@ export function useActsReceivedByMe(limit = 10) {
     queryFn: async (): Promise<ReceivedAct[]> => {
       const { data, error } = await supabase
         .from("acts_of_kindness")
-        .select("id, description, created_at, mode, tags, first_name, video_url, link_preview_image")
+        .select("id, description, language, created_at, mode, tags, first_name, video_url, link_preview_image")
         .eq("to_user_id", user!.id)
         .eq("status", "published")
         .order("created_at", { ascending: false })
@@ -292,6 +300,8 @@ export function useActsReceivedByMe(limit = 10) {
       return (data ?? []).map((row) => ({
         id: row.id,
         description: row.description ?? "An act of kindness",
+        hasDescription: !!row.description,
+        language: row.language ?? null,
         createdAt: row.created_at,
         mode: row.mode,
         tags: row.tags ?? [],

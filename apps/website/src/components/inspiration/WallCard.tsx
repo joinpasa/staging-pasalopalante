@@ -51,15 +51,16 @@ export default function WallCard({
   const original = (description ?? "").trim();
   const hasText = original.length > 0;
 
+  // Original first; translated only once the reader asks for it.
+  const [requested, setRequested] = useState(false);
   const { translation, loading, needed, sourceLang } = useActTranslation(
     id,
     original,
     language,
     lang,
+    requested,
   );
-  const [showOriginal, setShowOriginal] = useState(false);
-  const displayText =
-    needed && translation && !showOriginal ? translation : original;
+  const displayText = requested && translation ? translation : original;
 
   // If both photo and video, prefer photo for the polaroid frame.
   const showVideo = !photoUrl && !!videoThumbUrl;
@@ -94,8 +95,28 @@ export default function WallCard({
       ? t.inspiration.translatedFromEs
       : "";
 
+  const toggleButton = (label: string) => (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        setRequested((v) => !v);
+      }}
+      className="underline underline-offset-2 hover:opacity-70 transition-opacity"
+    >
+      {label}
+    </button>
+  );
+
   const renderTranslationStrip = () => {
     if (!needed) return null;
+    if (!requested) {
+      return (
+        <span className="text-[10px]" style={{ color: MUTED_COLOR }}>
+          {toggleButton(t.inspiration.seeTranslation)}
+        </span>
+      );
+    }
     if (loading && !translation) {
       return (
         <span
@@ -110,18 +131,8 @@ export default function WallCard({
     if (!translation) return null;
     return (
       <span className="text-[10px]" style={{ color: MUTED_COLOR }}>
-        <span className="italic">{translatedLabel}</span>
-        {" · "}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowOriginal((v) => !v);
-          }}
-          className="underline underline-offset-2 hover:opacity-70 transition-opacity"
-        >
-          {showOriginal ? t.inspiration.seeTranslation : t.inspiration.seeOriginal}
-        </button>
+        {translatedLabel && <span className="italic">{translatedLabel} · </span>}
+        {toggleButton(t.inspiration.seeOriginal)}
       </span>
     );
   };

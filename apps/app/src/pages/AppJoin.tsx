@@ -29,7 +29,7 @@ import { storeReferralCode } from "@shared/lib/referral";
  */
 export default function AppJoin() {
   const { user, signIn, signInWithMagicLink, signInWithGoogle, resetPassword } = useAuth();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [tab, setTab] = useState<"join" | "login">("join");
@@ -128,6 +128,7 @@ export default function AppJoin() {
           pledge_count: pledgeCount,
           country,
           help_role: "do_acts",
+          lang,
         },
       });
       if (error) toast.error(isRateLimitedError(error) ? pickRateLimitCheer() : error.message);

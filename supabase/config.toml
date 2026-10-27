@@ -43,3 +43,5 @@ project_id = "tipfbleltjexofsjffwb"
     verify_jwt = false
   [functions.sync-partners]
     verify_jwt = false
+  [functions.sync-media]
+    verify_jwt = false

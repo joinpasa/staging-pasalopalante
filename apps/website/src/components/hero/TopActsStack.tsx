@@ -251,15 +251,9 @@ function StackCard({
   act: TopAct;
   onReadMore: () => void;
 }) {
-  const { t, lang } = useLanguage();
-  const original = (act.description ?? "").trim();
-  const { translation, needed } = useActTranslation(
-    act.id,
-    original,
-    act.language,
-    lang,
-  );
-  const displayText = needed && translation ? translation : original;
+  const { t } = useLanguage();
+  // Always the original here — translating is offered in the detail popup.
+  const displayText = (act.description ?? "").trim();
   const truncated = displayText.length > TRUNC;
   const text = truncated
     ? displayText.slice(0, TRUNC).trimEnd() + "…"
@@ -368,15 +362,19 @@ function ActDetailDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const { t, lang } = useLanguage();
-  const { translation, needed } = useActTranslation(
+  // Original first; translated only once the reader asks for it.
+  const [requested, setRequested] = useState(false);
+  useEffect(() => setRequested(false), [act?.id]);
+  const { translation, loading, needed } = useActTranslation(
     act?.id ?? "",
     (act?.description ?? "").trim(),
     act?.language ?? null,
     lang,
+    requested,
   );
   if (!act) return null;
   const original = (act.description ?? "").trim();
-  const full = needed && translation ? translation : original;
+  const full = requested && translation ? translation : original;
   const photo =
     act.photo_paths && act.photo_paths.length > 0
       ? publicPhotoUrl(act.photo_paths[0])
@@ -398,6 +396,20 @@ function ActDetailDialog({
         <p className="text-base leading-relaxed whitespace-pre-wrap text-foreground">
           {full}
         </p>
+        {needed && (
+          <button
+            type="button"
+            onClick={() => setRequested((v) => !v)}
+            disabled={requested && loading}
+            className="self-start text-xs text-muted-foreground underline underline-offset-2 hover:opacity-70 transition-opacity"
+          >
+            {requested && loading
+              ? t.inspiration.translating
+              : requested && translation
+              ? t.inspiration.seeOriginal
+              : t.inspiration.seeTranslation}
+          </button>
+        )}
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Heart size={14} className="fill-current text-warm-terracotta" />
           {act.reaction_count}

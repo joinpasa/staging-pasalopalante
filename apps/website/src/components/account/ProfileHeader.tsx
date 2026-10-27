@@ -1,8 +1,8 @@
 import { useAuth } from "@shared/contexts/AuthContext";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { Button } from "@shared/components/ui/button";
-import { Crown, Settings } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Crown, LogOut, Settings } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
 interface Props {
   profile: {
@@ -16,7 +16,8 @@ interface Props {
 
 const ProfileHeader = ({ profile }: Props) => {
   const { t, lang } = useLanguage();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const name = profile?.display_name || user?.email?.split("@")[0] || "";
   const since = profile?.created_at
@@ -55,12 +56,25 @@ const ProfileHeader = ({ profile }: Props) => {
           {since && <p className="text-sm text-foreground/60">{t.account.memberSince} {since}</p>}
         </div>
       </div>
-      <Button variant="ghost" size="sm" asChild>
-        <Link to="/account/settings">
-          <Settings size={16} className="mr-2" />
-          {t.navbar.myAccount}
-        </Link>
-      </Button>
+      <div className="flex flex-col items-start gap-1">
+        <Button variant="ghost" size="sm" asChild>
+          <Link to="/account/settings">
+            <Settings size={16} className="mr-2" />
+            {t.navbar.myAccount}
+          </Link>
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={async () => {
+            await signOut();
+            navigate("/");
+          }}
+        >
+          <LogOut size={16} className="mr-2" />
+          {t.account.signOut}
+        </Button>
+      </div>
     </header>
   );
 };
