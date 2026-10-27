@@ -313,8 +313,11 @@ export default function PartnersPage() {
                   href="/partners/apply"
                   className="flex h-14 items-center justify-center rounded-full bg-warm-terracotta text-base font-bold text-white transition-transform duration-200 hover:scale-105"
                 >
-                  {tp.getInTouch}
+                  {tp.becomePartner}
                 </a>
+                <p className="mt-2 text-center text-xs font-semibold uppercase tracking-[0.14em] text-warm-cream/60">
+                  {tp.emailQuestion}
+                </p>
                 <a
                   href="mailto:info@passkindnessforward.com"
                   className="flex h-14 items-center justify-center rounded-full border-[1.5px] border-warm-cream/40 text-sm font-semibold text-warm-cream"

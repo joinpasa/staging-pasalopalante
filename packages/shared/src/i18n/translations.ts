@@ -1237,6 +1237,7 @@ const translations = {
       joinHeading: "Put your organization's name behind kindness.",
       joinBody: "Join the movement and help us pass kindness forward. Tell us about your organization and we'll follow up with next steps.",
       getInTouch: "Get in touch",
+      emailQuestion: "Got a question? Email us",
     },
     contactPage: {
       contactUs: "Contact us",

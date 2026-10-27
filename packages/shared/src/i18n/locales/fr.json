@@ -1341,7 +1341,8 @@
     "joinEyebrow": "DEVENIR PARTENAIRE",
     "joinHeading": "Associez le nom de votre organisation à la gentillesse.",
     "joinBody": "Rejoignez le mouvement et aidez-nous à faire passer la gentillesse. Parlez-nous de votre organisation et nous reviendrons vers vous avec les prochaines étapes.",
-    "getInTouch": "Nous contacter"
+    "getInTouch": "Nous contacter",
+    "emailQuestion": "Une question ? Écrivez-nous"
   },
   "contactPage": {
     "contactUs": "Nous contacter",

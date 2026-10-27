@@ -1341,7 +1341,8 @@
     "joinEyebrow": "PARTNER WERDEN",
     "joinHeading": "Stellen Sie den Namen Ihrer Organisation hinter die Freundlichkeit.",
     "joinBody": "Werden Sie Teil der Bewegung und helfen Sie uns, Freundlichkeit weiterzugeben. Erzählen Sie uns von Ihrer Organisation, und wir melden uns mit den nächsten Schritten.",
-    "getInTouch": "Kontakt aufnehmen"
+    "getInTouch": "Kontakt aufnehmen",
+    "emailQuestion": "Haben Sie eine Frage? Schreiben Sie uns"
   },
   "contactPage": {
     "contactUs": "Kontakt",

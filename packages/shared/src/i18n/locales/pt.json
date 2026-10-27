@@ -1342,7 +1342,8 @@
   "joinEyebrow": "SEJA UM PARCEIRO",
   "joinHeading": "Coloque o nome da sua organização ao lado da gentileza.",
   "joinBody": "Junte-se ao movimento e ajude-nos a passar a gentileza adiante. Conte-nos sobre sua organização e entraremos em contato com os próximos passos.",
-  "getInTouch": "Fale conosco"
+  "getInTouch": "Fale conosco",
+  "emailQuestion": "Tem alguma dúvida? Envie um e-mail"
  },
  "contactPage": {
   "contactUs": "Fale conosco",

@@ -1233,7 +1233,8 @@
     "joinEyebrow": "POSTANI PARTNER",
     "joinHeading": "Postavi ime svoje organizacije za prijaznost.",
     "joinBody": "Pridruži se gibanju in nam pomagaj prijaznost podajati naprej. Povej nam o svoji organizaciji in oglasili se bomo z naslednjimi koraki.",
-    "getInTouch": "Stopi v stik"
+    "getInTouch": "Stopi v stik",
+    "emailQuestion": "Imaš vprašanje? Piši nam"
   },
   "contactPage": {
     "contactUs": "Kontaktiraj nas",
