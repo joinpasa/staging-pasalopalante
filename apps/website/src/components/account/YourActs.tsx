@@ -104,13 +104,13 @@ const YourActs = ({ userId }: { userId: string }) => {
 
   return (
     <section className="bg-background border border-border rounded-2xl p-6 md:p-8">
-      <div className="flex items-baseline justify-between flex-wrap gap-3 mb-6">
+      <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
         <h2 className="font-serif text-2xl">
           {t.account.actsHeading.replace("{count}", String(total))}
         </h2>
-        <button type="button" onClick={() => openShareModal()} className="text-sm text-warm-sky hover:underline">
+        <Button onClick={() => openShareModal()}>
           + {t.account.logAnother}
-        </button>
+        </Button>
       </div>
 
       <Tabs value={mode} onValueChange={(v) => setMode(v as Mode)} className="w-full mb-6">
