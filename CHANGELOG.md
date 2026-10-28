@@ -17,6 +17,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 - **Fixed duplicate organizations for chapter sign-ups.** When an organization committed with a chapter name, the check for an existing organization always failed, so a new duplicate organization was created every time. It now finds the existing one.
 - **Arabic (right-to-left) layout fixes across the website and app.** About 80 spots that were hard-wired to "left" or "right" (password show/hide icons, menus, close buttons, list indents, the QR scanner frame, etc.) now flip correctly for Arabic; nothing changes for left-to-right languages. Login, sign-up and forgot-password were checked in a browser in English and Arabic.
 - **Long stories on the website's Wall now expand right on their card.** "Read more" shows the full text over the whole card (scrolling inside the card if it's still too long) with a "Show less" link, instead of opening a popup. Tapping a photo or video still opens the larger viewer.
+- **The app's Map now lets you read the full text of each "Recent Acts of Kindness" entry.** Entries that are cut off get a small expand button under the translate button; it opens the full text right in the list (no popup) and closes it again.
 - **Repo health checks are green again.** Tests, the type check and lint (errors) all pass, so a real problem now stands out instead of hiding among old failures.
 
 ## 2026-10-27 — va.deedumlao@gmail.com

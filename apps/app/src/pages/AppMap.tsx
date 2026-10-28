@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ComposableMap, Geographies, Geography, Marker, ZoomableGroup } from "react-simple-maps";
 import { geoCentroid } from "d3-geo";
-import { Loader2, LocateFixed, Minus, Plus, Search } from "lucide-react";
-import { useKindnessMapCounts, useMovementTotals, useWallActs } from "@/hooks/useAppData";
+import { ChevronDown, Loader2, LocateFixed, Minus, Plus, Search } from "lucide-react";
+import { useKindnessMapCounts, useMovementTotals, useWallActs, type WallAct } from "@/hooks/useAppData";
 import { useActTranslations } from "@/hooks/useActTranslations";
 import TranslateButton from "@/components/app/TranslateButton";
 // Bundled locally instead of fetched from cdn.jsdelivr.net at runtime - that
@@ -14,6 +14,7 @@ import TranslateButton from "@/components/app/TranslateButton";
 import geoData from "world-atlas/countries-110m.json";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { timeAgo } from "@shared/lib/appActs";
+import { cn } from "@shared/lib/utils";
 
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 40;
@@ -304,29 +305,89 @@ export default function AppMap() {
         ) : (
           <ul className="mt-3 space-y-1">
             {acts.map((act) => (
-              <li key={act.id} className="flex items-center gap-3 py-2">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-app-coral-tint text-lg">
-                  ✨
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-foreground">{translations.textFor(act)}</p>
-                  <p className="truncate text-xs text-muted-foreground">{act.name}</p>
-                </div>
-                <div className="flex shrink-0 flex-col items-end gap-0.5">
-                  <span className="text-xs font-bold text-app-teal">{timeAgo(act.createdAt, t.appCommon, lang)}</span>
-                  {translations.canTranslate(act) && (
-                    <TranslateButton
-                      translated={translations.isTranslated(act.id)}
-                      loading={translations.isLoading(act.id)}
-                      onClick={() => translations.toggle(act)}
-                    />
-                  )}
-                </div>
-              </li>
+              <RecentActRow key={act.id} act={act} translations={translations} />
             ))}
           </ul>
         )}
       </section>
     </div>
+  );
+}
+
+/**
+ * One "Recent Acts of Kindness" entry. The text is cut to one line; when it
+ * doesn't fit, an expand button under the translate button shows the full
+ * text right in the list (no popup), and collapses it again.
+ */
+function RecentActRow({
+  act,
+  translations,
+}: {
+  act: WallAct;
+  translations: ReturnType<typeof useActTranslations>;
+}) {
+  const { t, lang } = useLanguage();
+  const text = translations.textFor(act);
+  const textRef = useRef<HTMLParagraphElement>(null);
+  const [expanded, setExpanded] = useState(false);
+  const [cutOff, setCutOff] = useState(false);
+
+  // Only measurable while collapsed; re-measured when the text (e.g. a
+  // translation) or the available width changes.
+  useLayoutEffect(() => {
+    const el = textRef.current;
+    if (!el || expanded) return;
+    const measure = () => setCutOff(el.scrollWidth > el.clientWidth + 1);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [text, expanded]);
+
+  const label = expanded ? t.inspiration.showLess : t.inspiration.readMore;
+
+  return (
+    <li className={cn("flex gap-3 py-2", expanded ? "items-start" : "items-center")}>
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-app-coral-tint text-lg">
+        ✨
+      </span>
+      <div className="min-w-0 flex-1">
+        <p
+          ref={textRef}
+          className={cn(
+            "text-sm font-semibold text-foreground",
+            expanded ? "whitespace-pre-wrap break-words" : "truncate",
+          )}
+        >
+          {text}
+        </p>
+        <p className="truncate text-xs text-muted-foreground">{act.name}</p>
+      </div>
+      <div className="flex shrink-0 flex-col items-end gap-0.5">
+        <span className="text-xs font-bold text-app-teal">{timeAgo(act.createdAt, t.appCommon, lang)}</span>
+        {translations.canTranslate(act) && (
+          <TranslateButton
+            translated={translations.isTranslated(act.id)}
+            loading={translations.isLoading(act.id)}
+            onClick={() => translations.toggle(act)}
+          />
+        )}
+        {(cutOff || expanded) && (
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            aria-label={label}
+            aria-expanded={expanded}
+            title={label}
+            className={cn(
+              "flex h-6 w-6 items-center justify-center rounded-full transition-colors",
+              expanded ? "bg-app-coral-tint text-app-coral" : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            <ChevronDown size={14} className={cn("transition-transform", expanded && "rotate-180")} />
+          </button>
+        )}
+      </div>
+    </li>
   );
 }
