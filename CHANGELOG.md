@@ -17,9 +17,12 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-10-27 — M.Schollmeyer@gmx.de
 
+- **Friendly "you" everywhere.** The website and app now speak to people informally instead of formally: German uses "du" instead of "Sie", French "tu" instead of "vous", Russian "ты", Chinese "你", Hindi "तुम" and Bengali "তুমি", with verbs and possessives adjusted so the sentences stay grammatical. A few Slovenian lines aimed at organizations were switched to the same singular "ti". Spanish, Portuguese and Arabic were already informal and are unchanged.
 - **Shorter app button labels.** The homepage's "Open App" and "Download App" buttons (and the "Download App" button on Account Settings) now just say "Open" and "Download", in every language.
 - **Rearranged the Account page.** Your shared acts now appear first, right under your profile, followed by your badges; the movement-wide stats moved down into the main column below the inspiration card. The "+ Share another" link on that page is now a proper orange button, so it's easier to spot.
 - **One photo per shared act.** In the "Share an act of kindness" form, once you add a photo or video it takes the place of the upload box, shown large, with an X to remove it and pick a different one. Before, you could keep adding up to six files.
+- **Website share form now uses the app's wording.** "What happened?" is now "Tell us more" and "Add media (optional)" is now "Add a photo or video", and those plus "What did you do?" each show a lighter "(optional)" tag, in every language. The app's "What did you do?" got the same tag.
+- **Bigger share pop-up on desktop.** The website's "Share an act of kindness" pop-up is now wider (42rem) and nearly full-screen tall on tablets and computers, so there's less scrolling. Phones are unchanged.
 
 - **Sharing an act on the website now matches the app.** Every place on the website where you share an act (the Share popup, the /share page, and the idea cards) uses the same single screen: pick Gave / Received / Witnessed, optionally tap a preset like "Gave a compliment", add text or photos, and choose whether it appears on the public Wall. The old two-step version is gone. In the app, picking a preset is now optional too; you can log an act with just text, a photo or a link.
 

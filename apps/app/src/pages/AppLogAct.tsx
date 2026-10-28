@@ -161,7 +161,8 @@ export default function AppLogAct() {
 
       <div className="flex flex-1 flex-col gap-[18px] px-4 py-5">
         <div>
-          <p className="mb-2.5 text-sm font-bold text-foreground">{t.appLogAct.whatDidYouDo}</p>
+          <p className="mb-2.5 text-sm font-bold text-foreground">{t.appLogAct.whatDidYouDo} <span className="font-medium text-muted-foreground">{t.appLogAct.optional}</span></p>
+          
           <div className="flex flex-wrap gap-2">
             {ACT_TYPES.map(({ value, labelKey }) => (
               <button

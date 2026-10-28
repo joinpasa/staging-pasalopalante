@@ -185,12 +185,10 @@
     "formHeading": "Un gesto amable. Treinta segundos.",
     "descriptionHelper": "Opcional. Hasta unas pocas palabras cuentan.",
     "claimHelper": "Añade tu correo y te enviaremos un enlace para reclamar este acto y seguir tu ola.",
-    "mediaOptionalLabel": "Añade contenido (opcional)",
     "dropzonePrefix": "Arrastra y suelta, o",
     "dropzoneBrowse": "elige un archivo",
     "dropzoneHint": "Imágenes o video, hasta 25 MB cada uno",
     "submitCompact": "Comparte mi acto",
-    "descriptionLabel": "¿Qué pasó?",
     "descriptionPlaceholder": "Una breve descripción del acto de bondad…",
     "firstNameLabel": "Tu nombre (opcional)",
     "firstNamePlaceholder": "Nombre",
@@ -284,7 +282,6 @@
       "shareFailed": "No se pudo compartir — prueba otra opción."
     },
     "linkDetected": "Enlace de {platform} detectado",
-    "linkCaptionLabel": "Añade una descripción (opcional)",
     "linkCaptionPlaceholder": "Añade una breve descripción…",
     "removeLink": "Quitar enlace"
   },
