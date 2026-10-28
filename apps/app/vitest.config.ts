@@ -9,6 +9,9 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
+    // No unit tests here yet (the app's coverage is the Playwright e2e
+    // suite) — don't let an empty run fail the root `npm test` chain.
+    passWithNoTests: true,
   },
   resolve: {
     alias: {

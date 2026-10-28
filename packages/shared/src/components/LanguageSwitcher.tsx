@@ -43,7 +43,7 @@ const LanguageSwitcher = ({ variant = "floating", triggerClassName, align = "rig
   const panelSide = align === "left" ? "left-0" : "right-0";
 
   return (
-    <div ref={ref} className={isInline ? "relative" : "fixed bottom-6 right-6 z-50"} dir="ltr">
+    <div ref={ref} className={isInline ? "relative" : "fixed bottom-6 end-6 z-50"} dir="ltr">
       {open && (
         <div
           className={`absolute ${panelSide} ${isInline ? "top-[calc(100%+12px)]" : "bottom-full mb-2"} w-48 max-h-[60vh] overflow-y-auto rounded-2xl shadow-lg border border-foreground/10 bg-cyan-950 py-1.5 z-50`}

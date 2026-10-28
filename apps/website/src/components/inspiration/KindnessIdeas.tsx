@@ -2,12 +2,13 @@ import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@shared/components/ui/dialog";
 import { useLanguage } from "@shared/contexts/LanguageContext";
+import type { Translations } from "@shared/i18n/translations";
 import { useUI } from "@shared/contexts/UIContext";
 import ShareActFlow from "@shared/components/share/ShareActFlow";
 
 type CategoryKey = "words" | "time" | "money" | "hands" | "business" | "group";
 
-const CATEGORIES: { key: CategoryKey; labelKey: keyof ReturnType<typeof useLanguage>["t"]["inspiration"] }[] = [
+const CATEGORIES: { key: CategoryKey; labelKey: Extract<keyof Translations["inspiration"], `category${string}`> }[] = [
   { key: "words", labelKey: "categoryWords" },
   { key: "time", labelKey: "categoryTime" },
   { key: "money", labelKey: "categoryMoney" },
@@ -23,7 +24,7 @@ export default function KindnessIdeas() {
   const [openIdea, setOpenIdea] = useState<string | null>(null);
 
   const ideas = useMemo(() => {
-    const all = (t.inspiration as any).ideas as Record<CategoryKey, { title: string; why: string }[]>;
+    const all: Record<CategoryKey, readonly { title: string; why: string }[]> = t.inspiration.ideas;
     return (all[active] || []).slice(0, 6);
   }, [t, active]);
 
@@ -59,7 +60,7 @@ export default function KindnessIdeas() {
                       : "bg-card text-foreground/70 border-border hover:border-primary/50 hover:text-foreground"
                   }`}
                 >
-                  {(t.inspiration as any)[c.labelKey]}
+                  {t.inspiration[c.labelKey]}
                 </button>
               );
             })}

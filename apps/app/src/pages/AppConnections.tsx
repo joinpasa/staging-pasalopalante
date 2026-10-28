@@ -21,7 +21,7 @@ function DirectionBadge({ direction }: { direction: ConnectionDirection }) {
     return (
       <span className="inline-flex items-center gap-1 rounded-full bg-app-sky/10 px-2 py-0.5 text-[10.5px] font-bold text-app-sky">
         <ArrowUpRight className="h-3 w-3" />
-        <ArrowDownLeft className="h-3 w-3 -ml-1.5" />
+        <ArrowDownLeft className="h-3 w-3 -ms-1.5" />
         {t.appConnections.bothWays}
       </span>
     );

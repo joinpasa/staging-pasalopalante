@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { Award, Building2, Flame, Heart, Sparkles, Users } from "lucide-react";
+import { Building2, Heart, Users } from "lucide-react";
 import { toPng } from "html-to-image";
 import { toast } from "sonner";
 import schoolImage from "@/assets/getinvolved-build.jpg";
@@ -39,7 +39,7 @@ function publicPhotoUrl(path: string) {
 
 function Inner() {
   const { id } = useParams<{ id: string }>();
-  const { t, lang } = useLanguage();
+  const { t } = useLanguage();
   const { user } = useAuth();
   const { openShareModal } = useUI();
   const navigate = useNavigate();
@@ -49,7 +49,6 @@ function Inner() {
   const [loading, setLoading] = useState(true);
   const graphicRef = useRef<HTMLDivElement>(null);
   const [postShare, setPostShare] = useState<{ kind: "check_inbox" | "prefill"; email: string } | null>(null);
-  const [rewards, setRewards] = useState<{ unlocked_badges?: string[]; type_tag?: string } | null>(null);
   const [showClaim, setShowClaim] = useState(false);
   const [readMoreOpen, setReadMoreOpen] = useState(false);
 
@@ -58,8 +57,6 @@ function Inner() {
     try {
       const raw = sessionStorage.getItem(`share_post_${id}`);
       if (raw) setPostShare(JSON.parse(raw));
-      const rewardRaw = sessionStorage.getItem(`share_rewards_${id}`);
-      if (rewardRaw) setRewards(JSON.parse(rewardRaw));
     } catch { /* noop */ }
     (async () => {
       const { data } = await supabase
@@ -159,15 +156,6 @@ function Inner() {
     }
   }
 
-  const unlocked = rewards?.unlocked_badges || [];
-  const rewardMessages = unlocked.map((badgeId) => {
-    if (badgeId === "streak_3") return { icon: <Flame size={22} className="text-primary" />, text: lang === "es" ? "¡Felicidades! Alcanzaste una racha de 3 días." : "Congrats — you hit a 3-day kindness streak." };
-    if (badgeId === "streak_7") return { icon: <Flame size={22} className="text-primary" />, text: lang === "es" ? "¡Una semana de bondad seguida! Tu racha de 7 días está activa." : "A full week of kindness — your 7-day streak is active." };
-    if (badgeId === "hug_dealer") return { icon: <Award size={22} className="text-primary" />, text: lang === "es" ? "Desbloqueaste Repartidor de Abrazos por registrar 10 abrazos." : "You unlocked Hug Dealer for logging 10 hugs." };
-    if (badgeId === "listener") return { icon: <Award size={22} className="text-primary" />, text: lang === "es" ? "Desbloqueaste Escucha Profunda por registrar 10 actos de escucha." : "You unlocked Deep Listener for logging 10 listening acts." };
-    return { icon: <Sparkles size={22} className="text-primary" />, text: lang === "es" ? "Gracias por sumar a la ola — desbloqueaste una nueva insignia." : "Thanks for adding to the wave — you unlocked a new badge." };
-  });
-
   const photoUrl =
     act?.photo_paths && act.photo_paths.length > 0 ? publicPhotoUrl(act.photo_paths[0]) : null;
 
@@ -212,16 +200,6 @@ function Inner() {
 
         {user && (
           <div className="mb-8 space-y-3">
-            {rewardMessages.length > 0 && (
-              <div className="bg-card border border-primary/20 rounded-2xl p-5 shadow-sm space-y-3">
-                {rewardMessages.map((item, i) => (
-                  <div key={i} className="flex items-center gap-3 text-foreground">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 grid place-items-center shrink-0">{item.icon}</div>
-                    <p className="font-medium leading-snug">{item.text}</p>
-                  </div>
-                ))}
-              </div>
-            )}
             <ThanksSummary userId={user.id} email={user.email || ""} />
           </div>
         )}

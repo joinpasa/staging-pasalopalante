@@ -7,6 +7,7 @@ import { ExternalLink, MoreVertical, Trash2 } from "lucide-react";
 import ReactionButton from "@/components/app/ReactionButton";
 import DeleteActDialog from "@/components/app/DeleteActDialog";
 import TranslateButton from "@/components/app/TranslateButton";
+import ActBadgeTags from "@shared/components/badges/ActBadgeTags";
 import { useActTranslations } from "@/hooks/useActTranslations";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { supabase } from "@shared/integrations/supabase/client";
@@ -202,7 +203,7 @@ export default function AppWall() {
                     className="h-44 w-full object-cover"
                   />
                   {SocialIcon && (
-                    <span className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-app-surface shadow">
+                    <span className="absolute end-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-app-surface shadow">
                       <SocialIcon size={14} className="text-app-coral" />
                     </span>
                   )}
@@ -223,9 +224,9 @@ export default function AppWall() {
               ) : (
                 <div className="relative flex h-28 items-center justify-center bg-gradient-to-br from-app-coral-tint to-app-teal-tint">
                   <span className="text-4xl" aria-hidden="true">
-                    {actEmoji(post.tags, post.mode)}
+                    {actEmoji(post.actType, post.mode)}
                   </span>
-                  <span className="absolute left-4 top-4 rounded-full bg-app-surface/85 px-3 py-1 text-xs font-semibold text-foreground">
+                  <span className="absolute start-4 top-4 rounded-full bg-app-surface/85 px-3 py-1 text-xs font-semibold text-foreground">
                     {modeLabel(post.mode, t.appCommon)}
                   </span>
                 </div>
@@ -270,7 +271,7 @@ export default function AppWall() {
                           className="text-destructive focus:text-destructive"
                           onClick={() => setDeleteTarget(post.id)}
                         >
-                          <Trash2 className="mr-2 h-4 w-4" />
+                          <Trash2 className="me-2 h-4 w-4" />
                           Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -280,18 +281,12 @@ export default function AppWall() {
 
                 <p className="mt-3 text-sm leading-relaxed text-foreground">{translations.textFor(post)}</p>
 
-                {post.tags.length > 0 && (
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {post.tags.slice(0, 3).map((tag) => (
-                      <span
-                        key={tag}
-                        className="rounded-full bg-app-coral-tint px-2.5 py-1 text-xs font-bold text-app-coral"
-                      >
-                        {tag.replace(/_/g, " ")}
-                      </span>
-                    ))}
-                  </div>
-                )}
+                <ActBadgeTags
+                  mode={post.mode}
+                  actType={post.actType}
+                  className="mt-4"
+                  tagClassName="bg-app-coral-tint text-app-coral"
+                />
 
                 <div className="mt-4 flex items-center border-t border-border pt-3.5">
                   <ReactionButton

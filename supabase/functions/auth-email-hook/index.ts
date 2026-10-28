@@ -25,6 +25,8 @@ const EMAIL_SUBJECTS: Record<string, string> = {
 }
 
 // Template mapping
+// Each template takes its own props; the hook passes the matching ones.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
   signup: SignupEmail,
   invite: InviteEmail,

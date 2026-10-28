@@ -134,7 +134,7 @@ export default function WelcomeCarousel({
               <p className="mt-2 text-center text-sm leading-relaxed text-foreground/70">
                 Just enough to put you on the map.
               </p>
-              <div className="mt-4 space-y-3 text-left">
+              <div className="mt-4 space-y-3 text-start">
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <Label htmlFor="welcome-first-name">First name</Label>

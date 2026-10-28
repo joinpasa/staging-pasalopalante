@@ -17,8 +17,6 @@ project_id = "tipfbleltjexofsjffwb"
     verify_jwt = false
   [functions.ppl-signup]
     verify_jwt = false
-  [functions.classify-act]
-    verify_jwt = false
   [functions.send-push]
     verify_jwt = false
   [functions.pending-review-digest]

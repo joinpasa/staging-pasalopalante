@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Heart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { supabasePublic } from "@shared/integrations/supabase/publicClient";
+import { cn } from "@shared/lib/utils";
 
 interface Act {
   id: string;
@@ -34,6 +35,53 @@ const MODE_STYLES: Record<string, string> = {
   received: "bg-warm-gold/20 text-foreground",
   witnessed: "bg-warm-sage/20 text-warm-sage",
 };
+
+/**
+ * Shows as many whole lines of `text` as fit in its card and ends with "…".
+ * The space is worked out from the grid cell the card sits in (marked
+ * data-fit-grid / data-fit-card) minus the card's padding and its other
+ * rows — never from the text's own height, which would only ever shrink.
+ */
+function FittedText({ text, className }: { text: string; className?: string }) {
+  const ref = useRef<HTMLParagraphElement>(null);
+  const [lines, setLines] = useState<number>();
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    const card = el?.closest<HTMLElement>("[data-fit-card]");
+    const grid = el?.closest<HTMLElement>("[data-fit-grid]");
+    if (!el || !card || !grid) return;
+    const px = (v: string) => parseFloat(v) || 0;
+    const measure = () => {
+      const lineHeight = px(getComputedStyle(el).lineHeight);
+      const cell = px(getComputedStyle(grid).gridTemplateRows);
+      if (!lineHeight || !cell) return;
+      const c = getComputedStyle(card);
+      let used = px(c.paddingTop) + px(c.paddingBottom) + px(c.borderTopWidth) + px(c.borderBottomWidth);
+      for (const sibling of Array.from(el.parentElement?.children ?? [])) {
+        if (sibling === el) continue;
+        const m = getComputedStyle(sibling);
+        used += sibling.getBoundingClientRect().height + px(m.marginTop) + px(m.marginBottom);
+      }
+      setLines(Math.max(1, Math.floor((cell - used) / lineHeight)));
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(grid);
+    observer.observe(card);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <p
+      ref={ref}
+      className={cn("overflow-hidden", className)}
+      style={{ display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: lines }}
+    >
+      {text}
+    </p>
+  );
+}
 
 const LiveFromWall = () => {
   const { t } = useLanguage();
@@ -109,7 +157,9 @@ const LiveFromWall = () => {
 
   return (
     <section className="bg-white section-padding py-14 md:py-20 min-h-[488px] h-[96dvh] md:h-[48vh]">
-      <div className="max-w-6xl mx-auto">
+      {/* Fills the section's fixed height so the cards below can share
+          what's left instead of overflowing it. */}
+      <div className="max-w-6xl mx-auto h-full flex flex-col">
         {todayCount !== null && todayCount > 0 && (
           <p className="text-sm text-foreground/60 mb-2">
             {t.liveWall.statLine.replace("{n}", String(todayCount))}
@@ -123,7 +173,7 @@ const LiveFromWall = () => {
           {t.liveWall.eyebrow}
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div data-fit-grid className="flex-1 min-h-0 grid grid-cols-1 grid-rows-3 gap-4 sm:grid-cols-3 sm:grid-rows-1 sm:items-start sm:gap-6">
           <AnimatePresence mode="popLayout">
             {(visible ?? [0, 1, 2]).map((entry, i) => {
               const act = visible ? (entry as Act) : null;
@@ -145,26 +195,30 @@ const LiveFromWall = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.4, delay: act ? i * 0.08 : 0, ease: "easeOut" }}
-                  className="flex gap-3.5 bg-warm-cream border border-border rounded-2xl p-6"
+                  data-fit-card
+                  className="flex min-h-0 max-h-full gap-3.5 overflow-hidden bg-warm-cream border border-border rounded-2xl p-4 sm:p-6"
                 >
                   <div className="shrink-0 w-[38px] h-[38px] rounded-full bg-warm-blush grid place-items-center">
                     <Heart size={17} className="text-primary fill-current" />
                   </div>
-                  <div className="min-w-0">
+                  <div className="min-w-0 min-h-0 flex-1 flex flex-col">
                     {act ? (
                       <>
                         {modeStyle && modeLabel && (
-                          <span className={`inline-block text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full mb-2 ${modeStyle}`}>
+                          <span className={`self-start shrink-0 inline-block text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full mb-2 ${modeStyle}`}>
                             {modeLabel}
                           </span>
                         )}
-                        <p className="text-[15px] leading-snug text-foreground">{act.description}</p>
-                        <p className="mt-1.5 text-xs text-muted-foreground">
-                          {timeAgo(act.created_at, t)}
+                        <FittedText
+                          text={act.description ?? ""}
+                          className="text-[15px] leading-snug text-foreground"
+                        />
+                        <p className="shrink-0 mt-1.5 flex items-baseline gap-2 text-xs">
+                          {act.first_name && (
+                            <span className="min-w-0 truncate text-foreground/50">{act.first_name}</span>
+                          )}
+                          <span className="shrink-0 text-muted-foreground">{timeAgo(act.created_at, t)}</span>
                         </p>
-                        {act.first_name && (
-                          <p className="text-xs text-foreground/50 mt-0.5">{act.first_name}</p>
-                        )}
                       </>
                     ) : (
                       <>

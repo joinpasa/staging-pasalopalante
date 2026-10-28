@@ -17,6 +17,7 @@ import { logConsent } from "@shared/lib/legal";
 import { getAuthErrorMessage } from "@shared/lib/authErrors";
 import { detectSocialLink, type DetectedSocialLink } from "@shared/lib/socialLinks";
 import { ACT_TYPES } from "@shared/lib/actTypes";
+import { announceBadgeStages } from "@shared/lib/badges";
 import SocialLinkChip from "./SocialLinkChip";
 
 type Mode = "performed" | "witnessed" | "received";
@@ -58,8 +59,9 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [mode, setMode] = useState<Mode>(initialMode ?? "performed");
-  // Optional preset, same chips as the app's Log an Act screen.
+  // Both the mode and a chip are required (badges are counted from them),
+  // so neither is preselected unless the caller already knows the mode.
+  const [mode, setMode] = useState<Mode | null>(initialMode ?? null);
   const [actType, setActType] = useState<string | null>(null);
   const [shareOnWall, setShareOnWall] = useState(true);
   const [description, setDescription] = useState(initialDescription ?? "");
@@ -145,6 +147,7 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
   }
 
   async function handleSubmit() {
+    if (!mode || !actType) return;
     const parsed = detailsSchema.safeParse({
       description,
       first_name: firstName,
@@ -192,7 +195,7 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
           photo_paths: photoPaths,
           to_user_id: toUserId || undefined,
           video_url: socialLink?.url || undefined,
-          act_type: actType || undefined,
+          act_type: actType,
           share_on_wall: shareOnWall,
           lang,
         },
@@ -236,10 +239,12 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
           .from("profiles")
           .update({ display_name: trimmedFirstName })
           .eq("user_id", user.id)
-          .then(({ error }) => {
-            if (error) console.error("profile update failed", error);
-          })
-          .catch((err) => console.error("profile update failed", err));
+          .then(
+            ({ error }) => {
+              if (error) console.error("profile update failed", error);
+            },
+            (err) => console.error("profile update failed", err),
+          );
       }
 
       // Log a consent record for this submission (audit trail).
@@ -297,12 +302,7 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
         JSON.stringify({ description: description.trim() || null, first_name: trimmedFirstName || null, mode, photo_paths: photoPaths }),
       );
 
-      if (user) {
-        sessionStorage.setItem(
-          `share_rewards_${data.id}`,
-          JSON.stringify({ unlocked_badges: data.unlocked_badges || [], type_tag: data.type_tag })
-        );
-      }
+      void announceBadgeStages(data.badge_stages, lang, t.appBadges.newStage);
 
       onClose?.();
       navigate(redirectTo ?? `/share/thanks/${data.id}`);
@@ -316,7 +316,7 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
   const detailsFields = (
     <>
       <div className="space-y-2.5">
-        <Label>{t.appLogAct.whatDidYouDo} <span className="font-medium text-muted-foreground">{t.appLogAct.optional}</span></Label>
+        <Label>{t.appLogAct.whatDidYouDo}</Label>
         <div className="flex flex-wrap gap-2">
           {ACT_TYPES.map(({ value, labelKey }) => (
             <button
@@ -517,7 +517,7 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
 
       <Button
         onClick={handleSubmit}
-        disabled={submitting}
+        disabled={submitting || !mode || !actType}
         className="w-full !py-6 text-base"
       >
         {submitting ? (

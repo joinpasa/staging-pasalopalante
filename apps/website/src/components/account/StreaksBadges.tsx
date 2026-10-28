@@ -1,45 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@shared/integrations/supabase/client";
-import { supabasePublic } from "@shared/integrations/supabase/publicClient";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { Skeleton } from "@shared/components/ui/skeleton";
-import { Flame, Check } from "lucide-react";
-
-interface Badge {
-  id: string;
-  kind: string | null;
-  sort_order: number | null;
-  name: string;
-  name_es: string | null;
-  name_fr: string | null;
-  name_de: string | null;
-  description: string | null;
-  description_es: string | null;
-  description_fr: string | null;
-  description_de: string | null;
-  icon: string | null;
-}
+import { badgeText, fetchBadgeCatalogue, type BadgeDef } from "@shared/lib/badges";
+import BadgeHint from "@shared/components/badges/BadgeHint";
+import { Flame } from "lucide-react";
 
 interface Progress {
   badge_id: string;
   current_count: number;
   target: number;
+  stage: number;
+  max_stage: number;
 }
-
-const localized = (b: Badge, lang: string, field: "name" | "description") => {
-  const map: Record<string, string | null | undefined> = {
-    es: field === "name" ? b.name_es : b.description_es,
-    fr: field === "name" ? b.name_fr : b.description_fr,
-    de: field === "name" ? b.name_de : b.description_de,
-  };
-  return map[lang] || (field === "name" ? b.name : b.description) || "";
-};
 
 const StreaksBadges = ({ userId }: { userId: string }) => {
   const { t, lang } = useLanguage();
   const [streak, setStreak] = useState<{ current_streak: number; longest_streak: number; total_acts: number } | null>(null);
-  const [badges, setBadges] = useState<Badge[] | null>(null);
-  const [earned, setEarned] = useState<Set<string>>(new Set());
+  const [badges, setBadges] = useState<BadgeDef[] | null>(null);
+  const [stages, setStages] = useState<Record<string, number>>({});
   const [progress, setProgress] = useState<Record<string, Progress>>({});
   const [justEarned, setJustEarned] = useState<Set<string>>(new Set());
 
@@ -49,64 +28,65 @@ const StreaksBadges = ({ userId }: { userId: string }) => {
       if (s && s[0]) setStreak(s[0]);
       else setStreak({ current_streak: 0, longest_streak: 0, total_acts: 0 });
 
-      const { data: b } = await supabasePublic.from("badges").select("*");
-      setBadges((b as Badge[]) || []);
-
-      const { data: ub } = await supabase
-        .from("user_badges")
-        .select("badge_id")
-        .eq("user_id", userId);
-      const earnedIds = new Set((ub || []).map((x: any) => x.badge_id as string));
-      setEarned(earnedIds);
+      try {
+        setBadges(await fetchBadgeCatalogue());
+      } catch {
+        setBadges([]);
+      }
 
       const { data: p } = await supabase.rpc("act_badge_progress", { _user_id: userId });
       const byId: Record<string, Progress> = {};
       for (const row of (p as Progress[]) || []) byId[row.badge_id] = row;
       setProgress(byId);
 
-      // One-time "just earned" celebration, tracked locally per user.
-      const key = `ppl_seen_badges_${userId}`;
-      let seen: string[] = [];
-      try { seen = JSON.parse(localStorage.getItem(key) || "[]"); } catch { /* ignore */ }
-      const fresh = [...earnedIds].filter((id) => !seen.includes(id));
-      if (seen.length === 0 && fresh.length > 0) {
-        // First visit after this feature ships: don't fire on everything at once.
-        localStorage.setItem(key, JSON.stringify([...earnedIds]));
-      } else if (fresh.length > 0) {
+      // Stages never go down (user_badges keeps the highest), but live
+      // progress can be ahead of it for a moment right after logging.
+      const { data: ub } = await supabase
+        .from("user_badges")
+        .select("badge_id, stage")
+        .eq("user_id", userId);
+      const reached: Record<string, number> = {};
+      for (const row of ub || []) reached[row.badge_id] = row.stage;
+      for (const row of Object.values(byId)) {
+        reached[row.badge_id] = Math.max(reached[row.badge_id] ?? 0, row.stage);
+      }
+      setStages(reached);
+
+      // One-time "new stage" celebration, tracked locally per user.
+      const key = `ppl_seen_badge_stages_${userId}`;
+      let seen: Record<string, number> | null = null;
+      try { seen = JSON.parse(localStorage.getItem(key) || "null"); } catch { /* ignore */ }
+      const fresh = Object.keys(reached).filter((id) => reached[id] > (seen?.[id] ?? 0));
+      localStorage.setItem(key, JSON.stringify(reached));
+      // First visit after this ships: don't fire on everything at once.
+      if (seen && fresh.length > 0) {
         setJustEarned(new Set(fresh));
-        localStorage.setItem(key, JSON.stringify([...earnedIds]));
         setTimeout(() => setJustEarned(new Set()), 2200);
       }
     })();
   }, [userId]);
 
-  const streakBadges = useMemo(
-    () =>
-      (badges || [])
-        .filter((b) => b.kind !== "act_type")
-        .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0)),
-    [badges],
-  );
+  const streakBadge = (badges || []).find((b) => b.kind === "streak");
 
-  // "What's next" ordering: earned first, then by progress ratio, then table order.
+  // "What's next" ordering: badges with a stage first, then closest to
+  // their next stage, then table order.
   const actBadges = useMemo(() => {
-    const list = (badges || []).filter((b) => b.kind === "act_type");
-    const ratio = (b: Badge) => {
+    const list = (badges || []).filter((b) => b.kind !== "streak");
+    const ratio = (b: BadgeDef) => {
       const p = progress[b.id];
-      const target = p?.target ?? 10;
-      return Math.min(p?.current_count ?? 0, target) / target;
+      return p ? Math.min(p.current_count, p.target) / (p.target || 1) : 0;
     };
     return list.sort((a, b) => {
-      const ea = earned.has(a.id) || ratio(a) >= 1;
-      const eb = earned.has(b.id) || ratio(b) >= 1;
+      const ea = (stages[a.id] ?? 0) > 0;
+      const eb = (stages[b.id] ?? 0) > 0;
       if (ea !== eb) return ea ? -1 : 1;
-      if (!ea) {
-        const d = ratio(b) - ratio(a);
-        if (Math.abs(d) > 1e-9) return d;
-      }
+      const d = ratio(b) - ratio(a);
+      if (Math.abs(d) > 1e-9) return d;
       return (a.sort_order || 0) - (b.sort_order || 0);
     });
-  }, [badges, earned, progress]);
+  }, [badges, stages, progress]);
+
+  const stageLabel = (stage: number) => t.appBadges.stage.replace("{stage}", String(stage));
 
   return (
     <section className="bg-background border border-border rounded-2xl p-6 md:p-8">
@@ -131,58 +111,59 @@ const StreaksBadges = ({ userId }: { userId: string }) => {
             {t.account.totalActs}: <strong>{streak.total_acts}</strong>
           </div>
 
-          {streakBadges.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2">
-              {streakBadges.map((b) => {
-                const got = earned.has(b.id);
-                return (
-                  <span
-                    key={b.id}
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs leading-none transition-opacity ${
-                      got ? "bg-warm-cream text-foreground" : "bg-muted/50 text-foreground/40"
-                    } ${justEarned.has(b.id) ? "badge-pop" : ""}`}
-                    title={localized(b, lang, "description")}
-                  >
-                    <span className={`text-base ${got ? "" : "grayscale opacity-60"}`}>{b.icon || "🏅"}</span>
-                    <span className="font-medium">{localized(b, lang, "name")}</span>
-                  </span>
-                );
-              })}
-            </div>
-          )}
+          {streakBadge && (() => {
+            const stage = stages[streakBadge.id] ?? 0;
+            const p = progress[streakBadge.id];
+            return (
+              <BadgeHint
+                text={badgeText(streakBadge, lang, "description")}
+                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs leading-none transition-opacity ${
+                  stage > 0 ? "bg-warm-cream text-foreground" : "bg-muted/50 text-foreground/40"
+                } ${justEarned.has(streakBadge.id) ? "badge-pop" : ""}`}
+              >
+                <span className={`text-base ${stage > 0 ? "" : "grayscale opacity-60"}`}>{streakBadge.icon || "🏅"}</span>
+                <span className="font-medium">{badgeText(streakBadge, lang, "name")}</span>
+                {stage > 0 && <span className="text-foreground/60">· {stageLabel(stage)}</span>}
+                {p && <span className="tabular-nums text-foreground/60">· {p.current_count}/{p.target}</span>}
+              </BadgeHint>
+            );
+          })()}
         </div>
       )}
 
       {badges === null ? (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => <Skeleton key={i} className="h-24 rounded-xl" />)}
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => <Skeleton key={i} className="h-28 rounded-xl" />)}
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {actBadges.map((b) => {
             const p = progress[b.id];
-            const target = p?.target ?? 10;
-            const current = Math.min(p?.current_count ?? 0, target);
-            const got = earned.has(b.id) || current >= target;
+            const stage = stages[b.id] ?? 0;
+            const got = stage > 0;
             return (
-              <div
+              <BadgeHint
                 key={b.id}
-                className={`p-4 rounded-xl text-center border transition-all ${
+                text={badgeText(b, lang, "description")}
+                className={`p-4 rounded-xl text-center border transition-all flex flex-col ${
                   got ? "bg-warm-cream border-terracotta/30" : "border-border"
                 } ${justEarned.has(b.id) ? "badge-pop" : ""}`}
-                title={localized(b, lang, "description")}
               >
-                <div className={`text-3xl mb-1 ${got ? "" : "grayscale opacity-50"}`}>
+                <span className={`block text-3xl mb-1 ${got ? "" : "grayscale opacity-50"}`}>
                   {b.icon || "🏅"}
-                </div>
-                <div className={`text-xs font-medium leading-tight ${got ? "" : "text-foreground/60"}`}>
-                  {localized(b, lang, "name")}
-                </div>
-                <div className="mt-1.5 text-[11px] tabular-nums text-foreground/60 flex items-center justify-center gap-1">
-                  {got && <Check size={11} className="text-terracotta" />}
-                  {current}/{target}
-                </div>
-              </div>
+                </span>
+                <span className={`block text-xs font-medium leading-tight ${got ? "" : "text-foreground/60"}`}>
+                  {badgeText(b, lang, "name")}
+                </span>
+                {got && (
+                  <span className="mt-1 block text-[11px] font-semibold text-terracotta">{stageLabel(stage)}</span>
+                )}
+                {p && (
+                  <span className="mt-auto block pt-1.5 text-[11px] tabular-nums text-foreground/60">
+                    {p.current_count}/{p.target}
+                  </span>
+                )}
+              </BadgeHint>
             );
           })}
         </div>

@@ -92,7 +92,7 @@ Deno.serve(async (req) => {
   const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
   const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-  // Internal-only dispatch from submit-act, same convention as classify-act.
+  // Internal-only dispatch from submit-act.
   const auth = req.headers.get("Authorization") ?? "";
   if (auth !== `Bearer ${SERVICE_ROLE}`) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {

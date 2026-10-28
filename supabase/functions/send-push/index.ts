@@ -3,9 +3,10 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import webpush from "npm:web-push@3.6.7";
 
 /**
- * Sends a Web Push notification when a member unlocks a badge or hits a streak
- * milestone. Invoked by the `notify_badge_unlocked` database trigger on
- * `user_badges`, so streaks and act-type badges share one delivery path.
+ * Sends a Web Push notification when a member reaches a new stage of a badge
+ * (the streak badge included). Invoked by the `notify_badge_unlocked`
+ * database trigger on `user_badges`. Only members who turned alerts on in
+ * the app have a push subscription — it's off by default.
  */
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -16,10 +17,13 @@ const VAPID_SUBJECT = Deno.env.get("VAPID_SUBJECT") ?? "mailto:hello@pasalopalan
 
 webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
 
-const STREAK_COPY: Record<string, { title: string; body: string }> = {
-  streak_3: { title: "3-day streak! 🔥", body: "Three days of kindness in a row. Keep it rolling." },
-  streak_7: { title: "7-day streak! 🔥", body: "A full week of passing it forward. Beautiful." },
-  streak_30: { title: "30-day streak! 🔥", body: "Thirty days straight. You are the ripple." },
+// Same wording as the in-app message (appBadges.newStage), in the languages
+// badge names exist in; everyone else gets English.
+const NEW_STAGE_COPY: Record<string, string> = {
+  en: "Reached a new stage of “{badge}” (stage {stage})",
+  es: "Alcanzaste una nueva etapa de “{badge}” (etapa {stage})",
+  fr: "Nouveau palier atteint pour « {badge} » (palier {stage})",
+  de: "Neue Stufe von „{badge}“ erreicht (Stufe {stage})",
 };
 
 Deno.serve(async (req) => {
@@ -39,23 +43,33 @@ Deno.serve(async (req) => {
     const payload = await req.json().catch(() => null);
     const userId = payload?.user_id;
     const badgeId = payload?.badge_id;
+    const stage = Number(payload?.stage ?? 1);
     if (typeof userId !== "string" || typeof badgeId !== "string") {
       return json({ error: "user_id and badge_id are required" }, 400);
     }
 
     const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
-    const [{ data: badge }, { data: subs, error: subsError }] = await Promise.all([
-      supabase.from("badges").select("name, description, icon").eq("id", badgeId).maybeSingle(),
+    const [{ data: badge }, { data: subs, error: subsError }, { data: profile }] = await Promise.all([
+      supabase
+        .from("badges")
+        .select("name, name_es, name_fr, name_de, description, description_es, description_fr, description_de, icon")
+        .eq("id", badgeId)
+        .maybeSingle(),
       supabase.from("push_subscriptions").select("id, endpoint, p256dh, auth").eq("user_id", userId),
+      supabase.from("profiles").select("language").eq("user_id", userId).maybeSingle(),
     ]);
     if (subsError) return json({ error: subsError.message }, 500);
     if (!subs?.length) return json({ sent: 0, reason: "no subscriptions" });
 
-    const streak = STREAK_COPY[badgeId];
+    const lang = NEW_STAGE_COPY[profile?.language ?? ""] ? (profile!.language as string) : "en";
+    const localized = (field: "name" | "description") =>
+      (lang !== "en" && badge?.[`${field}_${lang}` as keyof typeof badge]) || badge?.[field] || "";
     const notification = {
-      title: streak?.title ?? `${badge?.icon ?? "🏅"} Badge unlocked: ${badge?.name ?? "New badge"}`,
-      body: streak?.body ?? badge?.description ?? "You just unlocked a new milestone.",
+      title: `${badge?.icon ?? "🏅"} ${NEW_STAGE_COPY[lang]
+        .replace("{badge}", localized("name") || badgeId)
+        .replace("{stage}", String(stage))}`,
+      body: localized("description"),
       url: "/app/badges",
       tag: `badge-${badgeId}`,
     };

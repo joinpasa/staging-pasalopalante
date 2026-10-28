@@ -142,7 +142,7 @@ export default function OnboardingWalkthrough({
               <p className="mt-2 text-center text-sm leading-relaxed text-muted-foreground">
                 {t.appOnboarding.aboutBody}
               </p>
-              <div className="mt-4 space-y-3 text-left">
+              <div className="mt-4 space-y-3 text-start">
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label className="text-xs font-semibold text-muted-foreground" htmlFor="onb-first-name">{t.appOnboarding.firstName}</label>

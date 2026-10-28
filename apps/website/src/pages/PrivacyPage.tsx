@@ -83,7 +83,7 @@ export default function PrivacyPage() {
                   "Juntos, Te Amo PR y Pásalo Pa'lante comparten un propósito común: inspirar a personas, instituciones, escuelas, empresas, comunidades y naciones a hacer la bondad visible, práctica y contagiosa."
                 )}
               </p>
-              <ul className="list-none pl-0 space-y-1 text-sm bg-warm-cream/60 border border-border rounded-lg p-4">
+              <ul className="list-none ps-0 space-y-1 text-sm bg-warm-cream/60 border border-border rounded-lg p-4">
                 <li><strong>{t("Legal nonprofit organization:", "Organización legal sin fines de lucro:")}</strong> Te Amo PR</li>
                 <li><strong>{t("Sister initiative / movement platform:", "Iniciativa hermana / plataforma del movimiento:")}</strong> Pásalo Pa'lante</li>
                 <li><strong>{t("Primary organization website:", "Sitio principal de la organización:")}</strong> teamopr.org</li>
@@ -113,7 +113,7 @@ export default function PrivacyPage() {
                 )}
               </p>
               <p>{t("Our work may include:", "Nuestro trabajo puede incluir:")}</p>
-              <ul className="list-disc pl-6 space-y-1">
+              <ul className="list-disc ps-6 space-y-1">
                 <li>{t("Public kindness campaigns.", "Campañas públicas de bondad.")}</li>
                 <li>{t("Educational and community resources.", "Recursos educativos y comunitarios.")}</li>
                 <li>{t("School, university, and youth activations.", "Activaciones en escuelas, universidades y juventudes.")}</li>
@@ -133,7 +133,7 @@ export default function PrivacyPage() {
 
             <Section n={3} title={t("Purpose of This Page", "Propósito de esta página")}>
               <p>{t("This page explains:", "Esta página explica:")}</p>
-              <ul className="list-disc pl-6 space-y-1">
+              <ul className="list-disc ps-6 space-y-1">
                 <li>{t("How we collect, use, and protect personal information.", "Cómo recopilamos, usamos y protegemos la información personal.")}</li>
                 <li>{t("How donations, partnerships, and participation may be handled.", "Cómo se manejan las donaciones, alianzas y participación.")}</li>
                 <li>{t("The relationship between Pásalo Pa'lante and Te Amo PR.", "La relación entre Pásalo Pa'lante y Te Amo PR.")}</li>
@@ -145,7 +145,7 @@ export default function PrivacyPage() {
             <Section n={4} title={t("Information We Collect", "Información que recopilamos")}>
               <h3 className="font-semibold mt-2">{t("Information You Provide Directly", "Información que provees directamente")}</h3>
               <p>{t("You may voluntarily provide information when you:", "Puedes proveer información voluntariamente cuando:")}</p>
-              <ul className="list-disc pl-6 space-y-1">
+              <ul className="list-disc ps-6 space-y-1">
                 <li>{t("Fill out a contact form.", "Completas un formulario de contacto.")}</li>
                 <li>{t("Sign up for updates.", "Te suscribes a actualizaciones.")}</li>
                 <li>{t("Register as a participant, ambassador, volunteer, school, organization, or partner.", "Te registras como participante, embajador, voluntario, escuela, organización o socio.")}</li>
@@ -164,7 +164,7 @@ export default function PrivacyPage() {
 
             <Section n={5} title={t("How We Use Information", "Cómo usamos la información")}>
               <p>{t("We may use collected information to:", "Podemos usar la información recopilada para:")}</p>
-              <ul className="list-disc pl-6 space-y-1">
+              <ul className="list-disc ps-6 space-y-1">
                 <li>{t("Respond to messages, questions, or requests.", "Responder mensajes, preguntas o solicitudes.")}</li>
                 <li>{t("Share updates about Pásalo Pa'lante and Te Amo PR.", "Compartir actualizaciones sobre Pásalo Pa'lante y Te Amo PR.")}</li>
                 <li>{t("Register individuals, ambassadors, schools, institutions, or partners.", "Registrar individuos, embajadores, escuelas, instituciones o socios.")}</li>
@@ -200,7 +200,7 @@ export default function PrivacyPage() {
                 )}
               </p>
               <p>{t("When you interact with the Chatbot, we may collect the following information that you voluntarily provide:", "Cuando interactúa con el Chatbot, podemos recopilar la siguiente información que usted proporciona voluntariamente:")}</p>
-              <ul className="list-disc pl-6 space-y-1">
+              <ul className="list-disc ps-6 space-y-1">
                 <li>{t("Name", "Nombre")}</li>
                 <li>{t("Email address", "Dirección de correo electrónico")}</li>
                 <li>{t("Country", "País")}</li>
@@ -208,7 +208,7 @@ export default function PrivacyPage() {
               </ul>
               <p>{t("This information is stored and managed through GoHighLevel (GHL), a customer relationship management (CRM) platform used by Te Amo PR.", "Esta información se almacena y gestiona a través de GoHighLevel (GHL), una plataforma de gestión de relaciones con contactos (CRM) utilizada por Te Amo PR.")}</p>
               <p>{t("Information collected through the Chatbot may be used to:", "La información recopilada a través del Chatbot puede utilizarse para:")}</p>
-              <ul className="list-disc pl-6 space-y-1">
+              <ul className="list-disc ps-6 space-y-1">
                 <li>{t("Respond to your questions and requests", "Responder sus preguntas y solicitudes")}</li>
                 <li>{t("Send you onboarding materials and follow-up communications related to Pass Kindness Forward", "Enviarle materiales de incorporación y comunicaciones de seguimiento relacionadas con Pass Kindness Forward")}</li>
                 <li>{t("Track your participation interest and status within the movement", "Dar seguimiento a su interés y estado de participación en el movimiento")}</li>
@@ -265,7 +265,7 @@ export default function PrivacyPage() {
 
             <Section n={11} title={t("How We Share Information", "Cómo compartimos información")}>
               <p>{t("We may share information only when appropriate and necessary, including with:", "Podemos compartir información solo cuando sea apropiado y necesario, incluyendo con:")}</p>
-              <ul className="list-disc pl-6 space-y-1">
+              <ul className="list-disc ps-6 space-y-1">
                 <li>{t("Te Amo PR team members, officers, staff, contractors, advisors, or authorized volunteers.", "Miembros del equipo, oficiales, personal, contratistas, asesores o voluntarios autorizados de Te Amo PR.")}</li>
                 <li>{t("Website hosting providers.", "Proveedores de alojamiento web.")}</li>
                 <li>{t("Email and communication platforms.", "Plataformas de correo y comunicación.")}</li>
@@ -280,7 +280,7 @@ export default function PrivacyPage() {
 
             <Section n={12} title={t("User-Submitted Stories, Photos, Videos, and Testimonials", "Historias, fotos, videos y testimonios enviados por usuarios")}>
               <p>{t("Pásalo Pa'lante may invite participants to submit kindness stories, photos, videos, impact reports, testimonials, or campaign participation materials. By submitting content, you confirm that:", "Pásalo Pa'lante puede invitar a participantes a enviar historias de bondad, fotos, videos, reportes de impacto, testimonios o materiales de campaña. Al enviar contenido, confirmas que:")}</p>
-              <ul className="list-disc pl-6 space-y-1">
+              <ul className="list-disc ps-6 space-y-1">
                 <li>{t("You have the right to submit the content.", "Tienes el derecho de enviar el contenido.")}</li>
                 <li>{t("The content does not violate the rights of another person.", "El contenido no viola los derechos de otra persona.")}</li>
                 <li>{t("The content may be reviewed by our team.", "El contenido puede ser revisado por nuestro equipo.")}</li>
@@ -305,7 +305,7 @@ export default function PrivacyPage() {
 
             <Section n={16} title={t("Your Choices and Rights", "Tus opciones y derechos")}>
               <p>{t("Depending on your location, you may have rights related to your personal information, including the right to:", "Dependiendo de tu ubicación, puedes tener derechos sobre tu información personal, incluyendo:")}</p>
-              <ul className="list-disc pl-6 space-y-1">
+              <ul className="list-disc ps-6 space-y-1">
                 <li>{t("Request access to personal information we hold about you.", "Solicitar acceso a la información personal que tenemos sobre ti.")}</li>
                 <li>{t("Request correction of inaccurate information.", "Solicitar corrección de información inexacta.")}</li>
                 <li>{t("Request deletion of certain information.", "Solicitar eliminación de cierta información.")}</li>
@@ -330,7 +330,7 @@ export default function PrivacyPage() {
 
             <Section n={20} title={t("Terms of Website Use", "Términos de uso del sitio")}>
               <p>{t("By using pasalopalante.com, you agree to use the site respectfully, lawfully, and in alignment with the mission of kindness. You agree not to:", "Al usar pasalopalante.com, aceptas usar el sitio con respeto, legalmente y en alineación con la misión de bondad. Aceptas no:")}</p>
-              <ul className="list-disc pl-6 space-y-1">
+              <ul className="list-disc ps-6 space-y-1">
                 <li>{t("Submit false, harmful, abusive, hateful, defamatory, or misleading content.", "Enviar contenido falso, dañino, abusivo, odioso, difamatorio o engañoso.")}</li>
                 <li>{t("Interfere with website security or functionality.", "Interferir con la seguridad o funcionalidad del sitio.")}</li>
                 <li>{t("Attempt unauthorized access to website systems.", "Intentar acceso no autorizado a los sistemas del sitio.")}</li>

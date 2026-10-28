@@ -62,7 +62,7 @@ function JoinPopup() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 80, opacity: 0 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] left-4 right-4 z-[65] mx-auto max-w-md"
+          className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] inset-x-4 z-[65] mx-auto max-w-md"
           role="dialog"
           aria-label={t.appWidgets.joinDialogLabel}
         >
@@ -181,7 +181,7 @@ export default function VerificationBanner() {
             {resending ? t.appWidgets.sending : t.appWidgets.resendLink}
           </button>
         </div>
-        <form onSubmit={verifyCode} className="flex items-center gap-2 pl-6">
+        <form onSubmit={verifyCode} className="flex items-center gap-2 ps-6">
           <span className="shrink-0 text-muted-foreground">{t.appWidgets.enterCode}</span>
           <input
             required

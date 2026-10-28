@@ -53,14 +53,14 @@ const ThanksSummary = ({ userId, email }: { userId: string; email: string }) => 
       if (cancelled) return;
       setCommitment((c as Commitment) || null);
       setActsCount(count || 0);
-      setStreak(s && (s as any)[0] ? (s as any)[0].current_streak : 0);
-      if (m && (m as any).organizations) {
-        setOrg((m as any).organizations);
-        const { data: os } = await supabase.rpc("org_stats", { _org_id: (m as any).org_id });
-        if (!cancelled && os && (os as any)[0]) {
+      setStreak(s?.[0]?.current_streak ?? 0);
+      if (m?.organizations) {
+        setOrg(m.organizations as Org);
+        const { data: os } = await supabase.rpc("org_stats", { _org_id: m.org_id });
+        if (!cancelled && os?.[0]) {
           setOrgStats({
-            total_acts: (os as any)[0].total_acts,
-            total_pledged: (os as any)[0].total_pledged,
+            total_acts: os[0].total_acts,
+            total_pledged: os[0].total_pledged,
           });
         }
       }

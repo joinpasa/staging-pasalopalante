@@ -645,8 +645,14 @@ function formSourceLabel(formType: string): string {
 // overwrite a contact's existing consent. Values are strings because GHL
 // custom fields are stored as text; sms_consent_at is the ISO time the form
 // was submitted (when the yes/no decision was recorded).
-// deno-lint-ignore no-explicit-any
-function smsConsentFields(data: any): Record<string, string> {
+interface SmsConsentInput {
+  sms_consent?: unknown;
+  sms_consent_at?: unknown;
+  email?: string;
+  fullName?: string;
+}
+
+function smsConsentFields(data: SmsConsentInput | null | undefined): Record<string, string> {
   if (typeof data?.sms_consent !== "boolean") return {};
   const at = typeof data.sms_consent_at === "string" && !Number.isNaN(Date.parse(data.sms_consent_at))
     ? data.sms_consent_at
@@ -657,12 +663,11 @@ function smsConsentFields(data: any): Record<string, string> {
 // Adds an "sms-consent" tag (additively, never removing other tags) when the
 // person ticked the box, so GHL workflows/segments can target opted-in
 // contacts. Non-fatal: the custom fields above are the record of consent.
-// deno-lint-ignore no-explicit-any
-async function tagSmsConsent(data: any, ghlContactId: string | null) {
+async function tagSmsConsent(data: SmsConsentInput | null | undefined, ghlContactId: string | null) {
   if (data?.sms_consent !== true || !ghlContactId) return;
   try {
     await ghlAddTags(
-      data.email,
+      data.email ?? "",
       ["sms-consent"],
       {
         firstName: data.fullName?.split(" ")[0] || "",

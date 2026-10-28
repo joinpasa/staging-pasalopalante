@@ -106,7 +106,7 @@ export default function TopActsStack() {
         if (error) throw error;
         const rows = (data as ActRow[]) ?? [];
         const ids = rows.map((r) => r.id);
-        let counts: Record<string, number> = {};
+        const counts: Record<string, number> = {};
         if (ids.length) {
           const { data: rx } = await supabasePublic.rpc("reaction_counts", {
             _act_ids: ids,

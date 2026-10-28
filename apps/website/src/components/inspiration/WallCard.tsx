@@ -7,6 +7,7 @@ import PalanteArrow from "@shared/components/icons/PalanteArrow";
 import { splitKindnessTag } from "@shared/lib/splitKindnessTag";
 import { SOCIAL_LINK_ICONS } from "@shared/components/share/SocialLinkChip";
 import type { DetectedSocialLink } from "@shared/lib/socialLinks";
+import ActBadgeTags from "@shared/components/badges/ActBadgeTags";
 
 
 export type WallMode = "performed" | "received" | "witnessed";
@@ -16,6 +17,8 @@ interface Props {
   description: string | null;
   firstName: string | null;
   mode: WallMode;
+  /** The "What did you do?" chip, shown as a short tag; null on older acts. */
+  actType: string | null;
   language: string | null;
   photoUrl: string | null;
   videoThumbUrl: string | null;
@@ -24,6 +27,7 @@ interface Props {
   reactionCount: number;
   reacted: boolean;
   onToggleReact: () => void;
+  /** Opens the photo/video viewer (long text expands inside the card instead). */
   onOpen: () => void;
 }
 
@@ -37,6 +41,7 @@ export default function WallCard({
   description,
   firstName,
   mode,
+  actType,
   language,
   photoUrl,
   videoThumbUrl,
@@ -61,6 +66,9 @@ export default function WallCard({
     requested,
   );
   const displayText = requested && translation ? translation : original;
+  // "Read more" expands the full text over the whole card (scrolling inside
+  // it if it's still too long) instead of opening a popup.
+  const [expanded, setExpanded] = useState(false);
 
   // If both photo and video, prefer photo for the polaroid frame.
   const showVideo = !photoUrl && !!videoThumbUrl;
@@ -170,7 +178,7 @@ export default function WallCard({
                 onClick={onOpen}
                 className="group relative block bg-white p-2 pb-5 rounded-sm shadow-md hover:shadow-lg transition-shadow"
                 style={{ border: "1px solid rgba(255,255,255,0.9)", width: 168 }}
-                aria-label={showVideo ? "Play video" : t.inspiration.readMore}
+                aria-label={showVideo ? "Play video" : "View photo"}
               >
                 <div className="w-full aspect-square overflow-hidden bg-black/5">
                   <img
@@ -183,12 +191,12 @@ export default function WallCard({
                 {showVideo && (
                   <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <span className="flex items-center justify-center w-12 h-12 rounded-full bg-black/60 text-white group-hover:bg-black/75 transition-colors shadow-lg">
-                      <Play size={22} className="fill-current ml-0.5" />
+                      <Play size={22} className="fill-current ms-0.5" />
                     </span>
                   </span>
                 )}
                 {showSocialPreview && SocialIcon && (
-                  <span className="absolute top-1.5 right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-white shadow">
+                  <span className="absolute top-1.5 end-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-white shadow">
                     <SocialIcon size={13} className="text-primary" />
                   </span>
                 )}
@@ -224,7 +232,7 @@ export default function WallCard({
                     {" "}
                     <button
                       type="button"
-                      onClick={onOpen}
+                      onClick={() => setExpanded(true)}
                       className="font-semibold underline underline-offset-2 hover:opacity-70 transition-opacity"
                       style={{ color: MUTED_COLOR }}
                     >
@@ -250,7 +258,7 @@ export default function WallCard({
                 {" "}
                 <button
                   type="button"
-                  onClick={onOpen}
+                  onClick={() => setExpanded(true)}
                   className="font-semibold underline underline-offset-2 hover:opacity-70 transition-opacity"
                   style={{ color: MUTED_COLOR }}
                 >
@@ -262,6 +270,13 @@ export default function WallCard({
           {hasText && <div className="mt-2">{renderTranslationStrip()}</div>}
         </div>
       )}
+
+      <ActBadgeTags
+        mode={mode}
+        actType={actType}
+        className="justify-center px-5 pb-3"
+        tagClassName="bg-white/70"
+      />
 
       {/* Footer chrome */}
       <div className="mt-auto flex items-center justify-between px-5 py-3 border-t border-foreground/5">
@@ -278,6 +293,35 @@ export default function WallCard({
           {reactionCount}
         </button>
       </div>
+
+      {expanded && (
+        <div
+          className="absolute inset-0 z-10 flex flex-col px-5 py-3"
+          style={{ background: gradient }}
+        >
+          <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain flex flex-col text-center">
+            <p
+              className={`m-0 my-auto py-1 leading-relaxed whitespace-pre-wrap ${
+                hasMedia ? "font-semibold text-sm" : "font-bold text-base"
+              }`}
+              style={{ color: TEXT_COLOR }}
+            >
+              {`"${displayText}"`}
+            </p>
+          </div>
+          <div className="pt-2 flex flex-col items-center gap-1.5">
+            {renderTranslationStrip()}
+            <button
+              type="button"
+              onClick={() => setExpanded(false)}
+              className="text-xs font-semibold underline underline-offset-2 hover:opacity-70 transition-opacity"
+              style={{ color: MUTED_COLOR }}
+            >
+              {t.inspiration.showLess}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

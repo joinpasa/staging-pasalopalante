@@ -60,7 +60,7 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
     // Already running inside the installed app — nothing to do.
     const standalone =
       window.matchMedia?.("(display-mode: standalone)").matches ||
-      (window.navigator as any).standalone === true;
+      (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
     if (standalone) return;
 
     // An active service worker is part of how Chrome/Edge decide a page is
@@ -95,7 +95,7 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
     if (dismissedAt && Date.now() - dismissedAt < DISMISS_DAYS * 86400_000) return;
 
     const ua = window.navigator.userAgent;
-    const ios = /iPad|iPhone|iPod/.test(ua) && !(window as any).MSStream;
+    const ios = /iPad|iPhone|iPod/.test(ua) && !(window as Window & { MSStream?: unknown }).MSStream;
     setIsIOS(ios);
 
     const onBIP = (e: Event) => {
@@ -370,7 +370,7 @@ const InstallPrompt = ({ variant = "website" }: InstallPromptProps = {}) => {
       iosOpenAppHint: "تفضّل شاشة أبسط؟",
     },
   } as const;
-  const c = (copy as any)[lang] || copy.en;
+  const c = copy[lang as keyof typeof copy] ?? copy.en;
 
   return (
     <AnimatePresence>

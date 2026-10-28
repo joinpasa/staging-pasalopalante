@@ -11,7 +11,7 @@ import { cn } from "@shared/lib/utils";
 const REPORT_ISSUE_URL = "https://pasalopalante.com/tech-form";
 
 const itemClass =
-  "flex w-full items-center gap-2.5 px-4 py-3 text-left text-[13.5px] font-medium text-foreground hover:bg-app-canvas";
+  "flex w-full items-center gap-2.5 px-4 py-3 text-start text-[13.5px] font-medium text-foreground hover:bg-app-canvas";
 
 /**
  * The avatar button in the Dashboard's top bar and its dropdown — replaces
@@ -69,7 +69,7 @@ export default function AccountMenu({ highlighted = false }: { highlighted?: boo
       </button>
 
       {open && (
-        <div className="absolute right-0 top-12 z-30 w-[226px] overflow-hidden rounded-2xl border border-border bg-app-surface shadow-xl">
+        <div className="absolute end-0 top-12 z-30 w-[226px] overflow-hidden rounded-2xl border border-border bg-app-surface shadow-xl">
           <div className="flex items-center gap-2.5 border-b border-border px-4 py-3.5">
             <span className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full bg-app-ink text-[13px] font-bold text-app-surface">
               {initial}

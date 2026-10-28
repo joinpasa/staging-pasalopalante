@@ -1,3 +1,5 @@
+import { findActType } from "@shared/lib/actTypes";
+
 interface TimeAgoTranslations {
   justNow: string;
   minutesAgo: string;
@@ -27,18 +29,10 @@ export function timeAgo(iso: string, translations?: TimeAgoTranslations, locale?
   return new Date(iso).toLocaleDateString(locale, { month: "short", day: "numeric" });
 }
 
-const TAG_EMOJI: Record<string, string> = {
-  time: "⏳",
-  hands_on: "🛠️",
-  money: "💸",
-  words: "💬",
-  hug: "🤗",
-  group: "👥",
-};
-
-/** A small glyph for an act, chosen from its tags then its mode. */
-export function actEmoji(tags: string[], mode: string): string {
-  for (const tag of tags) if (TAG_EMOJI[tag]) return TAG_EMOJI[tag];
+/** A small glyph for an act, chosen from its chip then its mode. */
+export function actEmoji(actType: string | null, mode: string): string {
+  const chip = findActType(actType);
+  if (chip) return chip.emoji;
   if (mode === "received") return "🎁";
   if (mode === "witnessed") return "👀";
   return "💛";

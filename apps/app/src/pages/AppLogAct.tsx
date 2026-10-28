@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, CheckCircle2, Play, Upload, X } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -11,7 +11,8 @@ import { cn } from "@shared/lib/utils";
 import { detectSocialLink, type DetectedSocialLink } from "@shared/lib/socialLinks";
 import SocialLinkChip from "@shared/components/share/SocialLinkChip";
 import { isRateLimitedError, pickRateLimitCheer } from "@shared/lib/rateLimitCheer";
-import { ACT_TYPES } from "@shared/lib/actTypes";
+import { ACT_TYPES, type ActMode } from "@shared/lib/actTypes";
+import { announceBadgeStages } from "@shared/lib/badges";
 
 const MAX_FILE_SIZE = 25 * 1024 * 1024;
 
@@ -22,8 +23,10 @@ const MAX_FILE_SIZE = 25 * 1024 * 1024;
  * to). The previous mode-picker/multi-photo/anonymous-capture flow
  * (ShareActFlow) is still reachable from here as "more detail" for anyone
  * who wants it — it moved to /log/detailed rather than being replaced,
- * since its mode axis (witnessed/received) and multi-photo support aren't
- * things this simpler chip flow covers.
+ * since its multi-photo and anonymous-capture support aren't things this
+ * simpler chip flow covers. The Gave/Received/Witnessed choice is built in
+ * here directly (same options and texts as ShareActFlow, own app styling).
+ * Both the mode and a chip are required — badges are counted from them.
  */
 export default function AppLogAct() {
   const navigate = useNavigate();
@@ -33,18 +36,24 @@ export default function AppLogAct() {
   const [searchParams] = useSearchParams();
   const withName = searchParams.get("with")?.trim();
   const toUserId = searchParams.get("toUserId")?.trim();
+  // Text (or a social link) typed into the Dashboard's quick-log field,
+  // handed over so it isn't lost while the mode and chip get picked here.
+  const prefill = useLocation().state as { note?: string; socialLink?: DetectedSocialLink } | null;
 
+  // A pass hand-off is always something the user gave.
+  const [mode, setMode] = useState<ActMode | null>(withName ? "performed" : null);
   const [picked, setPicked] = useState<string | null>(null);
-  const [note, setNote] = useState(withName ? `${t.appLogAct.passedItForwardTo} ${withName}: ` : "");
-  const [socialLink, setSocialLink] = useState<DetectedSocialLink | null>(null);
+  const [note, setNote] = useState(
+    withName ? `${t.appLogAct.passedItForwardTo} ${withName}: ` : prefill?.note ?? "",
+  );
+  const [socialLink, setSocialLink] = useState<DetectedSocialLink | null>(prefill?.socialLink ?? null);
   const [file, setFile] = useState<{ file: File; preview: string; isVideo: boolean } | null>(null);
   const [shareOnWall, setShareOnWall] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [newTotal, setNewTotal] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  // A preset is optional — but something has to describe the act.
-  const canSubmit = !!picked || !!note.trim() || !!file || !!socialLink;
+  const canSubmit = !!mode && !!picked;
   const nf = new Intl.NumberFormat(lang);
 
   function pickFile(list: FileList | null) {
@@ -88,11 +97,11 @@ export default function AppLogAct() {
 
       const { data, error } = await supabase.functions.invoke("submit-act", {
         body: {
-          mode: "performed",
+          mode,
           description: note.trim() || undefined,
           photo_paths: photoPaths,
           to_user_id: toUserId || undefined,
-          act_type: picked || undefined,
+          act_type: picked,
           share_on_wall: shareOnWall,
           video_url: socialLink?.url || undefined,
           lang,
@@ -110,6 +119,7 @@ export default function AppLogAct() {
         toast.error(t.appLogAct.genericError);
         return;
       }
+      void announceBadgeStages(data.badge_stages, lang, t.appBadges.newStage);
       setNewTotal((me?.actsPassedForward ?? 0) + 1);
       setSubmitted(true);
       queryClient.invalidateQueries({ queryKey: ["app", "me"] });
@@ -121,6 +131,12 @@ export default function AppLogAct() {
       setSubmitting(false);
     }
   }
+
+  const modeOptions: { key: ActMode; label: string }[] = [
+    { key: "performed", label: t.share.modeGaveShort },
+    { key: "received", label: t.share.modeReceivedShort },
+    { key: "witnessed", label: t.share.modeWitnessedShort },
+  ];
 
   if (submitted) {
     return (
@@ -160,9 +176,28 @@ export default function AppLogAct() {
       </div>
 
       <div className="flex flex-1 flex-col gap-[18px] px-4 py-5">
+        <div className="grid grid-cols-3 gap-2">
+          {modeOptions.map((m) => (
+            <button
+              key={m.key}
+              type="button"
+              onClick={() => setMode(m.key)}
+              aria-pressed={mode === m.key}
+              className={cn(
+                "rounded-2xl border-[1.5px] px-2 py-3 text-[13.5px] font-bold",
+                mode === m.key
+                  ? "border-app-coral bg-app-coral text-app-surface"
+                  : "border-app-ink/[0.14] bg-app-surface text-foreground",
+              )}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+
         <div>
-          <p className="mb-2.5 text-sm font-bold text-foreground">{t.appLogAct.whatDidYouDo} <span className="font-medium text-muted-foreground">{t.appLogAct.optional}</span></p>
-          
+          <p className="mb-2.5 text-sm font-bold text-foreground">{t.appLogAct.whatDidYouDo}</p>
+
           <div className="flex flex-wrap gap-2">
             {ACT_TYPES.map(({ value, labelKey }) => (
               <button
@@ -252,7 +287,7 @@ export default function AppLogAct() {
                 type="button"
                 onClick={removeFile}
                 aria-label={t.appLogAct.removeAttachment}
-                className="absolute right-2 top-2 flex h-[30px] w-[30px] items-center justify-center rounded-full bg-app-ink/70"
+                className="absolute end-2 top-2 flex h-[30px] w-[30px] items-center justify-center rounded-full bg-app-ink/70"
               >
                 <X className="h-3.5 w-3.5 text-app-surface" />
               </button>

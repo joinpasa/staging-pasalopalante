@@ -1,10 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ComposableMap, Geographies, Geography, Marker, ZoomableGroup } from "react-simple-maps";
 import { geoCentroid } from "d3-geo";
-import { Loader2, LocateFixed, Minus, Plus, Search } from "lucide-react";
-import { useKindnessMapCounts, useMovementTotals, useWallActs } from "@/hooks/useAppData";
+import { ChevronDown, Loader2, LocateFixed, Minus, Plus, Search } from "lucide-react";
+import { toast } from "sonner";
+import { useActReactions, useKindnessMapCounts, useMovementTotals, useWallActs, type WallAct } from "@/hooks/useAppData";
 import { useActTranslations } from "@/hooks/useActTranslations";
 import TranslateButton from "@/components/app/TranslateButton";
+import ReactionButton from "@/components/app/ReactionButton";
 // Bundled locally instead of fetched from cdn.jsdelivr.net at runtime - that
 // CDN is blocked or unreliable on some networks (confirmed blocked outright
 // from this project's own dev sandbox), which made the map silently fail to
@@ -13,7 +15,9 @@ import TranslateButton from "@/components/app/TranslateButton";
 // instead of a third-party one no code here can control.
 import geoData from "world-atlas/countries-110m.json";
 import { useLanguage } from "@shared/contexts/LanguageContext";
+import { useAuth } from "@shared/contexts/AuthContext";
 import { timeAgo } from "@shared/lib/appActs";
+import { cn } from "@shared/lib/utils";
 
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 40;
@@ -50,6 +54,16 @@ export default function AppMap() {
   const { data: rows = [], isLoading } = useKindnessMapCounts();
   const { data: acts = [] } = useWallActs(8);
   const translations = useActTranslations();
+  // Same hearts as on the Wall — one shared count per act.
+  const { user } = useAuth();
+  const { reactions, toggle } = useActReactions(acts.map((a) => a.id));
+  const onToggleReact = (actId: string) => {
+    if (!user) {
+      toast(t.appWall.joinToReact);
+      return;
+    }
+    void toggle(actId);
+  };
 
   const [centroids, setCentroids] = useState<Record<string, [number, number]>>({});
   const [center, setCenter] = useState<[number, number]>([0, 20]);
@@ -304,29 +318,109 @@ export default function AppMap() {
         ) : (
           <ul className="mt-3 space-y-1">
             {acts.map((act) => (
-              <li key={act.id} className="flex items-center gap-3 py-2">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-app-coral-tint text-lg">
-                  ✨
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-foreground">{translations.textFor(act)}</p>
-                  <p className="truncate text-xs text-muted-foreground">{act.name}</p>
-                </div>
-                <div className="flex shrink-0 flex-col items-end gap-0.5">
-                  <span className="text-xs font-bold text-app-teal">{timeAgo(act.createdAt, t.appCommon, lang)}</span>
-                  {translations.canTranslate(act) && (
-                    <TranslateButton
-                      translated={translations.isTranslated(act.id)}
-                      loading={translations.isLoading(act.id)}
-                      onClick={() => translations.toggle(act)}
-                    />
-                  )}
-                </div>
-              </li>
+              <RecentActRow
+                key={act.id}
+                act={act}
+                translations={translations}
+                reaction={reactions[act.id]}
+                onToggleReact={() => onToggleReact(act.id)}
+              />
             ))}
           </ul>
         )}
       </section>
     </div>
+  );
+}
+
+/**
+ * One "Recent Acts of Kindness" entry: the translate button sits next to the
+ * poster's name, the heart (same as on the Wall) under the time. The text is
+ * cut to one line; when it doesn't fit, an expand button under the heart
+ * shows the full text right in the list (no popup), and collapses it again.
+ */
+function RecentActRow({
+  act,
+  translations,
+  reaction,
+  onToggleReact,
+}: {
+  act: WallAct;
+  translations: ReturnType<typeof useActTranslations>;
+  reaction: { count: number; reacted: boolean } | undefined;
+  onToggleReact: () => void;
+}) {
+  const { t, lang } = useLanguage();
+  const text = translations.textFor(act);
+  const textRef = useRef<HTMLParagraphElement>(null);
+  const [expanded, setExpanded] = useState(false);
+  const [cutOff, setCutOff] = useState(false);
+
+  // Only measurable while collapsed; re-measured when the text (e.g. a
+  // translation) or the available width changes.
+  useLayoutEffect(() => {
+    const el = textRef.current;
+    if (!el || expanded) return;
+    const measure = () => setCutOff(el.scrollWidth > el.clientWidth + 1);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [text, expanded]);
+
+  const label = expanded ? t.inspiration.showLess : t.inspiration.readMore;
+
+  return (
+    <li className={cn("flex gap-3 py-2", expanded ? "items-start" : "items-center")}>
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-app-coral-tint text-lg">
+        ✨
+      </span>
+      <div className="min-w-0 flex-1">
+        <p
+          ref={textRef}
+          className={cn(
+            "text-sm font-semibold text-foreground",
+            expanded ? "whitespace-pre-wrap break-words" : "truncate",
+          )}
+        >
+          {text}
+        </p>
+        <div className="flex items-center gap-3">
+          <p className="truncate text-xs text-muted-foreground">{act.name}</p>
+          {translations.canTranslate(act) && (
+            <span className="-my-1 shrink-0">
+              <TranslateButton
+                translated={translations.isTranslated(act.id)}
+                loading={translations.isLoading(act.id)}
+                onClick={() => translations.toggle(act)}
+              />
+            </span>
+          )}
+        </div>
+      </div>
+      <div className="flex shrink-0 flex-col items-end gap-1">
+        <span className="text-xs font-bold text-app-teal">{timeAgo(act.createdAt, t.appCommon, lang)}</span>
+        <ReactionButton
+          count={reaction?.count ?? 0}
+          reacted={reaction?.reacted ?? false}
+          onToggle={onToggleReact}
+        />
+        {(cutOff || expanded) && (
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            aria-label={label}
+            aria-expanded={expanded}
+            title={label}
+            className={cn(
+              "flex h-6 w-6 items-center justify-center rounded-full transition-colors",
+              expanded ? "bg-app-coral-tint text-app-coral" : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            <ChevronDown size={14} className={cn("transition-transform", expanded && "rotate-180")} />
+          </button>
+        )}
+      </div>
+    </li>
   );
 }
