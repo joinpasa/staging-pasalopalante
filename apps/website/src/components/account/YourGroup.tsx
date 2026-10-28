@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@shared/integrations/supabase/client";
 import { useLanguage } from "@shared/contexts/LanguageContext";
+import type { Translations } from "@shared/i18n/translations";
 import { Skeleton } from "@shared/components/ui/skeleton";
 import { Button } from "@shared/components/ui/button";
 import { Input } from "@shared/components/ui/input";
@@ -24,7 +25,7 @@ interface GroupCommitment {
   pledge_count: number;
 }
 
-const StatGrid = ({ stats, t }: { stats: Stats; t: any }) => (
+const StatGrid = ({ stats, t }: { stats: Stats; t: Translations }) => (
   <div className="grid grid-cols-3 gap-4 text-center">
     <div>
       <div className="font-serif text-2xl">{stats.member_count}</div>
@@ -62,11 +63,11 @@ const YourGroup = ({ userId }: { userId: string }) => {
         .eq("user_id", userId)
         .maybeSingle();
       if (cancelled) return;
-      if (m && (m as any).organizations) {
-        const o = (m as any).organizations as Org;
+      if (m?.organizations) {
+        const o = m.organizations as Org;
         setOrg(o);
-        setIsLeader(!!(m as any).is_leader);
-        const { data: s } = await supabase.rpc("org_stats", { _org_id: (m as any).org_id });
+        setIsLeader(!!m.is_leader);
+        const { data: s } = await supabase.rpc("org_stats", { _org_id: m.org_id });
         if (cancelled) return;
         if (s && s[0]) setStats(s[0] as Stats);
 

@@ -169,7 +169,7 @@ export default function GlobalAmbassadorsPage() {
             src="/world-map.svg"
             alt=""
             aria-hidden="true"
-            className="pointer-events-none absolute -right-20 top-10 w-[560px] opacity-[0.06]"
+            className="pointer-events-none absolute -end-20 top-10 w-[560px] opacity-[0.06]"
           />
           <div className="section-padding relative mx-auto flex max-w-6xl flex-wrap items-end gap-12 pb-16 pt-28 md:pt-32">
             <div className="flex flex-1 flex-col gap-6" style={{ flexBasis: "560px" }}>
@@ -198,13 +198,13 @@ export default function GlobalAmbassadorsPage() {
               </div>
             </div>
             <dl className="grid flex-1 grid-cols-2 gap-0 border-t border-warm-cream/20" style={{ flexBasis: "320px" }}>
-              <div className="flex flex-col gap-1.5 pr-4 pt-5">
+              <div className="flex flex-col gap-1.5 pe-4 pt-5">
                 <dd className="font-display text-4xl leading-none md:text-5xl">{!isLoading ? all.length : "—"}</dd>
                 <dt className="text-xs font-semibold leading-tight text-warm-cream/70">
                   {tx.ambassadorsChampions}
                 </dt>
               </div>
-              <div className="flex flex-col gap-1.5 border-l border-warm-cream/20 py-5 pl-4">
+              <div className="flex flex-col gap-1.5 border-l border-warm-cream/20 py-5 ps-4">
                 <dd className="font-display text-4xl leading-none text-warm-gold md:text-5xl">
                   {!isLoading ? countries.length : "—"}
                 </dd>
@@ -226,7 +226,7 @@ export default function GlobalAmbassadorsPage() {
         <div id="directory" className="sticky top-0 z-10 border-b border-border bg-warm-cream/95 backdrop-blur">
           <div className="section-padding mx-auto flex max-w-6xl flex-wrap items-center gap-3 py-4">
             <div className="relative min-w-[220px] flex-[999_1_300px]">
-              <Search size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40" />
+              <Search size={16} className="pointer-events-none absolute start-4 top-1/2 -translate-y-1/2 text-foreground/40" />
               <label htmlFor="ambassador-search" className="sr-only">
                 {tx.searchAmbassadors}
               </label>
@@ -236,7 +236,7 @@ export default function GlobalAmbassadorsPage() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={tx.searchByNameCountry}
-                className="h-12 w-full rounded-full border border-border bg-white pl-11 pr-4 text-sm text-foreground outline-none focus:border-warm-terracotta"
+                className="h-12 w-full rounded-full border border-border bg-white ps-11 pe-4 text-sm text-foreground outline-none focus:border-warm-terracotta"
               />
             </div>
             <div className="min-w-[180px] flex-[1_1_200px]">
@@ -296,7 +296,7 @@ export default function GlobalAmbassadorsPage() {
         {/* Directory */}
         <div className="section-padding mx-auto flex max-w-6xl flex-col gap-10 py-14">
           <div
-            className="flex items-center gap-4 rounded-2xl border border-border bg-white py-5 pl-6 pr-6"
+            className="flex items-center gap-4 rounded-2xl border border-border bg-white py-5 ps-6 pe-6"
             style={{ borderLeft: "4px solid #0e234b" }}
           >
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-warm-sand">
@@ -373,7 +373,7 @@ export default function GlobalAmbassadorsPage() {
               <p className="text-foreground/75 leading-relaxed max-w-xl mx-auto mb-10">
                 {tx.ourAmbassadorsAreHere}
               </p>
-              <div className="grid gap-4 text-left sm:grid-cols-3">
+              <div className="grid gap-4 text-start sm:grid-cols-3">
                 {[
                   {
                     step: tx.step1,
@@ -409,7 +409,7 @@ export default function GlobalAmbassadorsPage() {
               src="/world-map.svg"
               alt=""
               aria-hidden="true"
-              className="pointer-events-none absolute -bottom-20 -left-16 w-[340px] opacity-[0.06]"
+              className="pointer-events-none absolute -bottom-20 -start-16 w-[340px] opacity-[0.06]"
             />
             <div className="relative flex flex-wrap items-center gap-10">
               <div className="flex flex-1 flex-col gap-4" style={{ flexBasis: "420px" }}>

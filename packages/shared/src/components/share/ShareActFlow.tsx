@@ -239,10 +239,12 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
           .from("profiles")
           .update({ display_name: trimmedFirstName })
           .eq("user_id", user.id)
-          .then(({ error }) => {
-            if (error) console.error("profile update failed", error);
-          })
-          .catch((err) => console.error("profile update failed", err));
+          .then(
+            ({ error }) => {
+              if (error) console.error("profile update failed", error);
+            },
+            (err) => console.error("profile update failed", err),
+          );
       }
 
       // Log a consent record for this submission (audit trail).

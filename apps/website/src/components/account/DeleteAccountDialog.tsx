@@ -55,8 +55,8 @@ const DeleteAccountDialog = () => {
       }}
     >
       <AlertDialogTrigger asChild>
-        <Button variant="ghost" className="text-destructive hover:text-destructive mb-12 ml-2">
-          <Trash2 size={16} className="mr-2" />
+        <Button variant="ghost" className="text-destructive hover:text-destructive mb-12 ms-2">
+          <Trash2 size={16} className="me-2" />
           {t.account.deleteAccount}
         </Button>
       </AlertDialogTrigger>
@@ -84,7 +84,7 @@ const DeleteAccountDialog = () => {
         <AlertDialogFooter>
           <AlertDialogCancel disabled={deleting}>{t.account.deleteAccountCancel}</AlertDialogCancel>
           <Button variant="destructive" disabled={!confirmed || deleting} onClick={handleDelete}>
-            {deleting && <Loader2 size={16} className="mr-2 animate-spin" />}
+            {deleting && <Loader2 size={16} className="me-2 animate-spin" />}
             {t.account.deleteAccountConfirm}
           </Button>
         </AlertDialogFooter>

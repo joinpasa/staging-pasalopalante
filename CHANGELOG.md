@@ -14,6 +14,9 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 - **Logging an act now always asks two things:** Gave / Received / Witnessed (now also on the app's main Log an Act screen, not only the website) and a "What did you do?" choice, both required. The choices are now short tags (Helped out, Compliment, Volunteered, Donated, Treated, Gift, Hug, Listened, Something else), and Gift and Hug are new. The app's quick-log field on the home screen now opens the full log screen with the text filled in, so the two choices can be made there.
 - **Wall posts show the chosen tag plus a "+1" badge icon** for every badge the act counted toward, in both the app and the website. They replace the old AI-generated tags. The AI no longer tags acts at all; it only moderates and detects the language.
 - **Reaching a new badge stage shows a message at the top of the screen** right after submitting. Members who turn on alerts in the app (off by default) also get a push notification for every new stage, in their language.
+- **Fixed duplicate organizations for chapter sign-ups.** When an organization committed with a chapter name, the check for an existing organization always failed, so a new duplicate organization was created every time. It now finds the existing one.
+- **Arabic (right-to-left) layout fixes across the website and app.** About 80 spots that were hard-wired to "left" or "right" (password show/hide icons, menus, close buttons, list indents, the QR scanner frame, etc.) now flip correctly for Arabic; nothing changes for left-to-right languages. Login, sign-up and forgot-password were checked in a browser in English and Arabic.
+- **Repo health checks are green again.** Tests, the type check and lint (errors) all pass, so a real problem now stands out instead of hiding among old failures.
 
 ## 2026-10-27 — va.deedumlao@gmail.com
 

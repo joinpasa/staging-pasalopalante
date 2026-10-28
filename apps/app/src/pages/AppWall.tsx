@@ -203,7 +203,7 @@ export default function AppWall() {
                     className="h-44 w-full object-cover"
                   />
                   {SocialIcon && (
-                    <span className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-app-surface shadow">
+                    <span className="absolute end-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-app-surface shadow">
                       <SocialIcon size={14} className="text-app-coral" />
                     </span>
                   )}
@@ -226,7 +226,7 @@ export default function AppWall() {
                   <span className="text-4xl" aria-hidden="true">
                     {actEmoji(post.actType, post.mode)}
                   </span>
-                  <span className="absolute left-4 top-4 rounded-full bg-app-surface/85 px-3 py-1 text-xs font-semibold text-foreground">
+                  <span className="absolute start-4 top-4 rounded-full bg-app-surface/85 px-3 py-1 text-xs font-semibold text-foreground">
                     {modeLabel(post.mode, t.appCommon)}
                   </span>
                 </div>
@@ -271,7 +271,7 @@ export default function AppWall() {
                           className="text-destructive focus:text-destructive"
                           onClick={() => setDeleteTarget(post.id)}
                         >
-                          <Trash2 className="mr-2 h-4 w-4" />
+                          <Trash2 className="me-2 h-4 w-4" />
                           Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>

@@ -118,13 +118,13 @@ export default function ResetPasswordPage() {
                       value={pw}
                       onChange={(e) => setPw(e.target.value)}
                       required
-                      className="pr-10"
+                      className="pe-10"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPw((v) => !v)}
                       aria-label={showPw ? "Hide password" : "Show password"}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/50 hover:text-foreground"
+                      className="absolute end-3 top-1/2 -translate-y-1/2 text-foreground/50 hover:text-foreground"
                     >
                       {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>

@@ -61,7 +61,7 @@ const HeroVideo = () => {
             type="button"
             onClick={toggleMute}
             aria-label={muted ? t.hero.unmute : t.hero.mute}
-            className="absolute bottom-3 right-3 grid place-items-center w-9 h-9 rounded-full bg-cyan-950/70 text-white backdrop-blur-sm transition-colors hover:bg-cyan-950/90"
+            className="absolute bottom-3 end-3 grid place-items-center w-9 h-9 rounded-full bg-cyan-950/70 text-white backdrop-blur-sm transition-colors hover:bg-cyan-950/90"
           >
             {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
           </button>

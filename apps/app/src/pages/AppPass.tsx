@@ -335,10 +335,10 @@ function ScanPanel() {
         <canvas ref={canvasRef} className="hidden" />
         {/* Orange corner brackets frame the scan area instead of a uniform border. */}
         <div className="pointer-events-none absolute inset-8">
-          <span className="absolute left-0 top-0 h-9 w-9 rounded-tl-xl border-l-[3px] border-t-[3px] border-app-coral" />
-          <span className="absolute right-0 top-0 h-9 w-9 rounded-tr-xl border-r-[3px] border-t-[3px] border-app-coral" />
-          <span className="absolute bottom-0 left-0 h-9 w-9 rounded-bl-xl border-b-[3px] border-l-[3px] border-app-coral" />
-          <span className="absolute bottom-0 right-0 h-9 w-9 rounded-br-xl border-b-[3px] border-r-[3px] border-app-coral" />
+          <span className="absolute start-0 top-0 h-9 w-9 rounded-ss-xl border-s-[3px] border-t-[3px] border-app-coral" />
+          <span className="absolute end-0 top-0 h-9 w-9 rounded-se-xl border-e-[3px] border-t-[3px] border-app-coral" />
+          <span className="absolute bottom-0 start-0 h-9 w-9 rounded-es-xl border-b-[3px] border-s-[3px] border-app-coral" />
+          <span className="absolute bottom-0 end-0 h-9 w-9 rounded-ee-xl border-b-[3px] border-e-[3px] border-app-coral" />
         </div>
       </div>
 
@@ -381,7 +381,7 @@ function TroubleshootPanel() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left"
+        className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-start"
       >
         <span className="flex items-center gap-2.5 text-sm font-semibold text-foreground">
           <HelpCircle className="h-4 w-4" />

@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { supabase } from "@shared/integrations/supabase/client";
+import type { Tables } from "@shared/integrations/supabase/types";
 import { isRateLimitedError, pickRateLimitCheer } from "@shared/lib/rateLimitCheer";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -26,7 +27,7 @@ const AccountPage = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<Tables<"profiles"> | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
   const [passwordPromptDismissed, setPasswordPromptDismissed] = useState(false);
   const [hasCommitment, setHasCommitment] = useState(false);
@@ -115,7 +116,7 @@ const AccountPage = () => {
         .update({ onboarding_seen: true })
         .eq("user_id", user.id);
       if (seenError) console.error("onboarding_seen update failed", seenError);
-      setProfile((prev: any) => (prev ? { ...prev, onboarding_seen: true } : prev));
+      setProfile((prev) => (prev ? { ...prev, onboarding_seen: true } : prev));
       setOnboardingBusy(false);
       setShowOnboarding(false);
     }
@@ -199,7 +200,7 @@ const AccountPage = () => {
               type="button"
               onClick={() => setPasswordPromptDismissed(true)}
               aria-label={t.account.dismiss}
-              className="absolute right-4 top-4 text-foreground/40 hover:text-foreground/70"
+              className="absolute end-4 top-4 text-foreground/40 hover:text-foreground/70"
             >
               <X size={16} />
             </button>

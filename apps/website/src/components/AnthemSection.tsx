@@ -75,7 +75,7 @@ const AnthemSection = () => {
               />
               <span className="absolute inset-0 flex items-center justify-center bg-black/30 transition-colors group-hover:bg-black/40">
                 <span className="grid h-16 w-16 place-items-center rounded-full bg-white/90 text-foreground shadow-lg transition-transform group-hover:scale-105">
-                  <Play size={28} className="ml-1" fill="currentColor" />
+                  <Play size={28} className="ms-1" fill="currentColor" />
                 </span>
               </span>
             </button>

@@ -2,6 +2,9 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { escapeHtml, notifyOps, SITE_NAME } from "../_shared/ops.ts";
 import { checkRateLimit, envInt, getClientIp, rateLimitedResponse, rateLimitIpKey, rateLimitMultiplier } from "../_shared/rateLimit.ts";
 
+// Supabase's edge runtime global, for background work after the response.
+declare const EdgeRuntime: { waitUntil(promise: Promise<unknown>): void } | undefined;
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -163,10 +166,10 @@ Deno.serve(async (req) => {
       ? `Pledge count ${pledgeCount.toLocaleString("en-US")} exceeds the ${reviewThreshold.toLocaleString("en-US")} auto-publish threshold for ${body.type} commitments — held for review.`
       : null;
 
-    const helpRole = body.help_role && HELP_ROLES.includes(body.help_role as any) ? body.help_role : null;
+    const helpRole = body.help_role && (HELP_ROLES as readonly string[]).includes(body.help_role) ? body.help_role : null;
     const country = (body.country ?? "").toString().trim().slice(0, 80) || null;
     if (!country) return bad("Country is required");
-    const orgType = body.org_type && ORG_TYPES.includes(body.org_type as any) ? body.org_type : null;
+    const orgType = body.org_type && (ORG_TYPES as readonly string[]).includes(body.org_type) ? body.org_type : null;
 
     const { data, error } = await supabase
       .from("commitments")
@@ -242,11 +245,12 @@ Deno.serve(async (req) => {
     // For organization commitments, ensure org row + leader membership when signed in
     if (body.type === "organization" && orgNameRaw) {
       try {
-        const { data: existing } = await supabase
-          .from("organizations")
-          .select("id")
-          .ilike("name", orgNameRaw)
-          .is("chapter", chapter ? undefined as any : null)
+        // Same name + same chapter (or both without one) is the same org.
+        // This used to filter `chapter IS undefined` whenever a chapter was
+        // given — an invalid filter, so the lookup always failed and every
+        // chapter signup created a duplicate organization row.
+        const byName = supabase.from("organizations").select("id").ilike("name", orgNameRaw);
+        const { data: existing } = await (chapter ? byName.eq("chapter", chapter) : byName.is("chapter", null))
           .maybeSingle();
         let orgId = existing?.id as string | undefined;
         if (!orgId) {
@@ -291,7 +295,6 @@ Deno.serve(async (req) => {
           if (!res.ok) console.error("ghl-sync-totals dispatch failed", res.status, await res.text());
         })
         .catch((e) => console.error("ghl-sync-totals dispatch error", e));
-      // @ts-ignore EdgeRuntime is available in Supabase Edge Functions
       if (typeof EdgeRuntime !== "undefined") EdgeRuntime.waitUntil(task);
     } catch (e) {
       console.error("ghl-sync-totals dispatch error", e);

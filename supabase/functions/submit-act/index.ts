@@ -1,6 +1,9 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { checkRateLimit, envInt, getClientIp, rateLimitedResponse, rateLimitIpKey, rateLimitMultiplier } from "../_shared/rateLimit.ts";
 
+// Supabase's edge runtime global, for background work after the response.
+declare const EdgeRuntime: { waitUntil(promise: Promise<unknown>): void } | undefined;
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -490,7 +493,6 @@ Deno.serve(async (req) => {
               if (!res.ok) console.error("fetch-link-preview dispatch failed", res.status, await res.text());
             })
             .catch((e) => console.error("fetch-link-preview dispatch failed", e));
-          // @ts-ignore EdgeRuntime is available in Supabase Edge Functions
           if (typeof EdgeRuntime !== "undefined") EdgeRuntime.waitUntil(task);
         }
       } catch (e) {
@@ -521,7 +523,6 @@ Deno.serve(async (req) => {
             if (!res.ok) console.error("ghl-sync-totals dispatch failed", res.status, await res.text());
           })
           .catch((e) => console.error("ghl-sync-totals dispatch error", e));
-        // @ts-ignore EdgeRuntime is available in Supabase Edge Functions
         if (typeof EdgeRuntime !== "undefined") EdgeRuntime.waitUntil(task);
       } catch (e) {
         console.error("ghl-sync-totals dispatch error", e);

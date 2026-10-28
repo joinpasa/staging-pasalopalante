@@ -31,7 +31,7 @@ export default function ProfileBackfill() {
     }
     if (!pending) return;
 
-    const update: Record<string, string> = {};
+    const update: { first_name?: string; last_name?: string; country?: string } = {};
     if (pending.firstName) update.first_name = pending.firstName;
     if (pending.lastName) update.last_name = pending.lastName;
     if (pending.country) update.country = pending.country;

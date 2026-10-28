@@ -47,7 +47,7 @@ const ProfileHeader = ({ profile }: Props) => {
               <Crown size={12} className="fill-current" />
               {roleLabel.label}
               {roleLabel.detail && (
-                <span className="text-terracotta/70 font-medium normal-case tracking-normal ml-1">
+                <span className="text-terracotta/70 font-medium normal-case tracking-normal ms-1">
                   · {roleLabel.detail}
                 </span>
               )}
@@ -59,7 +59,7 @@ const ProfileHeader = ({ profile }: Props) => {
       <div className="flex flex-col items-start gap-1">
         <Button variant="ghost" size="sm" asChild>
           <Link to="/account/settings">
-            <Settings size={16} className="mr-2" />
+            <Settings size={16} className="me-2" />
             {t.navbar.myAccount}
           </Link>
         </Button>
@@ -71,7 +71,7 @@ const ProfileHeader = ({ profile }: Props) => {
             navigate("/");
           }}
         >
-          <LogOut size={16} className="mr-2" />
+          <LogOut size={16} className="me-2" />
           {t.account.signOut}
         </Button>
       </div>

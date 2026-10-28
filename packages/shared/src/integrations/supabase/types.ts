@@ -1145,6 +1145,7 @@ export type Database = {
         Returns: {
           from_name: string
           from_user_id: string
+          is_self: boolean
         }[]
       }
       move_to_dlq: {
@@ -1156,6 +1157,18 @@ export type Database = {
         }
         Returns: number
       }
+      my_connections: {
+        Args: never
+        Returns: {
+          connected_at: string
+          country: string
+          direction: string
+          name: string
+          user_id: string
+        }[]
+      }
+      my_connections_count: { Args: never; Returns: number }
+      my_longest_chain: { Args: never; Returns: number }
       my_reactions: {
         Args: { _act_ids: string[] }
         Returns: {

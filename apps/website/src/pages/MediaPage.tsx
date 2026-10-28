@@ -176,7 +176,7 @@ function VideoEmbedCard({ item }: { item: MediaItem }) {
         )}
         <span className="absolute inset-0 flex items-center justify-center bg-black/10 transition-colors group-hover:bg-black/20">
           <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow">
-            <Play size={14} className="ml-0.5 fill-warm-terracotta text-warm-terracotta" />
+            <Play size={14} className="ms-0.5 fill-warm-terracotta text-warm-terracotta" />
           </span>
         </span>
       </div>
@@ -444,7 +444,7 @@ export default function MediaPage() {
                 down ~20% per the requester's ask (one Tailwind size tier
                 smaller across the board). */}
             <dl className="grid flex-1 grid-cols-2 gap-0 border-t border-warm-cream/20" style={{ flexBasis: "320px" }}>
-              <div className="flex flex-col gap-1.5 pr-4 pt-5">
+              <div className="flex flex-col gap-1.5 pe-4 pt-5">
                 <dd className="font-display text-lg leading-snug md:text-xl">
                   <>
                     {tx.recordedPrefix}{" "}
@@ -455,7 +455,7 @@ export default function MediaPage() {
                   </>
                 </dd>
               </div>
-              <div className="flex flex-col gap-1.5 border-l border-warm-cream/20 py-5 pl-4">
+              <div className="flex flex-col gap-1.5 border-l border-warm-cream/20 py-5 ps-4">
                 <dd className="font-display text-3xl leading-none text-warm-gold md:text-4xl">
                   {compactNumber(mediaSummary.impressions, locale)}+
                 </dd>
@@ -463,7 +463,7 @@ export default function MediaPage() {
                   {tx.estimatedImpressions}
                 </dt>
               </div>
-              <div className="flex flex-col gap-1.5 pr-4 pt-5">
+              <div className="flex flex-col gap-1.5 pe-4 pt-5">
                 <dd className="font-display text-3xl leading-none md:text-4xl">
                   ${compactNumber(mediaSummary.earnedMediaValue, locale)}+
                 </dd>
@@ -471,7 +471,7 @@ export default function MediaPage() {
                   {tx.earnedMediaValue}
                 </dt>
               </div>
-              <div className="flex flex-col gap-1.5 border-l border-warm-cream/20 py-5 pl-4">
+              <div className="flex flex-col gap-1.5 border-l border-warm-cream/20 py-5 ps-4">
                 <dd className="font-display text-3xl leading-none text-warm-gold md:text-4xl">
                   {placementCount}+
                 </dd>
@@ -564,7 +564,7 @@ export default function MediaPage() {
                 className="inline-flex h-[52px] items-center justify-center rounded-full border-[1.5px] border-foreground/20 px-7 text-sm font-bold text-foreground transition-colors duration-200 hover:border-foreground/50"
               >
                 {tx.pressInquiries}
-                <ExternalLink size={14} className="ml-1.5 shrink-0" />
+                <ExternalLink size={14} className="ms-1.5 shrink-0" />
               </a>
             </div>
           </div>

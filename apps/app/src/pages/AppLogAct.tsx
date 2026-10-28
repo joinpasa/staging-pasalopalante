@@ -287,7 +287,7 @@ export default function AppLogAct() {
                 type="button"
                 onClick={removeFile}
                 aria-label={t.appLogAct.removeAttachment}
-                className="absolute right-2 top-2 flex h-[30px] w-[30px] items-center justify-center rounded-full bg-app-ink/70"
+                className="absolute end-2 top-2 flex h-[30px] w-[30px] items-center justify-center rounded-full bg-app-ink/70"
               >
                 <X className="h-3.5 w-3.5 text-app-surface" />
               </button>

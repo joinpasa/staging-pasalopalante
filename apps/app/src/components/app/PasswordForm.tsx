@@ -61,7 +61,7 @@ export default function PasswordForm({
 
   const inputType = showPw ? "text" : "password";
   const fieldClass =
-    "h-10 w-full rounded-lg border border-border bg-app-surface px-3 pr-10 text-sm text-foreground outline-none focus:border-app-coral";
+    "h-10 w-full rounded-lg border border-border bg-app-surface px-3 pe-10 text-sm text-foreground outline-none focus:border-app-coral";
 
   return (
     <form onSubmit={submit} className="space-y-2">
@@ -84,7 +84,7 @@ export default function PasswordForm({
           type="button"
           onClick={() => setShowPw((v) => !v)}
           aria-label={showPw ? t.appWidgets.hidePassword : t.appWidgets.showPassword}
-          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground"
+          className="absolute end-2.5 top-1/2 -translate-y-1/2 text-muted-foreground"
         >
           {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
         </button>

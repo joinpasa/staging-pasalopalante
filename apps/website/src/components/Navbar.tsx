@@ -118,7 +118,7 @@ const Navbar = () => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
         isSolid ? "bg-warm-cream/95 backdrop-blur-md border-b border-border shadow-sm" : "bg-transparent"
       }`}
     >
@@ -176,7 +176,7 @@ const Navbar = () => {
               <ChevronDown size={14} className={`transition-transform duration-200 ${exploreOpen ? "rotate-180" : ""}`} />
             </button>
             <div
-              className={`absolute right-0 top-[calc(100%+18px)] z-50 min-w-[210px] rounded-2xl border border-border bg-warm-cream p-2 shadow-2xl transition-all duration-200 ${
+              className={`absolute end-0 top-[calc(100%+18px)] z-50 min-w-[210px] rounded-2xl border border-border bg-warm-cream p-2 shadow-2xl transition-all duration-200 ${
                 exploreOpen
                   ? "opacity-100 visible translate-y-0"
                   : "opacity-0 invisible -translate-y-1.5 pointer-events-none"
@@ -188,7 +188,7 @@ const Navbar = () => {
                     key={item.label}
                     type="button"
                     onClick={() => { setExploreOpen(false); item.onClick(); }}
-                    className="block w-full text-left rounded-lg px-4 py-2.5 text-sm text-foreground/80 hover:bg-warm-sand transition-colors"
+                    className="block w-full text-start rounded-lg px-4 py-2.5 text-sm text-foreground/80 hover:bg-warm-sand transition-colors"
                   >
                     {item.label}
                   </button>
@@ -197,7 +197,7 @@ const Navbar = () => {
                     key={item.label}
                     type="button"
                     onClick={() => { setExploreOpen(false); goToAnchor(item.anchor); }}
-                    className="block w-full text-left rounded-lg px-4 py-2.5 text-sm text-foreground/80 hover:bg-warm-sand transition-colors"
+                    className="block w-full text-start rounded-lg px-4 py-2.5 text-sm text-foreground/80 hover:bg-warm-sand transition-colors"
                   >
                     {item.label}
                   </button>
@@ -274,7 +274,7 @@ const Navbar = () => {
               <button
                 type="button"
                 onClick={() => { setMobileOpen(false); goToAnchor("how-it-works"); }}
-                className="text-lg font-medium text-foreground/80 text-left"
+                className="text-lg font-medium text-foreground/80 text-start"
               >
                 {t.navbar.howItWorks}
               </button>
@@ -300,14 +300,14 @@ const Navbar = () => {
                       exit={{ opacity: 0, height: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="flex flex-col gap-4 pl-4 pt-4">
+                      <div className="flex flex-col gap-4 ps-4 pt-4">
                         {exploreItems.map((item) => (
                           item.onClick ? (
                             <button
                               key={item.label}
                               type="button"
                               onClick={() => { setMobileOpen(false); item.onClick(); }}
-                              className="text-base font-medium text-foreground/70 text-left"
+                              className="text-base font-medium text-foreground/70 text-start"
                             >
                               {item.label}
                             </button>
@@ -316,7 +316,7 @@ const Navbar = () => {
                               key={item.label}
                               type="button"
                               onClick={() => { setMobileOpen(false); goToAnchor(item.anchor); }}
-                              className="text-base font-medium text-foreground/70 text-left"
+                              className="text-base font-medium text-foreground/70 text-start"
                             >
                               {item.label}
                             </button>

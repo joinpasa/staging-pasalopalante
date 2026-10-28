@@ -187,12 +187,12 @@ export default function WallCard({
                 {showVideo && (
                   <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <span className="flex items-center justify-center w-12 h-12 rounded-full bg-black/60 text-white group-hover:bg-black/75 transition-colors shadow-lg">
-                      <Play size={22} className="fill-current ml-0.5" />
+                      <Play size={22} className="fill-current ms-0.5" />
                     </span>
                   </span>
                 )}
                 {showSocialPreview && SocialIcon && (
-                  <span className="absolute top-1.5 right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-white shadow">
+                  <span className="absolute top-1.5 end-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-white shadow">
                     <SocialIcon size={13} className="text-primary" />
                   </span>
                 )}

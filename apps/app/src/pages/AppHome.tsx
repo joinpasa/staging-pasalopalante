@@ -354,7 +354,7 @@ export default function AppHome() {
                 />
               </div>
             )}
-            <div className="flex items-center gap-2 rounded-full bg-app-surface py-[5px] pl-4 pr-[5px]">
+            <div className="flex items-center gap-2 rounded-full bg-app-surface py-[5px] ps-4 pe-[5px]">
               <input
                 value={quickText}
                 onChange={(e) => {
@@ -391,7 +391,7 @@ export default function AppHome() {
         </section>
       ) : (
         <section className="relative overflow-hidden rounded-3xl border-4 border-warm-terracotta bg-app-coral p-6 text-app-surface">
-          <div className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-app-surface/10" />
+          <div className="pointer-events-none absolute -end-10 -top-10 h-44 w-44 rounded-full bg-app-surface/10" />
           <p className="relative text-[11px] font-semibold uppercase tracking-[0.18em] text-app-surface/80">
             {t.appHome.movementName}
           </p>
@@ -439,7 +439,7 @@ export default function AppHome() {
             aria-label={t.appWidgets.myNetwork}
             className="relative flex flex-col gap-1.5 overflow-hidden rounded-2xl bg-app-magenta/10 p-3"
           >
-            <span className="absolute right-2 top-2 flex h-[22px] w-[22px] items-center justify-center rounded-full bg-app-magenta/15">
+            <span className="absolute end-2 top-2 flex h-[22px] w-[22px] items-center justify-center rounded-full bg-app-magenta/15">
               <ArrowUpRight className="h-[11px] w-[11px] text-app-magenta" strokeWidth={2.1} />
             </span>
             <Users className="h-[17px] w-[17px] text-app-magenta" strokeWidth={1.6} />
@@ -521,7 +521,7 @@ export default function AppHome() {
                       </p>
                     </div>
                   </div>
-                  <div className="mt-3 pl-[3.25rem]">
+                  <div className="mt-3 ps-[3.25rem]">
                     {thanked ? (
                       <span className="inline-flex items-center gap-1.5 rounded-full bg-app-gold-tint px-3 py-1.5 text-xs font-semibold text-app-gold">
                         🙏 {t.appHome.thanksSent}
@@ -575,7 +575,7 @@ export default function AppHome() {
                     {modeLabel(act.mode, t.appCommon)}
                   </span>
                 </div>
-                <div className="mt-3 flex items-center gap-2 pl-[3.25rem]">
+                <div className="mt-3 flex items-center gap-2 ps-[3.25rem]">
                   <ReactionButton
                     count={reactions[act.id]?.count ?? 0}
                     reacted={reactions[act.id]?.reacted ?? false}
@@ -591,7 +591,7 @@ export default function AppHome() {
                       <button
                         type="button"
                         aria-label="Act options"
-                        className="ml-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-muted-foreground"
+                        className="ms-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-muted-foreground"
                       >
                         <MoreVertical size={16} />
                       </button>
@@ -601,7 +601,7 @@ export default function AppHome() {
                         className="text-destructive focus:text-destructive"
                         onClick={() => setDeleteTarget(act.id)}
                       >
-                        <Trash2 className="mr-2 h-4 w-4" />
+                        <Trash2 className="me-2 h-4 w-4" />
                         Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
