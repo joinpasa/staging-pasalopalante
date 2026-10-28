@@ -7,6 +7,7 @@ import PalanteArrow from "@shared/components/icons/PalanteArrow";
 import { splitKindnessTag } from "@shared/lib/splitKindnessTag";
 import { SOCIAL_LINK_ICONS } from "@shared/components/share/SocialLinkChip";
 import type { DetectedSocialLink } from "@shared/lib/socialLinks";
+import ActBadgeTags from "@shared/components/badges/ActBadgeTags";
 
 
 export type WallMode = "performed" | "received" | "witnessed";
@@ -16,6 +17,8 @@ interface Props {
   description: string | null;
   firstName: string | null;
   mode: WallMode;
+  /** The "What did you do?" chip, shown as a short tag; null on older acts. */
+  actType: string | null;
   language: string | null;
   photoUrl: string | null;
   videoThumbUrl: string | null;
@@ -37,6 +40,7 @@ export default function WallCard({
   description,
   firstName,
   mode,
+  actType,
   language,
   photoUrl,
   videoThumbUrl,
@@ -262,6 +266,13 @@ export default function WallCard({
           {hasText && <div className="mt-2">{renderTranslationStrip()}</div>}
         </div>
       )}
+
+      <ActBadgeTags
+        mode={mode}
+        actType={actType}
+        className="justify-center px-5 pb-3"
+        tagClassName="bg-white/70"
+      />
 
       {/* Footer chrome */}
       <div className="mt-auto flex items-center justify-between px-5 py-3 border-t border-foreground/5">

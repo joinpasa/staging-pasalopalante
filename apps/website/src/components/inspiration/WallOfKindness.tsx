@@ -37,6 +37,7 @@ interface ActRow {
   link_preview_image: string | null;
   created_at: string;
   mode: string;
+  act_type: string | null;
   language: string | null;
 }
 
@@ -137,7 +138,7 @@ export default function WallOfKindness() {
         const to = from + PAGE_SIZE - 1;
         let q = supabasePublic
           .from("acts_of_kindness")
-          .select("id, description, first_name, photo_paths, video_url, link_preview_image, created_at, mode, language")
+          .select("id, description, first_name, photo_paths, video_url, link_preview_image, created_at, mode, act_type, language")
           .eq("status", "published")
           .not("description", "is", null)
           .neq("description", "");
@@ -159,7 +160,7 @@ export default function WallOfKindness() {
           const to = from + LIKED_CANDIDATE_BATCH - 1;
           let q = supabasePublic
             .from("acts_of_kindness")
-            .select("id, description, first_name, photo_paths, video_url, link_preview_image, created_at, mode, language")
+            .select("id, description, first_name, photo_paths, video_url, link_preview_image, created_at, mode, act_type, language")
             .eq("status", "published")
             .not("description", "is", null)
             .neq("description", "");
@@ -355,6 +356,7 @@ export default function WallOfKindness() {
                     description={a.description}
                     firstName={a.first_name}
                     mode={(a.mode as WallMode) ?? "performed"}
+                    actType={a.act_type}
                     language={a.language}
                     photoUrl={photoUrl}
                     videoThumbUrl={videoThumbUrl}

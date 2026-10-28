@@ -967,18 +967,21 @@ export type Database = {
           badge_id: string
           earned_at: string
           id: string
+          stage: number
           user_id: string
         }
         Insert: {
           badge_id: string
           earned_at?: string
           id?: string
+          stage?: number
           user_id: string
         }
         Update: {
           badge_id?: string
           earned_at?: string
           id?: string
+          stage?: number
           user_id?: string
         }
         Relationships: [
@@ -1076,6 +1079,8 @@ export type Database = {
         Returns: {
           badge_id: string
           current_count: number
+          max_stage: number
+          stage: number
           target: number
         }[]
       }
@@ -1083,6 +1088,7 @@ export type Database = {
         Args: { _user_id: string }
         Returns: {
           earned_badge_id: string
+          new_stage: number
         }[]
       }
       claim_my_acts: { Args: never; Returns: number }

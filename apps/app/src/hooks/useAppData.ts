@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@shared/integrations/supabase/client";
 import { supabasePublic } from "@shared/integrations/supabase/publicClient";
+import { fetchBadgeCatalogue, type BadgeDef } from "@shared/lib/badges";
 import { useAuth } from "@shared/contexts/AuthContext";
 
 /**
@@ -97,7 +98,8 @@ export interface AppAct {
   description: string;
   createdAt: string;
   mode: string;
-  tags: string[];
+  /** The "What did you do?" chip (actTypes.ts value), null on older acts. */
+  actType: string | null;
   videoUrl: string | null;
   linkPreviewImage: string | null;
   /** False when `description` is just the "An act of kindness" placeholder. */
@@ -116,7 +118,7 @@ export function useMyRecentActs(limit = 5) {
     queryFn: async (): Promise<AppAct[]> => {
       const { data, error } = await supabase
         .from("acts_of_kindness")
-        .select("id, description, language, created_at, mode, tags, video_url, link_preview_image")
+        .select("id, description, language, created_at, mode, act_type, video_url, link_preview_image")
         .eq("user_id", user!.id)
         .order("created_at", { ascending: false })
         .limit(limit);
@@ -128,7 +130,7 @@ export function useMyRecentActs(limit = 5) {
         language: row.language ?? null,
         createdAt: row.created_at,
         mode: row.mode,
-        tags: row.tags ?? [],
+        actType: row.act_type ?? null,
         videoUrl: row.video_url ?? null,
         linkPreviewImage: row.link_preview_image ?? null,
       }));
@@ -149,7 +151,7 @@ export function useWallActs(limit = 20) {
     queryFn: async (): Promise<WallAct[]> => {
       const { data, error } = await supabasePublic
         .from("acts_of_kindness")
-        .select("id, description, language, created_at, mode, tags, first_name, photo_paths, video_url, link_preview_image")
+        .select("id, description, language, created_at, mode, act_type, first_name, photo_paths, video_url, link_preview_image")
         .eq("status", "published")
         .order("created_at", { ascending: false })
         .limit(limit);
@@ -163,7 +165,7 @@ export function useWallActs(limit = 20) {
           language: row.language ?? null,
           createdAt: row.created_at,
           mode: row.mode,
-          tags: row.tags ?? [],
+          actType: row.act_type ?? null,
           videoUrl: row.video_url ?? null,
           linkPreviewImage: row.link_preview_image ?? null,
           name: row.first_name?.trim() || "Someone",
@@ -291,7 +293,7 @@ export function useActsReceivedByMe(limit = 10) {
     queryFn: async (): Promise<ReceivedAct[]> => {
       const { data, error } = await supabase
         .from("acts_of_kindness")
-        .select("id, description, language, created_at, mode, tags, first_name, video_url, link_preview_image")
+        .select("id, description, language, created_at, mode, act_type, first_name, video_url, link_preview_image")
         .eq("to_user_id", user!.id)
         .eq("status", "published")
         .order("created_at", { ascending: false })
@@ -304,7 +306,7 @@ export function useActsReceivedByMe(limit = 10) {
         language: row.language ?? null,
         createdAt: row.created_at,
         mode: row.mode,
-        tags: row.tags ?? [],
+        actType: row.act_type ?? null,
         videoUrl: row.video_url ?? null,
         linkPreviewImage: row.link_preview_image ?? null,
         fromName: row.first_name?.trim() || "a fellow member",
@@ -333,78 +335,63 @@ export function useSendThanks() {
  *  packages/shared so both platforms use the exact same live query. */
 export { useMovementTotals } from "@shared/hooks/useMovementTotals";
 
-export interface AppBadge {
-  id: string;
-  kind: string | null;
-  name: string;
-  name_es: string | null;
-  name_fr: string | null;
-  name_de: string | null;
-  description: string | null;
-  description_es: string | null;
-  description_fr: string | null;
-  description_de: string | null;
-  icon: string | null;
+export interface AppBadge extends BadgeDef {
+  /** Highest stage reached (0 = not started). */
+  stage: number;
+  maxStage: number;
   earned: boolean;
   current: number | null;
+  /** The next stage's threshold, or the last one once every stage is done. */
   target: number | null;
 }
 
-/** Badge catalogue joined with what the signed-in user has earned. Mirrors
- *  the website's StreaksBadges query (same table, same columns) so the two
- *  never show different badges, icons, or names for the same person. */
+/** Badge catalogue joined with the signed-in user's stages and progress.
+ *  Mirrors the website's StreaksBadges query (same table, same RPC) so the
+ *  two never show different badges, icons, or stages for the same person. */
 export function useAppBadges() {
   const { user } = useAuth();
 
   return useQuery({
     queryKey: ["app", "badges", user?.id],
     queryFn: async (): Promise<AppBadge[]> => {
-      const catalogue = await supabasePublic
-        .from("badges")
-        .select(
-          "id, kind, name, name_es, name_fr, name_de, description, description_es, description_fr, description_de, icon, sort_order",
-        )
-        .order("sort_order", { ascending: true });
-      if (catalogue.error) throw catalogue.error;
+      const catalogue = await fetchBadgeCatalogue();
 
-      let earned = new Set<string>();
-      let progress = new Map<string, { current: number; target: number }>();
+      let earnedStage = new Map<string, number>();
+      let progress = new Map<string, { current: number; target: number; stage: number; maxStage: number }>();
 
       if (user) {
         const [mine, prog] = await Promise.all([
-          supabase.from("user_badges").select("badge_id").eq("user_id", user.id),
+          supabase.from("user_badges").select("badge_id, stage").eq("user_id", user.id),
           supabase.rpc("act_badge_progress", { _user_id: user.id }),
         ]);
-        if (mine.error) throw mine.error;
-        if (prog.error) throw prog.error;
-        earned = new Set((mine.data ?? []).map((row) => row.badge_id));
+        // Never let a failed personal query hide the whole catalogue — the
+        // badges and their rules still show, just without progress.
+        if (mine.error) console.error("user_badges fetch failed", mine.error);
+        if (prog.error) console.error("act_badge_progress fetch failed", prog.error);
+        earnedStage = new Map((mine.data ?? []).map((row) => [row.badge_id, Number(row.stage ?? 0)]));
         progress = new Map(
           (prog.data ?? []).map((row) => [
             row.badge_id,
-            { current: Number(row.current_count ?? 0), target: Number(row.target ?? 0) },
+            {
+              current: Number(row.current_count ?? 0),
+              target: Number(row.target ?? 0),
+              stage: Number(row.stage ?? 0),
+              maxStage: Number(row.max_stage ?? 0),
+            },
           ]),
         );
       }
 
-      return (catalogue.data ?? []).map((badge) => {
+      return catalogue.map((badge) => {
         const p = progress.get(badge.id);
-        // Self-heal: a badge whose progress already meets its target counts
-        // as earned even if the user_badges row hasn't landed yet, so the
-        // app never shows a badge as locked that the website shows unlocked.
-        const metByProgress = !!p && p.target > 0 && p.current >= p.target;
+        // Stages never go down (user_badges keeps the highest), but live
+        // progress can be ahead of it for a moment right after logging.
+        const stage = Math.max(earnedStage.get(badge.id) ?? 0, p?.stage ?? 0);
         return {
-          id: badge.id,
-          kind: badge.kind,
-          name: badge.name,
-          name_es: badge.name_es,
-          name_fr: badge.name_fr,
-          name_de: badge.name_de,
-          description: badge.description,
-          description_es: badge.description_es,
-          description_fr: badge.description_fr,
-          description_de: badge.description_de,
-          icon: badge.icon,
-          earned: earned.has(badge.id) || metByProgress,
+          ...badge,
+          stage,
+          maxStage: p?.maxStage ?? badge.criteria?.stages.length ?? 0,
+          earned: stage > 0,
           current: p?.current ?? null,
           target: p?.target ?? null,
         };

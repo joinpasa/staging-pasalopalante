@@ -8,6 +8,13 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-28 — M.Schollmeyer@gmx.de
+
+- **Badges reworked to be smaller and easy to understand.** Every badge now comes from choices people make themselves when logging an act, so each badge simply says how to earn it (e.g. "Gave + Compliment"). There are now 9 badges, and each one has stages instead of unlocking once: one Kindness Streak badge (best streak ever: 1/2/3/5/10/20/50 days in a row) plus Good Word, Deep Listener, Gift Giver, Open Hand, Helping Hand, Hug Dealer, Grateful Heart (any received act) and Kindness Spotter (any witnessed act), with stages at 3/7/12/18/25/33/42/50 acts. The old First Spark/3/7/30-day, Time Giver and Wave Maker badges are gone, and everyone's badges were recalculated under the new rules (acts from before the act-type chips existed only count toward the streak, Grateful Heart and Kindness Spotter).
+- **Logging an act now always asks two things:** Gave / Received / Witnessed (now also on the app's main Log an Act screen, not only the website) and a "What did you do?" choice, both required. The choices are now short tags (Helped out, Compliment, Volunteered, Donated, Treated, Gift, Hug, Listened, Something else), and Gift and Hug are new. The app's quick-log field on the home screen now opens the full log screen with the text filled in, so the two choices can be made there.
+- **Wall posts show the chosen tag plus a "+1" badge icon** for every badge the act counted toward, in both the app and the website. They replace the old AI-generated tags. The AI no longer tags acts at all; it only moderates and detects the language.
+- **Reaching a new badge stage shows a message at the top of the screen** right after submitting. Members who turn on alerts in the app (off by default) also get a push notification for every new stage, in their language.
+
 ## 2026-10-27 — va.deedumlao@gmail.com
 
 - **GEO (AI-answer-engine) groundwork, ahead of Nov 1.** robots.txt now explicitly allows OAI-SearchBot, ChatGPT-User, Claude-SearchBot, Claude-User, PerplexityBot, Googlebot, and Bingbot (on top of the existing wildcard allow). Resolved on Cloudflare: AI Crawl Control's "Training" policy was blocking GPTBot, ClaudeBot, and others from pasalopalante.com with real failed requests in the last 24 hours — now allowed. New `/join` page — a plain Q&A answer to "how do I get involved in 1 billion acts of kindness," with step-by-step instructions pointing at the quick pledge (ambassador application linked as a secondary option, not the main button) — carries FAQPage and Event structured data (schema.org) so AI engines can read and cite it directly. New `/live` page snapshot so the 11.11 broadcast page has real content for non-JS crawlers.

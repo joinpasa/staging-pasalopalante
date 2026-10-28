@@ -242,60 +242,16 @@ export default function AppHome() {
     }
   }
 
-  // The quick-log field on the hero card — a minimal direct call to the same
-  // submit-act function ShareActFlow uses, for the case where someone just
-  // wants to log something in one tap without leaving the dashboard. The
-  // full flow (mode picker, multi-photo, anonymous name/email) stays at
-  // /log for anyone who wants more than that.
+  // The quick-log field on the hero card — type a few words here, then pick
+  // the mode and chip (both required, badges count them) on the full Log an
+  // Act screen, which opens with the text already filled in.
   const [quickText, setQuickText] = useState("");
   const [quickSocialLink, setQuickSocialLink] = useState<DetectedSocialLink | null>(null);
-  const [quickSubmitting, setQuickSubmitting] = useState(false);
-  const [quickLogged, setQuickLogged] = useState(false);
-  const [quickLoggedTotal, setQuickLoggedTotal] = useState<number | null>(null);
 
-  async function submitQuick() {
-    if (!user || quickSubmitting) return;
+  function submitQuick() {
     const trimmed = quickText.trim();
     if (!trimmed && !quickSocialLink) return;
-    setQuickSubmitting(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("submit-act", {
-        body: {
-          mode: "performed",
-          description: trimmed || undefined,
-          photo_paths: [],
-          video_url: quickSocialLink?.url || undefined,
-          lang,
-        },
-      });
-      if (error) {
-        toast.error(isRateLimitedError(error) ? pickRateLimitCheer(lang) : error.message);
-        return;
-      }
-      if (data?.status === "rejected") {
-        toast.error(data?.short_reason || t.appHome.unableToLogAct);
-        return;
-      }
-      if (!data?.id) {
-        toast.error(t.appHome.genericError);
-        return;
-      }
-      setQuickLogged(true);
-      setQuickLoggedTotal((me?.actsPassedForward ?? 0) + 1);
-      queryClient.invalidateQueries({ queryKey: ["app", "me"] });
-      queryClient.invalidateQueries({ queryKey: ["app", "my-acts"] });
-      queryClient.invalidateQueries({ queryKey: ["app", "badges"] });
-    } catch {
-      toast.error(t.appHome.genericError);
-    } finally {
-      setQuickSubmitting(false);
-    }
-  }
-
-  function resetQuick() {
-    setQuickLogged(false);
-    setQuickText("");
-    setQuickSocialLink(null);
+    navigate("/log", { state: { note: trimmed, socialLink: quickSocialLink ?? undefined } });
   }
 
   const earned = (badges ?? []).filter((b) => b.earned).slice(0, 6);
@@ -387,67 +343,51 @@ export default function AppHome() {
             <p className="text-[15.5px] font-bold">{t.appHome.logActHeading}</p>
           </div>
 
-          {!quickLogged ? (
-            <div className="mt-3">
-              {quickSocialLink && (
-                <div className="mb-2">
-                  <SocialLinkChip
-                    link={quickSocialLink}
-                    detectedLabel={`${quickSocialLink.label} link detected`}
-                    removeLabel="Remove link"
-                    onRemove={() => setQuickSocialLink(null)}
-                  />
-                </div>
-              )}
-              <div className="flex items-center gap-2 rounded-full bg-app-surface py-[5px] pl-4 pr-[5px]">
-                <input
-                  value={quickText}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    const detected = detectSocialLink(value);
-                    if (detected) {
-                      setQuickSocialLink(detected);
-                      setQuickText("");
-                    } else {
-                      setQuickText(value);
-                    }
-                  }}
-                  placeholder={quickSocialLink ? t.appLogAct.captionPlaceholder : t.appHome.describeAct}
-                  aria-label={t.appHome.describeAct}
-                  className="min-w-0 flex-1 border-none bg-transparent text-[13.5px] text-app-ink outline-none placeholder:text-app-ink/40"
+          <div className="mt-3">
+            {quickSocialLink && (
+              <div className="mb-2">
+                <SocialLinkChip
+                  link={quickSocialLink}
+                  detectedLabel={`${quickSocialLink.label} link detected`}
+                  removeLabel="Remove link"
+                  onRemove={() => setQuickSocialLink(null)}
                 />
-                <button
-                  type="button"
-                  onClick={submitQuick}
-                  disabled={quickSubmitting || (!quickText.trim() && !quickSocialLink)}
-                  aria-label={t.appHome.logThisAct}
-                  className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full bg-app-ink disabled:opacity-60"
-                >
-                  <Check className="h-4 w-4 text-app-surface" />
-                </button>
               </div>
-              <Link
-                to="/log"
-                className="mt-2.5 block text-[11.5px] font-semibold text-app-surface/90 underline underline-offset-2"
-              >
-                {t.appHome.addPhotoOrPickAct}
-              </Link>
-            </div>
-          ) : (
-            <div className="mt-3 flex items-center gap-2.5 rounded-2xl bg-app-surface/20 px-3.5 py-2.5">
-              <CheckCircle2 className="h-5 w-5 shrink-0 fill-app-surface text-app-coral" />
-              <p className="flex-1 text-[12.5px] leading-snug">
-                {t.appHome.quickLogged.replace("{count}", nf.format(quickLoggedTotal ?? 0))}
-              </p>
+            )}
+            <div className="flex items-center gap-2 rounded-full bg-app-surface py-[5px] pl-4 pr-[5px]">
+              <input
+                value={quickText}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const detected = detectSocialLink(value);
+                  if (detected) {
+                    setQuickSocialLink(detected);
+                    setQuickText("");
+                  } else {
+                    setQuickText(value);
+                  }
+                }}
+                placeholder={quickSocialLink ? t.appLogAct.captionPlaceholder : t.appHome.describeAct}
+                aria-label={t.appHome.describeAct}
+                className="min-w-0 flex-1 border-none bg-transparent text-[13.5px] text-app-ink outline-none placeholder:text-app-ink/40"
+              />
               <button
                 type="button"
-                onClick={resetQuick}
-                className="shrink-0 text-[11.5px] font-bold underline underline-offset-2"
+                onClick={submitQuick}
+                disabled={!quickText.trim() && !quickSocialLink}
+                aria-label={t.appHome.logThisAct}
+                className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full bg-app-ink disabled:opacity-60"
               >
-                {t.appHome.logAnother}
+                <Check className="h-4 w-4 text-app-surface" />
               </button>
             </div>
-          )}
+            <Link
+              to="/log"
+              className="mt-2.5 block text-[11.5px] font-semibold text-app-surface/90 underline underline-offset-2"
+            >
+              {t.appHome.addPhotoOrPickAct}
+            </Link>
+          </div>
         </section>
       ) : (
         <section className="relative overflow-hidden rounded-3xl border-4 border-warm-terracotta bg-app-coral p-6 text-app-surface">
@@ -547,6 +487,9 @@ export default function AppHome() {
                 <p className="mt-2 text-[11px] font-medium leading-tight text-foreground">
                   {badgeName(badge)}
                 </p>
+                <p className="mt-0.5 text-[10.5px] font-semibold text-app-coral">
+                  {t.appBadges.stage.replace("{stage}", String(badge.stage))}
+                </p>
               </div>
             ))}
           </div>
@@ -566,7 +509,7 @@ export default function AppHome() {
                 >
                   <div className="flex items-center gap-3">
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-app-teal-tint text-lg">
-                      {actEmoji(act.tags, act.mode)}
+                      {actEmoji(act.actType, act.mode)}
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="line-clamp-2 text-sm font-semibold leading-snug text-foreground">
@@ -612,7 +555,7 @@ export default function AppHome() {
               >
                 <div className="flex items-center gap-3">
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-app-coral-tint text-lg">
-                    {actEmoji(act.tags, act.mode)}
+                    {actEmoji(act.actType, act.mode)}
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="line-clamp-2 text-sm font-semibold leading-snug text-foreground">
