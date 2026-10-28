@@ -2,9 +2,11 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ComposableMap, Geographies, Geography, Marker, ZoomableGroup } from "react-simple-maps";
 import { geoCentroid } from "d3-geo";
 import { ChevronDown, Loader2, LocateFixed, Minus, Plus, Search } from "lucide-react";
-import { useKindnessMapCounts, useMovementTotals, useWallActs, type WallAct } from "@/hooks/useAppData";
+import { toast } from "sonner";
+import { useActReactions, useKindnessMapCounts, useMovementTotals, useWallActs, type WallAct } from "@/hooks/useAppData";
 import { useActTranslations } from "@/hooks/useActTranslations";
 import TranslateButton from "@/components/app/TranslateButton";
+import ReactionButton from "@/components/app/ReactionButton";
 // Bundled locally instead of fetched from cdn.jsdelivr.net at runtime - that
 // CDN is blocked or unreliable on some networks (confirmed blocked outright
 // from this project's own dev sandbox), which made the map silently fail to
@@ -13,6 +15,7 @@ import TranslateButton from "@/components/app/TranslateButton";
 // instead of a third-party one no code here can control.
 import geoData from "world-atlas/countries-110m.json";
 import { useLanguage } from "@shared/contexts/LanguageContext";
+import { useAuth } from "@shared/contexts/AuthContext";
 import { timeAgo } from "@shared/lib/appActs";
 import { cn } from "@shared/lib/utils";
 
@@ -51,6 +54,16 @@ export default function AppMap() {
   const { data: rows = [], isLoading } = useKindnessMapCounts();
   const { data: acts = [] } = useWallActs(8);
   const translations = useActTranslations();
+  // Same hearts as on the Wall — one shared count per act.
+  const { user } = useAuth();
+  const { reactions, toggle } = useActReactions(acts.map((a) => a.id));
+  const onToggleReact = (actId: string) => {
+    if (!user) {
+      toast(t.appWall.joinToReact);
+      return;
+    }
+    void toggle(actId);
+  };
 
   const [centroids, setCentroids] = useState<Record<string, [number, number]>>({});
   const [center, setCenter] = useState<[number, number]>([0, 20]);
@@ -305,7 +318,13 @@ export default function AppMap() {
         ) : (
           <ul className="mt-3 space-y-1">
             {acts.map((act) => (
-              <RecentActRow key={act.id} act={act} translations={translations} />
+              <RecentActRow
+                key={act.id}
+                act={act}
+                translations={translations}
+                reaction={reactions[act.id]}
+                onToggleReact={() => onToggleReact(act.id)}
+              />
             ))}
           </ul>
         )}
@@ -315,16 +334,21 @@ export default function AppMap() {
 }
 
 /**
- * One "Recent Acts of Kindness" entry. The text is cut to one line; when it
- * doesn't fit, an expand button under the translate button shows the full
- * text right in the list (no popup), and collapses it again.
+ * One "Recent Acts of Kindness" entry: the translate button sits next to the
+ * poster's name, the heart (same as on the Wall) under the time. The text is
+ * cut to one line; when it doesn't fit, an expand button under the heart
+ * shows the full text right in the list (no popup), and collapses it again.
  */
 function RecentActRow({
   act,
   translations,
+  reaction,
+  onToggleReact,
 }: {
   act: WallAct;
   translations: ReturnType<typeof useActTranslations>;
+  reaction: { count: number; reacted: boolean } | undefined;
+  onToggleReact: () => void;
 }) {
   const { t, lang } = useLanguage();
   const text = translations.textFor(act);
@@ -361,17 +385,26 @@ function RecentActRow({
         >
           {text}
         </p>
-        <p className="truncate text-xs text-muted-foreground">{act.name}</p>
+        <div className="flex items-center gap-3">
+          <p className="truncate text-xs text-muted-foreground">{act.name}</p>
+          {translations.canTranslate(act) && (
+            <span className="-my-1 shrink-0">
+              <TranslateButton
+                translated={translations.isTranslated(act.id)}
+                loading={translations.isLoading(act.id)}
+                onClick={() => translations.toggle(act)}
+              />
+            </span>
+          )}
+        </div>
       </div>
-      <div className="flex shrink-0 flex-col items-end gap-0.5">
+      <div className="flex shrink-0 flex-col items-end gap-1">
         <span className="text-xs font-bold text-app-teal">{timeAgo(act.createdAt, t.appCommon, lang)}</span>
-        {translations.canTranslate(act) && (
-          <TranslateButton
-            translated={translations.isTranslated(act.id)}
-            loading={translations.isLoading(act.id)}
-            onClick={() => translations.toggle(act)}
-          />
-        )}
+        <ReactionButton
+          count={reaction?.count ?? 0}
+          reacted={reaction?.reacted ?? false}
+          onToggle={onToggleReact}
+        />
         {(cutOff || expanded) && (
           <button
             type="button"
