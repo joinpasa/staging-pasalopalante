@@ -43,6 +43,25 @@ export function badgeText(b: BadgeDef, lang: string, field: "name" | "descriptio
   return map[lang] || (field === "name" ? b.name : b.description) || "";
 }
 
+// Quoted chip/mode names in badge rules — “Gave” (en/es), „Gegeben“ (de),
+// « Donné » (fr), or plain "…".
+const QUOTED = /(?:“|„|«\s?|")(.+?)(?:\s?»|”|“|")/g;
+
+/** Splits a badge rule so its quoted words can be shown in bold, without
+ *  the quote marks: Log “Gave” + “Compliment” → Log **Gave** + **Compliment**. */
+export function badgeRuleParts(text: string): Array<{ text: string; bold: boolean }> {
+  const parts: Array<{ text: string; bold: boolean }> = [];
+  let last = 0;
+  for (const m of text.matchAll(QUOTED)) {
+    const at = m.index ?? 0;
+    if (at > last) parts.push({ text: text.slice(last, at), bold: false });
+    parts.push({ text: m[1], bold: true });
+    last = at + m[0].length;
+  }
+  if (last < text.length) parts.push({ text: text.slice(last), bold: false });
+  return parts;
+}
+
 /** The badges this act added +1 to. Streaks aren't per act, so never listed. */
 export function badgesForAct(
   catalogue: BadgeDef[] | undefined,

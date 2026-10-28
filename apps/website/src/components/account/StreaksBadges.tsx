@@ -3,6 +3,7 @@ import { supabase } from "@shared/integrations/supabase/client";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { Skeleton } from "@shared/components/ui/skeleton";
 import { badgeText, fetchBadgeCatalogue, type BadgeDef } from "@shared/lib/badges";
+import BadgeHint from "@shared/components/badges/BadgeHint";
 import { Flame } from "lucide-react";
 
 interface Progress {
@@ -114,17 +115,17 @@ const StreaksBadges = ({ userId }: { userId: string }) => {
             const stage = stages[streakBadge.id] ?? 0;
             const p = progress[streakBadge.id];
             return (
-              <span
+              <BadgeHint
+                text={badgeText(streakBadge, lang, "description")}
                 className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs leading-none transition-opacity ${
                   stage > 0 ? "bg-warm-cream text-foreground" : "bg-muted/50 text-foreground/40"
                 } ${justEarned.has(streakBadge.id) ? "badge-pop" : ""}`}
-                title={badgeText(streakBadge, lang, "description")}
               >
                 <span className={`text-base ${stage > 0 ? "" : "grayscale opacity-60"}`}>{streakBadge.icon || "🏅"}</span>
                 <span className="font-medium">{badgeText(streakBadge, lang, "name")}</span>
                 {stage > 0 && <span className="text-foreground/60">· {stageLabel(stage)}</span>}
                 {p && <span className="tabular-nums text-foreground/60">· {p.current_count}/{p.target}</span>}
-              </span>
+              </BadgeHint>
             );
           })()}
         </div>
@@ -141,30 +142,28 @@ const StreaksBadges = ({ userId }: { userId: string }) => {
             const stage = stages[b.id] ?? 0;
             const got = stage > 0;
             return (
-              <div
+              <BadgeHint
                 key={b.id}
+                text={badgeText(b, lang, "description")}
                 className={`p-4 rounded-xl text-center border transition-all flex flex-col ${
                   got ? "bg-warm-cream border-terracotta/30" : "border-border"
                 } ${justEarned.has(b.id) ? "badge-pop" : ""}`}
               >
-                <div className={`text-3xl mb-1 ${got ? "" : "grayscale opacity-50"}`}>
+                <span className={`block text-3xl mb-1 ${got ? "" : "grayscale opacity-50"}`}>
                   {b.icon || "🏅"}
-                </div>
-                <div className={`text-xs font-medium leading-tight ${got ? "" : "text-foreground/60"}`}>
+                </span>
+                <span className={`block text-xs font-medium leading-tight ${got ? "" : "text-foreground/60"}`}>
                   {badgeText(b, lang, "name")}
-                </div>
+                </span>
                 {got && (
-                  <div className="mt-1 text-[11px] font-semibold text-terracotta">{stageLabel(stage)}</div>
+                  <span className="mt-1 block text-[11px] font-semibold text-terracotta">{stageLabel(stage)}</span>
                 )}
-                <div className="mt-1 text-[11px] leading-snug text-foreground/60">
-                  {badgeText(b, lang, "description")}
-                </div>
                 {p && (
-                  <div className="mt-auto pt-1.5 text-[11px] tabular-nums text-foreground/60">
+                  <span className="mt-auto block pt-1.5 text-[11px] tabular-nums text-foreground/60">
                     {p.current_count}/{p.target}
-                  </div>
+                  </span>
                 )}
-              </div>
+              </BadgeHint>
             );
           })}
         </div>

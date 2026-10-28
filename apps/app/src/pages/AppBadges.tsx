@@ -5,14 +5,15 @@ import PushToggle from "@/components/app/PushToggle";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { badgeText } from "@shared/lib/badges";
+import BadgeHint from "@shared/components/badges/BadgeHint";
 import { useAppBadges, useAppMe, type AppBadge } from "@/hooks/useAppData";
 import { cn } from "@shared/lib/utils";
 
 /**
  * Same badge catalogue, stages and progress as the website's account page
  * (StreaksBadges.tsx). Every badge says exactly how to earn it — its
- * description is the rule ("Log “Gave” + “Compliment”") — and climbs
- * through stages instead of unlocking once.
+ * description is the rule ("Log “Gave” + “Compliment”"), shown in a bubble
+ * on tap (or hover) — and climbs through stages instead of unlocking once.
  */
 export default function AppBadges() {
   const { user } = useAuth();
@@ -70,12 +71,12 @@ export default function AppBadges() {
           </div>
 
           {streakBadge && (
-            <span
+            <BadgeHint
+              text={badgeText(streakBadge, lang, "description")}
               className={cn(
                 "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs leading-none",
                 streakBadge.earned ? "bg-app-gold-tint text-foreground" : "bg-muted/50 text-app-hush",
               )}
-              title={badgeText(streakBadge, lang, "description")}
             >
               <span className={cn("text-base", !streakBadge.earned && "grayscale opacity-60")}>
                 {streakBadge.icon || "🏅"}
@@ -87,7 +88,7 @@ export default function AppBadges() {
               <span className="tabular-nums text-muted-foreground">
                 · {streakBadge.current ?? 0} / {streakBadge.target}
               </span>
-            </span>
+            </BadgeHint>
           )}
         </section>
       )}
@@ -95,9 +96,12 @@ export default function AppBadges() {
       {user && next && (
         <section className="mt-4 rounded-2xl bg-app-surface p-4">
           <div className="flex items-baseline justify-between gap-3">
-            <p className="truncate text-sm font-semibold text-foreground">
+            <BadgeHint
+              text={badgeText(next, lang, "description")}
+              className="min-w-0 truncate text-start text-sm font-semibold text-foreground"
+            >
               {t.appBadges.nextMilestone} · {next.icon} {badgeText(next, lang, "name")} · {stageLabel(next.stage + 1)}
-            </p>
+            </BadgeHint>
             <p className="shrink-0 text-sm font-bold text-app-coral">
               {next.current ?? 0} / {next.target}
             </p>
@@ -105,7 +109,6 @@ export default function AppBadges() {
           <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-muted">
             <div className="h-full rounded-full bg-app-coral" style={{ width: `${progress}%` }} />
           </div>
-          <p className="mt-2 text-xs text-muted-foreground">{badgeText(next, lang, "description")}</p>
         </section>
       )}
 
@@ -120,42 +123,41 @@ export default function AppBadges() {
       ) : (
         <ul className="mt-4 grid grid-cols-3 gap-3">
           {actBadges.map((badge) => (
-            <li
-              key={badge.id}
-              className={cn(
-                "flex flex-col rounded-2xl p-3 text-center",
-                badge.earned ? "bg-app-surface" : "bg-app-surface/50",
-              )}
-            >
-              <div
+            <li key={badge.id}>
+              <BadgeHint
+                text={badgeText(badge, lang, "description")}
                 className={cn(
-                  "mx-auto flex h-14 w-14 items-center justify-center rounded-full text-2xl",
-                  !badge.earned && "grayscale opacity-50",
+                  "flex h-full w-full flex-col rounded-2xl p-3 text-center",
+                  badge.earned ? "bg-app-surface" : "bg-app-surface/50",
                 )}
               >
-                {badge.icon || "🏅"}
-              </div>
-              <p
-                className={cn(
-                  "mt-2 text-xs font-bold leading-tight",
-                  badge.earned ? "text-foreground" : "text-app-hush",
+                <span
+                  className={cn(
+                    "mx-auto flex h-14 w-14 items-center justify-center rounded-full text-2xl",
+                    !badge.earned && "grayscale opacity-50",
+                  )}
+                >
+                  {badge.icon || "🏅"}
+                </span>
+                <span
+                  className={cn(
+                    "mt-2 block text-xs font-bold leading-tight",
+                    badge.earned ? "text-foreground" : "text-app-hush",
+                  )}
+                >
+                  {badgeText(badge, lang, "name")}
+                </span>
+                {badge.earned && (
+                  <span className="mt-1 block text-[10.5px] font-semibold text-app-coral">
+                    {stageLabel(badge.stage)}
+                  </span>
                 )}
-              >
-                {badgeText(badge, lang, "name")}
-              </p>
-              {badge.earned && (
-                <p className="mt-1 text-[10.5px] font-semibold text-app-coral">
-                  {stageLabel(badge.stage)}
-                </p>
-              )}
-              <p className="mt-1 text-[10.5px] leading-snug text-muted-foreground">
-                {badgeText(badge, lang, "description")}
-              </p>
-              {user && badge.target ? (
-                <p className="mt-auto pt-1.5 text-[11px] tabular-nums text-muted-foreground">
-                  {badge.current ?? 0} / {badge.target}
-                </p>
-              ) : null}
+                {user && badge.target ? (
+                  <span className="mt-auto block pt-1.5 text-[11px] tabular-nums text-muted-foreground">
+                    {badge.current ?? 0} / {badge.target}
+                  </span>
+                ) : null}
+              </BadgeHint>
             </li>
           ))}
         </ul>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { badgesForAct, badgeText, type BadgeDef } from "@shared/lib/badges";
+import { badgeRuleParts, badgesForAct, badgeText, type BadgeDef } from "@shared/lib/badges";
 
 const STAGES = [3, 7, 12, 18, 25, 33, 42, 50];
 
@@ -70,5 +70,22 @@ describe("badgeText", () => {
     expect(badgeText(b, "de", "name")).toBe("Gutes Wort");
     expect(badgeText(b, "es", "name")).toBe("Good Word");
     expect(badgeText(b, "de", "description")).toBe("Log it");
+  });
+});
+
+describe("badgeRuleParts", () => {
+  const bold = (text: string) =>
+    badgeRuleParts(text).map((p) => (p.bold ? `*${p.text}*` : p.text)).join("");
+
+  it("bolds the quoted words and drops the quote marks in every language", () => {
+    expect(bold("Log “Gave” + “Compliment”")).toBe("Log *Gave* + *Compliment*");
+    expect(bold("Halte „Gegeben“ + „Kompliment“ fest")).toBe("Halte *Gegeben* + *Kompliment* fest");
+    expect(bold("Enregistre « Donné » + « Mot gentil »")).toBe("Enregistre *Donné* + *Mot gentil*");
+    expect(bold("Log “Gave” + “Donated” or “Treated”")).toBe("Log *Gave* + *Donated* or *Treated*");
+  });
+
+  it("leaves rules without quotes untouched", () => {
+    const text = "Log an act on as many days in a row as you can. Your best run counts.";
+    expect(badgeRuleParts(text)).toEqual([{ text, bold: false }]);
   });
 });
