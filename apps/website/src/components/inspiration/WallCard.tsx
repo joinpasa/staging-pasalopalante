@@ -27,6 +27,7 @@ interface Props {
   reactionCount: number;
   reacted: boolean;
   onToggleReact: () => void;
+  /** Opens the photo/video viewer (long text expands inside the card instead). */
   onOpen: () => void;
 }
 
@@ -65,6 +66,9 @@ export default function WallCard({
     requested,
   );
   const displayText = requested && translation ? translation : original;
+  // "Read more" expands the full text over the whole card (scrolling inside
+  // it if it's still too long) instead of opening a popup.
+  const [expanded, setExpanded] = useState(false);
 
   // If both photo and video, prefer photo for the polaroid frame.
   const showVideo = !photoUrl && !!videoThumbUrl;
@@ -174,7 +178,7 @@ export default function WallCard({
                 onClick={onOpen}
                 className="group relative block bg-white p-2 pb-5 rounded-sm shadow-md hover:shadow-lg transition-shadow"
                 style={{ border: "1px solid rgba(255,255,255,0.9)", width: 168 }}
-                aria-label={showVideo ? "Play video" : t.inspiration.readMore}
+                aria-label={showVideo ? "Play video" : "View photo"}
               >
                 <div className="w-full aspect-square overflow-hidden bg-black/5">
                   <img
@@ -228,7 +232,7 @@ export default function WallCard({
                     {" "}
                     <button
                       type="button"
-                      onClick={onOpen}
+                      onClick={() => setExpanded(true)}
                       className="font-semibold underline underline-offset-2 hover:opacity-70 transition-opacity"
                       style={{ color: MUTED_COLOR }}
                     >
@@ -254,7 +258,7 @@ export default function WallCard({
                 {" "}
                 <button
                   type="button"
-                  onClick={onOpen}
+                  onClick={() => setExpanded(true)}
                   className="font-semibold underline underline-offset-2 hover:opacity-70 transition-opacity"
                   style={{ color: MUTED_COLOR }}
                 >
@@ -289,6 +293,35 @@ export default function WallCard({
           {reactionCount}
         </button>
       </div>
+
+      {expanded && (
+        <div
+          className="absolute inset-0 z-10 flex flex-col px-5 py-3"
+          style={{ background: gradient }}
+        >
+          <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain flex flex-col text-center">
+            <p
+              className={`m-0 my-auto py-1 leading-relaxed whitespace-pre-wrap ${
+                hasMedia ? "font-semibold text-sm" : "font-bold text-base"
+              }`}
+              style={{ color: TEXT_COLOR }}
+            >
+              {`"${displayText}"`}
+            </p>
+          </div>
+          <div className="pt-2 flex flex-col items-center gap-1.5">
+            {renderTranslationStrip()}
+            <button
+              type="button"
+              onClick={() => setExpanded(false)}
+              className="text-xs font-semibold underline underline-offset-2 hover:opacity-70 transition-opacity"
+              style={{ color: MUTED_COLOR }}
+            >
+              {t.inspiration.showLess}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

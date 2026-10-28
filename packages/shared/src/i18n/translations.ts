@@ -1133,6 +1133,7 @@ const translations = {
       anonymous: "Anonymous",
       signInToReact: "Sign in to send a heart.",
       readMore: "Read more",
+      showLess: "Show less",
       close: "Close",
       translatedFromEn: "Translated from English",
       translatedFromEs: "Translated from Spanish",
