@@ -22,16 +22,15 @@ Teammates push here too, so `git pull origin claude/app-website-separation-lgg5n
 
 After pushing a change to `supabase/**`, check the Actions tab (or ask the user to) rather than assuming it deployed — a red run there means it didn't ship.
 
-## Combining the two domains (app under pasalopalante.com/app)
+## The two domains (app lives at pasalopalante.com/app) — this already happened
 
-`npm run build:combined` (`scripts/build-combined.mjs`) builds a single deployment with the website at `/` and the app embedded at `/app/*` on the same origin — this is what makes a true one-tap "Get the app → native install dialog" possible (no origin can trigger a *different* origin's install prompt, which is why the current two-domain setup needs a redirect hop first). It's additive and already merged — `build:website`/`build:app` are unaffected, verified byte-for-byte identical to before. It does **not** go live on its own. To actually cut over:
+This used to document a *planned* cutover. It's done — don't follow it as a future to-do, and don't tell anyone the app still lives on its own subdomain. Here's the actual current state:
 
-1. In the Cloudflare dashboard, change the `pasalopalante.com` project's build command to `npm run build:combined` (root directory: repo root, output directory: `apps/website/dist`).
-2. Point `app.pasalopalante.com` at a redirect to `pasalopalante.com/app/$1` (the old subdomain needs to keep working for existing bookmarks/printed QR codes — don't just delete it).
-3. Add `https://pasalopalante.com/app/**` to Supabase's Auth → URL Configuration → Redirect URLs allow-list (magic links, password reset, etc. depend on this).
-4. Once confirmed working, the old `app.pasalopalante.com`-only Cloudflare project's build can stop running — traffic is fully served from the `pasalopalante.com` project by then.
-
-Until all of that happens, both domains keep working exactly as they do today, independently, unaffected by this build script's existence.
+- The `pasalopalante.com` Cloudflare project's build command is `npm run build:combined` (`scripts/build-combined.mjs`), live since 2026-09-08: the website serves at `/`, the installable app is embedded at `/app/*`, same origin. This is what makes the one-tap "Get the app → native install dialog" work (an install prompt can't be triggered across origins). `build:website`/`build:app` still exist and are unaffected — other things still use them (e.g. `app.pasalopalante.com` below).
+- **`app.pasalopalante.com` is still a real, independently-deployed, fully-working app** — not a redirect, and not retired. It's `build:app`'s own separate Cloudflare project, kept intentionally live so old bookmarks and previously-shared/printed Pass QR codes keep working. Any new QR code, share link, or "Open/Get the app" button on the website now points at same-origin `pasalopalante.com/app/...` instead (see `getAppBaseUrl()` in `packages/shared/src/lib/canonicalDomain.ts`) — `app.pasalopalante.com` is a fallback for existing links, not where new traffic is sent.
+- Supabase's Auth → URL Configuration → Redirect URLs allow-list already includes `https://pasalopalante.com/app/**` (has to, for magic links/password reset to work on the combined path, which they do).
+- **Still genuinely pending**: pointing `app.pasalopalante.com` at a redirect to `pasalopalante.com/app/$1` instead of keeping it as a second live deployment, and retiring that old Cloudflare project once that's confirmed stable. Don't do this unprompted — it's a deliberate, not-yet-made call, not an oversight.
+- `passkindnessforward.com` shares the same Cloudflare Worker as `pasalopalante.com` (same combined build), which once caused it to silently spin up its own separate install/account system — fixed (`canonicalDomain.ts`, covered by `canonicalDomain.test.ts`): its `/auth` and `/account` routes redirect to canonical `pasalopalante.com`, and its app links always point at `app.pasalopalante.com` rather than installing a second, disconnected copy of the app.
 
 ## Set real git identity at the start of every session
 
