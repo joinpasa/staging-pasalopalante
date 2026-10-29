@@ -453,8 +453,8 @@ export default function AppHome() {
               <ArrowUpRight className="h-[11px] w-[11px] text-app-magenta" strokeWidth={2.1} />
             </span>
             <Users className="h-[17px] w-[17px] text-app-magenta" strokeWidth={1.6} />
-            <p className={cn("font-extrabold leading-none text-foreground", statFontSizeClass(me?.connections ?? 0, "compact"))}>
-              {nf.format(me?.connections ?? 0)}
+            <p className={cn("font-extrabold leading-none text-foreground", statFontSizeClass(me?.reach.peopleReached ?? 0, "compact"))}>
+              {nf.format(me?.reach.peopleReached ?? 0)}
             </p>
             <p className="text-[10.5px] leading-tight text-muted-foreground">{t.appHome.peopleReached}</p>
           </Link>

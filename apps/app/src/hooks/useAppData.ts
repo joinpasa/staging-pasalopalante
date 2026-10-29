@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@shared/integrations/supabase/client";
 import { supabasePublic } from "@shared/integrations/supabase/publicClient";
 import { fetchBadgeCatalogue, type BadgeDef } from "@shared/lib/badges";
+import { parseReachStats, type ReachStats } from "@shared/lib/reach";
 import { useAuth } from "@shared/contexts/AuthContext";
 
 /**
@@ -25,13 +26,12 @@ export interface AppMe {
   pledged: number;
   peoplePassedTo: number;
   rippleActs: number;
-  /** Distinct people connected with in person via Pass (either direction —
-   *  scanning someone's code or having your own scanned both count), from
-   *  pass_handoffs. Separate from peoplePassedTo, which is specifically
-   *  people who joined the platform using your referral code — connecting
-   *  with an existing member in person is a different event and wasn't
-   *  reflected anywhere until this. */
-  connections: number;
+  /** People reached (whole referral chain + registered members who scanned
+   *  your own Pass QR and their chains, each person once) and the
+   *  direct-join / ripple breakdown —
+   *  see my_reach_stats(). My Network's connection list is separate
+   *  (useMyConnections). */
+  reach: ReachStats;
   onboardingSeen: boolean;
   hasCommitment: boolean;
   tourSeen: boolean;
@@ -46,7 +46,7 @@ export function useAppMe() {
     queryFn: async (): Promise<AppMe> => {
       const uid = user!.id;
 
-      const [profileRes, streakRes, pledgeRes, referralRes, connectionsRes] = await Promise.all([
+      const [profileRes, streakRes, pledgeRes, referralRes, reachRes] = await Promise.all([
         supabase
           .from("profiles")
           .select("display_name, first_name, last_name, country, referral_code, onboarding_seen, tour_seen")
@@ -55,14 +55,14 @@ export function useAppMe() {
         supabase.rpc("user_streak", { _user_id: uid }),
         supabase.from("commitments").select("pledge_count").eq("user_id", uid),
         supabase.rpc("my_referral_stats"),
-        supabase.rpc("my_connections_count"),
+        supabase.rpc("my_reach_stats"),
       ]);
 
       // A failed query here must not silently render as "0 of everything" —
       // that's indistinguishable from a real new/empty account. Throwing
       // lets react-query surface an actual error state instead.
       const firstError =
-        profileRes.error || streakRes.error || pledgeRes.error || referralRes.error || connectionsRes.error;
+        profileRes.error || streakRes.error || pledgeRes.error || referralRes.error || reachRes.error;
       if (firstError) throw firstError;
 
       const profile = profileRes.data;
@@ -84,7 +84,7 @@ export function useAppMe() {
         pledged: (pledgeRes.data ?? []).reduce((sum, row) => sum + (row.pledge_count ?? 0), 0),
         peoplePassedTo: Number(referral?.joined_count ?? 0),
         rippleActs: Number(referral?.acts_count ?? 0),
-        connections: Number(connectionsRes.data ?? 0),
+        reach: parseReachStats(reachRes.data),
         onboardingSeen: !!profile?.onboarding_seen,
         hasCommitment: (pledgeRes.data ?? []).length > 0,
         tourSeen: !!profile?.tour_seen,
@@ -416,7 +416,7 @@ export interface Connection {
   direction: ConnectionDirection;
 }
 
-/** The list behind me.connections — one row per distinct person connected
+/** My Network's list — one row per distinct person connected
  *  with via Pass, most recent first. */
 export function useMyConnections() {
   const { user } = useAuth();

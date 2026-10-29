@@ -30,10 +30,12 @@ npm run build
 ## Testing
 
 ```sh
-npm test                     # unit tests: shared, website, app, and cross-cutting repo checks
+npm test                     # unit tests: shared, website, app, cross-cutting repo checks, and database logic
 npm run test:e2e:website     # Playwright, requires the website dev server running
 npm run test:e2e:app         # Playwright, requires the app dev server running
 ```
+
+`tests/db/` runs SQL from `supabase/migrations/` against an in-process Postgres ([PGlite](https://pglite.dev)), so database functions can be tested without a Supabase project, a server or Docker. It currently covers "people reached" and the direct-join / ripple counts (`my_reach_stats`).
 
 ## Technologies
 
