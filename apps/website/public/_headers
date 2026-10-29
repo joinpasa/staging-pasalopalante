@@ -1,0 +1,22 @@
+# Keep sign-in, account and personal-link pages out of search results.
+# Sent as a header so crawlers that don't run JavaScript see it too; the
+# pages also set <meta name="robots" content="noindex"> themselves (SEO.tsx).
+# Not blocked in robots.txt on purpose — a crawler that can't fetch a page
+# never sees its noindex, and could still index the bare URL.
+# scripts/build-combined.mjs appends its /app rules after these.
+/auth
+  X-Robots-Tag: noindex
+/reset-password
+  X-Robots-Tag: noindex
+/account
+  X-Robots-Tag: noindex
+/account/*
+  X-Robots-Tag: noindex
+/share/thanks/*
+  X-Robots-Tag: noindex
+/wave
+  X-Robots-Tag: noindex
+/wave/*
+  X-Robots-Tag: noindex
+/k/*
+  X-Robots-Tag: noindex

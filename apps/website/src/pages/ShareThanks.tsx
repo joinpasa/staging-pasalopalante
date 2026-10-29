@@ -23,6 +23,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@shared/compon
 import { supabase } from "@shared/integrations/supabase/client";
 import { useReferralCode } from "@/hooks/useReferralCode";
 import { siteOrigin, withReferral } from "@shared/lib/referral";
+import { useNoIndex } from "@/hooks/useNoIndex";
 
 interface Act {
   id: string;
@@ -330,6 +331,7 @@ function Inner() {
 }
 
 export default function ShareThanks() {
+  useNoIndex();
   return (
     <div className="min-h-screen bg-background">
       <Navbar />

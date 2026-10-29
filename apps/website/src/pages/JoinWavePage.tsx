@@ -12,6 +12,7 @@ import CommitRoles from "@/components/commit/CommitRoles";
 import { supabase } from "@shared/integrations/supabase/client";
 import { supabasePublic } from "@shared/integrations/supabase/publicClient";
 import { getStoredReferral } from "@shared/lib/referral";
+import { useNoIndex } from "@/hooks/useNoIndex";
 
 interface Act {
   id: string;
@@ -161,6 +162,7 @@ function Inner() {
 }
 
 export default function JoinWavePage() {
+  useNoIndex();
   return (
     <div className="min-h-screen bg-background">
       <Navbar />

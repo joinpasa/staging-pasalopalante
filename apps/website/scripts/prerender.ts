@@ -51,7 +51,6 @@ const FOOTER = `
   </p>
   <p>
     <a href="/about">About</a> ·
-    <a href="/how-it-works">How it works</a> ·
     <a href="/programs">Programs</a> ·
     <a href="/get-involved">Get involved</a> ·
     <a href="/donate">Donate</a> ·
@@ -96,27 +95,6 @@ const routes: Route[] = [
       <p>Anyone can participate. Pásalo Pa'lante welcomes individuals, families, students, educators, community leaders, nonprofit organizations, companies, municipalities, artists, athletes, media partners, sponsors, and institutions that want to help create a more compassionate world.</p>
       <h2>How the Movement Grows</h2>
       <p>The movement grows through simple acts of kindness, community participation, school and youth activations, ambassador leadership, nonprofit partnerships, institutional support, storytelling, and shared public commitment.</p>
-    `,
-  },
-  {
-    path: "/how-it-works",
-    title: "How It Works | Kindness Forward",
-    description:
-      "Discover how individuals, schools, organizations, cities, and ambassadors can participate in the Pásalo Pa'lante kindness movement.",
-    body: `
-      <h1>How Pásalo Pa'lante works</h1>
-      ${SISTER}
-      <p>Pásalo Pa'lante begins with a simple act of kindness. A person helps, encourages, serves, gives, thanks, forgives, listens, supports, or uplifts someone else. Then they invite that person to pass kindness forward.</p>
-      <p>The movement is designed to be simple enough for anyone to join and structured enough for schools, organizations, companies, municipalities, churches, nonprofits, and community leaders to activate at scale.</p>
-      <h2>Ways to participate</h2>
-      <ul>
-        <li><strong>Individuals</strong> — do and share acts of kindness.</li>
-        <li><strong>Schools</strong> — kindness challenges, classroom activities, student leadership, service projects.</li>
-        <li><strong>Organizations</strong> — volunteer activations, workplace kindness campaigns, community partnerships.</li>
-        <li><strong>Cities &amp; institutions</strong> — civic kindness, public service, community engagement.</li>
-        <li><strong>Ambassadors</strong> — organize, invite, document, and expand the movement.</li>
-      </ul>
-      <p>See <a href="/programs">/programs</a> for the full program list and <a href="/get-involved">/get-involved</a> to join.</p>
     `,
   },
   {

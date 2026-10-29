@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { setNoIndex } from "@/hooks/useNoIndex";
 
 interface SEOProps {
   title: string;
@@ -14,6 +15,8 @@ interface SEOProps {
   siteUrl?: string;
   /** One or more JSON-LD objects (e.g. FAQPage, Organization) to embed. */
   schema?: object | object[];
+  /** Keep this page out of search results (sign-in, account, personal links). */
+  noindex?: boolean;
 }
 
 const SITE_URL = "https://pasalopalante.com";
@@ -40,7 +43,7 @@ function setLink(rel: string, href: string) {
   el.setAttribute("href", href);
 }
 
-export default function SEO({ title, description, path, image, siteUrl, schema }: SEOProps) {
+export default function SEO({ title, description, path, image, siteUrl, schema, noindex = false }: SEOProps) {
   const origin = siteUrl ?? SITE_URL;
   const url = `${origin}${path}`;
   const img = image ?? DEFAULT_IMAGE;
@@ -56,6 +59,7 @@ export default function SEO({ title, description, path, image, siteUrl, schema }
     setMeta("name", "twitter:title", title);
     setMeta("name", "twitter:description", description);
     setMeta("name", "twitter:image", img);
+    setNoIndex(noindex);
 
     let script = document.head.querySelector<HTMLScriptElement>(`script[data-id="${JSON_LD_ID}"]`);
     if (schema) {
@@ -69,7 +73,7 @@ export default function SEO({ title, description, path, image, siteUrl, schema }
     } else if (script) {
       script.remove();
     }
-  }, [title, description, url, img, schema]);
+  }, [title, description, url, img, schema, noindex]);
 
   return null;
 }

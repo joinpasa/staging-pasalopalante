@@ -14,6 +14,7 @@ import DeleteAccountDialog from "@/components/account/DeleteAccountDialog";
 import { buttonVariants } from "@shared/components/ui/button";
 import { Skeleton } from "@shared/components/ui/skeleton";
 import DownloadAppButton from "@/components/DownloadAppButton";
+import { useNoIndex } from "@/hooks/useNoIndex";
 
 /**
  * Account settings: profile, password, notifications, and account deletion — split
@@ -31,6 +32,7 @@ interface Profile {
 }
 
 const AccountSettingsPage = () => {
+  useNoIndex();
   const { t } = useLanguage();
   const { user, loading } = useAuth();
   const navigate = useNavigate();

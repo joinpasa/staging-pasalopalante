@@ -132,20 +132,19 @@ const App = () => (
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/live" element={<LivePage />} />
-              {/* Unlisted on purpose, for now — not linked from the Navbar
-                  or Footer while this is still in review. Only reachable
-                  by direct URL. */}
+              {/* Public: linked from the Explore menu, prerendered, in the sitemap. */}
               <Route path="/media" element={<MediaPage />} />
               <Route path="/join" element={<JoinPage />} />
-              {/* Unlisted on purpose — live but not linked from the Navbar,
-                  Footer, or Explore menu, and left out of the prerender
-                  list in scripts/prerender.ts so it isn't surfaced for SEO
-                  either. Only reachable by direct URL. */}
+              {/* Public: linked from the Explore menu, prerendered, in the sitemap.
+                  /partners/apply and /ambassadors below are still unlisted (see
+                  the comment at their imports) and stay out of the sitemap. */}
               <Route path="/partners" element={<PartnersPage />} />
               <Route path="/partners/apply" element={<PartnersApplyPage />} />
               <Route path="/ambassadors" element={<GlobalAmbassadorsPage />} />
               <Route path="/programs" element={<ProgramsPage />} />
-              <Route path="/how-it-works" element={<ProgramsPage />} />
+              {/* Old alias — same page as /programs; the host also 301s it
+                  (public/_redirects), this covers in-app navigation. */}
+              <Route path="/how-it-works" element={<Navigate to="/programs" replace />} />
               <Route path="/get-involved" element={<GetInvolvedPage />} />
               <Route path="/get-involved/schools" element={<SchoolsEducatorsPage />} />
               <Route path="/get-involved/nonprofits" element={<NonprofitsFaithPage />} />
