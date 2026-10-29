@@ -313,7 +313,13 @@ function doPost(e) {
     return textOut_("bad json");
   }
   const f = flattenPayload_(payload);
-  logIntake_(payload);
+  const logRow = logIntake_(payload);
+  // Writes the outcome next to the logged payload, so a skipped
+  // submission says why in _intake_log column C.
+  const done = (msg) => {
+    SpreadsheetApp.getActiveSpreadsheet().getSheetByName("_intake_log").getRange(logRow, 3).setValue(msg);
+    return textOut_(msg);
+  };
 
   const pick = (...keys) => {
     for (const k of keys) {
@@ -323,9 +329,12 @@ function doPost(e) {
     return "";
   };
 
-  const name = pick("partner_name", "organization_name", "organization", "company_name", "company", "business_name");
-  if (!name) return textOut_("missing organization name");
-  const category = pick("category", "partner_category", "organization_type", "type") || CONFIG.DEFAULT_CATEGORY;
+  // Labels as the GHL partner survey sends them ("organization name is",
+  // "What type of Group do you lead?", "Group Pledged Acts", "Your Logo")
+  // come first; generic names are fallbacks.
+  const name = pick("organization_name_is", "partner_name", "organization_name", "group_name", "organization", "company_name", "company", "business_name");
+  if (!name) return done("skipped: no organization name found");
+  const category = pick("what_type_of_group_do_you_lead", "category", "partner_category", "organization_type", "type") || CONFIG.DEFAULT_CATEGORY;
   const contact = [pick("full_name", "name") || [pick("first_name"), pick("last_name")].join(" ").trim(), pick("email"), pick("phone")]
     .filter(Boolean)
     .join(" · ");
@@ -342,7 +351,7 @@ function doPost(e) {
       return sh.getRange(FIRST_DATA_ROW, COLS.NAME + 1, last - FIRST_DATA_ROW + 1, 1).getValues()
         .some((r) => String(r[0]).trim().toLowerCase() === name.toLowerCase());
     });
-    if (existing) return textOut_("duplicate");
+    if (existing) return done("skipped: " + name + " is already in the sheet");
 
     const prefix = makePrefix_(category);
     const row = new Array(TOTAL_COLS).fill("");
@@ -351,23 +360,34 @@ function doPost(e) {
     row[COLS.FEATURED] = "No";
     row[COLS.CATEGORY] = category;
     row[COLS.NAME] = name;
-    row[COLS.LOGO] = pick("logo", "logo_url");
-    row[COLS.WEBSITE] = pick("website", "website_url", "company_website");
+    row[COLS.LOGO] = pick("your_logo", "logo", "logo_url", "organization_logo", "orgnization_logo");
+    // GHL's contact-level "website" is sometimes our own site (set by a
+    // website signup); that would link the partner to us on /partners.
+    const site = pick("organization_website", "company_website", "website_url", "website");
+    row[COLS.WEBSITE] = /passkindnessforward\.com|pasalopalante\.com/i.test(site) ? "" : site;
     row[COLS.FACEBOOK] = pick("facebook", "facebook_url");
     row[COLS.ROLE] = pick("role", "partnership_type");
     row[COLS.DARK] = "FALSE";
     row[COLS.PORTAL] = "Yes"; // portal account is created when someone sets Status = Approved
     row[COLS.CONTACT_EMAIL] = pick("email");
     // GHL custom field {{contact.partner_group_pledged_acts}}
-    const pledge = pick("partner_group_pledged_acts", "pledged_acts", "pledge", "pledge_count").replace(/[^0-9]/g, "");
+    const pledge = pick(
+      "group_pledged_acts",
+      "partner_group_pledged_acts",
+      "total_acts_of_kindness_your_group_commits_to_in_november_2026",
+      "pledged_acts",
+      "pledge",
+      "pledge_count",
+    ).replace(/[^0-9]/g, "");
     row[COLS.PLEDGE] = pledge ? Number(pledge) : "";
     row[11] = "GHL application " + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm") +
       (contact ? " — " + contact : "");
     sheet.appendRow(row);
-  } finally {
     lock.releaseLock();
+    return done("added " + row[COLS.ID] + " (" + name + ")");
+  } finally {
+    try { lock.releaseLock(); } catch (err) { /* already released */ }
   }
-  return textOut_("ok");
 }
 
 function intakeSheet_() {
@@ -399,9 +419,10 @@ function normKey_(k) {
 function logIntake_(payload) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const log = ss.getSheetByName("_intake_log") || ss.insertSheet("_intake_log");
-  log.appendRow([new Date(), JSON.stringify(payload).slice(0, 45000)]);
-  const extra = log.getLastRow() - 200;
+  const extra = log.getLastRow() - 199;
   if (extra > 0) log.deleteRows(1, extra);
+  log.appendRow([new Date(), JSON.stringify(payload).slice(0, 45000)]);
+  return log.getLastRow();
 }
 
 function textOut_(s) {

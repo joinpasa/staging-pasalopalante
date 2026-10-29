@@ -104,7 +104,12 @@ the partner's submitted acts.
 5. **GHL invite workflow:** trigger Contact Tag Added =
    `partner-portal-invite`, then send the invite email with
    `{{contact.partner_portal_url}}`.
-6. **Fields that don't map:** if a field doesn't land in the right column,
+6. **Partner survey field names** read by `doPost`: organization name from
+   "organization name is", category from "What type of Group do you lead?",
+   pledge from "Group Pledged Acts" (`partner_group_pledged_acts`), logo
+   from "Your Logo". Each `_intake_log` row's column C says what happened
+   (added / skipped and why).
+7. **Fields that don't map:** if a field doesn't land in the right column,
    add **Custom Data** in the Webhook action with one of these keys:
    `partner_name`, `category`, `website`, `facebook`, `logo`, `role`. Raw
    payloads are kept in the `_intake_log` tab (last 200).
