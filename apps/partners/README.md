@@ -11,6 +11,8 @@ partners.passkindnessforward.com is where schools and partner orgs log their act
 
 ## Adding a partner
 
+**Normally automatic:** partners who apply through the `/partners/apply` survey get their portal org created once their row in the PKF_Partners sheet is set to Approved (with Portal Access = Yes). The invite link is written into the sheet's Portal Link column and emailed through GHL. See `apps-script/pkf-partners/README.md`. The SQL below is for adding one by hand.
+
 In the Supabase SQL editor:
 
 ```sql

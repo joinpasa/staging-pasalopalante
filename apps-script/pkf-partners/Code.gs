@@ -20,7 +20,8 @@ const CONFIG = {
   DEFAULT_CATEGORY: "Businesses",
 };
 
-// Column order: ID, Status, Featured?, Category, Name, Logo, Website, Facebook, Role, Dark, Sort Order, Internal Notes
+// Column order: ID, Status, Featured?, Category, Name, Logo, Website, Facebook, Role, Dark, Sort Order, Internal Notes,
+// Portal Access, Contact Email, Portal Link
 // (0-based indexes, used when reading a whole row as an array)
 const COLS = {
   ID: 0,
@@ -35,7 +36,12 @@ const COLS = {
   DARK: 9,
   SORT_ORDER: 10,
   // INTERNAL_NOTES: 11 — never read.
+  PORTAL: 12,        // M — "Yes" = give this partner a partner-portal account once Approved
+  CONTACT_EMAIL: 13, // N — goes to the private portal org only, never to the website
+  PORTAL_LINK: 14,   // O — filled in by the sync: the portal invite link to send them
 };
+const TOTAL_COLS = 15;
+const PORTAL_HEADERS = { 13: "Portal Access", 14: "Contact Email", 15: "Portal Link" }; // 1-based column → header
 
 // 1-based column numbers (what getRange() expects) — derived from COLS so the
 // two can never drift apart again if a column is added later.
@@ -52,8 +58,10 @@ function dataSheets_() {
 
 function syncPartners() {
   const entries = [];
+  const rowOf = {}; // sheet row ID → { sheet, row } so portal links can be written back
 
   dataSheets_().forEach((sheet) => {
+    ensurePortalHeaders_(sheet);
     const values = sheet.getDataRange().getValues();
     for (let i = 1; i < values.length; i++) { // skip header row
       const row = values[i];
@@ -61,6 +69,7 @@ function syncPartners() {
       const name = String(row[COLS.NAME] || "").trim();
       const category = String(row[COLS.CATEGORY] || "").trim();
       if (!id || !name || !category) continue; // blank/trailing row
+      rowOf[id] = { sheet: sheet, row: i + 1 };
 
       entries.push({
         id: id,
@@ -77,6 +86,8 @@ function syncPartners() {
           : Number(row[COLS.SORT_ORDER]),
         // "Yes" / "No" / blank from the dropdown (a checkbox's TRUE/FALSE works too).
         featured: String(row[COLS.FEATURED] || "").trim(),
+        portal: String(row[COLS.PORTAL] || "").trim(),
+        contactEmail: String(row[COLS.CONTACT_EMAIL] || "").trim(),
       });
     }
   });
@@ -100,7 +111,26 @@ function syncPartners() {
     Logger.log("Sync FAILED (" + code + "): " + body);
     throw new Error("Partners sync failed: " + body);
   }
-  Logger.log("Sync OK: " + body); // lists duplicateIds here if any slipped through
+  Logger.log("Sync OK: " + body); // lists duplicateIds / portalCreated here
+
+  // Write each portal org's invite link into the Portal Link column.
+  const result = JSON.parse(body);
+  const links = result.portalLinks || {};
+  Object.keys(links).forEach((id) => {
+    const at = rowOf[id];
+    if (!at) return;
+    const cell = at.sheet.getRange(at.row, COLS.PORTAL_LINK + 1);
+    if (String(cell.getValue()).trim() !== links[id]) cell.setValue(links[id]);
+  });
+  if (result.portalWarning) Logger.log("Portal: " + result.portalWarning);
+}
+
+/** Adds the three portal headers to row 1 if they're missing. */
+function ensurePortalHeaders_(sheet) {
+  Object.keys(PORTAL_HEADERS).forEach((col) => {
+    const cell = sheet.getRange(1, Number(col));
+    if (String(cell.getValue()).trim() === "") cell.setValue(PORTAL_HEADERS[col]);
+  });
 }
 
 /** One-time setup: run this once from the editor's function dropdown. It
@@ -249,9 +279,12 @@ function fixDuplicateIds() {
 /**
  * Web-app endpoint for the GHL "Webhook" workflow action (trigger: the
  * partner application form is submitted). Adds ONE row per application
- * with Status = "Pending", so nothing goes public until someone on the
- * team reviews it and changes Status to "Approved". Contact details go in
- * Internal Notes, which is never synced to the website.
+ * with Status = "Pending" and Portal Access = "Yes". Nothing happens until
+ * someone on the team reviews it and changes Status to "Approved": the next
+ * sync then puts it on the website AND creates its partner-portal account,
+ * writing the invite link into the Portal Link column. The contact's email
+ * goes to Contact Email (portal only); name/phone go in Internal Notes.
+ * Neither is ever shown on the website.
  *
  * Setup: Deploy → New deployment → Web app, Execute as: Me, Who has
  * access: Anyone. In GHL use the plain "Webhook" action (POST) with the
@@ -307,7 +340,7 @@ function doPost(e) {
     if (existing) return textOut_("duplicate");
 
     const prefix = makePrefix_(category);
-    const row = new Array(12).fill("");
+    const row = new Array(TOTAL_COLS).fill("");
     row[COLS.ID] = prefix + "-" + nextNumber_(prefix);
     row[COLS.STATUS] = "Pending";
     row[COLS.FEATURED] = "No";
@@ -318,6 +351,8 @@ function doPost(e) {
     row[COLS.FACEBOOK] = pick("facebook", "facebook_url");
     row[COLS.ROLE] = pick("role", "partnership_type");
     row[COLS.DARK] = "FALSE";
+    row[COLS.PORTAL] = "Yes"; // portal account is created when someone sets Status = Approved
+    row[COLS.CONTACT_EMAIL] = pick("email");
     row[11] = "GHL application " + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm") +
       (contact ? " — " + contact : "");
     sheet.appendRow(row);
