@@ -9,6 +9,15 @@
 const CONFIG = {
   SYNC_URL: "https://tipfbleltjexofsjffwb.supabase.co/functions/v1/sync-partners",
   SYNC_SECRET: "PASTE_PARTNERS_SYNC_SECRET_HERE", // real value lives only in the sheet's script + Supabase secret PARTNERS_SYNC_SECRET — never commit it
+  // GHL partner-application webhook (doPost below). Any long random text;
+  // the same value goes at the end of the webhook URL in GHL (?key=...).
+  // Never commit the real value.
+  INTAKE_SECRET: "PASTE_ANY_LONG_RANDOM_TEXT_HERE",
+  // Tab new applications land on. Blank = the first non-underscore tab.
+  INTAKE_TAB: "",
+  // Used when the form doesn't send a category (Category is required for
+  // the row to sync and to get an ID). Fix it by hand when you approve.
+  DEFAULT_CATEGORY: "Businesses",
 };
 
 // Column order: ID, Status, Featured?, Category, Name, Logo, Website, Facebook, Role, Dark, Sort Order, Internal Notes
@@ -231,4 +240,127 @@ function fixDuplicateIds() {
   } finally {
     lock.releaseLock();
   }
+}
+
+/* ------------------------------------------------------------------ */
+/*  GHL partner applications → new Pending row                         */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Web-app endpoint for the GHL "Webhook" workflow action (trigger: the
+ * partner application form is submitted). Adds ONE row per application
+ * with Status = "Pending", so nothing goes public until someone on the
+ * team reviews it and changes Status to "Approved". Contact details go in
+ * Internal Notes, which is never synced to the website.
+ *
+ * Setup: Deploy → New deployment → Web app, Execute as: Me, Who has
+ * access: Anyone. In GHL use the plain "Webhook" action (POST) with the
+ * web-app URL + "?key=" + CONFIG.INTAKE_SECRET.
+ *
+ * Field names: GHL sends its standard contact fields (first_name,
+ * company_name, website, email, phone...). For anything else, add a
+ * "Custom Data" line in the GHL Webhook action using one of these keys:
+ * partner_name, category, website, facebook, logo, role.
+ */
+function doPost(e) {
+  const params = (e && e.parameter) || {};
+  if (!CONFIG.INTAKE_SECRET || CONFIG.INTAKE_SECRET.indexOf("PASTE_") === 0 || params.key !== CONFIG.INTAKE_SECRET) {
+    return textOut_("unauthorized");
+  }
+
+  let payload = {};
+  try {
+    payload = JSON.parse((e.postData && e.postData.contents) || "{}");
+  } catch (err) {
+    return textOut_("bad json");
+  }
+  const f = flattenPayload_(payload);
+  logIntake_(payload);
+
+  const pick = (...keys) => {
+    for (const k of keys) {
+      const v = f[normKey_(k)];
+      if (v !== undefined && v !== null && String(v).trim() !== "") return String(v).trim();
+    }
+    return "";
+  };
+
+  const name = pick("partner_name", "organization_name", "organization", "company_name", "company", "business_name");
+  if (!name) return textOut_("missing organization name");
+  const category = pick("category", "partner_category", "organization_type", "type") || CONFIG.DEFAULT_CATEGORY;
+  const contact = [pick("full_name", "name") || [pick("first_name"), pick("last_name")].join(" ").trim(), pick("email"), pick("phone")]
+    .filter(Boolean)
+    .join(" · ");
+
+  const lock = LockService.getDocumentLock();
+  lock.waitLock(20000);
+  try {
+    const sheet = intakeSheet_();
+
+    // Same organization submitted twice → don't add a second row.
+    const existing = dataSheets_().some((sh) => {
+      const last = sh.getLastRow();
+      if (last < FIRST_DATA_ROW) return false;
+      return sh.getRange(FIRST_DATA_ROW, COLS.NAME + 1, last - FIRST_DATA_ROW + 1, 1).getValues()
+        .some((r) => String(r[0]).trim().toLowerCase() === name.toLowerCase());
+    });
+    if (existing) return textOut_("duplicate");
+
+    const prefix = makePrefix_(category);
+    const row = new Array(12).fill("");
+    row[COLS.ID] = prefix + "-" + nextNumber_(prefix);
+    row[COLS.STATUS] = "Pending";
+    row[COLS.FEATURED] = "No";
+    row[COLS.CATEGORY] = category;
+    row[COLS.NAME] = name;
+    row[COLS.LOGO] = pick("logo", "logo_url");
+    row[COLS.WEBSITE] = pick("website", "website_url", "company_website");
+    row[COLS.FACEBOOK] = pick("facebook", "facebook_url");
+    row[COLS.ROLE] = pick("role", "partnership_type");
+    row[COLS.DARK] = "FALSE";
+    row[11] = "GHL application " + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm") +
+      (contact ? " — " + contact : "");
+    sheet.appendRow(row);
+  } finally {
+    lock.releaseLock();
+  }
+  return textOut_("ok");
+}
+
+function intakeSheet_() {
+  if (CONFIG.INTAKE_TAB) {
+    const named = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.INTAKE_TAB);
+    if (named) return named;
+  }
+  return dataSheets_()[0];
+}
+
+// GHL nests some fields (contact.*, customData.*); flatten to one level
+// with normalized keys ("Company Name" / company_name → companyname).
+function flattenPayload_(obj, out) {
+  out = out || {};
+  Object.keys(obj || {}).forEach((k) => {
+    const v = obj[k];
+    if (v && typeof v === "object" && !Array.isArray(v)) flattenPayload_(v, out);
+    else if (!(normKey_(k) in out)) out[normKey_(k)] = Array.isArray(v) ? v.join(", ") : v;
+  });
+  return out;
+}
+
+function normKey_(k) {
+  return String(k).toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+// Raw payloads go to "_intake_log" (underscore = ignored by the sync and
+// ID numbering) so a field that didn't map can be traced. Last 200 kept.
+function logIntake_(payload) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const log = ss.getSheetByName("_intake_log") || ss.insertSheet("_intake_log");
+  log.appendRow([new Date(), JSON.stringify(payload).slice(0, 45000)]);
+  const extra = log.getLastRow() - 200;
+  if (extra > 0) log.deleteRows(1, extra);
+}
+
+function textOut_(s) {
+  return ContentService.createTextOutput(s);
 }

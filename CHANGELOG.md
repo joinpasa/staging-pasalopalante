@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-10-29 — va.deedumlao@gmail.com
 
+- **Partner applications from the GHL form can now go straight into the PKF_Partners sheet**, free, with no Make.com and no paid GHL Sheets action. Each submission becomes a new "Pending" row with its ID filled in, and goes live on /partners only once someone sets it to Approved. This needs a one-time setup in the sheet and in GHL; the steps are in `apps-script/pkf-partners/README.md`.
 - **Ambassadors page: @handles removed from the cards**, and **Europe Sprint Ambassadors merged into "Global Ambassadors of Kindness"**, so the category chips are now just Champions, Education Leads and Global Ambassadors of Kindness. The profile-link button on each card stays. No sheet or Apps Script change was needed; the sheet's tabs are untouched.
 - **"Media" added to the Explore menu** (right after Partners), on desktop and mobile, so visitors can find the In the Press page from anywhere on the site. Translated in all 11 languages.
 

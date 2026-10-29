@@ -47,3 +47,27 @@ file into the sheet, keep the sheet's existing secret line.
 If you add, remove or move a column: update `COLS` in the sheet's script,
 here, and — if it's a new field — `sync-partners` and the `partner_entries`
 table.
+
+## GHL partner applications → sheet (free, no Make.com)
+
+`doPost` in Code.gs turns each GHL partner-application submission
+(form `Od6Vms5T0VCdams7JT9b`, embedded on `/partners/apply`) into a new
+row with **Status = Pending**: nothing goes public until someone sets it
+to `Approved`. It assigns the ID itself, using the same numbering as
+`onEdit`, which doesn't fire for script-written rows. The contact's
+name, email and phone go in Internal Notes, which is never synced.
+Organizations already in the sheet (same name) are skipped.
+
+Setup:
+1. Set `CONFIG.INTAKE_SECRET` (any long random text) in the sheet's script.
+   Optionally set `INTAKE_TAB` and `DEFAULT_CATEGORY`.
+2. Deploy → New deployment → Web app, with *Execute as: Me* and *Who has access:
+   Anyone*. Copy the URL. Later edits: Manage deployments → edit → New
+   version, which keeps the same URL.
+3. GHL workflow: trigger **Form Submitted** (the partner form), then action
+   **Webhook** (the plain one, not the paid Custom Webhook), POST to
+   `<web app URL>?key=<INTAKE_SECRET>`.
+4. If a field doesn't land in the right column, add **Custom Data** in the
+   Webhook action with one of these keys: `partner_name`, `category`,
+   `website`, `facebook`, `logo`, `role`. Raw payloads are kept in the
+   `_intake_log` tab (last 200) for checking what GHL actually sent.
