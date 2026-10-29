@@ -140,6 +140,8 @@ export function useMyRecentActs(limit = 5) {
 
 export interface WallAct extends AppAct {
   name: string;
+  /** Author's account, so a member's own posts can be told apart (null if posted without one). */
+  userId: string | null;
   photoUrl: string | null;
 }
 
@@ -151,7 +153,7 @@ export function useWallActs(limit = 20) {
     queryFn: async (): Promise<WallAct[]> => {
       const { data, error } = await supabasePublic
         .from("acts_of_kindness")
-        .select("id, description, language, created_at, mode, act_type, first_name, photo_paths, video_url, link_preview_image")
+        .select("id, description, language, created_at, mode, act_type, first_name, photo_paths, video_url, link_preview_image, user_id")
         .eq("status", "published")
         .order("created_at", { ascending: false })
         .limit(limit);
@@ -169,6 +171,7 @@ export function useWallActs(limit = 20) {
           videoUrl: row.video_url ?? null,
           linkPreviewImage: row.link_preview_image ?? null,
           name: row.first_name?.trim() || "Someone",
+          userId: row.user_id ?? null,
           photoUrl: path
             ? supabasePublic.storage.from("kindness-photos").getPublicUrl(path).data.publicUrl
             : null,

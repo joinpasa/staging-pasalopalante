@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-10-29 — M.Schollmeyer@gmx.de
 
+- **Hearts moved to where they make sense on the app's home screen.** The "Recent Acts of Kindness" cards now have the same heart button as the Wall (bottom right, same likes), except on your own posts. "Your recent kindness" no longer has one, since those are all your own acts. Both sections now also show each act's tag and the "+1" badge icons, like the Wall, and the translate icon no longer adds an empty line above the text.
 - **The website's "Download" app button no longer wrongly says the app is already installed.** That message appeared whenever the browser didn't offer its one-tap install dialog, which happens on every iPhone, in Safari and Firefox, inside apps like Instagram, and right after the app was uninstalled, so people couldn't reinstall. The button now waits a moment for the dialog, and if there still isn't one it explains the manual way for that exact device and browser (iPhone: Share → Add to Home Screen; Android: browser menu → Install app; Mac Safari: File → Add to Dock; Chrome/Edge on a computer: the app is already installed; Firefox: use Chrome or Edge; inside another app: open the page in a real browser). The messages are translated into all 11 languages.
 
 ## 2026-10-28 — M.Schollmeyer@gmx.de
