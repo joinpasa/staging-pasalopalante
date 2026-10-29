@@ -22,8 +22,8 @@
          Only on the pages that actually show the map, though: this shell is
          served for every route, and a high-priority 24 KB download nothing
          uses (e.g. /join, /wall) competes with that page's own content.
-         Inline and placed before the stylesheet below on purpose — a script
-         after a pending stylesheet would wait for it, delaying the preload. -->
+         Inline and kept above any stylesheet on purpose — a script after a
+         pending stylesheet would wait for it, delaying the preload. -->
     <script>
       (function () {
         var path = location.pathname.replace(/\/+$/, "") || "/";
@@ -37,9 +37,7 @@
       })();
     </script>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" />
+    <!-- Fonts (DM Sans, DM Serif Display) are self-hosted: see src/fonts/fonts.css. -->
 
     <!-- Google tag (gtag.js) — measurement ID picked at runtime by hostname.
          passkindnessforward.com is routed to this exact same build (same
