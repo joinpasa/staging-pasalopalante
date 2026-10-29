@@ -21,7 +21,7 @@ const CONFIG = {
 };
 
 // Column order: ID, Status, Featured?, Category, Name, Logo, Website, Facebook, Role, Dark, Sort Order, Internal Notes,
-// Portal Access, Contact Email, Portal Link
+// Portal Access, Contact Email, Portal Link, Pledge
 // (0-based indexes, used when reading a whole row as an array)
 const COLS = {
   ID: 0,
@@ -39,9 +39,10 @@ const COLS = {
   PORTAL: 12,        // M — "Yes" = give this partner a partner-portal account once Approved
   CONTACT_EMAIL: 13, // N — goes to the private portal org only, never to the website
   PORTAL_LINK: 14,   // O — filled in by the sync: the portal invite link to send them
+  PLEDGE: 15,        // P — acts of kindness the organization pledges; counts toward "Acts pledged" once Approved
 };
-const TOTAL_COLS = 15;
-const PORTAL_HEADERS = { 13: "Portal Access", 14: "Contact Email", 15: "Portal Link" }; // 1-based column → header
+const TOTAL_COLS = 16;
+const PORTAL_HEADERS = { 13: "Portal Access", 14: "Contact Email", 15: "Portal Link", 16: "Pledge" }; // 1-based column → header
 
 // 1-based column numbers (what getRange() expects) — derived from COLS so the
 // two can never drift apart again if a column is added later.
@@ -88,6 +89,7 @@ function syncPartners() {
         featured: String(row[COLS.FEATURED] || "").trim(),
         portal: String(row[COLS.PORTAL] || "").trim(),
         contactEmail: String(row[COLS.CONTACT_EMAIL] || "").trim(),
+        pledge: row[COLS.PLEDGE] === "" || row[COLS.PLEDGE] == null ? "" : String(row[COLS.PLEDGE]),
       });
     }
   });
@@ -123,6 +125,7 @@ function syncPartners() {
     if (String(cell.getValue()).trim() !== links[id]) cell.setValue(links[id]);
   });
   if (result.portalWarning) Logger.log("Portal: " + result.portalWarning);
+  if (result.pledgeWarning) Logger.log("Pledges: " + result.pledgeWarning);
 }
 
 /** Adds the three portal headers to row 1 if they're missing. */
@@ -283,7 +286,9 @@ function fixDuplicateIds() {
  * someone on the team reviews it and changes Status to "Approved": the next
  * sync then puts it on the website AND creates its partner-portal account,
  * writing the invite link into the Portal Link column. The contact's email
- * goes to Contact Email (portal only); name/phone go in Internal Notes.
+ * goes to Contact Email (portal only); name/phone go in Internal Notes. The
+ * pledged acts (GHL field partner_group_pledged_acts) go to Pledge, which
+ * counts toward the website's "Acts pledged" total once Approved.
  * Neither is ever shown on the website.
  *
  * Setup: Deploy → New deployment → Web app, Execute as: Me, Who has
@@ -353,6 +358,9 @@ function doPost(e) {
     row[COLS.DARK] = "FALSE";
     row[COLS.PORTAL] = "Yes"; // portal account is created when someone sets Status = Approved
     row[COLS.CONTACT_EMAIL] = pick("email");
+    // GHL custom field {{contact.partner_group_pledged_acts}}
+    const pledge = pick("partner_group_pledged_acts", "pledged_acts", "pledge", "pledge_count").replace(/[^0-9]/g, "");
+    row[COLS.PLEDGE] = pledge ? Number(pledge) : "";
     row[11] = "GHL application " + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm") +
       (contact ? " — " + contact : "");
     sheet.appendRow(row);

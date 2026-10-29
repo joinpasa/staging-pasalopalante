@@ -27,6 +27,12 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
  * the row's Contact Email) in the custom field `partner_portal_url`, and
  * the tag `partner-portal-invite` is added — a GHL workflow on that tag
  * sends the invite email. Retried each sync until it succeeds.
+ *
+ * Pledges: an Approved row with a Pledge number counts toward the public
+ * "Acts pledged" total as one organization commitment (keyed by the sheet
+ * row ID), kept in step with the sheet: updated when the number changes,
+ * removed when the row stops being Approved, loses its pledge, or leaves
+ * the sheet. The portal org's pledge_goal follows the same number.
  */
 
 const corsHeaders = {
@@ -67,6 +73,14 @@ interface Entry {
   /** Sheet's "Contact Email" column — only ever goes to the private portal
    * org row, never to the public partner_entries table. */
   contactEmail?: string;
+  /** Sheet's "Pledge" column: acts of kindness the organization pledges. */
+  pledge?: number | string;
+}
+
+/** "1,000" / "1000 acts" / 1000 → 1000; anything else → 0. */
+function pledgeCount(v: unknown): number {
+  const n = typeof v === "number" ? v : parseInt(String(v ?? "").replace(/[^0-9]/g, ""), 10);
+  return Number.isFinite(n) && n > 0 ? Math.min(Math.floor(n), 1_000_000_000) : 0;
 }
 
 const PORTAL_JOIN_URL = "https://partners.passkindnessforward.com/join/";
@@ -194,8 +208,9 @@ Deno.serve(async (req) => {
   }
 
   const portal = await syncPortalOrgs(supabase, incoming);
+  const pledges = await syncPartnerPledges(supabase, incoming);
 
-  return json({ ok: true, synced: uniqueRows.length, deleted, ...dupes, ...portal });
+  return json({ ok: true, synced: uniqueRows.length, deleted, ...dupes, ...portal, ...pledges });
 });
 
 /**
@@ -205,27 +220,37 @@ Deno.serve(async (req) => {
  */
 // deno-lint-ignore no-explicit-any
 async function syncPortalOrgs(supabase: any, incoming: Entry[]) {
-  const wanted = new Map<string, { name: string; category: string; email: string | null }>();
+  const wanted = new Map<string, { name: string; category: string; email: string | null; pledge: number }>();
   for (const e of incoming) {
     const id = e.id?.trim();
     const name = e.name?.trim();
     if (!id || !name || !e.category?.trim()) continue;
     if (e.status?.trim().toLowerCase() !== "approved" || !isTruthy(e.portal)) continue;
     const email = e.contactEmail?.trim() ?? "";
-    wanted.set(id, { name: name.slice(0, 160), category: e.category.trim(), email: EMAIL_RE.test(email) ? email : null });
+    wanted.set(id, {
+      name: name.slice(0, 160),
+      category: e.category.trim(),
+      email: EMAIL_RE.test(email) ? email : null,
+      pledge: pledgeCount(e.pledge),
+    });
   }
   if (wanted.size === 0) return {};
 
   try {
     const ids = [...wanted.keys()];
     const { data: linked, error: linkedErr } = await supabase
-      .from("partners").select("id, sheet_entry_id, invite_token, contact_email, ghl_invite_pushed_at").in("sheet_entry_id", ids);
+      .from("partners").select("id, sheet_entry_id, invite_token, contact_email, ghl_invite_pushed_at, pledge_goal").in("sheet_entry_id", ids);
     if (linkedErr) throw linkedErr;
     const tokenById = new Map<string, string>();
     // Orgs whose link hasn't reached GHL yet: portal org id → { email, link }.
     const toPush = new Map<string, { email: string; link: string }>();
     for (const p of linked ?? []) {
       tokenById.set(p.sheet_entry_id, p.invite_token);
+      const goal = wanted.get(p.sheet_entry_id)?.pledge ?? 0;
+      if (goal > 0 && goal !== p.pledge_goal) {
+        const { error } = await supabase.from("partners").update({ pledge_goal: goal }).eq("id", p.id);
+        if (error) throw error;
+      }
       if (!p.ghl_invite_pushed_at && p.contact_email) toPush.set(p.id, { email: p.contact_email, link: PORTAL_JOIN_URL + p.invite_token });
     }
 
@@ -237,7 +262,9 @@ async function syncPortalOrgs(supabase: any, incoming: Entry[]) {
       const { data: manual } = await supabase
         .from("partners").select("id, invite_token, contact_email, ghl_invite_pushed_at").is("sheet_entry_id", null).ilike("name", w.name.replace(/[%_\\]/g, "\\$&")).limit(1);
       if (manual && manual.length > 0) {
-        const { error } = await supabase.from("partners").update({ sheet_entry_id: id }).eq("id", manual[0].id);
+        const update: Record<string, unknown> = { sheet_entry_id: id };
+        if (w.pledge > 0) update.pledge_goal = w.pledge;
+        const { error } = await supabase.from("partners").update(update).eq("id", manual[0].id);
         if (error) throw error;
         tokenById.set(id, manual[0].invite_token);
         const email = manual[0].contact_email ?? w.email;
@@ -246,7 +273,7 @@ async function syncPortalOrgs(supabase: any, incoming: Entry[]) {
       }
       const { data: inserted, error } = await supabase
         .from("partners")
-        .insert({ name: w.name, org_type: orgType(w.category), contact_email: w.email, sheet_entry_id: id })
+        .insert({ name: w.name, org_type: orgType(w.category), contact_email: w.email, sheet_entry_id: id, pledge_goal: w.pledge })
         .select("id, invite_token")
         .single();
       if (error) throw error;
@@ -321,4 +348,62 @@ async function pushInvitesToGhl(supabase: any, toPush: Map<string, { email: stri
     ...(notInGhl.length ? { ghlContactNotFound: notInGhl } : {}),
     ...(failed.length ? { ghlInviteFailed: failed } : {}),
   };
+}
+
+/**
+ * Mirrors sheet pledges into public.commitments (type "organization",
+ * status "published") so they count toward the public "Acts pledged"
+ * total. Only rows this function created (partner_sheet_id set) are ever
+ * touched. Failures are reported as a warning, never fail the public sync.
+ */
+// deno-lint-ignore no-explicit-any
+async function syncPartnerPledges(supabase: any, incoming: Entry[]) {
+  const wanted = new Map<string, { org_name: string; org_website: string | null; pledge_count: number }>();
+  for (const e of incoming) {
+    const id = e.id?.trim();
+    const name = e.name?.trim();
+    const pledge = pledgeCount(e.pledge);
+    if (!id || !name || pledge === 0 || e.status?.trim().toLowerCase() !== "approved") continue;
+    wanted.set(id, { org_name: name, org_website: e.website?.trim() || null, pledge_count: pledge });
+  }
+
+  try {
+    const { data: existing, error: listErr } = await supabase
+      .from("commitments")
+      .select("id, partner_sheet_id, org_name, org_website, pledge_count, status")
+      .not("partner_sheet_id", "is", null);
+    if (listErr) throw listErr;
+
+    const have = new Map<string, { id: string; org_name: string; org_website: string | null; pledge_count: number; status: string }>();
+    for (const c of existing ?? []) have.set(c.partner_sheet_id, c);
+
+    let added = 0, updated = 0, removed = 0;
+    for (const [sheetId, w] of wanted) {
+      const c = have.get(sheetId);
+      if (!c) {
+        const { error } = await supabase.from("commitments").insert({
+          type: "organization", status: "published", partner_sheet_id: sheetId, ...w,
+        });
+        if (error) throw error;
+        added++;
+      } else if (c.pledge_count !== w.pledge_count || c.org_name !== w.org_name || c.org_website !== w.org_website || c.status !== "published") {
+        const { error } = await supabase.from("commitments").update({ ...w, status: "published" }).eq("id", c.id);
+        if (error) throw error;
+        updated++;
+      }
+    }
+    const stale = [...have.entries()].filter(([sheetId]) => !wanted.has(sheetId)).map(([, c]) => c.id);
+    if (stale.length > 0) {
+      const { error } = await supabase.from("commitments").delete().in("id", stale);
+      if (error) throw error;
+      removed = stale.length;
+    }
+
+    let total = 0;
+    for (const w of wanted.values()) total += w.pledge_count;
+    return { partnerPledges: { counted: wanted.size, totalActs: total, added, updated, removed } };
+  } catch (err) {
+    console.error("partner pledge sync failed", err);
+    return { pledgeWarning: `Could not sync partner pledges: ${(err as { message?: string })?.message ?? err}` };
+  }
 }

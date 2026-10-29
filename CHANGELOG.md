@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-30 — va.deedumlao@gmail.com
+
+- **Partner pledges now count toward the website's "Acts pledged" total.** The number of acts a group pledges on the partner form (GHL field "Partner Group Pledged Acts") lands in a new Pledge column in the PKF_Partners sheet. Once that row is Approved, it's added to the public total and becomes the partner's goal in the Partner Portal. Changing the number updates both, and un-approving the row takes it back out. Only approved rows count, so a fake or joke number can't inflate the total.
+
 ## 2026-10-29 — va.deedumlao@gmail.com
 
 - **Partner sign-ups are now automatic end to end: Partners form → GHL → PKF_Partners sheet → Partner Portal.** A new application lands in the sheet as Pending. Once someone sets it to Approved, the partner appears on /partners, gets their own Partner Portal account, the invite link is written into the sheet, and GHL can email it to them. Logo-only partners already in the sheet don't get portal accounts unless their new "Portal Access" column is set to Yes. This needs a one-time setup in the sheet and GHL; the steps are in `apps-script/pkf-partners/README.md`.

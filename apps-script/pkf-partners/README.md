@@ -72,6 +72,14 @@ table.
    as the link. Each org's link is pushed once. If GHL is down, or the
    contact doesn't exist yet, it retries on every sync.
 
+6. **Pledge counted:** the pledged acts (GHL field
+   `{{contact.partner_group_pledged_acts}}`) land in **Pledge** (column P).
+   Once the row is Approved, the pledge counts toward the website's "Acts
+   pledged" total, as one organization pledge per row. It becomes the portal
+   org's pledge goal too. Changing the number updates both. Un-approving the
+   row, clearing the pledge or deleting the row takes it back out of the
+   total.
+
 Existing logo-only rows (municipalities, media, etc.) have Portal Access
 blank, so they never get portal accounts. To give one an account, set
 Portal Access = Yes and fill in Contact Email. If an org was already added
@@ -84,8 +92,8 @@ the partner's submitted acts.
 1. **Script:** paste Code.gs into the sheet's script, keeping your real
    `SYNC_SECRET`, and set `CONFIG.INTAKE_SECRET` to any long random text.
    Optionally set `INTAKE_TAB` and `DEFAULT_CATEGORY`. Run **Sync now**
-   once; this adds the Portal Access / Contact Email / Portal Link headers
-   (M–O).
+   once; this adds the Portal Access / Contact Email / Portal Link / Pledge
+   headers (M–P).
 2. **Web app:** Deploy → New deployment → Web app, *Execute as: Me*, *Who
    has access: Anyone*. Copy the URL. Later edits: Manage deployments →
    edit → New version, which keeps the same URL.
