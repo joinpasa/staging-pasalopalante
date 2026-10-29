@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-29 — va.deedumlao@gmail.com
+
+- **"Media" added to the Explore menu** (right after Partners), on desktop and mobile, so visitors can find the In the Press page from anywhere on the site. Translated in all 11 languages.
+
 ## 2026-10-29 — M.Schollmeyer@gmx.de
 
 - **Hearts moved to where they make sense on the app's home screen.** The "Recent Acts of Kindness" cards now have the same heart button as the Wall (bottom right, same likes), except on your own posts. "Your recent kindness" no longer has one, since those are all your own acts. Both sections now also show each act's tag and the "+1" badge icons, like the Wall, and the translate icon no longer adds an empty line above the text.
