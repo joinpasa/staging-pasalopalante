@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-10-29 — va.deedumlao@gmail.com
 
+- **Ambassadors page: @handles removed from the cards**, and **Europe Sprint Ambassadors merged into "Global Ambassadors of Kindness"**, so the category chips are now just Champions, Education Leads and Global Ambassadors of Kindness. The profile-link button on each card stays. No sheet or Apps Script change was needed; the sheet's tabs are untouched.
 - **"Media" added to the Explore menu** (right after Partners), on desktop and mobile, so visitors can find the In the Press page from anywhere on the site. Translated in all 11 languages.
 
 ## 2026-10-29 — M.Schollmeyer@gmx.de
