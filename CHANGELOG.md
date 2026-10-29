@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-29 — M.Schollmeyer@gmx.de
+
+- **The website's "Download" app button no longer wrongly says the app is already installed.** That message appeared whenever the browser didn't offer its one-tap install dialog, which happens on every iPhone, in Safari and Firefox, inside apps like Instagram, and right after the app was uninstalled, so people couldn't reinstall. The button now waits a moment for the dialog, and if there still isn't one it explains the manual way for that exact device and browser (iPhone: Share → Add to Home Screen; Android: browser menu → Install app; Mac Safari: File → Add to Dock; Chrome/Edge on a computer: the app is already installed; Firefox: use Chrome or Edge; inside another app: open the page in a real browser). The messages are translated into all 11 languages.
+
 ## 2026-10-28 — M.Schollmeyer@gmx.de
 
 - **Badges reworked to be smaller and easy to understand.** Every badge now comes from choices people make themselves when logging an act, so each badge simply says how to earn it (e.g. "Gave + Compliment"). There are now 9 badges, and each one has stages instead of unlocking once: one Kindness Streak badge (best streak ever: 1/2/3/5/10/20/50 days in a row) plus Good Word, Deep Listener, Gift Giver, Open Hand, Helping Hand, Hug Dealer, Grateful Heart (any received act) and Kindness Spotter (any witnessed act), with stages at 3/7/12/18/25/33/42/50 acts. The old First Spark/3/7/30-day, Time Giver and Wave Maker badges are gone, and everyone's badges were recalculated under the new rules (acts from before the act-type chips existed only count toward the streak, Grateful Heart and Kindness Spotter).
