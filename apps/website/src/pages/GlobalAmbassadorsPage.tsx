@@ -48,11 +48,17 @@ function displayName(name: string) {
   return lastInitial ? `${words[0]} ${lastInitial}.` : words[0];
 }
 
-// These four sheet tabs all cover the same kind of role at different scopes
-// (worldwide, regional, country, PR-specific) and read as redundant as
-// separate filter chips, so they're grouped into one category on this page
-// only — the sheet itself, and what actually syncs, is untouched.
-const MERGED_CATEGORIES = new Set(["Global Ambassadors", "Regional Leads", "Country Ambassadors", "PR Regional Ambassadors"]);
+// These sheet tabs all cover the same kind of role at different scopes
+// (worldwide, regional, country, PR-specific, the Europe sprint) and read as
+// redundant as separate filter chips, so they're grouped into one category on
+// this page only — the sheet itself, and what actually syncs, is untouched.
+const MERGED_CATEGORIES = new Set([
+  "Global Ambassadors",
+  "Regional Leads",
+  "Country Ambassadors",
+  "PR Regional Ambassadors",
+  "Europe Sprint Ambassadors",
+]);
 const MERGED_CATEGORY_LABEL = "Global Ambassadors of Kindness";
 
 function displayCategory(category: string) {
@@ -106,7 +112,6 @@ function DirectoryCard({ entry, tint }: { entry: DirectoryEntry; tint: string })
       )}
       <p className="mb-1.5 text-[11px] font-bold uppercase tracking-[0.15em] text-warm-terracotta">{title}</p>
       <h3 className="mb-1 font-display text-xl text-foreground">{displayName(entry.name)}</h3>
-      {entry.handle && <p className="mb-1 text-sm text-foreground/60">{entry.handle}</p>}
       {place && <p className="text-sm text-foreground/70">{place}</p>}
 
       {entry.bio && (

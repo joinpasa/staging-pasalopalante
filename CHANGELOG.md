@@ -8,6 +8,11 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-29 — va.deedumlao@gmail.com
+
+- **Ambassadors page: @handles removed from the cards**, and **Europe Sprint Ambassadors merged into "Global Ambassadors of Kindness"**, so the category chips are now just Champions, Education Leads and Global Ambassadors of Kindness. The profile-link button on each card stays. No sheet or Apps Script change was needed; the sheet's tabs are untouched.
+- **"Media" added to the Explore menu** (right after Partners), on desktop and mobile, so visitors can find the In the Press page from anywhere on the site. Translated in all 11 languages.
+
 ## 2026-10-29 — M.Schollmeyer@gmx.de
 
 - **"People reached" now means everyone your kindness chain reached, and both the app and website show how it spread.** The total counts everyone who joined with your code, everyone *they* brought in, and so on at every depth, plus registered members who scanned your personal QR code together with everyone *they* brought in (only you get credit, not the scanner), each person once, however often they scan or however many routes lead to them. The app's Share & Scan screen and the website's account page now list "people who joined with your code" (always shown) and then one line per ripple ("2 people joined in your 1st ripple", …), counted from actual sign-ups only, so a QR scan by an existing member never changes those lines. The website also shows the total next to "Member since". Wording switches between singular and plural and is translated into all 11 languages. My Network's connections list is unchanged. The counting is covered by new database tests that run with `npm test`.
