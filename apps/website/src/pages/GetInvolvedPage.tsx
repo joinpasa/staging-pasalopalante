@@ -2,7 +2,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import SEO from "@/components/SEO";
-import CourseCreatorForm from "@/components/CourseCreatorForm";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { Link } from "react-router-dom";
 
@@ -52,10 +51,6 @@ export default function GetInvolvedPage() {
             >
               {p.supportCta}
             </Link>
-          </div>
-
-          <div className="mt-16">
-            <CourseCreatorForm />
           </div>
         </div>
       </main>

@@ -12,8 +12,25 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 - **Logging an act starts with "Gave" and "Something else" already picked**, on both the website's share form and the app's Log an Act screen, so people can just type and submit — they can still switch to any other option.
 
+## 2026-10-30 — va.deedumlao@gmail.com
+
+- **Simplified the Get Involved page — removed the 20+-field “Ambassador & Core Team Commitment” form** that was bolted onto the bottom, on top of the six pillar cards above it. The Ambassadors card already links to its own page with a much shorter GHL-embedded form, so nothing is lost. Decided to keep the other five pillar pages (schools, nonprofits, companies, municipalities, ambassadors) on their existing lightweight GHL-embedded forms rather than rebuilding them as native site forms — editable by the team directly in GHL with no deploy needed, lower risk two days before launch.
+- **Swapped in the new, shorter GHL forms for Schools & Educators, Nonprofits & Faith Communities, and Municipalities & Civic Leaders** on their Get Involved pages.
+- **Removed the visible card/border around the embedded form on all five Get Involved pillar pages** — it read as a frame around the form instead of it looking like a natural part of the page.
+- **Get Involved pillar pages (Schools, Nonprofits, Companies, Municipalities, Ambassadors) now show the intro copy and the form side by side on desktop**, instead of stacked with the form below the fold, so visitors can see and fill out the whole form without scrolling. Still stacks normally on mobile.
+
+## 2026-10-30 — team
+
+- **The app now blocks signed-out visitors from opening Share and Scan.** Clicking the Share and Scan button shows the same login-required pop-up as Map and Badges, with a direct “Log in” action to keep the flow consistent.
+
+## 2026-10-30 — va.deedumlao@gmail.com
+
+- **Partner pledges now count toward the website's "Acts pledged" total.** The number of acts a group pledges on the partner form (GHL field "Partner Group Pledged Acts") lands in a new Pledge column in the PKF_Partners sheet. Once that row is Approved, it's added to the public total and becomes the partner's goal in the Partner Portal. Changing the number updates both, and un-approving the row takes it back out. Only approved rows count, so a fake or joke number can't inflate the total.
+
 ## 2026-10-29 — va.deedumlao@gmail.com
 
+- **Partner sign-ups are now automatic end to end: Partners form → GHL → PKF_Partners sheet → Partner Portal.** A new application lands in the sheet as Pending. Once someone sets it to Approved, the partner appears on /partners, gets their own Partner Portal account, the invite link is written into the sheet, and GHL can email it to them. Logo-only partners already in the sheet don't get portal accounts unless their new "Portal Access" column is set to Yes. This needs a one-time setup in the sheet and GHL; the steps are in `apps-script/pkf-partners/README.md`.
+- **Partner applications from the GHL form can now go straight into the PKF_Partners sheet**, free, with no Make.com and no paid GHL Sheets action. Each submission becomes a new "Pending" row with its ID filled in, and goes live on /partners only once someone sets it to Approved. This needs a one-time setup in the sheet and in GHL; the steps are in `apps-script/pkf-partners/README.md`.
 - **Ambassadors page: @handles removed from the cards**, and **Europe Sprint Ambassadors merged into "Global Ambassadors of Kindness"**, so the category chips are now just Champions, Education Leads and Global Ambassadors of Kindness. The profile-link button on each card stays. No sheet or Apps Script change was needed; the sheet's tabs are untouched.
 - **"Media" added to the Explore menu** (right after Partners), on desktop and mobile, so visitors can find the In the Press page from anywhere on the site. Translated in all 11 languages.
 
