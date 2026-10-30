@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-30 — va.deedumlao@gmail.com
+
+- **Simplified the Get Involved page — removed the 20+-field “Ambassador & Core Team Commitment” form** that was bolted onto the bottom, on top of the six pillar cards above it. The Ambassadors card already links to its own page with a much shorter GHL-embedded form, so nothing is lost. Decided to keep the other five pillar pages (schools, nonprofits, companies, municipalities, ambassadors) on their existing lightweight GHL-embedded forms rather than rebuilding them as native site forms — editable by the team directly in GHL with no deploy needed, lower risk two days before launch.
+
 ## 2026-10-30 — team
 
 - **The app now blocks signed-out visitors from opening Share and Scan.** Clicking the Share and Scan button shows the same login-required pop-up as Map and Badges, with a direct “Log in” action to keep the flow consistent.
