@@ -9,6 +9,7 @@ import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useAppMe } from "@/hooks/useAppData";
 import { getCanonicalOrigin } from "@shared/lib/canonicalOrigin";
 import { cn } from "@shared/lib/utils";
+import { EMPTY_REACH, reachRows, type ReachStats } from "@shared/lib/reach";
 
 type PassTab = "code" | "scan";
 
@@ -87,7 +88,7 @@ export default function AppPass() {
             <MyCode
               code={code}
               passUrl={passUrl}
-              carried={me?.peoplePassedTo ?? 0}
+              reach={me?.reach ?? EMPTY_REACH}
               displayName={me?.displayName ?? t.appWidgets.friend}
               memberSince={user.created_at ? new Intl.DateTimeFormat(lang, { month: "short", year: "numeric" }).format(new Date(user.created_at)) : null}
             />
@@ -103,18 +104,22 @@ export default function AppPass() {
 function MyCode({
   code,
   passUrl,
-  carried,
+  reach,
   displayName,
   memberSince,
 }: {
   code: string;
   passUrl: string;
-  carried: number;
+  reach: ReachStats;
   displayName: string;
   memberSince: string | null;
 }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const qrRef = useRef<PassQrCodeHandle>(null);
+  const nf = new Intl.NumberFormat(lang);
+  // Direct joins (always shown, even at 0), then one row per non-empty
+  // ripple generation — attributed signups only, never QR scans.
+  const rows = reachRows(reach, lang, t);
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -185,10 +190,16 @@ function MyCode({
       </div>
 
       <div className="w-full rounded-2xl border border-border bg-app-surface p-4">
-        <p className="flex items-baseline gap-2.5">
-          <span className="text-xl font-extrabold text-foreground">{carried}</span>
-          <span className="text-sm text-muted-foreground">{t.appPass.peopleJoinedWithCode}</span>
-        </p>
+        <ul className="flex flex-col gap-2">
+          {rows.map((row, i) => (
+            <li key={row.key} className={cn("flex items-baseline gap-2.5", i > 0 && "ps-3")}>
+              <span className={cn("font-extrabold text-foreground", i === 0 ? "text-xl" : "text-base")}>
+                {nf.format(row.count)}
+              </span>
+              <span className="text-sm text-muted-foreground">{row.label}</span>
+            </li>
+          ))}
+        </ul>
         <p className="mt-3 border-t border-border pt-3 text-xs leading-relaxed text-muted-foreground">
           {t.appPass.chainRipple}
         </p>

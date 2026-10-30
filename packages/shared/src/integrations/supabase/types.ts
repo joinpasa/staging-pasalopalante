@@ -1169,6 +1169,14 @@ export type Database = {
       }
       my_connections_count: { Args: never; Returns: number }
       my_longest_chain: { Args: never; Returns: number }
+      my_reach_stats: {
+        Args: never
+        Returns: {
+          direct_joins: number
+          people_reached: number
+          ripple_counts: number[]
+        }[]
+      }
       my_reactions: {
         Args: { _act_ids: string[] }
         Returns: {
@@ -1189,6 +1197,14 @@ export type Database = {
           member_count: number
           total_acts: number
           total_pledged: number
+        }[]
+      }
+      reach_stats_for: {
+        Args: { _user_id: string }
+        Returns: {
+          direct_joins: number
+          people_reached: number
+          ripple_counts: number[]
         }[]
       }
       reaction_counts: {

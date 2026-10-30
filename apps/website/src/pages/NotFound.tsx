@@ -1,8 +1,10 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import Footer from "@/components/Footer";
+import { useNoIndex } from "@/hooks/useNoIndex";
 
 const NotFound = () => {
+  useNoIndex();
   const location = useLocation();
 
   useEffect(() => {

@@ -91,7 +91,7 @@ const Footer = () => {
             <h4 className="text-sm font-bold tracking-widest uppercase text-warm-cream/40 mb-4">{t.footer.learnHeader}</h4>
             <ul className="space-y-2">
               <li><a href="/#story" className="text-warm-cream/70 hover:text-warm-cream transition-colors text-sm">{t.footer.ourStory}</a></li>
-              <li><a href="/how-it-works" className="text-warm-cream/70 hover:text-warm-cream transition-colors text-sm">{t.footer.howItWorks}</a></li>
+              <li><a href="/programs" className="text-warm-cream/70 hover:text-warm-cream transition-colors text-sm">{t.footer.howItWorks}</a></li>
               <li><a href="/about" className="text-warm-cream/70 hover:text-warm-cream transition-colors text-sm">About</a></li>
               <li><a href="/partners" className="text-warm-cream/70 hover:text-warm-cream transition-colors text-sm">{t.navbar.partners}</a></li>
               <li><a href="/ideas" className="text-warm-cream/70 hover:text-warm-cream transition-colors text-sm">{t.footer.ideas}</a></li>

@@ -21,8 +21,10 @@ import YourInvitations from "@/components/account/YourInvitations";
 import WelcomeCarousel, { type OnboardingResult } from "@/components/account/WelcomeCarousel";
 import { Skeleton } from "@shared/components/ui/skeleton";
 import { submitPPLForm } from "@shared/lib/pplForm";
+import { useNoIndex } from "@/hooks/useNoIndex";
 
 const AccountPage = () => {
+  useNoIndex();
   const { t, lang } = useLanguage();
   const { user, loading } = useAuth();
   const navigate = useNavigate();

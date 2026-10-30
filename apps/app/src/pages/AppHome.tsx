@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import AccountMenu from "@/components/app/AccountMenu";
 import JoinGate from "@/components/app/JoinGate";
 import ReactionButton from "@/components/app/ReactionButton";
+import ActBadgeTags from "@shared/components/badges/ActBadgeTags";
 import MyCommitment from "@/components/app/MyCommitment";
 import SeasonCountdown from "@/components/app/SeasonCountdown";
 import FirstTimeTour from "@/components/app/FirstTimeTour";
@@ -108,7 +109,16 @@ export default function AppHome() {
   const [searchParams] = useSearchParams();
 
   const myActIds = (myActs ?? []).map((a) => a.id);
-  const { reactions, toggle } = useActReactions(myActIds);
+  // Hearts for the "Recent Acts of Kindness" cards — same likes as the Wall.
+  const shownWallActs = (wallActs ?? []).slice(0, 2);
+  const { reactions, toggle } = useActReactions(shownWallActs.map((a) => a.id));
+  const onToggleReact = (actId: string) => {
+    if (!user) {
+      toast(t.appWall.joinToReact);
+      return;
+    }
+    void toggle(actId);
+  };
   const { data: thankedActs } = useThanksForActs([
     ...myActIds,
     ...(receivedActs ?? []).map((a) => a.id),
@@ -443,8 +453,8 @@ export default function AppHome() {
               <ArrowUpRight className="h-[11px] w-[11px] text-app-magenta" strokeWidth={2.1} />
             </span>
             <Users className="h-[17px] w-[17px] text-app-magenta" strokeWidth={1.6} />
-            <p className={cn("font-extrabold leading-none text-foreground", statFontSizeClass(me?.connections ?? 0, "compact"))}>
-              {nf.format(me?.connections ?? 0)}
+            <p className={cn("font-extrabold leading-none text-foreground", statFontSizeClass(me?.reach.peopleReached ?? 0, "compact"))}>
+              {nf.format(me?.reach.peopleReached ?? 0)}
             </p>
             <p className="text-[10.5px] leading-tight text-muted-foreground">{t.appHome.peopleReached}</p>
           </Link>
@@ -576,10 +586,10 @@ export default function AppHome() {
                   </span>
                 </div>
                 <div className="mt-3 flex items-center gap-2 ps-[3.25rem]">
-                  <ReactionButton
-                    count={reactions[act.id]?.count ?? 0}
-                    reacted={reactions[act.id]?.reacted ?? false}
-                    onToggle={() => void toggle(act.id)}
+                  <ActBadgeTags
+                    mode={act.mode}
+                    actType={act.actType}
+                    tagClassName="bg-app-coral-tint text-app-coral"
                   />
                   {thankedActs?.has(act.id) && (
                     <span className="inline-flex items-center rounded-full bg-app-gold-tint px-2.5 py-1 text-[11px] font-semibold text-app-gold">
@@ -621,7 +631,7 @@ export default function AppHome() {
               {t.appHome.seeAll}
             </Link>
           </div>
-          {(wallActs ?? []).slice(0, 2).map((act) => (
+          {shownWallActs.map((act) => (
             <div
               key={act.id}
               className="flex items-start gap-2.5 rounded-2xl border border-border bg-app-surface p-3.5"
@@ -630,26 +640,47 @@ export default function AppHome() {
                 {initials(act.name) || "PP"}
               </span>
               <div className="min-w-0 flex-1">
-                <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center justify-between gap-2">
                   <p className="truncate text-[13px] font-bold text-foreground">{act.name}</p>
-                  <div className="flex shrink-0 flex-col items-end gap-0.5">
-                    <p className="text-[10.5px] text-muted-foreground">{timeAgo(act.createdAt, t.appCommon, lang)}</p>
+                  {/* Translate sits beside the time, pulled out of the line
+                      height so it never pushes the text below down. */}
+                  <div className="flex shrink-0 items-center gap-1">
                     {translations.canTranslate(act) && (
-                      <TranslateButton
-                        translated={translations.isTranslated(act.id)}
-                        loading={translations.isLoading(act.id)}
-                        onClick={() => translations.toggle(act)}
-                      />
+                      <span className="-my-1.5">
+                        <TranslateButton
+                          translated={translations.isTranslated(act.id)}
+                          loading={translations.isLoading(act.id)}
+                          onClick={() => translations.toggle(act)}
+                        />
+                      </span>
                     )}
+                    <p className="text-[10.5px] text-muted-foreground">{timeAgo(act.createdAt, t.appCommon, lang)}</p>
                   </div>
                 </div>
                 <p className="mt-1 line-clamp-2 text-[12.5px] leading-snug text-foreground/75">
                   {translations.textFor(act)}
                 </p>
                 <SocialLinkRow videoUrl={act.videoUrl} />
-                <span className="mt-2 inline-block rounded-full bg-app-sky/10 px-2.5 py-1 text-[10.5px] font-semibold text-app-sky">
-                  {modeLabel(act.mode, t.appCommon)}
-                </span>
+                <div className="mt-2 flex items-center justify-between gap-2">
+                  <div className="flex min-w-0 flex-wrap items-center gap-2">
+                    <span className="inline-block rounded-full bg-app-sky/10 px-2.5 py-1 text-[10.5px] font-semibold text-app-sky">
+                      {modeLabel(act.mode, t.appCommon)}
+                    </span>
+                    <ActBadgeTags
+                      mode={act.mode}
+                      actType={act.actType}
+                      tagClassName="bg-app-coral-tint text-app-coral"
+                    />
+                  </div>
+                  {/* No liking your own post. */}
+                  {(!user || act.userId !== user.id) && (
+                    <ReactionButton
+                      count={reactions[act.id]?.count ?? 0}
+                      reacted={reactions[act.id]?.reacted ?? false}
+                      onToggle={() => onToggleReact(act.id)}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           ))}

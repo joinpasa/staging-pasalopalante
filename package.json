@@ -17,7 +17,7 @@
     "build": "npm run build:website && npm run build:app && npm run build:partners",
     "build:combined": "node scripts/build-combined.mjs",
     "lint": "eslint .",
-    "test": "npm run test --workspace=@pasalopalante/shared && npm run test --workspace=@pasalopalante/website && npm run test --workspace=@pasalopalante/app && npm run test --workspace=@pasalopalante/partners && npx vitest run --config tests/repo-invariants/vitest.config.ts",
+    "test": "npm run test --workspace=@pasalopalante/shared && npm run test --workspace=@pasalopalante/website && npm run test --workspace=@pasalopalante/app && npm run test --workspace=@pasalopalante/partners && npx vitest run --config tests/repo-invariants/vitest.config.ts && npx vitest run --config tests/db/vitest.config.ts",
     "test:e2e:website": "npm run test:e2e --workspace=@pasalopalante/website",
     "test:e2e:app": "npm run test:e2e --workspace=@pasalopalante/app",
     "translate": "tsx scripts/translate-i18n.ts"
@@ -85,6 +85,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.0",
+    "@electric-sql/pglite": "^0.5.13",
     "@eslint/js": "^9.32.0",
     "@playwright/test": "^1.57.0",
     "@tailwindcss/typography": "^0.5.16",

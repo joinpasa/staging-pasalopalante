@@ -9,9 +9,19 @@
 const CONFIG = {
   SYNC_URL: "https://tipfbleltjexofsjffwb.supabase.co/functions/v1/sync-partners",
   SYNC_SECRET: "PASTE_PARTNERS_SYNC_SECRET_HERE", // real value lives only in the sheet's script + Supabase secret PARTNERS_SYNC_SECRET — never commit it
+  // GHL partner-application webhook (doPost below). Any long random text;
+  // the same value goes at the end of the webhook URL in GHL (?key=...).
+  // Never commit the real value.
+  INTAKE_SECRET: "PASTE_ANY_LONG_RANDOM_TEXT_HERE",
+  // Tab new applications land on. Blank = the first non-underscore tab.
+  INTAKE_TAB: "",
+  // Used when the form doesn't send a category (Category is required for
+  // the row to sync and to get an ID). Fix it by hand when you approve.
+  DEFAULT_CATEGORY: "Businesses",
 };
 
-// Column order: ID, Status, Featured?, Category, Name, Logo, Website, Facebook, Role, Dark, Sort Order, Internal Notes
+// Column order: ID, Status, Featured?, Category, Name, Logo, Website, Facebook, Role, Dark, Sort Order, Internal Notes,
+// Portal Access, Contact Email, Portal Link, Pledge
 // (0-based indexes, used when reading a whole row as an array)
 const COLS = {
   ID: 0,
@@ -26,7 +36,13 @@ const COLS = {
   DARK: 9,
   SORT_ORDER: 10,
   // INTERNAL_NOTES: 11 — never read.
+  PORTAL: 12,        // M — "Yes" = give this partner a partner-portal account once Approved
+  CONTACT_EMAIL: 13, // N — goes to the private portal org only, never to the website
+  PORTAL_LINK: 14,   // O — filled in by the sync: the portal invite link to send them
+  PLEDGE: 15,        // P — acts of kindness the organization pledges; counts toward "Acts pledged" once Approved
 };
+const TOTAL_COLS = 16;
+const PORTAL_HEADERS = { 13: "Portal Access", 14: "Contact Email", 15: "Portal Link", 16: "Pledge" }; // 1-based column → header
 
 // 1-based column numbers (what getRange() expects) — derived from COLS so the
 // two can never drift apart again if a column is added later.
@@ -43,8 +59,10 @@ function dataSheets_() {
 
 function syncPartners() {
   const entries = [];
+  const rowOf = {}; // sheet row ID → { sheet, row } so portal links can be written back
 
   dataSheets_().forEach((sheet) => {
+    ensurePortalHeaders_(sheet);
     const values = sheet.getDataRange().getValues();
     for (let i = 1; i < values.length; i++) { // skip header row
       const row = values[i];
@@ -52,6 +70,7 @@ function syncPartners() {
       const name = String(row[COLS.NAME] || "").trim();
       const category = String(row[COLS.CATEGORY] || "").trim();
       if (!id || !name || !category) continue; // blank/trailing row
+      rowOf[id] = { sheet: sheet, row: i + 1 };
 
       entries.push({
         id: id,
@@ -68,6 +87,9 @@ function syncPartners() {
           : Number(row[COLS.SORT_ORDER]),
         // "Yes" / "No" / blank from the dropdown (a checkbox's TRUE/FALSE works too).
         featured: String(row[COLS.FEATURED] || "").trim(),
+        portal: String(row[COLS.PORTAL] || "").trim(),
+        contactEmail: String(row[COLS.CONTACT_EMAIL] || "").trim(),
+        pledge: row[COLS.PLEDGE] === "" || row[COLS.PLEDGE] == null ? "" : String(row[COLS.PLEDGE]),
       });
     }
   });
@@ -91,7 +113,27 @@ function syncPartners() {
     Logger.log("Sync FAILED (" + code + "): " + body);
     throw new Error("Partners sync failed: " + body);
   }
-  Logger.log("Sync OK: " + body); // lists duplicateIds here if any slipped through
+  Logger.log("Sync OK: " + body); // lists duplicateIds / portalCreated here
+
+  // Write each portal org's invite link into the Portal Link column.
+  const result = JSON.parse(body);
+  const links = result.portalLinks || {};
+  Object.keys(links).forEach((id) => {
+    const at = rowOf[id];
+    if (!at) return;
+    const cell = at.sheet.getRange(at.row, COLS.PORTAL_LINK + 1);
+    if (String(cell.getValue()).trim() !== links[id]) cell.setValue(links[id]);
+  });
+  if (result.portalWarning) Logger.log("Portal: " + result.portalWarning);
+  if (result.pledgeWarning) Logger.log("Pledges: " + result.pledgeWarning);
+}
+
+/** Adds the three portal headers to row 1 if they're missing. */
+function ensurePortalHeaders_(sheet) {
+  Object.keys(PORTAL_HEADERS).forEach((col) => {
+    const cell = sheet.getRange(1, Number(col));
+    if (String(cell.getValue()).trim() === "") cell.setValue(PORTAL_HEADERS[col]);
+  });
 }
 
 /** One-time setup: run this once from the editor's function dropdown. It
@@ -231,4 +273,158 @@ function fixDuplicateIds() {
   } finally {
     lock.releaseLock();
   }
+}
+
+/* ------------------------------------------------------------------ */
+/*  GHL partner applications → new Pending row                         */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Web-app endpoint for the GHL "Webhook" workflow action (trigger: the
+ * partner application form is submitted). Adds ONE row per application
+ * with Status = "Pending" and Portal Access = "Yes". Nothing happens until
+ * someone on the team reviews it and changes Status to "Approved": the next
+ * sync then puts it on the website AND creates its partner-portal account,
+ * writing the invite link into the Portal Link column. The contact's email
+ * goes to Contact Email (portal only); name/phone go in Internal Notes. The
+ * pledged acts (GHL field partner_group_pledged_acts) go to Pledge, which
+ * counts toward the website's "Acts pledged" total once Approved.
+ * Neither is ever shown on the website.
+ *
+ * Setup: Deploy → New deployment → Web app, Execute as: Me, Who has
+ * access: Anyone. In GHL use the plain "Webhook" action (POST) with the
+ * web-app URL + "?key=" + CONFIG.INTAKE_SECRET.
+ *
+ * Field names: GHL sends its standard contact fields (first_name,
+ * company_name, website, email, phone...). For anything else, add a
+ * "Custom Data" line in the GHL Webhook action using one of these keys:
+ * partner_name, category, website, facebook, logo, role.
+ */
+function doPost(e) {
+  const params = (e && e.parameter) || {};
+  if (!CONFIG.INTAKE_SECRET || CONFIG.INTAKE_SECRET.indexOf("PASTE_") === 0 || params.key !== CONFIG.INTAKE_SECRET) {
+    return textOut_("unauthorized");
+  }
+
+  let payload = {};
+  try {
+    payload = JSON.parse((e.postData && e.postData.contents) || "{}");
+  } catch (err) {
+    return textOut_("bad json");
+  }
+  const f = flattenPayload_(payload);
+  const logRow = logIntake_(payload);
+  // Writes the outcome next to the logged payload, so a skipped
+  // submission says why in _intake_log column C.
+  const done = (msg) => {
+    SpreadsheetApp.getActiveSpreadsheet().getSheetByName("_intake_log").getRange(logRow, 3).setValue(msg);
+    return textOut_(msg);
+  };
+
+  const pick = (...keys) => {
+    for (const k of keys) {
+      const v = f[normKey_(k)];
+      if (v !== undefined && v !== null && String(v).trim() !== "") return String(v).trim();
+    }
+    return "";
+  };
+
+  // Labels as the GHL partner survey sends them ("organization name is",
+  // "What type of Group do you lead?", "Group Pledged Acts", "Your Logo")
+  // come first; generic names are fallbacks.
+  const name = pick("organization_name_is", "partner_name", "organization_name", "group_name", "organization", "company_name", "company", "business_name");
+  if (!name) return done("skipped: no organization name found");
+  const category = pick("what_type_of_group_do_you_lead", "category", "partner_category", "organization_type", "type") || CONFIG.DEFAULT_CATEGORY;
+  const contact = [pick("full_name", "name") || [pick("first_name"), pick("last_name")].join(" ").trim(), pick("email"), pick("phone")]
+    .filter(Boolean)
+    .join(" · ");
+
+  const lock = LockService.getDocumentLock();
+  lock.waitLock(20000);
+  try {
+    const sheet = intakeSheet_();
+
+    // Same organization submitted twice → don't add a second row.
+    const existing = dataSheets_().some((sh) => {
+      const last = sh.getLastRow();
+      if (last < FIRST_DATA_ROW) return false;
+      return sh.getRange(FIRST_DATA_ROW, COLS.NAME + 1, last - FIRST_DATA_ROW + 1, 1).getValues()
+        .some((r) => String(r[0]).trim().toLowerCase() === name.toLowerCase());
+    });
+    if (existing) return done("skipped: " + name + " is already in the sheet");
+
+    const prefix = makePrefix_(category);
+    const row = new Array(TOTAL_COLS).fill("");
+    row[COLS.ID] = prefix + "-" + nextNumber_(prefix);
+    row[COLS.STATUS] = "Pending";
+    row[COLS.FEATURED] = "No";
+    row[COLS.CATEGORY] = category;
+    row[COLS.NAME] = name;
+    row[COLS.LOGO] = pick("your_logo", "logo", "logo_url", "organization_logo", "orgnization_logo");
+    // GHL's contact-level "website" is sometimes our own site (set by a
+    // website signup); that would link the partner to us on /partners.
+    const site = pick("organization_website", "company_website", "website_url", "website");
+    row[COLS.WEBSITE] = /passkindnessforward\.com|pasalopalante\.com/i.test(site) ? "" : site;
+    row[COLS.FACEBOOK] = pick("facebook", "facebook_url");
+    row[COLS.ROLE] = pick("role", "partnership_type");
+    row[COLS.DARK] = "FALSE";
+    row[COLS.PORTAL] = "Yes"; // portal account is created when someone sets Status = Approved
+    row[COLS.CONTACT_EMAIL] = pick("email");
+    // GHL custom field {{contact.partner_group_pledged_acts}}
+    const pledge = pick(
+      "group_pledged_acts",
+      "partner_group_pledged_acts",
+      "total_acts_of_kindness_your_group_commits_to_in_november_2026",
+      "pledged_acts",
+      "pledge",
+      "pledge_count",
+    ).replace(/[^0-9]/g, "");
+    row[COLS.PLEDGE] = pledge ? Number(pledge) : "";
+    row[11] = "GHL application " + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm") +
+      (contact ? " — " + contact : "");
+    sheet.appendRow(row);
+    lock.releaseLock();
+    return done("added " + row[COLS.ID] + " (" + name + ")");
+  } finally {
+    try { lock.releaseLock(); } catch (err) { /* already released */ }
+  }
+}
+
+function intakeSheet_() {
+  if (CONFIG.INTAKE_TAB) {
+    const named = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.INTAKE_TAB);
+    if (named) return named;
+  }
+  return dataSheets_()[0];
+}
+
+// GHL nests some fields (contact.*, customData.*); flatten to one level
+// with normalized keys ("Company Name" / company_name → companyname).
+function flattenPayload_(obj, out) {
+  out = out || {};
+  Object.keys(obj || {}).forEach((k) => {
+    const v = obj[k];
+    if (v && typeof v === "object" && !Array.isArray(v)) flattenPayload_(v, out);
+    else if (!(normKey_(k) in out)) out[normKey_(k)] = Array.isArray(v) ? v.join(", ") : v;
+  });
+  return out;
+}
+
+function normKey_(k) {
+  return String(k).toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+// Raw payloads go to "_intake_log" (underscore = ignored by the sync and
+// ID numbering) so a field that didn't map can be traced. Last 200 kept.
+function logIntake_(payload) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const log = ss.getSheetByName("_intake_log") || ss.insertSheet("_intake_log");
+  const extra = log.getLastRow() - 199;
+  if (extra > 0) log.deleteRows(1, extra);
+  log.appendRow([new Date(), JSON.stringify(payload).slice(0, 45000)]);
+  return log.getLastRow();
+}
+
+function textOut_(s) {
+  return ContentService.createTextOutput(s);
 }

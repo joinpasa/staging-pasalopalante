@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { CheckCircle2, KeyRound } from "lucide-react";
 import GoogleIcon from "@shared/components/icons/GoogleIcon";
 import Footer from "@/components/Footer";
+import { useNoIndex } from "@/hooks/useNoIndex";
 
 function safeNext(raw: string | null): string {
   if (!raw) return "/account";
@@ -24,6 +25,7 @@ function safeNext(raw: string | null): string {
 type AuthTab = "signin" | "signup";
 
 const AuthPage = () => {
+  useNoIndex();
   const { t } = useLanguage();
   const { signIn, signInWithMagicLink, signInWithGoogle, resetPassword, user, loading } = useAuth();
   const navigate = useNavigate();

@@ -7,6 +7,8 @@ import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useReferralCode } from "@/hooks/useReferralCode";
 import { siteOrigin } from "@shared/lib/referral";
 import { Skeleton } from "@shared/components/ui/skeleton";
+import { useReachStats } from "@shared/hooks/useReachStats";
+import { reachRows } from "@shared/lib/reach";
 import InviteQrCode from "./InviteQrCode";
 
 interface Stats {
@@ -16,8 +18,12 @@ interface Stats {
 }
 
 const YourInvitations = ({ userId }: { userId: string }) => {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const code = useReferralCode(userId);
+  // Direct joins + one row per non-empty ripple generation — attributed
+  // signups only; QR scans by existing members never show up here.
+  const { data: reach } = useReachStats(userId);
+  const nf = new Intl.NumberFormat(lang);
   const [stats, setStats] = useState<Stats | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -57,7 +63,6 @@ const YourInvitations = ({ userId }: { userId: string }) => {
   }
 
   const rows: { label: string; value: number }[] = [
-    { label: t.account.invitesJoined, value: stats?.joined_count ?? 0 },
     { label: t.account.invitesPledges, value: stats?.pledge_total ?? 0 },
     { label: t.account.invitesActs, value: stats?.acts_count ?? 0 },
   ];
@@ -69,10 +74,18 @@ const YourInvitations = ({ userId }: { userId: string }) => {
         <h2 className="font-serif text-xl">{t.account.invitesHeading}</h2>
       </div>
 
-      {stats === null ? (
+      {stats === null || !reach ? (
         <Skeleton className="h-24 w-full rounded-xl" />
       ) : (
         <>
+          <ul className="space-y-1.5 pb-3 mb-1 border-b border-border/60">
+            {reachRows(reach, lang, t).map((row, i) => (
+              <li key={row.key} className={`flex items-baseline gap-2.5 ${i > 0 ? "ps-4" : ""}`}>
+                <span className={`font-serif leading-none ${i === 0 ? "text-2xl" : "text-xl"}`}>{nf.format(row.count)}</span>
+                <span className="text-sm text-foreground/70">{row.label}</span>
+              </li>
+            ))}
+          </ul>
           <div className="space-y-2">
             {rows.map((r) => (
               <div

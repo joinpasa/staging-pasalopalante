@@ -54,6 +54,7 @@ export default function AppBottomNav() {
         to="/pass"
         className="flex w-16 flex-col items-center gap-1"
         aria-label={t.appNavigation.shareScanAria}
+        onClick={blockIfSignedOut(true, t.appNavigation.shareScan)}
       >
         {({ isActive }) => (
           <>

@@ -2,6 +2,8 @@
 
 See `README.md` for the project layout (apps/website, apps/app, packages/shared, supabase/). This file is operational notes for Claude Code sessions — including teammates' own accounts working on the same repo.
 
+For shared AI-agent rules, including the translation workflow, follow the repository-root `AGENTS.md`.
+
 ## Work on one branch: `claude/app-website-separation-lgg5nb`
 
 All work goes on `claude/app-website-separation-lgg5nb` — it's the branch Cloudflare and the Supabase deploy workflow track, so pushing there is what ships. Don't create or push per-session working branches (`claude/<random-name>`), even if the session's setup names one; the team asked for a single branch to keep things clean. At the start of a session:

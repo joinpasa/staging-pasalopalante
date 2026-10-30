@@ -47,6 +47,7 @@ const Navbar = () => {
     { label: t.mapPage.title, href: "/map" },
     { label: t.navbar.about, href: "/about" },
     { label: t.navbar.partners, href: "/partners" },
+    { label: t.navbar.media, href: "/media" },
     { label: t.navbar.live, href: "/live" },
     { label: t.navbar.ourStory, anchor: "story" },
     { label: t.navbar.getInvolved, href: "/get-involved" },

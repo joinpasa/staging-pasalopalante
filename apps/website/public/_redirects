@@ -1,2 +1,6 @@
 /tech-form    https://api.leadconnectorhq.com/widget/form/V0RS3yd6J4oW486FLaQh   301
 /tech-form/*  https://api.leadconnectorhq.com/widget/form/V0RS3yd6J4oW486FLaQh   301
+# /how-it-works was always the same page as /programs (same component,
+# canonical /programs) — one URL, so search engines don't see a duplicate.
+/how-it-works   /programs   301
+/how-it-works/  /programs   301

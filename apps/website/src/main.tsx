@@ -1,5 +1,6 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
+import "./fonts/fonts.css";
 import "@shared/styles/index.css";
 import { detectLanguage } from "@shared/contexts/LanguageContext";
 import { loadTranslations } from "@shared/i18n/translations";

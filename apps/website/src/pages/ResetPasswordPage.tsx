@@ -62,6 +62,7 @@ export default function ResetPasswordPage() {
         title="Reset your password | Kindness Forward"
         description="Set a new password for your Pásalo Pa'lante account."
         path="/reset-password"
+        noindex
       />
       <Navbar />
       <main className="pt-32 pb-20 section-padding">

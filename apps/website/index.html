@@ -18,12 +18,26 @@
          discover it until the JS bundle downloaded, parsed, and rendered
          the <img>. Preloading it here lets the browser fetch it starting
          at initial HTML parse, in parallel with the JS bundle, instead of
-         after it. -->
-    <link rel="preload" as="image" href="/world-map.svg" fetchpriority="high" />
+         after it.
+         Only on the pages that actually show the map, though: this shell is
+         served for every route, and a high-priority 24 KB download nothing
+         uses (e.g. /join, /wall) competes with that page's own content.
+         Inline and kept above any stylesheet on purpose — a script after a
+         pending stylesheet would wait for it, delaying the preload. -->
+    <script>
+      (function () {
+        var path = location.pathname.replace(/\/+$/, "") || "/";
+        if (path !== "/" && path !== "/partners" && path !== "/ambassadors") return;
+        var link = document.createElement("link");
+        link.rel = "preload";
+        link.as = "image";
+        link.href = "/world-map.svg";
+        link.setAttribute("fetchpriority", "high");
+        document.head.appendChild(link);
+      })();
+    </script>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" />
+    <!-- Fonts (DM Sans, DM Serif Display) are self-hosted: see src/fonts/fonts.css. -->
 
     <!-- Google tag (gtag.js) — measurement ID picked at runtime by hostname.
          passkindnessforward.com is routed to this exact same build (same
@@ -381,7 +395,12 @@
     <!-- ScaleSmart chat widget. Bottom-right corner: the install prompt
          and scroll-to-top button live bottom-left. data-position is the
          usual embed attribute for this; if ScaleSmart ignores it, set the
-         position in the ScaleSmart dashboard instead. -->
-    <script src="https://scalesmart-agent.onrender.com/widget.js" data-business-id="cmqsh6ozh060o7zsnm8ql1jjg" data-color="#F37025" data-position="bottom-right"></script>
+         position in the ScaleSmart dashboard instead.
+         defer: as a plain script it blocked the end of parsing, and the app
+         (a module script, which always waits for parsing to finish) couldn't
+         start until this third-party file had downloaded. Deferred, it loads
+         in parallel and runs right after the app. It finds its own tag via
+         querySelector and attaches to document.body, both fine when deferred. -->
+    <script defer src="https://scalesmart-agent.onrender.com/widget.js" data-business-id="cmqsh6ozh060o7zsnm8ql1jjg" data-color="#F37025" data-position="bottom-right"></script>
   </body>
 </html>

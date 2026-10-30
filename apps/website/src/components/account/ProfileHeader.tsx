@@ -3,6 +3,8 @@ import { useLanguage } from "@shared/contexts/LanguageContext";
 import { Button } from "@shared/components/ui/button";
 import { Crown, LogOut, Settings } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { useReachStats } from "@shared/hooks/useReachStats";
+import { countWording } from "@shared/lib/reach";
 
 interface Props {
   profile: {
@@ -18,6 +20,8 @@ const ProfileHeader = ({ profile }: Props) => {
   const { t, lang } = useLanguage();
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const { data: reach } = useReachStats(user?.id);
+  const reached = reach?.peopleReached ?? 0;
 
   const name = profile?.display_name || user?.email?.split("@")[0] || "";
   const since = profile?.created_at
@@ -53,7 +57,18 @@ const ProfileHeader = ({ profile }: Props) => {
               )}
             </span>
           )}
-          {since && <p className="text-sm text-foreground/60">{t.account.memberSince} {since}</p>}
+          {/* People reached sits right of "Member since" on wider screens and
+              drops below it on phones. */}
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
+            {since && <p className="text-sm text-foreground/60">{t.account.memberSince} {since}</p>}
+            {reach && (
+              <p className="text-sm text-foreground/60">
+                {since && <span className="hidden sm:inline me-3" aria-hidden="true">·</span>}
+                <strong className="font-semibold text-foreground">{new Intl.NumberFormat(lang).format(reached)}</strong>{" "}
+                {countWording(reached, t.account.personReached, t.account.peopleReached)}
+              </p>
+            )}
+          </div>
         </div>
       </div>
       <div className="flex flex-col items-start gap-1">
