@@ -59,10 +59,10 @@ export default function ShareActFlow({ onClose, initialMode, initialDescription,
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Both the mode and a chip are required (badges are counted from them),
-  // so neither is preselected unless the caller already knows the mode.
-  const [mode, setMode] = useState<Mode | null>(initialMode ?? null);
-  const [actType, setActType] = useState<string | null>(null);
+  // Both the mode and a chip are required (badges are counted from them);
+  // they default to Gave / Something else so the form is submittable as-is.
+  const [mode, setMode] = useState<Mode | null>(initialMode ?? "performed");
+  const [actType, setActType] = useState<string | null>("other");
   const [shareOnWall, setShareOnWall] = useState(true);
   const [description, setDescription] = useState(initialDescription ?? "");
   const [socialLink, setSocialLink] = useState<DetectedSocialLink | null>(null);

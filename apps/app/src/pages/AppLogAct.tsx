@@ -26,7 +26,8 @@ const MAX_FILE_SIZE = 25 * 1024 * 1024;
  * since its multi-photo and anonymous-capture support aren't things this
  * simpler chip flow covers. The Gave/Received/Witnessed choice is built in
  * here directly (same options and texts as ShareActFlow, own app styling).
- * Both the mode and a chip are required — badges are counted from them.
+ * Both the mode and a chip are required — badges are counted from them —
+ * and preselected to Gave / Something else.
  */
 export default function AppLogAct() {
   const navigate = useNavigate();
@@ -40,9 +41,9 @@ export default function AppLogAct() {
   // handed over so it isn't lost while the mode and chip get picked here.
   const prefill = useLocation().state as { note?: string; socialLink?: DetectedSocialLink } | null;
 
-  // A pass hand-off is always something the user gave.
-  const [mode, setMode] = useState<ActMode | null>(withName ? "performed" : null);
-  const [picked, setPicked] = useState<string | null>(null);
+  // Defaults to Gave / Something else (a pass hand-off is always "gave").
+  const [mode, setMode] = useState<ActMode | null>("performed");
+  const [picked, setPicked] = useState<string | null>("other");
   const [note, setNote] = useState(
     withName ? `${t.appLogAct.passedItForwardTo} ${withName}: ` : prefill?.note ?? "",
   );

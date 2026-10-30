@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-10-31 — M.Schollmeyer@gmx.de
+
+- **Logging an act starts with "Gave" and "Something else" already picked**, on both the website's share form and the app's Log an Act screen, so people can just type and submit — they can still switch to any other option.
+
 ## 2026-10-29 — va.deedumlao@gmail.com
 
 - **Ambassadors page: @handles removed from the cards**, and **Europe Sprint Ambassadors merged into "Global Ambassadors of Kindness"**, so the category chips are now just Champions, Education Leads and Global Ambassadors of Kindness. The profile-link button on each card stays. No sheet or Apps Script change was needed; the sheet's tabs are untouched.
