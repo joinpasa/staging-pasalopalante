@@ -27,9 +27,7 @@ export default function MunicipalitiesPage() {
             {f.municipalitiesBody}
           </p>
 
-          <div className="bg-white/70 border border-border rounded-2xl p-4 md:p-6">
-            <GHLFormEmbed formId="zDSXQsaqkVRmj7xZ3WIT" title={f.municipalitiesFormTitle} />
-          </div>
+          <GHLFormEmbed formId="zDSXQsaqkVRmj7xZ3WIT" title={f.municipalitiesFormTitle} />
         </div>
       </main>
       <Footer />

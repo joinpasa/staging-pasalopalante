@@ -27,9 +27,7 @@ export default function NonprofitsFaithPage() {
             {f.nonprofitsBody}
           </p>
 
-          <div className="bg-white/70 border border-border rounded-2xl p-4 md:p-6">
-            <GHLFormEmbed formId="Edsaxkyfgv3WcWT0Ga9O" title={f.nonprofitsFormTitle} />
-          </div>
+          <GHLFormEmbed formId="Edsaxkyfgv3WcWT0Ga9O" title={f.nonprofitsFormTitle} />
         </div>
       </main>
       <Footer />
