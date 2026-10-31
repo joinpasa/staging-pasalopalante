@@ -71,11 +71,29 @@ describe("rippleOrdinal", () => {
 
 describe("parseReachStats", () => {
   it("reads the RPC row and falls back to zeros", () => {
-    expect(parseReachStats([{ people_reached: "4", direct_joins: 1, ripple_counts: ["1", 2] }])).toEqual({
+    expect(
+      parseReachStats([
+        {
+          people_reached: "4",
+          direct_joins: 1,
+          ripple_counts: ["1", 2],
+          direct_connections: "2",
+          connection_ripples: [1, "1"],
+        },
+      ]),
+    ).toEqual({
       peopleReached: 4,
       directJoins: 1,
       rippleCounts: [1, 2],
+      directConnections: 2,
+      connectionRipples: [1, 1],
     });
-    expect(parseReachStats([])).toEqual({ peopleReached: 0, directJoins: 0, rippleCounts: [] });
+    expect(parseReachStats([])).toEqual({
+      peopleReached: 0,
+      directJoins: 0,
+      rippleCounts: [],
+      directConnections: 0,
+      connectionRipples: [],
+    });
   });
 });

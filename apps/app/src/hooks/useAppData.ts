@@ -28,11 +28,11 @@ export interface AppMe {
   pledged: number;
   peoplePassedTo: number;
   rippleActs: number;
-  /** People reached (whole referral chain + registered members who scanned
-   *  your own Pass QR and their chains, each person once) and the
-   *  direct-join / ripple breakdown —
-   *  see my_reach_stats(). My Network's connection list is separate
-   *  (useMyConnections). */
+  /** People reached (everyone reached through connections — signups and
+   *  QR scans, counted for both people — made after the step before them,
+   *  each person once), its breakdown by level, and the "joined with your
+   *  code" breakdown — see my_reach_stats(). My Network's connection list
+   *  is separate (useMyConnections). */
   reach: ReachStats;
   onboardingSeen: boolean;
   hasCommitment: boolean;

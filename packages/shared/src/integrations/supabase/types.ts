@@ -1172,6 +1172,8 @@ export type Database = {
       my_reach_stats: {
         Args: never
         Returns: {
+          connection_ripples: number[]
+          direct_connections: number
           direct_joins: number
           people_reached: number
           ripple_counts: number[]
@@ -1202,6 +1204,8 @@ export type Database = {
       reach_stats_for: {
         Args: { _user_id: string }
         Returns: {
+          connection_ripples: number[]
+          direct_connections: number
           direct_joins: number
           people_reached: number
           ripple_counts: number[]

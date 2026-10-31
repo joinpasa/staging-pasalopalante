@@ -2,35 +2,53 @@ import { supabase } from "@shared/integrations/supabase/client";
 import type { Translations } from "@shared/i18n/translations";
 
 /**
- * A member's reach, from my_reach_stats() (see the people_reached migration
- * for how it's counted):
- * - peopleReached: everyone in their referral chain, every depth, plus
- *   registered members who scanned their personal Pass QR together with
- *   those members' own referral chains — each person once
- * - directJoins: people who joined with their own code
- * - rippleCounts[0]: 1st ripple (people invited by their direct joins),
- *   [1]: 2nd ripple, … — 0 means that generation is empty
- * Direct joins and ripples only ever come from attributed signups; a QR
- * scan by an existing member only affects peopleReached.
+ * A member's reach, from my_reach_stats() (see the people_reached_two_way
+ * migration for how it's counted):
+ * - peopleReached: everyone reachable through connections (signups and QR
+ *   scans, counted for both people) made after the step before them —
+ *   each person once
+ * - directConnections / connectionRipples: peopleReached split by level —
+ *   connected with you directly, then [0]: 1st ripple, [1]: 2nd ripple, …
+ *   (0 means that level is empty)
+ * - directJoins / rippleCounts: the Pass screen's "joined with your code"
+ *   breakdown — attributed signups only, never QR scans
  */
 export interface ReachStats {
   peopleReached: number;
   directJoins: number;
   rippleCounts: number[];
+  directConnections: number;
+  connectionRipples: number[];
 }
 
-export const EMPTY_REACH: ReachStats = { peopleReached: 0, directJoins: 0, rippleCounts: [] };
+export const EMPTY_REACH: ReachStats = {
+  peopleReached: 0,
+  directJoins: 0,
+  rippleCounts: [],
+  directConnections: 0,
+  connectionRipples: [],
+};
+
+const numbers = (value: unknown) => (Array.isArray(value) ? value.map((n) => Number(n) || 0) : []);
 
 export function parseReachStats(data: unknown): ReachStats {
   const row = (Array.isArray(data) ? data[0] : data) as
-    | { people_reached?: unknown; direct_joins?: unknown; ripple_counts?: unknown }
+    | {
+        people_reached?: unknown;
+        direct_joins?: unknown;
+        ripple_counts?: unknown;
+        direct_connections?: unknown;
+        connection_ripples?: unknown;
+      }
     | null
     | undefined;
   if (!row) return EMPTY_REACH;
   return {
     peopleReached: Number(row.people_reached ?? 0) || 0,
     directJoins: Number(row.direct_joins ?? 0) || 0,
-    rippleCounts: Array.isArray(row.ripple_counts) ? row.ripple_counts.map((n) => Number(n) || 0) : [],
+    rippleCounts: numbers(row.ripple_counts),
+    directConnections: Number(row.direct_connections ?? 0) || 0,
+    connectionRipples: numbers(row.connection_ripples),
   };
 }
 
@@ -75,7 +93,7 @@ export interface ReachRow {
  * The direct-join line (always shown, even at 0), then one line per
  * non-empty ripple generation: "2 people joined in your 1st ripple", …
  */
-export function reachRows(stats: ReachStats, lang: string, t: Translations): ReachRow[] {
+export function reachRows(stats: Pick<ReachStats, "directJoins" | "rippleCounts">, lang: string, t: Translations): ReachRow[] {
   const rows: ReachRow[] = [
     {
       key: "direct",
