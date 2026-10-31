@@ -182,6 +182,8 @@ const translations = {
       addCountry: "Add your country →",
       noCountryActs: "No acts shared from {country} yet. Be the first to pass it forward.",
       noPersonalActs: "You haven't logged an act yet. Your first one shows up here.",
+      sortLikedToast: "Most liked ♥ Acts of Kindness.",
+      sortRecentToast: "Most recent Acts of Kindness.",
       noSharedActs: "No acts have been shared yet. Be the first to pass it forward.",
       photoAlt: "Act of kindness shared by {name}",
       modeOfKindness: "Act: {mode}",

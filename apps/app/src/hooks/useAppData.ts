@@ -312,7 +312,7 @@ export function useActReactions(actIds: string[]) {
     return true;
   };
 
-  return { reactions: query.data ?? {}, toggle };
+  return { reactions: query.data ?? {}, ready: query.isSuccess, toggle };
 }
 
 /** Which of these acts the signed-in user has already sent a "thanks" for

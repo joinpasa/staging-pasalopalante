@@ -1050,6 +1050,8 @@
     "addCountry": "Ajouter ton pays →",
     "noCountryActs": "Aucun acte n’a encore été partagé depuis {country}. Sois la première personne à faire passer la bonté.",
     "noPersonalActs": "Tu n’as encore consigné aucun acte. Le premier apparaîtra ici.",
+    "sortLikedToast": "Actes de bonté ♥ les plus aimés.",
+    "sortRecentToast": "Actes de bonté les plus récents.",
     "noSharedActs": "Aucun acte n’a encore été partagé. Sois la première personne à le transmettre.",
     "photoAlt": "Acte de gentillesse partagé par {name}",
     "modeOfKindness": "Acte : {mode}"

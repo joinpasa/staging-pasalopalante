@@ -181,6 +181,8 @@
     "addCountry": "Land hinzufügen →",
     "noCountryActs": "Aus {country} wurden noch keine Taten geteilt. Sei die erste Person, die sie weitergibt.",
     "noPersonalActs": "Du hast noch keine Tat erfasst. Deine erste erscheint hier.",
+    "sortLikedToast": "Beliebteste ♥ Taten der Freundlichkeit.",
+    "sortRecentToast": "Neueste Taten der Freundlichkeit.",
     "noSharedActs": "Noch wurden keine Taten geteilt. Gib als Erste oder Erster eine weiter.",
     "photoAlt": "Geteilte freundliche Tat von {name}",
     "modeOfKindness": "Tat: {mode}"

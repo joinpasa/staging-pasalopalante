@@ -1050,6 +1050,8 @@
   "addCountry": "添加你的国家 →",
   "noCountryActs": "{country} 还没有人分享善举。成为第一个传递善意的人吧。",
   "noPersonalActs": "你还没有记录过善举。你的第一件善事会显示在这里。",
+  "sortLikedToast": "最受喜爱 ♥ 的善举。",
+  "sortRecentToast": "最新的善举。",
   "noSharedActs": "还没有人分享善举。成为第一个传递善意的人吧。",
   "photoAlt": "{name} 分享的善举照片",
   "modeOfKindness": "善举：{mode}"

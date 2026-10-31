@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ExternalLink, MoreVertical, Trash2 } from "lucide-react";
+import { ExternalLink, Heart, Hourglass, MoreVertical, Trash2 } from "lucide-react";
 
 import ReactionButton from "@/components/app/ReactionButton";
 import DeleteActDialog from "@/components/app/DeleteActDialog";
@@ -35,6 +35,12 @@ import {
 
 const FILTERS = ["Worldwide", "My country", "My chain"] as const;
 type Filter = (typeof FILTERS)[number];
+type Sort = "recent" | "liked";
+
+const PAGE_SIZE = 20;
+// "Most liked" ranks the most recent acts by hearts — same idea as the
+// website's Wall, which also picks from a recent candidate batch.
+const LIKED_CANDIDATES = 100;
 
 function initials(name: string) {
   return name
@@ -50,30 +56,59 @@ export default function AppWall() {
   const { t, lang } = useLanguage();
   const nf = new Intl.NumberFormat(lang);
   const [filter, setFilter] = useState<Filter>("Worldwide");
+  const [sort, setSort] = useState<Sort>("recent");
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
 
-  const worldwide = useWallActs();
-  const mine = useMyRecentActs(20);
+  const limit = sort === "liked" ? LIKED_CANDIDATES : PAGE_SIZE;
+  const worldwide = useWallActs(limit);
+  const mine = useMyRecentActs(limit);
   const { data: me, isLoading: meLoading } = useAppMe();
   const country = me?.country ?? null;
-  const inCountry = useCountryWallActs(filter === "My country" ? country : null);
+  const inCountry = useCountryWallActs(filter === "My country" ? country : null, limit);
   const { data: totals } = useMovementTotals();
 
   const showingMine = filter === "My chain";
   const showingCountry = filter === "My country";
-  const posts = showingMine
+  const candidates = showingMine
     ? (mine.data ?? []).map((act) => ({ ...act, name: t.appWall.you, photoUrl: null as string | null }))
     : showingCountry
     ? (inCountry.data ?? [])
     : (worldwide.data ?? []);
-  const loading = showingMine
+  const { reactions, ready: reactionsReady, toggle } = useActReactions(candidates.map((p) => p.id));
+
+  // The liked order is fixed once per candidate list, so tapping a heart
+  // doesn't make the card jump to a new position under the user's finger.
+  const candidateKey = candidates.map((p) => p.id).join(",");
+  const [likedOrder, setLikedOrder] = useState<{ key: string; ids: string[] } | null>(null);
+  useEffect(() => {
+    if (sort !== "liked" || !reactionsReady || likedOrder?.key === candidateKey) return;
+    const ids = [...candidates]
+      .sort(
+        (a, b) =>
+          (reactions[b.id]?.count ?? 0) - (reactions[a.id]?.count ?? 0) ||
+          Date.parse(b.createdAt) - Date.parse(a.createdAt),
+      )
+      .slice(0, PAGE_SIZE)
+      .map((p) => p.id);
+    setLikedOrder({ key: candidateKey, ids });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sort, reactionsReady, candidateKey]);
+  const likedReady = likedOrder?.key === candidateKey;
+
+  const byId = new Map(candidates.map((p) => [p.id, p] as const));
+  const posts =
+    sort === "liked"
+      ? likedReady
+        ? likedOrder.ids.map((id) => byId.get(id)).filter((p): p is (typeof candidates)[number] => !!p)
+        : []
+      : candidates.slice(0, PAGE_SIZE);
+  const listLoading = showingMine
     ? mine.isLoading
     : showingCountry
     ? meLoading || (!!country && inCountry.isLoading)
     : worldwide.isLoading;
-
-  const { reactions, toggle } = useActReactions(posts.map((p) => p.id));
+  const loading = listLoading || (sort === "liked" && candidates.length > 0 && !likedReady);
   const translations = useActTranslations();
   const onToggleReact = (actId: string) => {
     if (!user) {
@@ -145,31 +180,57 @@ export default function AppWall() {
         ))}
       </section>
 
-      <div className="mt-5 flex flex-wrap gap-2" role="tablist" aria-label={t.appWall.filterAria}>
-        {FILTERS.map((option) => {
-          const active = option === filter;
-          return (
-            <button
-              key={option}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => setFilter(option)}
-              className={cn(
-                "rounded-full border px-4 py-2 text-sm font-medium transition-colors",
-                active
-                  ? "border-app-ink bg-app-ink text-app-surface"
-                  : "border-border bg-app-surface text-foreground",
-              )}
-            >
-              {option === "Worldwide"
-                ? t.appWall.worldwide
-                : option === "My country"
-                ? t.appWall.myCountry
-                : t.appWall.myChain}
-            </button>
-          );
-        })}
+      {/* Three filter chips + the sort toggle share one row, even on small phones. */}
+      <div className="mt-5 flex items-center gap-1.5">
+        <div className="flex min-w-0 flex-1 gap-1.5" role="tablist" aria-label={t.appWall.filterAria}>
+          {FILTERS.map((option) => {
+            const active = option === filter;
+            return (
+              <button
+                key={option}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => setFilter(option)}
+                className={cn(
+                  "min-w-0 flex-auto truncate rounded-full border px-2 py-2 text-xs font-medium transition-colors",
+                  active
+                    ? "border-app-ink bg-app-ink text-app-surface"
+                    : "border-border bg-app-surface text-foreground",
+                )}
+              >
+                {option === "Worldwide"
+                  ? t.appWall.worldwide
+                  : option === "My country"
+                  ? t.appWall.myCountry
+                  : t.appWall.myChain}
+              </button>
+            );
+          })}
+        </div>
+        {/* Sort toggle — icon-only chip; the icon shows the active order
+            (hourglass = most recent, heart = most liked) and a short toast
+            names it on each tap. */}
+        <button
+          type="button"
+          onClick={() => {
+            const next: Sort = sort === "recent" ? "liked" : "recent";
+            setSort(next);
+            toast(next === "liked" ? t.appWall.sortLikedToast : t.appWall.sortRecentToast, {
+              id: "wall-sort",
+              duration: 1500,
+            });
+          }}
+          aria-label={sort === "recent" ? t.inspiration.sortMostRecent : t.inspiration.sortMostLiked}
+          title={sort === "recent" ? t.inspiration.sortMostRecent : t.inspiration.sortMostLiked}
+          className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full border border-app-gold bg-app-gold/35 text-foreground transition-colors"
+        >
+          {sort === "recent" ? (
+            <Hourglass size={16} aria-hidden="true" />
+          ) : (
+            <Heart size={16} className="fill-current" aria-hidden="true" />
+          )}
+        </button>
       </div>
 
       {(showingMine || showingCountry) && !user ? (

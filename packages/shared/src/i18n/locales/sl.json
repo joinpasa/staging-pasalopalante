@@ -942,6 +942,8 @@
     "addCountry": "Dodaj svojo državo →",
     "noCountryActs": "Iz države {country} še ni deljenih dejanj. Bodi prvi/-a, ki preda prijaznost naprej.",
     "noPersonalActs": "Še nisi zabeležil/-a nobenega dejanja. Tvoje prvo bo prikazano tukaj.",
+    "sortLikedToast": "Najbolj priljubljena ♥ dejanja prijaznosti.",
+    "sortRecentToast": "Najnovejša dejanja prijaznosti.",
     "noSharedActs": "Še nihče ni delil dejanja. Bodi prvi/-a in ga podaj naprej.",
     "photoAlt": "Dejanje prijaznosti, ki ga je delil/-a {name}",
     "modeOfKindness": "Dejanje: {mode}"

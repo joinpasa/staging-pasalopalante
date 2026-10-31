@@ -1243,6 +1243,8 @@
   "addCountry": "أضف بلدك ←",
   "noCountryActs": "لم تتم مشاركة أي أعمال من {country} بعد. كن أول من يمرّر اللطف.",
   "noPersonalActs": "لم تسجّل أي عمل بعد. سيظهر عملك الأول هنا.",
+  "sortLikedToast": "أعمال اللطف ♥ الأكثر إعجابًا.",
+  "sortRecentToast": "أحدث أعمال اللطف.",
   "noSharedActs": "لم تتم مشاركة أي أعمال بعد. كن أول من يمرّرها.",
   "photoAlt": "عمل لطف شاركه {name}",
   "modeOfKindness": "العمل: {mode}"
