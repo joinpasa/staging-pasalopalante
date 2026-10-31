@@ -13,6 +13,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 - **Logging an act starts with "Gave" and "Something else" already picked**, on both the website's share form and the app's Log an Act screen, so people can just type and submit — they can still switch to any other option.
 - **Fixed Wall of Kindness cards that had no background.** About half the cards showed up plain white instead of with their soft colour, and on those, "Read more" put the full text on top of the photo instead of on a clean card. Every card now gets its colour, so the expanded text always sits on a solid background.
 - **The Wall of Kindness can now be filtered by Worldwide / My country / My chain**, on the website as well as in the app (the app had only Worldwide and My chain). "My country" shows acts shared by people from the same country as the signed-in member's profile; members without a country set get a prompt to add one, and signed-out visitors are asked to join or log in.
+- **Tidied the website Wall's filter bar on desktop:** the "Wall of Kindness" heading sits on its own line, with All / Given / Received / Seen on the left, Worldwide / My country / My chain in the middle and the sort menu on the right, all in one row. Phones and tablets keep the stacked layout.
 
 ## 2026-10-30 — va.deedumlao@gmail.com
 

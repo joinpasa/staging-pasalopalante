@@ -321,45 +321,75 @@ export default function WallOfKindness() {
   );
   const dialogPreviewImage = dialogSocialLink ? openAct?.link_preview_image ?? null : null;
 
+  const sortSelect = (triggerClassName: string) => (
+    <Select value={sort} onValueChange={(v) => setSort(v as SortValue)}>
+      <SelectTrigger className={triggerClassName}>
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="liked">{t.inspiration.sortMostLiked}</SelectItem>
+        <SelectItem value="recent">{t.inspiration.sortMostRecent}</SelectItem>
+      </SelectContent>
+    </Select>
+  );
+
+  const scopePills = (className: string) => (
+    <div className={cn("flex flex-wrap gap-2", className)} role="tablist" aria-label={t.appWall.filterAria}>
+      {SCOPES.map(({ value, label }) => {
+        const active = value === scope;
+        return (
+          <button
+            key={value}
+            type="button"
+            role="tab"
+            aria-selected={active}
+            onClick={() => setScope(value)}
+            className={cn(
+              "whitespace-nowrap rounded-full border px-3.5 py-1 text-xs sm:text-sm font-medium transition-colors",
+              active
+                ? "border-foreground bg-foreground text-background"
+                : "border-border bg-background text-foreground hover:bg-muted",
+            )}
+          >
+            {t.appWall[label]}
+          </button>
+        );
+      })}
+    </div>
+  );
+
   return (
     <section className="section-padding pt-0 pb-20 md:pb-28 lg:pb-36">
       <div className="max-w-6xl mx-auto">
         {/* Sticky control bar */}
         <div className="sticky top-20 z-30 -mx-4 px-4 py-2 sm:py-3 mb-6 bg-warm-cream/95 backdrop-blur-md border-b border-foreground/5">
           <div className="max-w-5xl mx-auto">
-            {/* Mobile: 2 rows */}
-            <div className="sm:hidden space-y-2">
+            {/* Mobile / tablet: stacked rows */}
+            <div className="lg:hidden space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-bold tracking-wide uppercase text-warm-terracotta">
                   {t.inspiration.wallHeading}
                 </span>
-                <Select value={sort} onValueChange={(v) => setSort(v as SortValue)}>
-                  <SelectTrigger className="h-8 w-36 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="liked">{t.inspiration.sortMostLiked}</SelectItem>
-                    <SelectItem value="recent">{t.inspiration.sortMostRecent}</SelectItem>
-                  </SelectContent>
-                </Select>
+                {sortSelect("h-8 w-36 text-xs")}
               </div>
               <Tabs value={tab} onValueChange={(v) => setTab(v as TabValue)} className="w-full">
                 <TabsList className="grid w-full grid-cols-4 h-9 items-center">
-                  <TabsTrigger value="all" className="text-[11px] px-1 h-7">{t.inspiration.tabAll}</TabsTrigger>
-                  <TabsTrigger value="performed" className="text-[11px] px-1 h-7">{t.inspiration.tabGiven}</TabsTrigger>
-                  <TabsTrigger value="received" className="text-[11px] px-1 h-7">{t.inspiration.tabReceived}</TabsTrigger>
-                  <TabsTrigger value="witnessed" className="text-[11px] px-1 h-7">{t.inspiration.tabSeen}</TabsTrigger>
+                  <TabsTrigger value="all" className="text-[11px] sm:text-sm px-1 h-7">{t.inspiration.tabAll}</TabsTrigger>
+                  <TabsTrigger value="performed" className="text-[11px] sm:text-sm px-1 h-7">{t.inspiration.tabGiven}</TabsTrigger>
+                  <TabsTrigger value="received" className="text-[11px] sm:text-sm px-1 h-7">{t.inspiration.tabReceived}</TabsTrigger>
+                  <TabsTrigger value="witnessed" className="text-[11px] sm:text-sm px-1 h-7">{t.inspiration.tabSeen}</TabsTrigger>
                 </TabsList>
               </Tabs>
+              {scopePills("justify-center")}
             </div>
 
-            {/* Desktop: 1 row */}
-            <div className="hidden sm:flex items-center gap-4">
-              <span className="text-base font-bold tracking-wide uppercase text-warm-terracotta shrink-0">
+            {/* Desktop: heading, then mode tabs (left) · scope (center) · sort (right) */}
+            <div className="hidden lg:block">
+              <span className="block text-base font-bold tracking-wide uppercase text-warm-terracotta">
                 {t.inspiration.wallHeading}
               </span>
-              <div className="flex-1 flex justify-center">
-                <Tabs value={tab} onValueChange={(v) => setTab(v as TabValue)} className="w-auto">
+              <div className="mt-2 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+                <Tabs value={tab} onValueChange={(v) => setTab(v as TabValue)} className="w-auto justify-self-start">
                   <TabsList className="grid grid-cols-4 h-10 items-center">
                     <TabsTrigger value="all" className="text-sm px-3 h-8">{t.inspiration.tabAll}</TabsTrigger>
                     <TabsTrigger value="performed" className="text-sm px-3 h-8">{t.inspiration.tabGiven}</TabsTrigger>
@@ -367,44 +397,9 @@ export default function WallOfKindness() {
                     <TabsTrigger value="witnessed" className="text-sm px-3 h-8">{t.inspiration.tabSeen}</TabsTrigger>
                   </TabsList>
                 </Tabs>
+                {scopePills("justify-center flex-nowrap")}
+                <div className="justify-self-end">{sortSelect("h-9 w-44 text-sm")}</div>
               </div>
-
-              <Select value={sort} onValueChange={(v) => setSort(v as SortValue)}>
-                <SelectTrigger className="h-9 w-44 text-sm shrink-0">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="liked">{t.inspiration.sortMostLiked}</SelectItem>
-                  <SelectItem value="recent">{t.inspiration.sortMostRecent}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div
-              className="mt-2 flex flex-wrap justify-center gap-2"
-              role="tablist"
-              aria-label={t.appWall.filterAria}
-            >
-              {SCOPES.map(({ value, label }) => {
-                const active = value === scope;
-                return (
-                  <button
-                    key={value}
-                    type="button"
-                    role="tab"
-                    aria-selected={active}
-                    onClick={() => setScope(value)}
-                    className={cn(
-                      "rounded-full border px-3.5 py-1 text-xs sm:text-sm font-medium transition-colors",
-                      active
-                        ? "border-foreground bg-foreground text-background"
-                        : "border-border bg-background text-foreground hover:bg-muted",
-                    )}
-                  >
-                    {t.appWall[label]}
-                  </button>
-                );
-              })}
             </div>
           </div>
         </div>
