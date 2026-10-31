@@ -37,6 +37,8 @@ export function pickCardGradient(seed?: string | null): string {
   const key = seed && seed.length ? seed : "default";
   // mix in a secondary rotation so neighboring ids feel more random
   const h = hashSeed(key);
-  const idx = (h ^ (h >>> 7)) % CARD_GRADIENTS.length;
+  // `^` yields a signed int, so force unsigned — a negative index returned
+  // undefined and left those cards with no background at all.
+  const idx = ((h ^ (h >>> 7)) >>> 0) % CARD_GRADIENTS.length;
   return CARD_GRADIENTS[idx];
 }

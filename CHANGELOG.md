@@ -11,6 +11,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 ## 2026-10-31 — M.Schollmeyer@gmx.de
 
 - **Logging an act starts with "Gave" and "Something else" already picked**, on both the website's share form and the app's Log an Act screen, so people can just type and submit — they can still switch to any other option.
+- **Fixed Wall of Kindness cards that had no background.** About half the cards showed up plain white instead of with their soft colour, and on those, "Read more" put the full text on top of the photo instead of on a clean card. Every card now gets its colour, so the expanded text always sits on a solid background.
 
 ## 2026-10-30 — va.deedumlao@gmail.com
 
