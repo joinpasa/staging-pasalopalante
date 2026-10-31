@@ -30,6 +30,8 @@ const catalogue = [
   badge("hug_dealer", { type: "acts", modes: ["performed", "received"], act_types: ["hug"], stages: STAGES }),
   badge("grateful_heart", { type: "acts", modes: ["received"], stages: STAGES }),
   badge("kindness_spotter", { type: "acts", modes: ["witnessed"], stages: STAGES }),
+  // 20261031200000_wave_maker_badge.sql
+  badge("wave_maker", { type: "reach", stages: STAGES }),
 ];
 
 const ids = (act: { mode: string | null; actType: string | null }) =>
@@ -58,6 +60,11 @@ describe("badgesForAct", () => {
     expect(ids({ mode: "performed", actType: "other" })).not.toContain("streak");
   });
 
+  it("never lists Wave Maker, which comes from people reached, not acts", () => {
+    expect(ids({ mode: "performed", actType: null })).not.toContain("wave_maker");
+    expect(ids({ mode: "witnessed", actType: null })).not.toContain("wave_maker");
+  });
+
   it("handles a missing catalogue", () => {
     expect(badgesForAct(undefined, { mode: "performed", actType: "hug" })).toEqual([]);
   });
@@ -82,6 +89,9 @@ describe("badgeRuleParts", () => {
     expect(bold("Halte „Gegeben“ + „Kompliment“ fest")).toBe("Halte *Gegeben* + *Kompliment* fest");
     expect(bold("Enregistre « Donné » + « Mot gentil »")).toBe("Enregistre *Donné* + *Mot gentil*");
     expect(bold("Log “Gave” + “Donated” or “Treated”")).toBe("Log *Gave* + *Donated* or *Treated*");
+    expect(bold("Share or scan a “QR code”")).toBe("Share or scan a *QR code*");
+    expect(bold("Teile oder scanne einen „QR-Code“")).toBe("Teile oder scanne einen *QR-Code*");
+    expect(bold("Partage ou scanne un « code QR »")).toBe("Partage ou scanne un *code QR*");
   });
 
   it("leaves rules without quotes untouched", () => {

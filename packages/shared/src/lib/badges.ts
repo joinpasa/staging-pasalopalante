@@ -8,7 +8,9 @@ import { supabasePublic } from "@shared/integrations/supabase/publicClient";
  * badges an act counted toward without the two ever drifting apart.
  */
 export interface BadgeCriteria {
-  type: "streak" | "acts";
+  /** acts: matching published acts; streak: best streak (days);
+   *  reach: people reached (my_reach_stats). */
+  type: "streak" | "acts" | "reach";
   modes?: string[];
   act_types?: string[];
   stages: number[];
