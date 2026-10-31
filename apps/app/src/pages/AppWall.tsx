@@ -12,7 +12,14 @@ import { useActTranslations } from "@/hooks/useActTranslations";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { supabase } from "@shared/integrations/supabase/client";
 import { useLanguage } from "@shared/contexts/LanguageContext";
-import { useActReactions, useMovementTotals, useMyRecentActs, useWallActs } from "@/hooks/useAppData";
+import {
+  useActReactions,
+  useAppMe,
+  useCountryWallActs,
+  useMovementTotals,
+  useMyRecentActs,
+  useWallActs,
+} from "@/hooks/useAppData";
 import { actEmoji, modeLabel, timeAgo } from "@shared/lib/appActs";
 import { cn } from "@shared/lib/utils";
 import { parseYouTubeId, getYouTubeThumbnail } from "@shared/lib/youtube";
@@ -26,7 +33,7 @@ import {
   DropdownMenuTrigger,
 } from "@shared/components/ui/dropdown-menu";
 
-const FILTERS = ["Worldwide", "My chain"] as const;
+const FILTERS = ["Worldwide", "My country", "My chain"] as const;
 type Filter = (typeof FILTERS)[number];
 
 function initials(name: string) {
@@ -48,13 +55,23 @@ export default function AppWall() {
 
   const worldwide = useWallActs();
   const mine = useMyRecentActs(20);
+  const { data: me, isLoading: meLoading } = useAppMe();
+  const country = me?.country ?? null;
+  const inCountry = useCountryWallActs(filter === "My country" ? country : null);
   const { data: totals } = useMovementTotals();
 
   const showingMine = filter === "My chain";
+  const showingCountry = filter === "My country";
   const posts = showingMine
     ? (mine.data ?? []).map((act) => ({ ...act, name: t.appWall.you, photoUrl: null as string | null }))
+    : showingCountry
+    ? (inCountry.data ?? [])
     : (worldwide.data ?? []);
-  const loading = showingMine ? mine.isLoading : worldwide.isLoading;
+  const loading = showingMine
+    ? mine.isLoading
+    : showingCountry
+    ? meLoading || (!!country && inCountry.isLoading)
+    : worldwide.isLoading;
 
   const { reactions, toggle } = useActReactions(posts.map((p) => p.id));
   const translations = useActTranslations();
@@ -128,7 +145,7 @@ export default function AppWall() {
         ))}
       </section>
 
-      <div className="mt-5 flex gap-2" role="tablist" aria-label={t.appWall.filterAria}>
+      <div className="mt-5 flex flex-wrap gap-2" role="tablist" aria-label={t.appWall.filterAria}>
         {FILTERS.map((option) => {
           const active = option === filter;
           return (
@@ -145,17 +162,28 @@ export default function AppWall() {
                   : "border-border bg-app-surface text-foreground",
               )}
             >
-              {option === "Worldwide" ? t.appWall.worldwide : t.appWall.myChain}
+              {option === "Worldwide"
+                ? t.appWall.worldwide
+                : option === "My country"
+                ? t.appWall.myCountry
+                : t.appWall.myChain}
             </button>
           );
         })}
       </div>
 
-      {showingMine && !user ? (
+      {(showingMine || showingCountry) && !user ? (
         <div className="mt-5 rounded-3xl bg-app-surface p-5 text-sm leading-relaxed text-muted-foreground">
-          {t.appWall.yourChainAppears}{" "}
+          {showingMine ? t.appWall.yourChainAppears : t.appWall.yourCountryAppears}{" "}
           <Link to="/join" className="font-semibold text-app-coral">
             {t.appWall.joinOrLogin}
+          </Link>
+        </div>
+      ) : showingCountry && !meLoading && !country ? (
+        <div className="mt-5 rounded-3xl bg-app-surface p-5 text-sm leading-relaxed text-muted-foreground">
+          {t.appWall.noCountrySet}{" "}
+          <Link to="/account" className="font-semibold text-app-coral">
+            {t.appWall.addCountry}
           </Link>
         </div>
       ) : loading ? (
@@ -168,6 +196,8 @@ export default function AppWall() {
         <div className="mt-5 rounded-3xl bg-app-surface p-5 text-sm leading-relaxed text-muted-foreground">
           {showingMine
             ? t.appWall.noPersonalActs
+            : showingCountry
+            ? t.appWall.noCountryActs.replace("{country}", country ?? "")
             : t.appWall.noSharedActs}
         </div>
       ) : (

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { Heart, Loader2 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@shared/components/ui/tabs";
 import { Dialog, DialogContent } from "@shared/components/ui/dialog";
@@ -14,6 +15,7 @@ import { useAuth } from "@shared/contexts/AuthContext";
 import { supabase } from "@shared/integrations/supabase/client";
 import { supabasePublic } from "@shared/integrations/supabase/publicClient";
 import { toast } from "sonner";
+import { cn } from "@shared/lib/utils";
 import { pickCardGradient } from "@shared/lib/cardGradients";
 import WallCard, { WallMode } from "./WallCard";
 import WallDialogBody from "./WallDialogBody";
@@ -27,6 +29,8 @@ import { detectSocialLink } from "@shared/lib/socialLinks";
 
 type TabValue = "all" | WallMode;
 type SortValue = "liked" | "recent";
+// Same Worldwide / My country / My chain filter as the app's Wall.
+type ScopeValue = "world" | "country" | "mine";
 
 interface ActRow {
   id: string;
@@ -50,6 +54,13 @@ interface ActWithCount extends ActRow {
 const PUBLIC_BUCKET = "kindness-photos";
 const PAGE_SIZE = 9;
 const LIKED_CANDIDATE_BATCH = 120;
+const SCOPES = [
+  { value: "world", label: "worldwide" },
+  { value: "country", label: "myCountry" },
+  { value: "mine", label: "myChain" },
+] as const satisfies readonly { value: ScopeValue; label: string }[];
+const ACT_COLUMNS =
+  "id, description, first_name, photo_paths, video_url, link_preview_image, created_at, mode, act_type, language";
 
 function publicPhotoUrl(path: string) {
   return supabase.storage.from(PUBLIC_BUCKET).getPublicUrl(path).data.publicUrl;
@@ -60,6 +71,9 @@ export default function WallOfKindness() {
   const { user } = useAuth();
   const [tab, setTab] = useState<TabValue>("all");
   const [sort, setSort] = useState<SortValue>("liked");
+  const [scope, setScope] = useState<ScopeValue>("world");
+  // Signed-in user's profile country; undefined while it's still loading.
+  const [country, setCountry] = useState<string | null | undefined>(undefined);
   const [items, setItems] = useState<ActWithCount[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -83,7 +97,32 @@ export default function WallOfKindness() {
   // items and mutating the refs the new selection is also using.
   const genRef = useRef(0);
 
-  // Reset state whenever tab or sort changes
+  useEffect(() => {
+    if (!user) {
+      setCountry(null);
+      return;
+    }
+    let cancelled = false;
+    setCountry(undefined);
+    supabase
+      .from("profiles")
+      .select("country")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!cancelled) setCountry(data?.country?.trim() || null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  // My country / My chain need an account (and a country); until then the
+  // grid is replaced by a prompt and nothing is fetched.
+  const scopeBlocked =
+    scope !== "world" && (!user || (scope === "country" && !country));
+
+  // Reset state whenever tab, sort or scope changes
   useEffect(() => {
     genRef.current += 1;
     setItems([]);
@@ -92,9 +131,10 @@ export default function WallOfKindness() {
     likedBufferRef.current = [];
     likedFetchedOffsetRef.current = 0;
     likedDoneRef.current = false;
+    if (scope === "country" && country === undefined) return; // wait for the profile
     loadMore(true, genRef.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, sort, user]);
+  }, [tab, sort, user, scope, country]);
 
   async function attachCounts(rows: ActRow[]): Promise<ActWithCount[]> {
     const ids = rows.map((r) => r.id);
@@ -120,7 +160,48 @@ export default function WallOfKindness() {
     }));
   }
 
+  // One page of acts for the current tab and scope, newest first, starting
+  // at `from`. Returns fewer than `count` rows once the source runs out.
+  async function fetchRows(from: number, count: number): Promise<ActRow[]> {
+    const to = from + count - 1;
+    if (scope === "country") {
+      // Acts carry no country; the RPC matches on the author's profile.
+      const { data: idRows, error: idError } = await supabasePublic.rpc("wall_act_ids_by_country", {
+        _country: country ?? "",
+        _mode: tab === "all" ? undefined : tab,
+        _with_description: true,
+        _limit: count,
+        _offset: from,
+      });
+      if (idError) throw idError;
+      const ids = (idRows ?? []).map((r) => r.id);
+      if (ids.length === 0) return [];
+      const { data, error } = await supabasePublic
+        .from("acts_of_kindness")
+        .select(ACT_COLUMNS)
+        .in("id", ids)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data as ActRow[]) ?? [];
+    }
+    // My chain: the member's own acts, like the app (needs their session).
+    let q =
+      scope === "mine"
+        ? supabase.from("acts_of_kindness").select(ACT_COLUMNS).eq("user_id", user!.id)
+        : supabasePublic.from("acts_of_kindness").select(ACT_COLUMNS).eq("status", "published");
+    q = q.not("description", "is", null).neq("description", "");
+    if (tab !== "all") q = q.eq("mode", tab);
+    const { data, error } = await q.order("created_at", { ascending: false }).range(from, to);
+    if (error) throw error;
+    return (data as ActRow[]) ?? [];
+  }
+
   async function loadMore(initial = false, gen = genRef.current) {
+    if (scopeBlocked) {
+      setLoading(false);
+      setHasMore(false);
+      return;
+    }
     if (initial) {
       setLoading(true);
     } else {
@@ -129,43 +210,18 @@ export default function WallOfKindness() {
     }
     try {
       if (sort === "recent") {
-        const from = recentOffsetRef.current;
-        const to = from + PAGE_SIZE - 1;
-        let q = supabasePublic
-          .from("acts_of_kindness")
-          .select("id, description, first_name, photo_paths, video_url, link_preview_image, created_at, mode, act_type, language")
-          .eq("status", "published")
-          .not("description", "is", null)
-          .neq("description", "");
-        if (tab !== "all") q = q.eq("mode", tab);
-        const { data, error } = await q
-          .order("created_at", { ascending: false })
-          .range(from, to);
-        if (error) throw error;
+        const data = await fetchRows(recentOffsetRef.current, PAGE_SIZE);
         if (gen !== genRef.current) return; // stale — tab/sort/user changed while this was in flight
-        const merged = await attachCounts((data as ActRow[]) ?? []);
+        const merged = await attachCounts(data);
         if (gen !== genRef.current) return;
         recentOffsetRef.current += merged.length;
         setItems((prev) => dedupe([...prev, ...merged]));
-        if (!data || data.length < PAGE_SIZE) setHasMore(false);
+        if (data.length < PAGE_SIZE) setHasMore(false);
       } else {
         // liked sort — fill buffer until we have ≥ PAGE_SIZE or source exhausted
         while (likedBufferRef.current.length < PAGE_SIZE && !likedDoneRef.current) {
-          const from = likedFetchedOffsetRef.current;
-          const to = from + LIKED_CANDIDATE_BATCH - 1;
-          let q = supabasePublic
-            .from("acts_of_kindness")
-            .select("id, description, first_name, photo_paths, video_url, link_preview_image, created_at, mode, act_type, language")
-            .eq("status", "published")
-            .not("description", "is", null)
-            .neq("description", "");
-          if (tab !== "all") q = q.eq("mode", tab);
-          const { data, error } = await q
-            .order("created_at", { ascending: false })
-            .range(from, to);
-          if (error) throw error;
+          const rows = await fetchRows(likedFetchedOffsetRef.current, LIKED_CANDIDATE_BATCH);
           if (gen !== genRef.current) return; // stale — abandon before touching the new selection's refs
-          const rows = (data as ActRow[]) ?? [];
           const merged = await attachCounts(rows);
           if (gen !== genRef.current) return;
           likedFetchedOffsetRef.current += rows.length;
@@ -210,7 +266,7 @@ export default function WallOfKindness() {
     io.observe(el);
     return () => io.disconnect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items, hasMore, loadingMore, sort, tab]);
+  }, [items, hasMore, loadingMore, sort, tab, scope, country]);
 
   async function toggleReaction(act: ActWithCount) {
     if (!user) {
@@ -323,15 +379,62 @@ export default function WallOfKindness() {
                 </SelectContent>
               </Select>
             </div>
+
+            <div
+              className="mt-2 flex flex-wrap justify-center gap-2"
+              role="tablist"
+              aria-label={t.appWall.filterAria}
+            >
+              {SCOPES.map(({ value, label }) => {
+                const active = value === scope;
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                    onClick={() => setScope(value)}
+                    className={cn(
+                      "rounded-full border px-3.5 py-1 text-xs sm:text-sm font-medium transition-colors",
+                      active
+                        ? "border-foreground bg-foreground text-background"
+                        : "border-border bg-background text-foreground hover:bg-muted",
+                    )}
+                  >
+                    {t.appWall[label]}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
-        {loading ? (
+        {scope !== "world" && !user ? (
+          <p className="text-center text-muted-foreground py-12">
+            {scope === "mine" ? t.appWall.yourChainAppears : t.appWall.yourCountryAppears}{" "}
+            <Link to="/auth" className="font-semibold text-primary">
+              {t.appWall.joinOrLogin}
+            </Link>
+          </p>
+        ) : scope === "country" && country === null ? (
+          <p className="text-center text-muted-foreground py-12">
+            {t.appWall.noCountrySet}{" "}
+            <Link to="/account/settings" className="font-semibold text-primary">
+              {t.appWall.addCountry}
+            </Link>
+          </p>
+        ) : loading || (scope === "country" && country === undefined) ? (
           <div className="flex justify-center py-16">
             <Loader2 className="animate-spin text-primary" size={28} />
           </div>
         ) : items.length === 0 ? (
-          <p className="text-center text-muted-foreground py-12">{t.inspiration.wallEmpty}</p>
+          <p className="text-center text-muted-foreground py-12">
+            {scope === "mine"
+              ? t.appWall.noPersonalActs
+              : scope === "country"
+              ? t.appWall.noCountryActs.replace("{country}", country ?? "")
+              : t.inspiration.wallEmpty}
+          </p>
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">

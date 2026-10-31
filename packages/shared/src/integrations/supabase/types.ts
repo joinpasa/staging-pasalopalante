@@ -1231,6 +1231,18 @@ export type Database = {
           total_acts: number
         }[]
       }
+      wall_act_ids_by_country: {
+        Args: {
+          _country: string
+          _limit?: number
+          _mode?: string
+          _offset?: number
+          _with_description?: boolean
+        }
+        Returns: {
+          id: string
+        }[]
+      }
     }
     Enums: {
       app_role: "member" | "leader" | "admin"

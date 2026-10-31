@@ -19,6 +19,8 @@ export interface AppMe {
   lastName: string;
   displayName: string;
   place: string;
+  /** Profile country as stored, null if not set (unlike `place`). */
+  country: string | null;
   referralCode: string | null;
   actsPassedForward: number;
   dayStreak: number;
@@ -77,6 +79,7 @@ export function useAppMe() {
         lastName: profile?.last_name?.trim() || "",
         displayName,
         place: profile?.country?.trim() || "Worldwide",
+        country: profile?.country?.trim() || null,
         referralCode: profile?.referral_code ?? null,
         actsPassedForward: Number(streak?.total_acts ?? 0),
         dayStreak: Number(streak?.current_streak ?? 0),
@@ -146,6 +149,9 @@ export interface WallAct extends AppAct {
 }
 
 
+const WALL_ACT_COLUMNS =
+  "id, description, language, created_at, mode, act_type, first_name, photo_paths, video_url, link_preview_image, user_id";
+
 /** Published acts from everyone — readable without a session. */
 export function useWallActs(limit = 20) {
   return useQuery({
@@ -153,31 +159,75 @@ export function useWallActs(limit = 20) {
     queryFn: async (): Promise<WallAct[]> => {
       const { data, error } = await supabasePublic
         .from("acts_of_kindness")
-        .select("id, description, language, created_at, mode, act_type, first_name, photo_paths, video_url, link_preview_image, user_id")
+        .select(WALL_ACT_COLUMNS)
         .eq("status", "published")
         .order("created_at", { ascending: false })
         .limit(limit);
       if (error) throw error;
-      return (data ?? []).map((row) => {
-        const path = (row.photo_paths ?? [])[0];
-        return {
-          id: row.id,
-          description: row.description ?? "An act of kindness",
-          hasDescription: !!row.description,
-          language: row.language ?? null,
-          createdAt: row.created_at,
-          mode: row.mode,
-          actType: row.act_type ?? null,
-          videoUrl: row.video_url ?? null,
-          linkPreviewImage: row.link_preview_image ?? null,
-          name: row.first_name?.trim() || "Someone",
-          userId: row.user_id ?? null,
-          photoUrl: path
-            ? supabasePublic.storage.from("kindness-photos").getPublicUrl(path).data.publicUrl
-            : null,
-        };
-      });
+      return toWallActs(data ?? []);
     },
+  });
+}
+
+/** Published acts by people whose profile country is `country` (the Wall's
+ *  "My country" filter). Acts have no country of their own, so the matching
+ *  ids come from the wall_act_ids_by_country RPC. */
+export function useCountryWallActs(country: string | null, limit = 20) {
+  return useQuery({
+    queryKey: ["app", "wall", "country", country, limit],
+    enabled: !!country,
+    queryFn: async (): Promise<WallAct[]> => {
+      const { data: idRows, error: idError } = await supabasePublic.rpc("wall_act_ids_by_country", {
+        _country: country!,
+        _limit: limit,
+      });
+      if (idError) throw idError;
+      const ids = (idRows ?? []).map((r) => r.id);
+      if (ids.length === 0) return [];
+      const { data, error } = await supabasePublic
+        .from("acts_of_kindness")
+        .select(WALL_ACT_COLUMNS)
+        .in("id", ids)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return toWallActs(data ?? []);
+    },
+  });
+}
+
+type WallActRow = {
+  id: string;
+  description: string | null;
+  language: string | null;
+  created_at: string;
+  mode: string;
+  act_type: string | null;
+  first_name: string | null;
+  photo_paths: string[] | null;
+  video_url: string | null;
+  link_preview_image: string | null;
+  user_id: string | null;
+};
+
+function toWallActs(rows: WallActRow[]): WallAct[] {
+  return rows.map((row) => {
+    const path = (row.photo_paths ?? [])[0];
+    return {
+      id: row.id,
+      description: row.description ?? "An act of kindness",
+      hasDescription: !!row.description,
+      language: row.language ?? null,
+      createdAt: row.created_at,
+      mode: row.mode,
+      actType: row.act_type ?? null,
+      videoUrl: row.video_url ?? null,
+      linkPreviewImage: row.link_preview_image ?? null,
+      name: row.first_name?.trim() || "Someone",
+      userId: row.user_id ?? null,
+      photoUrl: path
+        ? supabasePublic.storage.from("kindness-photos").getPublicUrl(path).data.publicUrl
+        : null,
+    };
   });
 }
 
