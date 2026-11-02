@@ -1,31 +1,11 @@
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { RippleCanvas } from "@shared/components/ui/ripple-canvas";
 import { smoothScrollTo } from "@shared/lib/smoothScrollTo";
 import HeroVideo from "@/components/hero/HeroVideo";
 
-const COUNTDOWN_TARGET = new Date("2026-11-01T00:00:00-04:00").getTime();
-
-function getTimeLeft() {
-  const diff = COUNTDOWN_TARGET - Date.now();
-  if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
-  return {
-    days: Math.floor(diff / 86400000),
-    hours: Math.floor((diff / 3600000) % 24),
-    minutes: Math.floor((diff / 60000) % 60),
-    seconds: Math.floor((diff / 1000) % 60),
-  };
-}
-
 const Hero = () => {
   const { t } = useLanguage();
-  const [time, setTime] = useState(getTimeLeft);
-
-  useEffect(() => {
-    const id = setInterval(() => setTime(getTimeLeft()), 1000);
-    return () => clearInterval(id);
-  }, []);
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden bg-cyan-900">
@@ -89,42 +69,6 @@ const Hero = () => {
               </p>
             </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.0 }}
-              className="mb-8"
-              aria-label={t.hero.countdownLabel}
-            >
-              <p className="text-xs md:text-sm font-semibold tracking-widest uppercase text-warm-gold mb-3">
-                {t.hero.countdownLabel}
-              </p>
-              <div className="flex items-center gap-2 md:gap-4">
-                {[
-                  { label: t.hero.days, value: time.days },
-                  { label: t.hero.hours, value: time.hours },
-                  { label: t.hero.minutes, value: time.minutes },
-                  { label: t.hero.seconds, value: time.seconds },
-                ].map((u, i, arr) => (
-                  <div key={u.label} className="flex items-center gap-2 md:gap-4">
-                    <div className="flex flex-col items-center min-w-[56px] md:min-w-[72px] rounded-lg bg-white/10 backdrop-blur-sm border border-white/15 px-3 py-2">
-                      <span
-                        className="text-2xl md:text-4xl font-bold text-warm-cream tabular-nums leading-none"
-                        style={{ fontFamily: "'DM Serif Display', serif" }}
-                      >
-                        {String(u.value).padStart(2, "0")}
-                      </span>
-                      <span className="text-[10px] md:text-xs uppercase tracking-wider text-warm-cream/70 mt-1">
-                        {u.label}
-                      </span>
-                    </div>
-                    {i < arr.length - 1 && (
-                      <span className="text-2xl md:text-3xl text-warm-cream/40 font-bold">:</span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}

@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-11-02 — va.deedumlao@gmail.com
+
+- **Removed the "Global Kindness Season begins in" countdown from the homepage**, now that the season has started (it was stuck at 00:00:00:00). The account page and app countdowns were left as they are: they already switch to showing pledge progress and time left in the season.
+
 ## 2026-10-31 — M.Schollmeyer@gmx.de
 
 - **New badge: "Wave Maker" 🌊**, earned through People reached, with the same steps as the other badges (3, 7, 12, 18, 25, 33, 42, 50 people). Its hint reads "Share or scan a **QR code**" (in English, Spanish, French and German, like the other badges). Both people get credit the moment they connect, and members who already reached enough people got the badge straight away, without a flood of notifications.
