@@ -34,7 +34,7 @@ import { getAuthErrorMessage } from "@shared/lib/authErrors";
 
 type HelpRole = "do_acts" | "champion" | "ambassador" | "civic" | "volunteer";
 
-const PLEDGE_PRESETS = [50, 100, 200, 500];
+const PLEDGE_PRESETS = [100, 200, 500, 1000];
 
 // Quick, single-step pledge form — the homepage's primary CTA target. Unlike
 // CommitFlow (the full /commit page: Individual/Group tabs, org fields), this
