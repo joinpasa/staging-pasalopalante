@@ -27,8 +27,8 @@ const ghostBtn = "rounded-full border border-border bg-app-canvas px-4 py-2 text
  * styled to match the rest of the app instead of the website's shadcn
  * components. Was previously website-only, which made the pledge someone
  * made in onboarding invisible again once they left that one-time screen.
- * The season countdown that used to live here pre-season is now its own
- * separate dashboard card (SeasonCountdown) — this always shows progress.
+ * Always shows progress (the season countdown was removed once the season
+ * started).
  */
 export default function MyCommitment({ userId, email }: { userId: string; email: string }) {
   const { t, lang } = useLanguage();

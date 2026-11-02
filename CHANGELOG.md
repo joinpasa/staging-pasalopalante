@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-11-02 — va.deedumlao@gmail.com
 
+- **Countdowns removed everywhere**: the app dashboard's Global Kindness Season card, the account page's pre-season timer, and the Partner Portal dashboard's "ends in" timer. The portal still shows a "season over" note after Jan 31. **Homepage Donate link tidied**: it now sits on its own line under the two main buttons, with a small heart, instead of wrapping awkwardly beside them.
 - **Removed the "Global Kindness Season begins in" countdown from the homepage**, now that the season has started (it was stuck at 00:00:00:00). The account page and app countdowns were left as they are: they already switch to showing pledge progress and time left in the season.
 
 ## 2026-10-31 — M.Schollmeyer@gmx.de

@@ -17,20 +17,6 @@ interface Commitment {
 
 const PRESETS = [1, 5, 10, 25, 100];
 
-// Puerto Rico is AST (UTC−4) year-round, no DST.
-const SEASON_START = new Date("2026-11-01T00:00:00-04:00");
-
-function getSeasonTimeLeft() {
-  const diff = SEASON_START.getTime() - Date.now();
-  if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
-  return {
-    days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-    hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
-    minutes: Math.floor((diff / (1000 * 60)) % 60),
-    seconds: Math.floor((diff / 1000) % 60),
-  };
-}
-
 const YourCommitment = ({ userId, email }: { userId: string; email: string }) => {
   const { t, lang } = useLanguage();
   const [items, setItems] = useState<Commitment[] | null>(null);
@@ -42,15 +28,6 @@ const YourCommitment = ({ userId, email }: { userId: string; email: string }) =>
   const [newCount, setNewCount] = useState(10);
   const [newCountText, setNewCountText] = useState("10");
   const [submitting, setSubmitting] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(getSeasonTimeLeft);
-  const seasonStarted = Date.now() >= SEASON_START.getTime();
-
-  useEffect(() => {
-    if (seasonStarted) return;
-    const id = setInterval(() => setTimeLeft(getSeasonTimeLeft()), 1000);
-    return () => clearInterval(id);
-  }, [seasonStarted]);
-
   const load = async () => {
     // Only personal commitments here. handle_new_user / claim_my_acts links
     // any pre-signup email-only commitments to user_id, so filtering by
@@ -206,55 +183,17 @@ const YourCommitment = ({ userId, email }: { userId: string; email: string }) =>
               .replace("{month}", t.account.eventMonth)}
           </p>
 
-          {seasonStarted ? (
-            <>
-              <div className="w-full bg-muted rounded-full h-2 mb-2 overflow-hidden">
-                <div
-                  className="bg-warm-terracotta h-full rounded-full transition-all"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-              <p className="text-xs text-foreground/60 mb-4">
-                {t.account.progressLabel
-                  .replace("{done}", String(actsCount))
-                  .replace("{total}", String(active.pledge_count))}
-              </p>
-            </>
-          ) : (
-            <div className="mb-4 mt-4">
-              <p className="text-[11px] font-semibold tracking-widest uppercase text-muted-foreground mb-2">
-                {t.account.seasonCountdownEyebrow}
-              </p>
-              <div className="flex items-end gap-3 md:gap-4">
-                {[
-                  { v: timeLeft.days, l: "D" },
-                  { v: timeLeft.hours, l: "H" },
-                  { v: timeLeft.minutes, l: "M" },
-                  { v: timeLeft.seconds, l: "S" },
-                ].map((u, i, arr) => (
-                  <div key={u.l} className="flex items-end gap-3 md:gap-4">
-                    <div className="flex flex-col items-center">
-                      <span
-                        className="text-xl md:text-2xl font-medium text-warm-terracotta tabular-nums leading-none"
-                        style={{ fontFamily: "'DM Serif Display', serif" }}
-                      >
-                        {String(u.v).padStart(2, "0")}
-                      </span>
-                      <span className="text-[10px] tracking-widest uppercase text-muted-foreground mt-1">
-                        {u.l}
-                      </span>
-                    </div>
-                    {i < arr.length - 1 && (
-                      <span className="text-lg md:text-xl text-warm-terracotta/40 leading-none pb-3">:</span>
-                    )}
-                  </div>
-                ))}
-              </div>
-              <p className="text-[11px] text-muted-foreground italic mt-2">
-                {t.account.seasonCountdownCaption}
-              </p>
-            </div>
-          )}
+          <div className="w-full bg-muted rounded-full h-2 mb-2 overflow-hidden">
+            <div
+              className="bg-warm-terracotta h-full rounded-full transition-all"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <p className="text-xs text-foreground/60 mb-4">
+            {t.account.progressLabel
+              .replace("{done}", String(actsCount))
+              .replace("{total}", String(active.pledge_count))}
+          </p>
 
           {editing === active.id ? (
             <div className="flex gap-2 items-center">

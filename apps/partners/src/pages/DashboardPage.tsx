@@ -70,26 +70,8 @@ function ProgressCard({ logged, goal, people }: { logged: number; goal: number; 
             <span className="text-sm font-semibold text-ink-muted">{t.teamPeopleHelp}</span>
           </div>
         </div>
-        {cd.phase === "after" ? (
+        {cd.phase === "after" && (
           <span className="rounded-full bg-sky-soft px-3 py-1.5 text-xs font-bold text-sky-ink">{t.seasonOver}</span>
-        ) : (
-          <div className="flex flex-col items-start gap-1.5">
-            <span className="text-[10px] font-bold tracking-[0.08em] text-ink-muted">
-              {cd.phase === "before" ? t.startsIn : t.endsIn}
-            </span>
-            <div className="flex gap-1.5">
-              {[
-                [cd.days, t.days],
-                [cd.hours, t.hrs],
-                [cd.minutes, t.min],
-              ].map(([n, label]) => (
-                <div key={label as string} className="flex w-[58px] flex-col items-center rounded-xl bg-canvas py-2">
-                  <span className="text-xl font-extrabold">{String(n).padStart(2, "0")}</span>
-                  <span className="text-[10px] font-semibold text-ink-muted">{label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
         )}
       </div>
       <div className="flex flex-col gap-2.5">

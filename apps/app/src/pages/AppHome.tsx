@@ -21,7 +21,6 @@ import JoinGate from "@/components/app/JoinGate";
 import ReactionButton from "@/components/app/ReactionButton";
 import ActBadgeTags from "@shared/components/badges/ActBadgeTags";
 import MyCommitment from "@/components/app/MyCommitment";
-import SeasonCountdown from "@/components/app/SeasonCountdown";
 import FirstTimeTour from "@/components/app/FirstTimeTour";
 import OnboardingWalkthrough, { type OnboardingResult } from "@/components/app/OnboardingWalkthrough";
 import DeleteActDialog from "@/components/app/DeleteActDialog";
@@ -477,8 +476,6 @@ export default function AppHome() {
       )}
 
       {user && <MyCommitment userId={user.id} email={user.email ?? ""} />}
-
-      <SeasonCountdown />
 
       {user && earned.length > 0 && (
         <section>
