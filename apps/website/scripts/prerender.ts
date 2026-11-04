@@ -138,6 +138,61 @@ const routes: Route[] = [
     `,
   },
   {
+    path: "/get-involved/ambassadors",
+    title: "Become an Ambassador | Get Involved — Kindness Forward",
+    description:
+      "Community leaders, creators, and organizers who champion Pásalo Pa'lante in their region, network, or platform. Get a toolkit and direct support from the Te Amo PR team.",
+    body: `
+      <h1>Become an Ambassador</h1>
+      <p>Community leaders, creators, and organizers who champion Pásalo Pa'lante in their region, network, or platform. Receive a toolkit and direct support from the Te Amo PR team.</p>
+      <p><a href="/get-involved/ambassadors">Apply on this page</a> — the sign-up form loads once the page finishes loading in your browser.</p>
+    `,
+  },
+  {
+    path: "/get-involved/schools",
+    title: "Schools & Educators | Get Involved — Kindness Forward",
+    description:
+      "Bring Pásalo Pa'lante into your classroom or campus with age-appropriate kindness prompts, classroom activities, and student leadership opportunities.",
+    body: `
+      <h1>Schools & Educators</h1>
+      <p>Bring Pásalo Pa'lante into your classroom or campus with age-appropriate kindness prompts, classroom activities, and student leadership opportunities.</p>
+      <p><a href="/get-involved/schools">Sign up on this page</a> — the form loads once the page finishes loading in your browser.</p>
+    `,
+  },
+  {
+    path: "/get-involved/nonprofits",
+    title: "Nonprofits & Faith Communities | Get Involved — Kindness Forward",
+    description:
+      "Co-host activations, share kindness resources with your community, and amplify a mission-aligned global movement rooted in service.",
+    body: `
+      <h1>Nonprofits & Faith Communities</h1>
+      <p>Co-host activations, share kindness resources with your community, and amplify a mission-aligned global movement rooted in service.</p>
+      <p><a href="/get-involved/nonprofits">Sign up on this page</a> — the form loads once the page finishes loading in your browser.</p>
+    `,
+  },
+  {
+    path: "/get-involved/companies",
+    title: "Companies & Brands | Get Involved — Kindness Forward",
+    description:
+      "Sponsor the movement, activate kindness campaigns inside your workplace, and align your brand with measurable community impact.",
+    body: `
+      <h1>Companies & Brands</h1>
+      <p>Sponsor the movement, activate kindness campaigns inside your workplace, and align your brand with measurable community impact.</p>
+      <p><a href="/get-involved/companies">Sign up on this page</a> — the form loads once the page finishes loading in your browser.</p>
+    `,
+  },
+  {
+    path: "/get-involved/municipalities",
+    title: "Municipalities & Civic Leaders | Get Involved — Kindness Forward",
+    description:
+      "Declare a Kindness Season in your city, support public service activations, and help unite residents through civic kindness.",
+    body: `
+      <h1>Municipalities & Civic Leaders</h1>
+      <p>Declare a Kindness Season in your city, support public service activations, and help unite residents through civic kindness.</p>
+      <p><a href="/get-involved/municipalities">Sign up on this page</a> — the form loads once the page finishes loading in your browser.</p>
+    `,
+  },
+  {
     path: "/donate",
     title: "Donate | Support Kindness Forward and Te Amo PR",
     description:
