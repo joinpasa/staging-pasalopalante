@@ -448,6 +448,27 @@
   "partnersMarquee": {
     "heading": "Avec la Confiance et le Soutien de"
   },
+  "leadTheWave": {
+    "eyebrow": "Menez la Vague",
+    "headline": "Devenez Ambassadeur Régional et Leader Principal",
+    "body": "Vous voulez mener la bonté dans votre ville, école ou travail ? Rejoignez ceux qui transforment un acte en mouvement mondial.",
+    "photoAlt": "Un ambassadeur menant un petit groupe",
+    "statLabel": "ambassadeurs et en croissance",
+    "tag1": "Ambassadeurs",
+    "tag2": "Écoles et Organisations",
+    "tag3": "Créateurs et Médias",
+    "subheading": "Menez la bonté là où vous vivez",
+    "subbody": "Vous apportez la communauté. Nous apportons la trousse à outils, le suivi et un réseau mondial derrière vous.",
+    "howItWorks": "Comment ça marche :",
+    "step1Title": "Postulez",
+    "step1Body": "Dites-nous où vous mènerez.",
+    "step2Title": "Recevez votre trousse",
+    "step2Body": "Ressources, scripts et suivi.",
+    "step3Title": "Menez votre ville",
+    "step3Body": "Rassemblez vos gens, regardez les actes s'additionner.",
+    "applyCta": "Postulez pour Rejoindre le Collectif Principal",
+    "pledgeCta": "Lancez un Engagement de Groupe"
+  },
   "theMoment": {
     "eyebrow": "Le moment",
     "days": "Jours",

@@ -14,6 +14,7 @@ import Testimonials from "@/components/Testimonials";
 import VisualTransition from "@/components/VisualTransition";
 import TwoPaths from "@/components/TwoPaths";
 import PartnersMarquee from "@/components/PartnersMarquee";
+import LeadTheWave from "@/components/LeadTheWave";
 import NovemberBand from "@/components/NovemberBand";
 import DonateBand from "@/components/DonateBand";
 
@@ -43,6 +44,7 @@ const Index = () => {
       </Suspense>
       <Testimonials />
       <VisualTransition />
+      <LeadTheWave />
       <DonateBand />
       <Footer />
       <ScrollToTop />

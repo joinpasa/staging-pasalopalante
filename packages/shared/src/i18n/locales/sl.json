@@ -160,6 +160,27 @@
   "partnersMarquee": {
     "heading": "Nam zaupajo in nas podpirajo"
   },
+  "leadTheWave": {
+    "eyebrow": "Vodi Val",
+    "headline": "Postani Regionalni Ambasador in Osrednji Vodja",
+    "body": "Želiš voditi prijaznost v svojem mestu, šoli ali na delovnem mestu? Pridruži se tistim, ki spreminjajo eno dejanje v globalno gibanje.",
+    "photoAlt": "Ambasador, ki vodi majhno skupino",
+    "statLabel": "ambasadorjev in število raste",
+    "tag1": "Ambasadorji",
+    "tag2": "Šole in Organizacije",
+    "tag3": "Ustvarjalci in Mediji",
+    "subheading": "Vodi prijaznost tam, kjer živiš",
+    "subbody": "Ti prinašaš skupnost. Mi prinašamo orodja, sledenje in globalno mrežo za tabo.",
+    "howItWorks": "Kako deluje:",
+    "step1Title": "Prijavi se",
+    "step1Body": "Povej nam, kje boš vodil/-a.",
+    "step2Title": "Prejmi svoj komplet orodij",
+    "step2Body": "Gradiva, scenariji in sledenje.",
+    "step3Title": "Vodi svoje mesto",
+    "step3Body": "Zberi svoje ljudi, opazuj, kako se dejanja seštevajo.",
+    "applyCta": "Prijavi se za Osrednjo Skupino",
+    "pledgeCta": "Začni Skupinsko Zavezo"
+  },
   "theMoment": {
     "eyebrow": "Trenutek",
     "days": "Dni",

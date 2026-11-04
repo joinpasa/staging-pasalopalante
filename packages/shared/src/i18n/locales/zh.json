@@ -456,6 +456,27 @@
  "partnersMarquee": {
   "heading": "值得信赖，获得支持方"
  },
+ "leadTheWave": {
+  "eyebrow": "引领浪潮",
+  "headline": "成为区域大使和核心领袖",
+  "body": "想在你的城市、学校或工作单位引领善意吗？加入这些把一个善举变成全球运动的人们。",
+  "photoAlt": "一位大使正在带领一个小组",
+  "statLabel": "位大使，并持续增长",
+  "tag1": "大使",
+  "tag2": "学校与组织",
+  "tag3": "创作者与媒体",
+  "subheading": "在你生活的地方引领善意",
+  "subbody": "你带来社区，我们提供工具包、追踪系统，以及你身后的全球网络。",
+  "howItWorks": "运作方式：",
+  "step1Title": "申请",
+  "step1Body": "告诉我们你将在哪里领导。",
+  "step2Title": "获取工具包",
+  "step2Body": "素材、脚本和追踪工具。",
+  "step3Title": "领导你的城市",
+  "step3Body": "召集你的人们，见证善举不断累积。",
+  "applyCta": "申请加入核心团队",
+  "pledgeCta": "发起团体承诺"
+ },
  "theMoment": {
   "eyebrow": "这一刻",
   "days": "天",

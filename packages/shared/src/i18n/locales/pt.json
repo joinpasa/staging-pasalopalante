@@ -618,6 +618,27 @@
  "partnersMarquee": {
   "heading": "Com a Confiança e o Apoio de"
  },
+ "leadTheWave": {
+  "eyebrow": "Lidere a Onda",
+  "headline": "Torne-se Embaixador Regional e Líder Principal",
+  "body": "Quer liderar a bondade na sua cidade, escola ou trabalho? Junte-se às pessoas que estão transformando um ato em um movimento global.",
+  "photoAlt": "Um embaixador liderando um pequeno grupo",
+  "statLabel": "embaixadores e crescendo",
+  "tag1": "Embaixadores",
+  "tag2": "Escolas e Organizações",
+  "tag3": "Criadores e Mídia",
+  "subheading": "Lidere a bondade onde você vive",
+  "subbody": "Você traz a comunidade. Nós trazemos o kit de ferramentas, o acompanhamento e uma rede global por trás de você.",
+  "howItWorks": "Como funciona:",
+  "step1Title": "Candidate-se",
+  "step1Body": "Diga-nos onde você vai liderar.",
+  "step2Title": "Receba seu kit",
+  "step2Body": "Materiais, roteiros e acompanhamento.",
+  "step3Title": "Lidere sua cidade",
+  "step3Body": "Reúna seu povo, veja os atos se somarem.",
+  "applyCta": "Candidate-se para o Coletivo Principal",
+  "pledgeCta": "Inicie um Compromisso em Grupo"
+ },
  "theMoment": {
   "eyebrow": "O Momento",
   "days": "Dias",

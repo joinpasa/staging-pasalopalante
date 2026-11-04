@@ -903,6 +903,27 @@
   "partnersMarquee": {
     "heading": "Vertraut und Unterstützt von"
   },
+  "leadTheWave": {
+    "eyebrow": "Führe die Welle An",
+    "headline": "Werde Regionalbotschafter & Kernleiter",
+    "body": "Möchtest du Freundlichkeit in deiner Stadt, Schule oder am Arbeitsplatz anführen? Schließe dich denen an, die aus einer Tat eine globale Bewegung machen.",
+    "photoAlt": "Ein Botschafter führt eine kleine Gruppe an",
+    "statLabel": "Botschafter und wachsend",
+    "tag1": "Botschafter",
+    "tag2": "Schulen & Organisationen",
+    "tag3": "Kreative & Medien",
+    "subheading": "Führe Freundlichkeit an, wo du lebst",
+    "subbody": "Du bringst die Gemeinschaft. Wir bringen das Toolkit, das Tracking und ein globales Netzwerk hinter dir.",
+    "howItWorks": "So funktioniert's:",
+    "step1Title": "Bewirb dich",
+    "step1Body": "Sag uns, wo du führen wirst.",
+    "step2Title": "Erhalte dein Toolkit",
+    "step2Body": "Materialien, Skripte und Tracking.",
+    "step3Title": "Führe deine Stadt an",
+    "step3Body": "Versammle deine Leute, sieh zu, wie sich die Taten summieren.",
+    "applyCta": "Bewirb dich für das Core Collective",
+    "pledgeCta": "Starte eine Gruppenzusage"
+  },
   "theMoment": {
     "eyebrow": "Der Moment",
     "days": "Tage",
