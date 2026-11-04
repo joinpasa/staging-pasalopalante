@@ -77,7 +77,7 @@ const TwoPaths = () => {
                 <li>{t.twoPaths.ambBullet3}</li>
                 <li>{t.twoPaths.ambBullet4}</li>
               </ul>
-              <a href="/commit" className="btn-secondary w-full text-center mt-auto">
+              <a href="/get-involved/ambassadors" className="btn-secondary w-full text-center mt-auto">
                 {t.twoPaths.ambCta}
               </a>
             </div>
@@ -98,7 +98,7 @@ const TwoPaths = () => {
                 <li>{t.twoPaths.grpBullet3}</li>
                 <li>{t.twoPaths.grpBullet4}</li>
               </ul>
-              <a href="/get-involved" className="btn-secondary w-full text-center mt-auto">
+              <a href="/get-involved/companies" className="btn-secondary w-full text-center mt-auto">
                 {t.twoPaths.grpCta}
               </a>
             </div>

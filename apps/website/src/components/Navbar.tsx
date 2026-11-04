@@ -53,8 +53,12 @@ const Navbar = () => {
       label: t.navbar.getInvolved,
       items: [
         { label: t.navbar.individualPledge, anchor: "get-involved-inline" },
-        { label: t.navbar.ambassadorProgram, href: "/commit" },
-        { label: t.navbar.groupCorporatePledges, href: "/get-involved" },
+        { label: t.navbar.ambassadorProgram, href: "/get-involved/ambassadors" },
+        { label: t.getInvolvedForms.schoolsHeading, href: "/get-involved/schools" },
+        { label: t.getInvolvedForms.nonprofitsHeading, href: "/get-involved/nonprofits" },
+        { label: t.getInvolvedForms.companiesHeading, href: "/get-involved/companies" },
+        { label: t.getInvolvedForms.municipalitiesHeading, href: "/get-involved/municipalities" },
+        { label: t.share.sectionCta, onClick: () => openShareModal() },
         { label: t.navbar.donateNow, href: "/donate" },
       ],
     },
@@ -74,12 +78,10 @@ const Navbar = () => {
         { label: t.navbar.howItWorks, anchor: "how-it-works" },
         { label: t.navbar.proof, anchor: "proof" },
         { label: t.navbar.ourStory, anchor: "story" },
-        { label: t.navbar.anthem, anchor: "anthem" },
         { label: t.navbar.ideas, href: "/ideas" },
         { label: t.mapPage.title, href: "/map" },
         { label: t.navbar.about, href: "/about" },
         { label: t.navbar.live, href: "/live" },
-        { label: t.share.sectionCta, onClick: () => openShareModal() },
       ],
     },
   ];
@@ -263,13 +265,14 @@ const Navbar = () => {
             </Link>
           )}
 
-          <button
-            type="button"
-            onClick={() => goToAnchor("get-involved-inline")}
+          <a
+            href="https://forms.pasalopalante.com/24hr-global-live"
+            target="_blank"
+            rel="noopener noreferrer"
             className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.04]"
           >
-            {t.navbar.makePledge}
-          </button>
+            {t.navbar.joinLiveBroadcast}
+          </a>
         </div>
 
         <button
@@ -355,13 +358,15 @@ const Navbar = () => {
                   )}
                 </AnimatePresence>
               </div>
-              <button
-                type="button"
-                onClick={() => { setMobileOpen(false); goToAnchor("get-involved-inline"); }}
+              <a
+                href="https://forms.pasalopalante.com/24hr-global-live"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileOpen(false)}
                 className="btn-primary text-center mt-2"
               >
-                {t.navbar.makePledge}
-              </button>
+                {t.navbar.joinLiveBroadcast}
+              </a>
               {user ? (
                 <Link to="/account" onClick={() => setMobileOpen(false)} className="text-center text-foreground/70 text-sm flex items-center justify-center gap-2">
                   <User size={16} /> {t.navbar.myAccount} · {navStats.acts} {t.account.acts}{navStats.streak > 0 ? ` · ${navStats.streak} ${t.account.dayStreak}` : ""}

@@ -493,6 +493,7 @@ const translations = {
       ambassadorsDirectory: "Ambassadors Directory",
       more: "More",
       makePledge: "Make a Pledge",
+      joinLiveBroadcast: "Join the Live Broadcast",
     },
     hero: {
       eyebrow: "The World's Largest Coordinated Kindness Movement",
