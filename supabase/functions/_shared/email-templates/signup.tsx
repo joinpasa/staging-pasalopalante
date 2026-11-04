@@ -5,7 +5,7 @@ import {
   Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Text,
 } from 'npm:@react-email/components@0.0.22'
 import {
-  BRAND_NAME, LOGO_URL, accentRule, button, buttonWrap, code, container,
+  BRAND_NAME, BRAND_NAME_ES, LOGO_ALT, LOGO_URL, LOGO_WIDTH, TEAM_NAME, accentRule, button, buttonWrap, code, container,
   footer, h1, logoImg, main, signature, text, textEs,
 } from './_styles.ts'
 
@@ -23,7 +23,7 @@ export const SignupEmail = ({ confirmationUrl, token }: SignupEmailProps) => (
     <Preview>Welcome to {BRAND_NAME} — confirm your email</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Img src={LOGO_URL} alt={BRAND_NAME} style={logoImg} />
+        <Img src={LOGO_URL} alt={LOGO_ALT} width={LOGO_WIDTH} style={logoImg} />
         <Hr style={accentRule} />
         <Heading style={h1}>Welcome to {BRAND_NAME}</Heading>
         <Text style={text}>
@@ -40,10 +40,10 @@ export const SignupEmail = ({ confirmationUrl, token }: SignupEmailProps) => (
         <Text style={text}>Already have the app open? Enter this code there instead:</Text>
         <Text style={code}>{token}</Text>
         <Text style={textEs}>
-          Bienvenido a {BRAND_NAME}. Confirma tu correo para comenzar a
+          Bienvenido a {BRAND_NAME_ES}. Confirma tu correo para comenzar a
           compartir y recibir actos de bondad.
         </Text>
-        <Text style={signature}>With love, the {BRAND_NAME} team</Text>
+        <Text style={signature}>With love, the {TEAM_NAME} team</Text>
         <Text style={footer}>
           If you didn't sign up, you can safely ignore this email.
         </Text>

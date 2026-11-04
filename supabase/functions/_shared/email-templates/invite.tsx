@@ -5,7 +5,7 @@ import {
   Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Text,
 } from 'npm:@react-email/components@0.0.22'
 import {
-  BRAND_NAME, LOGO_URL, accentRule, button, buttonWrap, container, footer,
+  BRAND_NAME, BRAND_NAME_ES, LOGO_ALT, LOGO_URL, LOGO_WIDTH, TEAM_NAME, accentRule, button, buttonWrap, container, footer,
   h1, logoImg, main, signature, text, textEs,
 } from './_styles.ts'
 
@@ -21,7 +21,7 @@ export const InviteEmail = ({ confirmationUrl }: InviteEmailProps) => (
     <Preview>You've been invited to {BRAND_NAME}</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Img src={LOGO_URL} alt={BRAND_NAME} style={logoImg} />
+        <Img src={LOGO_URL} alt={LOGO_ALT} width={LOGO_WIDTH} style={logoImg} />
         <Hr style={accentRule} />
         <Heading style={h1}>You've been invited</Heading>
         <Text style={text}>
@@ -33,10 +33,10 @@ export const InviteEmail = ({ confirmationUrl }: InviteEmailProps) => (
           <Button style={button} href={confirmationUrl}>Accept invitation</Button>
         </div>
         <Text style={textEs}>
-          Te invitaron a unirte a {BRAND_NAME}. Acepta la invitación para
+          Te invitaron a unirte a {BRAND_NAME_ES}. Acepta la invitación para
           crear tu cuenta.
         </Text>
-        <Text style={signature}>With love, the {BRAND_NAME} team</Text>
+        <Text style={signature}>With love, the {TEAM_NAME} team</Text>
         <Text style={footer}>
           If you weren't expecting this invitation, you can safely ignore this email.
         </Text>

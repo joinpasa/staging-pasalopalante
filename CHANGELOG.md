@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-11-04 — va.deedumlao@gmail.com
+
+- **Sign-up, sign-in and password emails are rebranded to Kindness Forward, with Pásalo Pa'lante as the sister brand.** They now show a combined logo (Kindness Forward first, Pásalo Pa'lante beside it) that stays readable in dark-mode mail apps, and use the website's colors (navy, bright orange button, gold accent). The sender name is now "Kindness Forward". The Spanish line names both ("Kindness Forward · Pásalo Pa'lante") so people in Puerto Rico still recognize it, and emails are signed "the Kindness Forward & Pásalo Pa'lante team". One version goes to everyone: sign-ups from both sites finish on pasalopalante.com, so the email can't tell which site someone came from.
+
 ## 2026-11-02 — va.deedumlao@gmail.com
 
 - **Homepage pledge form quick-pick options are now 100 / 200 / 500 / 1000** (50 removed, 1000 added). 200 is still pre-selected, and people can still type any number.

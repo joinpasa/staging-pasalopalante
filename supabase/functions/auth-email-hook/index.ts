@@ -37,7 +37,9 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "Pásalo Pa'lante"
+// Sender display name and {siteName}. The sending address stays on the
+// Resend-verified pasalopalante.com subdomain below.
+const SITE_NAME = "Kindness Forward"
 const ROOT_DOMAIN = "pasalopalante.com"
 // Emails must be sent from the domain actually verified with Resend, which is
 // this dedicated subdomain (chosen instead of notify.pasalopalante.com because
