@@ -163,28 +163,28 @@ const Navbar = () => {
         <ArrowRight size={16} strokeWidth={2.75} className="ms-2 shrink-0 transition-transform group-hover:translate-x-1 rtl:rotate-180" />
       </a>
       <div className="section-padding flex items-center justify-between h-20 gap-4">
-        <div className="flex items-center gap-8 md:gap-10 min-w-0">
-          <Link to="/" className="shrink-0 flex items-center gap-2 md:gap-2.5">
-            <img
-              src="/logo-PPL.png"
-              alt="Pásalo Pa'lante"
-              className={`h-10 transition-all duration-300 ${isSolid ? "" : "brightness-0 invert"}`}
-            />
-            <span className={`text-lg font-extralight ${isSolid ? "text-foreground/30" : "text-white/40"}`} aria-hidden="true">×</span>
-            <img
-              src={isSolid ? "/logo-PKF-horizontal-color.png" : "/logo-PKF-white-horizontal.png"}
-              srcSet={
-                isSolid
-                  ? "/logo-PKF-horizontal-color.png 1x, /logo-PKF-horizontal-color@2x.png 2x"
-                  : "/logo-PKF-white-horizontal.png 1x, /logo-PKF-white-horizontal@2x.png 2x"
-              }
-              alt="Pass Kindness Forward"
-              title="Pass Kindness Forward"
-              className="h-10 w-auto object-contain"
-            />
-          </Link>
+        <Link to="/" className="shrink-0 flex items-center gap-2 md:gap-2.5">
+          <img
+            src="/logo-PPL.png"
+            alt="Pásalo Pa'lante"
+            className={`h-10 transition-all duration-300 ${isSolid ? "" : "brightness-0 invert"}`}
+          />
+          <span className={`text-lg font-extralight ${isSolid ? "text-foreground/30" : "text-white/40"}`} aria-hidden="true">×</span>
+          <img
+            src={isSolid ? "/logo-PKF-horizontal-color.png" : "/logo-PKF-white-horizontal.png"}
+            srcSet={
+              isSolid
+                ? "/logo-PKF-horizontal-color.png 1x, /logo-PKF-horizontal-color@2x.png 2x"
+                : "/logo-PKF-white-horizontal.png 1x, /logo-PKF-white-horizontal@2x.png 2x"
+            }
+            alt="Pass Kindness Forward"
+            title="Pass Kindness Forward"
+            className="h-10 w-auto object-contain"
+          />
+        </Link>
 
-          <div ref={navLinksRef} className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-8">
+          <div ref={navLinksRef} className="flex items-center gap-6">
             {navGroups.map((group) => (
               <div key={group.key} className="relative">
                 <button
@@ -238,9 +238,7 @@ const Navbar = () => {
               </div>
             ))}
           </div>
-        </div>
 
-        <div className="hidden md:flex items-center gap-6">
           <LanguageSwitcher variant="inline" triggerClassName={linkClass} />
 
           <span className={`h-5 w-px ${isSolid ? "bg-border" : "bg-white/25"}`} aria-hidden="true" />
