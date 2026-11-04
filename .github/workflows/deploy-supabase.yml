@@ -45,4 +45,6 @@ jobs:
         # Docker image locally — that pull was hitting ghcr.io's anonymous
         # rate limit intermittently and failing this step even when nothing
         # about the functions themselves had changed.
-        run: supabase functions deploy --use-api
+        # --yes: CLI 3 asks to confirm deploys to the hosted project and
+        # fails in CI (no terminal) without it.
+        run: supabase functions deploy --use-api --yes
