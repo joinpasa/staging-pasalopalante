@@ -68,20 +68,13 @@ const Navbar = () => {
       ],
     },
     {
-      key: "impact",
-      label: t.navbar.groupOurImpact,
-      items: [
-        { label: t.navbar.howItWorks, anchor: "how-it-works" },
-        { label: t.navbar.wall, href: "/wall" },
-        { label: t.navbar.proof, anchor: "proof" },
-        { label: t.navbar.ourStory, anchor: "story" },
-        { label: t.navbar.anthem, anchor: "anthem" },
-      ],
-    },
-    {
       key: "resources",
       label: t.navbar.groupResources,
       items: [
+        { label: t.navbar.howItWorks, anchor: "how-it-works" },
+        { label: t.navbar.proof, anchor: "proof" },
+        { label: t.navbar.ourStory, anchor: "story" },
+        { label: t.navbar.anthem, anchor: "anthem" },
         { label: t.navbar.ideas, href: "/ideas" },
         { label: t.mapPage.title, href: "/map" },
         { label: t.navbar.about, href: "/about" },

@@ -898,7 +898,7 @@ const translations = {
       grpBody: "Schools, companies, municipalities, and faith communities ready to pledge as a group, not just one person at a time. Register your organization and rally everyone behind one shared goal.",
       grpBullet1: "→ A dedicated page for your school, company, or municipality",
       grpBullet2: "→ Your organization's pledge counted toward the global total",
-      grpBullet3: "→ Recognition as an official Pásalo Pa'lante partner",
+      grpBullet3: "→ Recognition as an official Pass Kindness Forward partner",
       grpBullet4: "→ A direct line to our partnerships team",
       grpCta: "Register Your Organization",
     },

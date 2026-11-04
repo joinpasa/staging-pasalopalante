@@ -34,14 +34,14 @@ const Hero = () => {
       />
 
 
-      <div className="relative z-10 section-padding w-full pt-32 pb-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+      <div className="relative z-10 section-padding w-full pt-24 pb-14">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           <div className="lg:col-span-6">
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="eyebrow !text-warm-gold mb-6"
+              className="eyebrow !text-warm-gold mb-4"
             >
               {t.hero.eyebrow}
             </motion.p>
@@ -50,7 +50,7 @@ const Hero = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.8 }}
-              className="headline-xl lg:text-5xl xl:text-6xl text-warm-cream mb-8 [&_em]:text-warm-gold"
+              className="headline-xl text-3xl md:text-4xl lg:text-4xl xl:text-5xl text-warm-cream mb-5 [&_em]:text-warm-gold"
             >
               <span dangerouslySetInnerHTML={{ __html: t.hero.title }} />
             </motion.h1>
@@ -59,22 +59,21 @@ const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
-              className="space-y-4 mb-12"
+              className="space-y-3 mb-7"
             >
-              <p className="body-lg text-warm-cream/90 max-w-2xl">
+              <p className="text-sm md:text-base text-warm-cream/90 max-w-2xl leading-relaxed">
                 {t.hero.body1}
               </p>
-              <p className="body-lg text-warm-cream/90 max-w-2xl">
+              <p className="text-sm md:text-base text-warm-cream/90 max-w-2xl leading-relaxed">
                 {t.hero.body2}
               </p>
             </motion.div>
-
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.1 }}
-              className="flex flex-wrap items-center gap-[18px]"
+              className="flex flex-wrap items-center gap-4"
             >
               <button
                 type="button"
@@ -83,10 +82,16 @@ const Hero = () => {
                   if (onHome) smoothScrollTo("get-involved-inline");
                   else window.location.href = "/#get-involved-inline";
                 }}
-                className="rounded-full bg-primary px-8 py-5 text-base md:text-lg font-semibold uppercase tracking-[0.06em] text-primary-foreground shadow-[0_14px_34px_rgba(0,0,0,0.28)] transition-transform hover:scale-[1.04]"
+                className="rounded-full bg-primary px-7 py-4 text-sm md:text-base font-semibold uppercase tracking-[0.06em] text-primary-foreground shadow-[0_14px_34px_rgba(0,0,0,0.28)] transition-transform hover:scale-[1.04]"
               >
                 {t.navbar.makePledge}
               </button>
+              <a
+                href="/wall"
+                className="rounded-full border-2 border-warm-cream/50 px-7 py-4 text-sm md:text-base font-semibold text-warm-cream transition-colors hover:border-warm-cream hover:bg-warm-cream/10"
+              >
+                {t.navbar.wall}
+              </a>
             </motion.div>
           </div>
 

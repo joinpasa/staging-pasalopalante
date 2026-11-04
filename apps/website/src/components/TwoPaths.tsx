@@ -1,6 +1,5 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { Handshake, Users, Building2 } from "lucide-react";
 import communityIndividual from "@/assets/community-individual.webp";
 import communityAmbassador from "@/assets/community-ambassador.webp";
 import communityPartners from "@/assets/community-partners.webp";
@@ -38,14 +37,11 @@ const TwoPaths = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <motion.div custom={3} variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"} className="bg-background rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col">
-            <div className="h-64 overflow-hidden shrink-0">
+            <div className="h-40 overflow-hidden shrink-0">
               <img src={communityIndividual} alt="Individual acts of kindness" className="w-full h-full object-cover" loading="lazy" />
             </div>
-            <div className="p-8 md:p-10 flex flex-col flex-1">
-              <div className="w-12 h-12 rounded-full bg-warm-blush flex items-center justify-center mb-4">
-                <Handshake className="w-5 h-5 text-warm-terracotta" />
-              </div>
-              <h3 className="headline-md text-foreground mb-2">{t.twoPaths.indTitle}</h3>
+            <div className="p-6 md:p-8 flex flex-col flex-1">
+              <h3 className="headline-md text-lg md:text-xl text-foreground mb-2">{t.twoPaths.indTitle}</h3>
               <p className="text-muted-foreground font-medium mb-4">{t.twoPaths.indSubtitle}</p>
               <p className="text-muted-foreground mb-6 text-sm leading-relaxed">{t.twoPaths.indBody}</p>
               <p className="text-foreground font-semibold mb-3 text-sm">{t.twoPaths.whatYouGet}</p>
@@ -67,14 +63,11 @@ const TwoPaths = () => {
           </motion.div>
 
           <motion.div custom={4} variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"} className="bg-background rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col">
-            <div className="h-64 overflow-hidden shrink-0">
+            <div className="h-40 overflow-hidden shrink-0">
               <img src={communityAmbassador} alt="An ambassador organizing their community" className="w-full h-full object-cover" loading="lazy" />
             </div>
-            <div className="p-8 md:p-10 flex flex-col flex-1">
-              <div className="w-12 h-12 rounded-full bg-warm-blush flex items-center justify-center mb-4">
-                <Users className="w-5 h-5 text-warm-terracotta" />
-              </div>
-              <h3 className="headline-md text-foreground mb-2">{t.twoPaths.ambTitle}</h3>
+            <div className="p-6 md:p-8 flex flex-col flex-1">
+              <h3 className="headline-md text-lg md:text-xl text-foreground mb-2">{t.twoPaths.ambTitle}</h3>
               <p className="text-muted-foreground font-medium mb-4">{t.twoPaths.ambSubtitle}</p>
               <p className="text-muted-foreground mb-6 text-sm leading-relaxed">{t.twoPaths.ambBody}</p>
               <p className="text-foreground font-semibold mb-3 text-sm">{t.twoPaths.whatYouGet}</p>
@@ -91,14 +84,11 @@ const TwoPaths = () => {
           </motion.div>
 
           <motion.div custom={5} variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"} className="bg-background rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col">
-            <div className="h-64 overflow-hidden shrink-0">
+            <div className="h-40 overflow-hidden shrink-0">
               <img src={communityPartners} alt="Partners and groups volunteering together" className="w-full h-full object-cover" loading="lazy" />
             </div>
-            <div className="p-8 md:p-10 flex flex-col flex-1">
-              <div className="w-12 h-12 rounded-full bg-warm-blush flex items-center justify-center mb-4">
-                <Building2 className="w-5 h-5 text-warm-terracotta" />
-              </div>
-              <h3 className="headline-md text-foreground mb-2">{t.twoPaths.grpTitle}</h3>
+            <div className="p-6 md:p-8 flex flex-col flex-1">
+              <h3 className="headline-md text-lg md:text-xl text-foreground mb-2">{t.twoPaths.grpTitle}</h3>
               <p className="text-muted-foreground font-medium mb-4">{t.twoPaths.grpSubtitle}</p>
               <p className="text-muted-foreground mb-6 text-sm leading-relaxed">{t.twoPaths.grpBody}</p>
               <p className="text-foreground font-semibold mb-3 text-sm">{t.twoPaths.whatYouGet}</p>
