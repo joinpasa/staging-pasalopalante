@@ -71,6 +71,8 @@ const Navbar = () => {
       key: "impact",
       label: t.navbar.groupOurImpact,
       items: [
+        { label: t.navbar.howItWorks, anchor: "how-it-works" },
+        { label: t.navbar.wall, href: "/wall" },
         { label: t.navbar.proof, anchor: "proof" },
         { label: t.navbar.ourStory, anchor: "story" },
         { label: t.navbar.anthem, anchor: "anthem" },
@@ -189,17 +191,6 @@ const Navbar = () => {
         </Link>
 
         <div className="hidden md:flex items-center gap-6">
-          <button
-            type="button"
-            onClick={() => goToAnchor("how-it-works")}
-            className={`text-sm font-medium tracking-wide transition-colors duration-300 ${linkClass}`}
-          >
-            {t.navbar.howItWorks}
-          </button>
-          <Link to="/wall" className={`text-sm font-medium tracking-wide transition-colors duration-300 ${linkClass}`}>
-            {t.navbar.wall}
-          </Link>
-
           <div ref={navLinksRef} className="flex items-center gap-6">
             {navGroups.map((group) => (
               <div key={group.key} className="relative">
@@ -284,7 +275,7 @@ const Navbar = () => {
             onClick={() => goToAnchor("get-involved-inline")}
             className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.04]"
           >
-            {t.navbar.getInvolved}
+            {t.navbar.makePledge}
           </button>
         </div>
 
@@ -311,16 +302,6 @@ const Navbar = () => {
             className="md:hidden bg-warm-cream border-t border-border overflow-hidden"
           >
             <div className="section-padding py-6 flex flex-col gap-4">
-              <button
-                type="button"
-                onClick={() => { setMobileOpen(false); goToAnchor("how-it-works"); }}
-                className="text-lg font-medium text-foreground/80 text-start"
-              >
-                {t.navbar.howItWorks}
-              </button>
-              <Link to="/wall" onClick={() => setMobileOpen(false)} className="text-lg font-medium text-foreground/80">
-                {t.navbar.wall}
-              </Link>
               <LanguageSwitcher variant="inline" align="left" triggerClassName="text-lg font-medium text-foreground/80" />
               <div>
                 <button
@@ -386,7 +367,7 @@ const Navbar = () => {
                 onClick={() => { setMobileOpen(false); goToAnchor("get-involved-inline"); }}
                 className="btn-primary text-center mt-2"
               >
-                {t.navbar.getInvolved}
+                {t.navbar.makePledge}
               </button>
               {user ? (
                 <Link to="/account" onClick={() => setMobileOpen(false)} className="text-center text-foreground/70 text-sm flex items-center justify-center gap-2">

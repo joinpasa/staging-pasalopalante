@@ -85,7 +85,7 @@ const Hero = () => {
                 }}
                 className="rounded-full bg-primary px-8 py-5 text-base md:text-lg font-semibold uppercase tracking-[0.06em] text-primary-foreground shadow-[0_14px_34px_rgba(0,0,0,0.28)] transition-transform hover:scale-[1.04]"
               >
-                {t.hero.cta}
+                {t.navbar.makePledge}
               </button>
             </motion.div>
           </div>
