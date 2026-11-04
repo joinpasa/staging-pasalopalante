@@ -1,5 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import { Link } from "react-router-dom";
 import ambassadorLeading from "@/assets/ambassador-leading.jpg";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useAmbassadors } from "@/hooks/useAmbassadors";
@@ -82,12 +83,12 @@ const LeadTheWave = () => {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <a href="/get-involved/ambassadors" className="btn-primary">
+              <Link to="/get-involved/ambassadors" className="btn-primary">
                 {lw.applyCta} →
-              </a>
-              <a href="/get-involved/companies" className="btn-secondary">
+              </Link>
+              <Link to="/get-involved/companies" className="btn-secondary">
                 {lw.pledgeCta}
-              </a>
+              </Link>
             </div>
           </div>
         </motion.div>

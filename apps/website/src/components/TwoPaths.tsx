@@ -1,5 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import { Link } from "react-router-dom";
 import communityIndividual from "@/assets/community-individual.webp";
 import communityAmbassador from "@/assets/community-ambassador.webp";
 import communityPartners from "@/assets/community-partners.webp";
@@ -77,9 +78,9 @@ const TwoPaths = () => {
                 <li>{t.twoPaths.ambBullet3}</li>
                 <li>{t.twoPaths.ambBullet4}</li>
               </ul>
-              <a href="/get-involved/ambassadors" className="btn-secondary w-full text-center mt-auto">
+              <Link to="/get-involved/ambassadors" className="btn-secondary w-full text-center mt-auto">
                 {t.twoPaths.ambCta}
-              </a>
+              </Link>
             </div>
           </motion.div>
 
@@ -98,9 +99,9 @@ const TwoPaths = () => {
                 <li>{t.twoPaths.grpBullet3}</li>
                 <li>{t.twoPaths.grpBullet4}</li>
               </ul>
-              <a href="/get-involved/companies" className="btn-secondary w-full text-center mt-auto">
+              <Link to="/get-involved/companies" className="btn-secondary w-full text-center mt-auto">
                 {t.twoPaths.grpCta}
-              </a>
+              </Link>
             </div>
           </motion.div>
         </div>
