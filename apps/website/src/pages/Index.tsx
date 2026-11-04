@@ -2,7 +2,6 @@ import { lazy, Suspense } from "react";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import LiveFromWall from "@/components/LiveFromWall";
-import ImpactTicker from "@/components/ImpactTicker";
 import TheStory from "@/components/TheStory";
 import HowItWorks from "@/components/HowItWorks";
 import AnthemSection from "@/components/AnthemSection";
