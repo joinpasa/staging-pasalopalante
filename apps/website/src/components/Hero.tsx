@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { Heart } from "lucide-react";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { RippleCanvas } from "@shared/components/ui/ripple-canvas";
 import { smoothScrollTo } from "@shared/lib/smoothScrollTo";
@@ -75,38 +74,19 @@ const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.1 }}
-              className="flex flex-col items-start gap-5"
+              className="flex flex-wrap items-center gap-[18px]"
             >
-              <div className="flex flex-wrap items-center gap-[18px]">
-                <button
-                  type="button"
-                  onClick={() => {
-                    const onHome = window.location.pathname === "/";
-                    if (onHome) smoothScrollTo("get-involved-inline");
-                    else window.location.href = "/#get-involved-inline";
-                  }}
-                  className="rounded-full bg-primary px-8 py-5 text-base md:text-lg font-semibold uppercase tracking-[0.06em] text-primary-foreground shadow-[0_14px_34px_rgba(0,0,0,0.28)] transition-transform hover:scale-[1.04]"
-                >
-                  {t.hero.cta}
-                </button>
-                <a
-                  href="/wall"
-                  className="rounded-full border-2 border-warm-cream/50 px-8 py-5 text-base md:text-lg font-semibold text-warm-cream transition-colors hover:border-warm-cream hover:bg-warm-cream/10"
-                >
-                  {t.hero.ctaSeeInAction}
-                </a>
-              </div>
-              {/* Secondary action: its own line under the two buttons, so it
-                  never wraps into an orphaned spot beside them. */}
-              <a
-                href="/donate"
-                className="group inline-flex items-center gap-2 text-sm md:text-base font-semibold text-warm-gold"
+              <button
+                type="button"
+                onClick={() => {
+                  const onHome = window.location.pathname === "/";
+                  if (onHome) smoothScrollTo("get-involved-inline");
+                  else window.location.href = "/#get-involved-inline";
+                }}
+                className="rounded-full bg-primary px-8 py-5 text-base md:text-lg font-semibold uppercase tracking-[0.06em] text-primary-foreground shadow-[0_14px_34px_rgba(0,0,0,0.28)] transition-transform hover:scale-[1.04]"
               >
-                <Heart size={16} className="fill-warm-gold/20" aria-hidden="true" />
-                <span className="border-b border-warm-gold/40 transition-colors group-hover:border-warm-gold">
-                  {t.navbar.donateNow}
-                </span>
-              </a>
+                {t.hero.cta}
+              </button>
             </motion.div>
           </div>
 

@@ -30,6 +30,7 @@ const Index = () => {
       />
       <Navbar />
       <Hero />
+      <TwoPaths />
       <LiveFromWall />
       <HowItWorks />
       <AnthemSection />
@@ -40,8 +41,6 @@ const Index = () => {
       </Suspense>
       <Testimonials />
       <VisualTransition />
-      <TwoPaths />
-      
       <DonateBand />
       <Footer />
       <ScrollToTop />

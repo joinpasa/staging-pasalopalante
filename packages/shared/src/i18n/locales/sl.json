@@ -23,7 +23,15 @@
     "mediaVideos": "Videi",
     "mediaSocial": "Družbena omrežja",
     "live": "Prenos v živo",
-    "liveBanner": "Pridruži se svetovnemu prenosu v živo 11. 11. 2026"
+    "liveBanner": "Pridruži se svetovnemu prenosu v živo 11. 11. 2026",
+    "groupDirectory": "Imenik in Mreža",
+    "groupOurImpact": "Naš Vpliv",
+    "groupResources": "Viri",
+    "individualPledge": "Individualna Zaveza",
+    "ambassadorProgram": "Program Ambasadorjev",
+    "groupCorporatePledges": "Skupinske in Korporativne Zaveze",
+    "ambassadorsDirectory": "Imenik Ambasadorjev",
+    "more": "Več"
   },
   "hero": {
     "eyebrow": "Največje usklajeno gibanje prijaznosti na svetu",
@@ -138,7 +146,15 @@
     "ambBullet3": "→ Dostop do globalne mreže sorodnih organizacij",
     "ambBullet4": "→ Zgodba, ki si jo bodo tvoji ljudje zapomnili",
     "ambCta": "Postani ambasador prijaznosti",
-    "indCta": "Podaj zavezo"
+    "indCta": "Podaj zavezo",
+    "grpTitle": "Za Partnerje in Skupine",
+    "grpSubtitle": "Mobilizirajte svojo šolo, podjetje ali skupnost v velikem obsegu.",
+    "grpBody": "Šole, podjetja, občine in verske skupnosti, pripravljene na zavezo kot skupina, ne le posameznik naenkrat. Registrirajte svojo organizacijo in združite vse okoli skupnega cilja.",
+    "grpBullet1": "→ Namenska stran za vašo šolo, podjetje ali občino",
+    "grpBullet2": "→ Zaveza vaše organizacije šteje v svetovno skupno vsoto",
+    "grpBullet3": "→ Priznanje kot uradni partner Pásalo Pa'lante",
+    "grpBullet4": "→ Neposredna linija z našo ekipo za partnerstva",
+    "grpCta": "Registrirajte Svojo Organizacijo"
   },
   "theMoment": {
     "eyebrow": "Trenutek",

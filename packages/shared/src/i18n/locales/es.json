@@ -78,7 +78,15 @@
     "joinMovement": "Únete",
     "donateNow": "Dona",
     "signIn": "Iniciar sesión",
-    "myAccount": "Mi Cuenta"
+    "myAccount": "Mi Cuenta",
+    "groupDirectory": "Directorio y Red",
+    "groupOurImpact": "Nuestro Impacto",
+    "groupResources": "Recursos",
+    "individualPledge": "Compromiso Individual",
+    "ambassadorProgram": "Programa de Embajadores",
+    "groupCorporatePledges": "Compromisos Grupales y Corporativos",
+    "ambassadorsDirectory": "Directorio de Embajadores",
+    "more": "Más"
   },
   "hero": {
     "eyebrow": "El movimiento coordinado de bondad más grande del mundo",
@@ -477,7 +485,15 @@
     "ambBullet2": "→ Herramientas de medición para rastrear tu impacto",
     "ambBullet3": "→ Acceso a una red global de organizaciones alineadas",
     "ambBullet4": "→ Una historia que tu gente recordará",
-    "ambCta": "Conviértete en Embajador de Bondad"
+    "ambCta": "Conviértete en Embajador de Bondad",
+    "grpTitle": "Para Socios y Grupos",
+    "grpSubtitle": "Moviliza tu escuela, empresa o congregación a gran escala.",
+    "grpBody": "Escuelas, empresas, municipios y comunidades de fe listas para comprometerse como grupo, no solo una persona a la vez. Registra tu organización y une a todos detrás de una meta compartida.",
+    "grpBullet1": "→ Una página dedicada para tu escuela, empresa o municipio",
+    "grpBullet2": "→ El compromiso de tu organización contado en el total global",
+    "grpBullet3": "→ Reconocimiento como socio oficial de Pásalo Pa'lante",
+    "grpBullet4": "→ Una línea directa con nuestro equipo de alianzas",
+    "grpCta": "Registra Tu Organización"
   },
   "theMoment": {
     "eyebrow": "El Momento",

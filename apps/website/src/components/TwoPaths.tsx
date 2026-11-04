@@ -1,8 +1,9 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { Handshake, Users } from "lucide-react";
-import community4 from "@/assets/community-4.jpg";
-import community5 from "@/assets/community-5.jpg";
+import { Handshake, Users, Building2 } from "lucide-react";
+import communityIndividual from "@/assets/community-individual.webp";
+import communityAmbassador from "@/assets/community-ambassador.webp";
+import communityPartners from "@/assets/community-partners.webp";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { smoothScrollTo } from "@shared/lib/smoothScrollTo";
 
@@ -35,10 +36,10 @@ const TwoPaths = () => {
           {t.twoPaths.body}
         </motion.p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <motion.div custom={3} variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"} className="bg-background rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col">
             <div className="h-64 overflow-hidden shrink-0">
-              <img src={community4} alt="Individual acts of kindness" className="w-full h-full object-cover" style={{ objectPosition: '50% 57%' }} loading="lazy" />
+              <img src={communityIndividual} alt="Individual acts of kindness" className="w-full h-full object-cover" loading="lazy" />
             </div>
             <div className="p-8 md:p-10 flex flex-col flex-1">
               <div className="w-12 h-12 rounded-full bg-warm-blush flex items-center justify-center mb-4">
@@ -67,7 +68,7 @@ const TwoPaths = () => {
 
           <motion.div custom={4} variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"} className="bg-background rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col">
             <div className="h-64 overflow-hidden shrink-0">
-              <img src={community5} alt="Community organizations" className="w-full h-full object-cover object-top" loading="lazy" />
+              <img src={communityAmbassador} alt="An ambassador organizing their community" className="w-full h-full object-cover" loading="lazy" />
             </div>
             <div className="p-8 md:p-10 flex flex-col flex-1">
               <div className="w-12 h-12 rounded-full bg-warm-blush flex items-center justify-center mb-4">
@@ -85,6 +86,30 @@ const TwoPaths = () => {
               </ul>
               <a href="/commit" className="btn-secondary w-full text-center mt-auto">
                 {t.twoPaths.ambCta}
+              </a>
+            </div>
+          </motion.div>
+
+          <motion.div custom={5} variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"} className="bg-background rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col">
+            <div className="h-64 overflow-hidden shrink-0">
+              <img src={communityPartners} alt="Partners and groups volunteering together" className="w-full h-full object-cover" loading="lazy" />
+            </div>
+            <div className="p-8 md:p-10 flex flex-col flex-1">
+              <div className="w-12 h-12 rounded-full bg-warm-blush flex items-center justify-center mb-4">
+                <Building2 className="w-5 h-5 text-warm-terracotta" />
+              </div>
+              <h3 className="headline-md text-foreground mb-2">{t.twoPaths.grpTitle}</h3>
+              <p className="text-muted-foreground font-medium mb-4">{t.twoPaths.grpSubtitle}</p>
+              <p className="text-muted-foreground mb-6 text-sm leading-relaxed">{t.twoPaths.grpBody}</p>
+              <p className="text-foreground font-semibold mb-3 text-sm">{t.twoPaths.whatYouGet}</p>
+              <ul className="space-y-2 mb-8 text-sm text-foreground/80">
+                <li>{t.twoPaths.grpBullet1}</li>
+                <li>{t.twoPaths.grpBullet2}</li>
+                <li>{t.twoPaths.grpBullet3}</li>
+                <li>{t.twoPaths.grpBullet4}</li>
+              </ul>
+              <a href="/get-involved" className="btn-secondary w-full text-center mt-auto">
+                {t.twoPaths.grpCta}
               </a>
             </div>
           </motion.div>

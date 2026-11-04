@@ -37,7 +37,15 @@
     "mediaVideos": "Vidéos",
     "mediaSocial": "Réseaux sociaux",
     "live": "Diffusion en direct",
-    "liveBanner": "Rejoins la diffusion mondiale en direct le 11.11.2026"
+    "liveBanner": "Rejoins la diffusion mondiale en direct le 11.11.2026",
+    "groupDirectory": "Répertoire et Réseau",
+    "groupOurImpact": "Notre Impact",
+    "groupResources": "Ressources",
+    "individualPledge": "Engagement Individuel",
+    "ambassadorProgram": "Programme d'Ambassadeurs",
+    "groupCorporatePledges": "Engagements de Groupe et d'Entreprise",
+    "ambassadorsDirectory": "Répertoire des Ambassadeurs",
+    "more": "Plus"
   },
   "hero": {
     "eyebrow": "Le plus grand mouvement de gentillesse coordonné au monde",
@@ -426,7 +434,15 @@
     "ambBullet2": "→ Des outils de mesure pour suivre ton impact",
     "ambBullet3": "→ Accès à un réseau mondial d'organisations alignées",
     "ambBullet4": "→ Une histoire dont tes gens se souviendront",
-    "ambCta": "Devenir Ambassadeur de la Gentillesse"
+    "ambCta": "Devenir Ambassadeur de la Gentillesse",
+    "grpTitle": "Pour les Partenaires et Groupes",
+    "grpSubtitle": "Mobilisez votre école, entreprise ou congrégation à grande échelle.",
+    "grpBody": "Écoles, entreprises, municipalités et communautés religieuses prêtes à s'engager en groupe, pas seulement une personne à la fois. Enregistrez votre organisation et rassemblez tout le monde autour d'un objectif commun.",
+    "grpBullet1": "→ Une page dédiée pour votre école, entreprise ou municipalité",
+    "grpBullet2": "→ L'engagement de votre organisation comptabilisé dans le total mondial",
+    "grpBullet3": "→ Reconnaissance en tant que partenaire officiel de Pásalo Pa'lante",
+    "grpBullet4": "→ Une ligne directe avec notre équipe de partenariats",
+    "grpCta": "Enregistrez Votre Organisation"
   },
   "theMoment": {
     "eyebrow": "Le moment",

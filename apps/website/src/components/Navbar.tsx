@@ -16,7 +16,7 @@ const SCROLL_THRESHOLD = 80;
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [exploreOpen, setExploreOpen] = useState(false);
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [mobileExploreOpen, setMobileExploreOpen] = useState(false);
   const { t } = useLanguage();
   const { user } = useAuth();
@@ -32,26 +32,61 @@ const Navbar = () => {
   const [navStats, setNavStats] = useState<{ acts: number; streak: number }>({ acts: 0, streak: 0 });
   const location = useLocation();
   const navigate = useNavigate();
-  const exploreRef = useRef<HTMLDivElement>(null);
+  const navLinksRef = useRef<HTMLDivElement>(null);
   // Strip a trailing slash before comparing — "/media/" is the same page as
   // "/media" to a visitor, but a strict === would treat it as a different
   // route and silently skip the sub-nav for it.
   const pathname = location.pathname.length > 1 ? location.pathname.replace(/\/+$/, "") : location.pathname;
   const isHome = pathname === "/";
-  const hasSubNav = isHome || pathname === "/ideas" || pathname === "/media";
+  // The homepage carries its own "Choose Your Path" audience cards right
+  // below the hero now, so it no longer needs the second anchor-link bar —
+  // /ideas and /media still do, and keep theirs unchanged.
+  const hasSubNav = pathname === "/ideas" || pathname === "/media";
   const isSolid = !isHome || scrolled;
 
-  const exploreItems = [
-    { label: t.share.sectionCta, onClick: () => openShareModal() },
-    { label: t.navbar.ideas, href: "/ideas" },
-    { label: t.mapPage.title, href: "/map" },
-    { label: t.navbar.about, href: "/about" },
-    { label: t.navbar.partners, href: "/partners" },
-    { label: t.navbar.media, href: "/media" },
-    { label: t.navbar.live, href: "/live" },
-    { label: t.navbar.ourStory, anchor: "story" },
-    { label: t.navbar.getInvolved, href: "/get-involved" },
-    { label: t.navbar.donateNow, href: "/donate" },
+  // Grouped by what the visitor is trying to do, replacing the old single
+  // "Explore" dropdown that mixed ten unrelated destinations together and
+  // buried Partners/Media/Ambassadors inside it.
+  const navGroups = [
+    {
+      key: "involved",
+      label: t.navbar.getInvolved,
+      items: [
+        { label: t.navbar.individualPledge, anchor: "get-involved-inline" },
+        { label: t.navbar.ambassadorProgram, href: "/commit" },
+        { label: t.navbar.groupCorporatePledges, href: "/get-involved" },
+        { label: t.navbar.donateNow, href: "/donate" },
+      ],
+    },
+    {
+      key: "directory",
+      label: t.navbar.groupDirectory,
+      items: [
+        { label: t.navbar.ambassadorsDirectory, href: "/ambassadors" },
+        { label: t.navbar.partners, href: "/partners" },
+        { label: t.navbar.media, href: "/media" },
+      ],
+    },
+    {
+      key: "impact",
+      label: t.navbar.groupOurImpact,
+      items: [
+        { label: t.navbar.proof, anchor: "proof" },
+        { label: t.navbar.ourStory, anchor: "story" },
+        { label: t.navbar.anthem, anchor: "anthem" },
+      ],
+    },
+    {
+      key: "resources",
+      label: t.navbar.groupResources,
+      items: [
+        { label: t.navbar.ideas, href: "/ideas" },
+        { label: t.mapPage.title, href: "/map" },
+        { label: t.navbar.about, href: "/about" },
+        { label: t.navbar.live, href: "/live" },
+        { label: t.share.sectionCta, onClick: () => openShareModal() },
+      ],
+    },
   ];
 
   useEffect(() => {
@@ -67,13 +102,13 @@ const Navbar = () => {
   }, [setNavbarMounted]);
 
   useEffect(() => {
-    if (!exploreOpen) return;
+    if (!openMenu) return;
     const onClick = (e: MouseEvent) => {
-      if (exploreRef.current && !exploreRef.current.contains(e.target as Node)) setExploreOpen(false);
+      if (navLinksRef.current && !navLinksRef.current.contains(e.target as Node)) setOpenMenu(null);
     };
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
-  }, [exploreOpen]);
+  }, [openMenu]);
 
   useEffect(() => {
     if (!user) {
@@ -165,55 +200,59 @@ const Navbar = () => {
             {t.navbar.wall}
           </Link>
 
-          <div ref={exploreRef} className="relative">
-            <button
-              type="button"
-              onClick={() => setExploreOpen((v) => !v)}
-              aria-haspopup="true"
-              aria-expanded={exploreOpen}
-              className={`flex items-center gap-1.5 text-sm font-medium tracking-wide transition-colors duration-300 ${linkClass}`}
-            >
-              {t.navbar.explore}
-              <ChevronDown size={14} className={`transition-transform duration-200 ${exploreOpen ? "rotate-180" : ""}`} />
-            </button>
-            <div
-              className={`absolute end-0 top-[calc(100%+18px)] z-50 min-w-[210px] rounded-2xl border border-border bg-warm-cream p-2 shadow-2xl transition-all duration-200 ${
-                exploreOpen
-                  ? "opacity-100 visible translate-y-0"
-                  : "opacity-0 invisible -translate-y-1.5 pointer-events-none"
-              }`}
-            >
-              {exploreItems.map((item) => (
-                item.onClick ? (
-                  <button
-                    key={item.label}
-                    type="button"
-                    onClick={() => { setExploreOpen(false); item.onClick(); }}
-                    className="block w-full text-start rounded-lg px-4 py-2.5 text-sm text-foreground/80 hover:bg-warm-sand transition-colors"
-                  >
-                    {item.label}
-                  </button>
-                ) : item.anchor ? (
-                  <button
-                    key={item.label}
-                    type="button"
-                    onClick={() => { setExploreOpen(false); goToAnchor(item.anchor); }}
-                    className="block w-full text-start rounded-lg px-4 py-2.5 text-sm text-foreground/80 hover:bg-warm-sand transition-colors"
-                  >
-                    {item.label}
-                  </button>
-                ) : (
-                  <Link
-                    key={item.label}
-                    to={item.href!}
-                    onClick={() => setExploreOpen(false)}
-                    className="block rounded-lg px-4 py-2.5 text-sm text-foreground/80 hover:bg-warm-sand transition-colors"
-                  >
-                    {item.label}
-                  </Link>
-                )
-              ))}
-            </div>
+          <div ref={navLinksRef} className="flex items-center gap-6">
+            {navGroups.map((group) => (
+              <div key={group.key} className="relative">
+                <button
+                  type="button"
+                  onClick={() => setOpenMenu((v) => (v === group.key ? null : group.key))}
+                  aria-haspopup="true"
+                  aria-expanded={openMenu === group.key}
+                  className={`flex items-center gap-1.5 text-sm font-medium tracking-wide transition-colors duration-300 ${linkClass}`}
+                >
+                  {group.label}
+                  <ChevronDown size={14} className={`transition-transform duration-200 ${openMenu === group.key ? "rotate-180" : ""}`} />
+                </button>
+                <div
+                  className={`absolute end-0 top-[calc(100%+18px)] z-50 min-w-[220px] rounded-2xl border border-border bg-warm-cream p-2 shadow-2xl transition-all duration-200 ${
+                    openMenu === group.key
+                      ? "opacity-100 visible translate-y-0"
+                      : "opacity-0 invisible -translate-y-1.5 pointer-events-none"
+                  }`}
+                >
+                  {group.items.map((item) => (
+                    item.onClick ? (
+                      <button
+                        key={item.label}
+                        type="button"
+                        onClick={() => { setOpenMenu(null); item.onClick(); }}
+                        className="block w-full text-start rounded-lg px-4 py-2.5 text-sm text-foreground/80 hover:bg-warm-sand transition-colors"
+                      >
+                        {item.label}
+                      </button>
+                    ) : item.anchor ? (
+                      <button
+                        key={item.label}
+                        type="button"
+                        onClick={() => { setOpenMenu(null); goToAnchor(item.anchor); }}
+                        className="block w-full text-start rounded-lg px-4 py-2.5 text-sm text-foreground/80 hover:bg-warm-sand transition-colors"
+                      >
+                        {item.label}
+                      </button>
+                    ) : (
+                      <Link
+                        key={item.label}
+                        to={item.href!}
+                        onClick={() => setOpenMenu(null)}
+                        className="block rounded-lg px-4 py-2.5 text-sm text-foreground/80 hover:bg-warm-sand transition-colors"
+                      >
+                        {item.label}
+                      </Link>
+                    )
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
 
           <LanguageSwitcher variant="inline" triggerClassName={linkClass} />
@@ -290,7 +329,7 @@ const Navbar = () => {
                   aria-expanded={mobileExploreOpen}
                   className="flex items-center gap-1.5 text-lg font-medium text-foreground/80"
                 >
-                  {t.navbar.explore}
+                  {t.navbar.more}
                   <ChevronDown size={16} className={`transition-transform duration-200 ${mobileExploreOpen ? "rotate-180" : ""}`} />
                 </button>
                 <AnimatePresence>
@@ -301,36 +340,41 @@ const Navbar = () => {
                       exit={{ opacity: 0, height: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="flex flex-col gap-4 ps-4 pt-4">
-                        {exploreItems.map((item) => (
-                          item.onClick ? (
-                            <button
-                              key={item.label}
-                              type="button"
-                              onClick={() => { setMobileOpen(false); item.onClick(); }}
-                              className="text-base font-medium text-foreground/70 text-start"
-                            >
-                              {item.label}
-                            </button>
-                          ) : item.anchor ? (
-                            <button
-                              key={item.label}
-                              type="button"
-                              onClick={() => { setMobileOpen(false); goToAnchor(item.anchor); }}
-                              className="text-base font-medium text-foreground/70 text-start"
-                            >
-                              {item.label}
-                            </button>
-                          ) : (
-                            <Link
-                              key={item.label}
-                              to={item.href!}
-                              onClick={() => setMobileOpen(false)}
-                              className="text-base font-medium text-foreground/70"
-                            >
-                              {item.label}
-                            </Link>
-                          )
+                      <div className="flex flex-col gap-5 ps-4 pt-4">
+                        {navGroups.map((group) => (
+                          <div key={group.key} className="flex flex-col gap-3">
+                            <p className="text-xs font-semibold uppercase tracking-wider text-foreground/40">{group.label}</p>
+                            {group.items.map((item) => (
+                              item.onClick ? (
+                                <button
+                                  key={item.label}
+                                  type="button"
+                                  onClick={() => { setMobileOpen(false); item.onClick(); }}
+                                  className="text-base font-medium text-foreground/70 text-start"
+                                >
+                                  {item.label}
+                                </button>
+                              ) : item.anchor ? (
+                                <button
+                                  key={item.label}
+                                  type="button"
+                                  onClick={() => { setMobileOpen(false); goToAnchor(item.anchor); }}
+                                  className="text-base font-medium text-foreground/70 text-start"
+                                >
+                                  {item.label}
+                                </button>
+                              ) : (
+                                <Link
+                                  key={item.label}
+                                  to={item.href!}
+                                  onClick={() => setMobileOpen(false)}
+                                  className="text-base font-medium text-foreground/70"
+                                >
+                                  {item.label}
+                                </Link>
+                              )
+                            ))}
+                          </div>
                         ))}
                       </div>
                     </motion.div>
