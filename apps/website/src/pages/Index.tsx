@@ -13,6 +13,7 @@ const GlobalMap = lazy(() => import("@/components/GlobalMap"));
 import Testimonials from "@/components/Testimonials";
 import VisualTransition from "@/components/VisualTransition";
 import TwoPaths from "@/components/TwoPaths";
+import PartnersMarquee from "@/components/PartnersMarquee";
 import NovemberBand from "@/components/NovemberBand";
 import DonateBand from "@/components/DonateBand";
 
@@ -31,6 +32,7 @@ const Index = () => {
       <Navbar />
       <Hero />
       <TwoPaths />
+      <PartnersMarquee />
       <LiveFromWall />
       <HowItWorks />
       <AnthemSection />

@@ -430,7 +430,7 @@
     "indCta": "Partager un acte de gentillesse",
     "ambTitle": "Pour les ambassadeurs & les organisations",
     "ambSubtitle": "Tu as déjà la communauté. Nous avons créé la boîte à outils.",
-    "ambBody": "Écoles, entreprises, communautés religieuses, organisations à but non lucratif et créateurs avec une plateforme : tu n'as pas besoin de construire un nouveau programme. Pásalo Pa'lante se superpose à ce que tu fais déjà.",
+    "ambBody": "Entreprises, communautés religieuses, organisations à but non lucratif et créateurs avec une plateforme : tu n'as pas besoin de construire un nouveau programme. Pass Kindness Forward se superpose à ce que tu fais déjà.",
     "ambBullet1": "→ Une boîte à outils d'activation clé en main",
     "ambBullet2": "→ Des outils de mesure pour suivre ton impact",
     "ambBullet3": "→ Accès à un réseau mondial d'organisations alignées",
@@ -439,11 +439,14 @@
     "grpTitle": "Pour les Partenaires et Groupes",
     "grpSubtitle": "Mobilisez votre école, entreprise ou congrégation à grande échelle.",
     "grpBody": "Écoles, entreprises, municipalités et communautés religieuses prêtes à s'engager en groupe, pas seulement une personne à la fois. Enregistrez votre organisation et rassemblez tout le monde autour d'un objectif commun.",
-    "grpBullet1": "→ Une page dédiée pour votre école, entreprise ou municipalité",
+    "grpBullet1": "→ Un portail dédié pour votre école, entreprise ou municipalité",
     "grpBullet2": "→ L'engagement de votre organisation comptabilisé dans le total mondial",
     "grpBullet3": "→ Reconnaissance en tant que partenaire officiel de Pass Kindness Forward",
     "grpBullet4": "→ Une ligne directe avec notre équipe de partenariats",
     "grpCta": "Enregistrez Votre Organisation"
+  },
+  "partnersMarquee": {
+    "heading": "Avec la Confiance et le Soutien de"
   },
   "theMoment": {
     "eyebrow": "Le moment",

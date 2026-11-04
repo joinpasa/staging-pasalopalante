@@ -481,7 +481,7 @@
     "indCta": "Hacer una promesa",
     "ambTitle": "Para Embajadores y Organizaciones",
     "ambSubtitle": "Ya tienes la comunidad. Nosotros construimos las herramientas.",
-    "ambBody": "Escuelas, empresas, comunidades de fe, organizaciones sin fines de lucro y creadores con plataforma: no necesitas crear un programa nuevo. Pásalo Pa'lante se integra con lo que ya estás haciendo.",
+    "ambBody": "Empresas, comunidades de fe, organizaciones sin fines de lucro y creadores con plataforma: no necesitas crear un programa nuevo. Pass Kindness Forward se integra con lo que ya estás haciendo.",
     "ambBullet1": "→ Un Kit de Activación llave en mano",
     "ambBullet2": "→ Herramientas de medición para rastrear tu impacto",
     "ambBullet3": "→ Acceso a una red global de organizaciones alineadas",
@@ -490,11 +490,14 @@
     "grpTitle": "Para Socios y Grupos",
     "grpSubtitle": "Moviliza tu escuela, empresa o congregación a gran escala.",
     "grpBody": "Escuelas, empresas, municipios y comunidades de fe listas para comprometerse como grupo, no solo una persona a la vez. Registra tu organización y une a todos detrás de una meta compartida.",
-    "grpBullet1": "→ Una página dedicada para tu escuela, empresa o municipio",
+    "grpBullet1": "→ Un portal dedicado para tu escuela, empresa o municipio",
     "grpBullet2": "→ El compromiso de tu organización contado en el total global",
     "grpBullet3": "→ Reconocimiento como socio oficial de Pass Kindness Forward",
     "grpBullet4": "→ Una línea directa con nuestro equipo de alianzas",
     "grpCta": "Registra Tu Organización"
+  },
+  "partnersMarquee": {
+    "heading": "Con el Apoyo y la Confianza de"
   },
   "theMoment": {
     "eyebrow": "El Momento",

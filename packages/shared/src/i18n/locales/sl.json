@@ -141,7 +141,7 @@
     "indBullet5": "→ Ustvarjaj zgodbe, vredne pripovedovanja (in življenja)",
     "ambTitle": "Za ambasadorje in organizacije",
     "ambSubtitle": "Skupnost že imaš. Mi smo pripravili orodja.",
-    "ambBody": "Šole, podjetja, verske skupnosti, neprofitne organizacije in ustvarjalci s platformo: ni ti treba graditi novega programa. Pásalo Pa'lante se poveže s tem, kar že počneš.",
+    "ambBody": "Podjetja, verske skupnosti, neprofitne organizacije in ustvarjalci s platformo: ni ti treba graditi novega programa. Pass Kindness Forward se poveže s tem, kar že počneš.",
     "ambBullet1": "→ Celovit komplet za aktivacijo",
     "ambBullet2": "→ Orodja za merjenje tvojega vpliva",
     "ambBullet3": "→ Dostop do globalne mreže sorodnih organizacij",
@@ -151,11 +151,14 @@
     "grpTitle": "Za Partnerje in Skupine",
     "grpSubtitle": "Mobilizirajte svojo šolo, podjetje ali skupnost v velikem obsegu.",
     "grpBody": "Šole, podjetja, občine in verske skupnosti, pripravljene na zavezo kot skupina, ne le posameznik naenkrat. Registrirajte svojo organizacijo in združite vse okoli skupnega cilja.",
-    "grpBullet1": "→ Namenska stran za vašo šolo, podjetje ali občino",
+    "grpBullet1": "→ Namenski portal za vašo šolo, podjetje ali občino",
     "grpBullet2": "→ Zaveza vaše organizacije šteje v svetovno skupno vsoto",
     "grpBullet3": "→ Priznanje kot uradni partner Pass Kindness Forward",
     "grpBullet4": "→ Neposredna linija z našo ekipo za partnerstva",
     "grpCta": "Registrirajte Svojo Organizacijo"
+  },
+  "partnersMarquee": {
+    "heading": "Nam zaupajo in nas podpirajo"
   },
   "theMoment": {
     "eyebrow": "Trenutek",

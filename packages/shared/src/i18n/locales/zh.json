@@ -437,7 +437,7 @@
   "indBullet5": "→ 创造值得讲述（和值得体验）的故事",
   "ambTitle": "致大使和组织",
   "ambSubtitle": "你已经拥有社区。我们已经构建了工具包。",
-  "ambBody": "学校、企业、信仰社区、非营利组织和拥有平台的创作者：你无需建立新项目。Pásalo Pa'lante 会在你现有工作的基础上锦上添花。",
+  "ambBody": "企业、信仰社区、非营利组织和拥有平台的创作者：你无需建立新项目。Pass Kindness Forward 会在你现有工作的基础上锦上添花。",
   "ambBullet1": "→ 一套即用型启动工具包",
   "ambBullet2": "→ 衡量工具以追踪你的影响力",
   "ambBullet3": "→ 访问全球对齐组织的网络",
@@ -447,11 +447,14 @@
   "grpTitle": "合作伙伴与团体",
   "grpSubtitle": "大规模动员您的学校、公司或团体。",
   "grpBody": "学校、公司、市政当局和信仰团体准备以团体形式作出承诺，而不仅仅是一个人。注册您的组织，团结大家实现共同目标。",
-  "grpBullet1": "→ 为您的学校、公司或市政当局提供专属页面",
+  "grpBullet1": "→ 为您的学校、公司或市政当局提供专属门户",
   "grpBullet2": "→ 您组织的承诺计入全球总数",
   "grpBullet3": "→ 获得 Pass Kindness Forward 官方合作伙伴的认可",
   "grpBullet4": "→ 与我们的合作团队直接联系",
   "grpCta": "注册您的组织"
+ },
+ "partnersMarquee": {
+  "heading": "值得信赖，获得支持方"
  },
  "theMoment": {
   "eyebrow": "这一刻",

@@ -21,17 +21,17 @@ const TwoPaths = () => {
   const { t } = useLanguage();
 
   return (
-    <section id="join" ref={ref} className="bg-warm-sand section-padding section-spacing">
+    <section id="join" ref={ref} className="bg-warm-sand section-padding py-10 md:py-14">
       <div className="max-w-6xl mx-auto">
-        <motion.p custom={0} variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"} className="eyebrow mb-4 text-center">
+        <motion.p custom={0} variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"} className="eyebrow mb-3 text-center">
           {t.twoPaths.eyebrow}
         </motion.p>
 
-        <motion.h2 custom={1} variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"} className="headline-lg text-foreground mb-4 text-center">
+        <motion.h2 custom={1} variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"} className="headline-lg text-foreground mb-3 text-center">
           {t.twoPaths.heading}
         </motion.h2>
 
-        <motion.p custom={2} variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"} className="body-lg text-muted-foreground max-w-2xl mx-auto text-center mb-16">
+        <motion.p custom={2} variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"} className="body-lg text-muted-foreground max-w-2xl mx-auto text-center mb-8">
           {t.twoPaths.body}
         </motion.p>
 
