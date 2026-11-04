@@ -85,7 +85,7 @@ const LeadTheWave = () => {
               <a href="/get-involved/ambassadors" className="btn-primary">
                 {lw.applyCta} →
               </a>
-              <a href="/get-involved/schools" className="btn-secondary">
+              <a href="/get-involved/companies" className="btn-secondary">
                 {lw.pledgeCta}
               </a>
             </div>

@@ -923,7 +923,7 @@ const translations = {
       step2Body: "Assets, scripts, and tracking.",
       step3Title: "Lead your city",
       step3Body: "Rally your people, watch acts add up.",
-      applyCta: "Apply to Join the Core Collective",
+      applyCta: "Apply to become an Ambassador",
       pledgeCta: "Start a Group Pledge",
     },
     theMoment: {
