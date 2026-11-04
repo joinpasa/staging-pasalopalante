@@ -141,10 +141,10 @@ const routes: Route[] = [
     path: "/get-involved/ambassadors",
     title: "Become an Ambassador | Get Involved — Kindness Forward",
     description:
-      "Community leaders, creators, and organizers who champion Pásalo Pa'lante in their region, network, or platform. Get a toolkit and direct support from the Te Amo PR team.",
+      "Community leaders, creators, and organizers who champion Pass Kindness Forward in their region, network, or platform. Get a toolkit and direct support from the Te Amo PR team.",
     body: `
       <h1>Become an Ambassador</h1>
-      <p>Community leaders, creators, and organizers who champion Pásalo Pa'lante in their region, network, or platform. Receive a toolkit and direct support from the Te Amo PR team.</p>
+      <p>Community leaders, creators, and organizers who champion Pass Kindness Forward in their region, network, or platform. Receive a toolkit and direct support from the Te Amo PR team.</p>
       <p><a href="/get-involved/ambassadors">Apply on this page</a> — the sign-up form loads once the page finishes loading in your browser.</p>
     `,
   },
@@ -152,10 +152,10 @@ const routes: Route[] = [
     path: "/get-involved/schools",
     title: "Schools & Educators | Get Involved — Kindness Forward",
     description:
-      "Bring Pásalo Pa'lante into your classroom or campus with age-appropriate kindness prompts, classroom activities, and student leadership opportunities.",
+      "Bring Pass Kindness Forward into your classroom or campus with age-appropriate kindness prompts, classroom activities, and student leadership opportunities.",
     body: `
       <h1>Schools & Educators</h1>
-      <p>Bring Pásalo Pa'lante into your classroom or campus with age-appropriate kindness prompts, classroom activities, and student leadership opportunities.</p>
+      <p>Bring Pass Kindness Forward into your classroom or campus with age-appropriate kindness prompts, classroom activities, and student leadership opportunities.</p>
       <p><a href="/get-involved/schools">Sign up on this page</a> — the form loads once the page finishes loading in your browser.</p>
     `,
   },
