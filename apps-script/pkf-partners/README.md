@@ -118,7 +118,16 @@ the partner's submitted acts.
    since Approved rows count publicly; copy it into Pledge to count it.
    `_intake_log` column C says exactly what happened. A crash is recorded
    there as `ERROR: ...`.
-8. **Fields that don't map:** if a field doesn't land in the right column,
+8. **Two forms feed this sheet:** Become a Partner (`/partners/apply`,
+   survey `Od6Vms5T0VCdams7JT9b`) and Companies & Brands
+   (`/get-involved/companies`, survey `leYKa0jMyupZbzUjDi2v`). Both use
+   the same field labels, so `doPost` handles either; each row's Internal
+   Notes says which one it came from. In GHL, ONE workflow with the trigger
+   Survey Submitted (both surveys selected), Allow Re-entry ON and a single
+   Webhook action is enough. Extra workflows with the same webhook just
+   make duplicate log rows. A contact whose application was missed can be
+   added to that workflow by hand: GHL then sends their saved answers.
+9. **Fields that don't map:** if a field doesn't land in the right column,
    add **Custom Data** in the Webhook action with one of these keys:
    `partner_name`, `category`, `website`, `facebook`, `logo`, `role`. Raw
    payloads are kept in the `_intake_log` tab (last 200).

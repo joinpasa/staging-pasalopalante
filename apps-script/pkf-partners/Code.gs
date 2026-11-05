@@ -327,6 +327,12 @@ function doPost(e) {
   }
 }
 
+// GHL survey ids (the form's id on the website) → a name for the notes.
+const FORM_NAMES = {
+  Od6Vms5T0VCdams7JT9b: "Become a Partner form (/partners/apply)",
+  leYKa0jMyupZbzUjDi2v: "Companies & Brands form (/get-involved/companies)",
+};
+
 function handleApplication_(f, done) {
 
   const pick = (...keys) => {
@@ -392,8 +398,9 @@ function handleApplication_(f, done) {
     row[COLS.PORTAL] = "Yes"; // portal account is created when someone sets Status = Approved
     row[COLS.CONTACT_EMAIL] = pick("email");
     row[COLS.PLEDGE] = pledgeNum ? pledgeNum : "";
+    const via = FORM_NAMES[pick("mediumid")] || "";
     row[11] = "GHL application " + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm") +
-      (contact ? " — " + contact : "");
+      (contact ? " — " + contact : "") + (via ? " — via " + via : "");
     sheet.appendRow(row);
     // Commit the new row BEFORE the lock is released: the same submission
     // often arrives 2-3 times at once (one per GHL workflow), and the next
