@@ -293,6 +293,42 @@ async function syncPortalOrgs(supabase: any, incoming: Entry[]) {
 }
 
 /**
+ * Writes the invite link into the contact's "Partner Portal URL" custom
+ * field. GHL is inconsistent about how a custom field is addressed, so this
+ * tries the short key, then the full "contact." key, then looks the field up
+ * by name and writes by id. Returns null on success, else why each failed.
+ */
+async function setPortalField(headers: Record<string, string>, locationId: string, contactId: string, link: string): Promise<string | null> {
+  const errors: string[] = [];
+  const put = async (field: Record<string, string>) => {
+    const res = await fetch(`${GHL_BASE_URL}/contacts/${contactId}`, {
+      method: "PUT",
+      headers,
+      body: JSON.stringify({ customFields: [{ ...field, field_value: link }] }),
+    });
+    if (res.ok) return true;
+    errors.push(`${JSON.stringify(field)} → ${res.status} ${(await res.text()).slice(0, 180)}`);
+    return false;
+  };
+
+  if (await put({ key: GHL_PORTAL_FIELD })) return null;
+  if (await put({ key: `contact.${GHL_PORTAL_FIELD}` })) return null;
+
+  const listRes = await fetch(`${GHL_BASE_URL}/locations/${locationId}/customFields?model=contact`, { headers });
+  if (!listRes.ok) {
+    errors.push(`field lookup → ${listRes.status} ${(await listRes.text()).slice(0, 120)}`);
+  } else {
+    const fields: Array<{ id?: string; name?: string; fieldKey?: string }> = (await listRes.json()).customFields ?? [];
+    const found = fields.find(
+      (f) => f.fieldKey === `contact.${GHL_PORTAL_FIELD}` || f.name?.trim().toLowerCase() === "partner portal url",
+    );
+    if (!found?.id) errors.push("no custom field named \"Partner Portal URL\" (key contact.partner_portal_url) found in GHL");
+    else if (await put({ id: found.id })) return null;
+  }
+  return errors.join(" | ");
+}
+
+/**
  * Saves each new portal invite link on the partner's GHL contact and tags
  * it so the GHL workflow emails it. Marks the org as pushed only on
  * success, so a failure (or a contact that doesn't exist yet) is retried on
@@ -323,12 +359,8 @@ async function pushInvitesToGhl(supabase: any, toPush: Map<string, { email: stri
       }
       // Custom field first, tag second: the tag is what fires the email,
       // so the link must already be on the contact when it lands.
-      const fieldRes = await fetch(`${GHL_BASE_URL}/contacts/${contactId}`, {
-        method: "PUT",
-        headers,
-        body: JSON.stringify({ customFields: [{ key: GHL_PORTAL_FIELD, field_value: link }] }),
-      });
-      if (!fieldRes.ok) throw new Error(`field ${fieldRes.status}: ${await fieldRes.text()}`);
+      const fieldError = await setPortalField(headers, locationId, contactId, link);
+      if (fieldError) throw new Error(`field: ${fieldError}`);
       const tagRes = await fetch(`${GHL_BASE_URL}/contacts/${contactId}/tags`, {
         method: "POST",
         headers,
@@ -340,7 +372,9 @@ async function pushInvitesToGhl(supabase: any, toPush: Map<string, { email: stri
       pushed.push(email);
     } catch (err) {
       console.error("GHL invite push failed", email, err);
-      failed.push(email);
+      // The reason goes back in the response (only the sheet's script, which
+      // holds the sync secret, can read it) so it shows in the script log.
+      failed.push(`${email} — ${String((err as { message?: string })?.message ?? err).slice(0, 400)}`);
     }
   }
   return {
