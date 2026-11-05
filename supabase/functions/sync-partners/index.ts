@@ -293,6 +293,47 @@ async function syncPortalOrgs(supabase: any, incoming: Entry[]) {
 }
 
 /**
+ * Finds a GHL contact id by email. GHL removed GET /contacts/search (it now
+ * answers 400 "Contact with id search not found", treating "search" as a
+ * contact id), so this uses the dedicated duplicate lookup and falls back to
+ * the POST search. Returns null only when GHL really has no such contact;
+ * throws (with the reasons) when the lookups themselves fail.
+ */
+async function findGhlContactId(headers: Record<string, string>, locationId: string, email: string): Promise<string | null> {
+  const errors: string[] = [];
+  let lookedUpEmpty = false;
+
+  const dupRes = await fetch(
+    `${GHL_BASE_URL}/contacts/search/duplicate?locationId=${locationId}&email=${encodeURIComponent(email)}`,
+    { headers },
+  );
+  if (dupRes.ok) {
+    const id = (await dupRes.json())?.contact?.id;
+    if (id) return id;
+    lookedUpEmpty = true;
+  } else {
+    errors.push(`duplicate lookup → ${dupRes.status} ${(await dupRes.text()).slice(0, 140)}`);
+  }
+
+  const searchRes = await fetch(`${GHL_BASE_URL}/contacts/search`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      locationId,
+      page: 1,
+      pageLimit: 1,
+      filters: [{ field: "email", operator: "eq", value: email }],
+    }),
+  });
+  if (searchRes.ok) return (await searchRes.json())?.contacts?.[0]?.id ?? null;
+  errors.push(`search → ${searchRes.status} ${(await searchRes.text()).slice(0, 140)}`);
+
+  // The first lookup answered "no such contact" and only the backup broke.
+  if (lookedUpEmpty) return null;
+  throw new Error(`contact lookup failed: ${errors.join(" | ")}`);
+}
+
+/**
  * Writes the invite link into the contact's "Partner Portal URL" custom
  * field. GHL is inconsistent about how a custom field is addressed, so this
  * tries the short key, then the full "contact." key, then looks the field up
@@ -347,12 +388,7 @@ async function pushInvitesToGhl(supabase: any, toPush: Map<string, { email: stri
   const failed: string[] = [];
   for (const [orgId, { email, link }] of toPush) {
     try {
-      const searchRes = await fetch(
-        `${GHL_BASE_URL}/contacts/search?email=${encodeURIComponent(email)}&locationId=${locationId}`,
-        { headers },
-      );
-      if (!searchRes.ok) throw new Error(`search ${searchRes.status}: ${await searchRes.text()}`);
-      const contactId = (await searchRes.json()).contacts?.[0]?.id;
+      const contactId = await findGhlContactId(headers, locationId, email);
       if (!contactId) {
         notInGhl.push(email);
         continue;
