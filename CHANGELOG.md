@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-11-05 — va.deedumlao@gmail.com
+
+- **Partner applications from organizations already in the PKF_Partners sheet are no longer silently dropped.** Before, if a partner who was already listed filled in the pledge form, the script skipped it and their pledge and contact details were lost. Now their email and a dated note are saved on their existing row, and the pledge is saved too (on an Approved row it goes into the note so an unreviewed number can't change the public total by itself). Also fixed a timing gap where the same application arriving from several GHL workflows at once could create a duplicate row, and crashes are now written to the intake log instead of vanishing. Needs the updated sheet script pasted in and re-deployed as a new version.
+
 ## 2026-11-04 — va.deedumlao@gmail.com
 
 - **Homepage redesign: streamlined navigation, audience-first layout, and a new "Lead the Wave" ambassador section.** The old flat 10-item "Explore" dropdown and the second anchor-link bar under the main nav are gone — the menu is now grouped into Get Involved (individual, ambassador, schools, nonprofits, companies, municipalities, share an act, donate), Directory & Network (ambassadors directory, partners, media), and Resources. The "However You Show Up, You Belong Here" audience cards moved from deep in the page to right under the hero, and now include a third "Partners & Groups" card alongside Individuals and Ambassadors. A compact rotating "Trusted and Supported by" partner-logo strip and a new "Lead the Wave" ambassador-recruitment section (with a live, real ambassador count) were added. The nav's main button temporarily reads "Join the Live Broadcast" ahead of 11/11, linking to the same registration form as the site's top banner. All copy is translated into the 10 supported languages alongside English.

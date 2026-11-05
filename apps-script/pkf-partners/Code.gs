@@ -320,6 +320,14 @@ function doPost(e) {
     SpreadsheetApp.getActiveSpreadsheet().getSheetByName("_intake_log").getRange(logRow, 3).setValue(msg);
     return textOut_(msg);
   };
+  try {
+    return handleApplication_(f, done);
+  } catch (err) {
+    return done("ERROR: " + (err && err.message ? err.message : err));
+  }
+}
+
+function handleApplication_(f, done) {
 
   const pick = (...keys) => {
     for (const k of keys) {
@@ -339,19 +347,32 @@ function doPost(e) {
     .filter(Boolean)
     .join(" · ");
 
+  // GHL custom field {{contact.partner_group_pledged_acts}}
+  const pledgeText = pick(
+    "group_pledged_acts",
+    "partner_group_pledged_acts",
+    "total_acts_of_kindness_your_group_commits_to_in_november_2026",
+    "pledged_acts",
+    "pledge",
+    "pledge_count",
+  ).replace(/[^0-9]/g, "");
+  const pledgeNum = pledgeText ? Number(pledgeText) : 0;
+
   const lock = LockService.getDocumentLock();
   lock.waitLock(20000);
   try {
     const sheet = intakeSheet_();
 
-    // Same organization submitted twice → don't add a second row.
-    const existing = dataSheets_().some((sh) => {
-      const last = sh.getLastRow();
-      if (last < FIRST_DATA_ROW) return false;
-      return sh.getRange(FIRST_DATA_ROW, COLS.NAME + 1, last - FIRST_DATA_ROW + 1, 1).getValues()
-        .some((r) => String(r[0]).trim().toLowerCase() === name.toLowerCase());
-    });
-    if (existing) return done("skipped: " + name + " is already in the sheet");
+    // The organization is already in the sheet (an existing partner, or the
+    // same application arriving again from a second GHL workflow). Never
+    // add a second row, and never drop what they just sent: record it on
+    // the existing row so nothing is lost silently.
+    const hit = findPartnerRow_(name);
+    if (hit) {
+      const msg = recordOnExistingRow_(hit, { name: name, email: pick("email"), contact: contact, pledge: pledgeNum });
+      SpreadsheetApp.flush();
+      return done(msg);
+    }
 
     const prefix = makePrefix_(category);
     const row = new Array(TOTAL_COLS).fill("");
@@ -370,24 +391,90 @@ function doPost(e) {
     row[COLS.DARK] = "FALSE";
     row[COLS.PORTAL] = "Yes"; // portal account is created when someone sets Status = Approved
     row[COLS.CONTACT_EMAIL] = pick("email");
-    // GHL custom field {{contact.partner_group_pledged_acts}}
-    const pledge = pick(
-      "group_pledged_acts",
-      "partner_group_pledged_acts",
-      "total_acts_of_kindness_your_group_commits_to_in_november_2026",
-      "pledged_acts",
-      "pledge",
-      "pledge_count",
-    ).replace(/[^0-9]/g, "");
-    row[COLS.PLEDGE] = pledge ? Number(pledge) : "";
+    row[COLS.PLEDGE] = pledgeNum ? pledgeNum : "";
     row[11] = "GHL application " + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm") +
       (contact ? " — " + contact : "");
     sheet.appendRow(row);
+    // Commit the new row BEFORE the lock is released: the same submission
+    // often arrives 2-3 times at once (one per GHL workflow), and the next
+    // request must see this row, or it would add a duplicate.
+    SpreadsheetApp.flush();
     lock.releaseLock();
     return done("added " + row[COLS.ID] + " (" + name + ")");
   } finally {
     try { lock.releaseLock(); } catch (err) { /* already released */ }
   }
+}
+
+// "SHRM ", "shrm" and "United Religions Initiative (URI)" vs "United
+// Religions Initiative" should all count as the same organization.
+function normName_(n) {
+  return String(n).toLowerCase().replace(/\([^)]*\)/g, "").replace(/[^a-z0-9]/g, "");
+}
+
+function findPartnerRow_(name) {
+  const want = normName_(name);
+  if (!want) return null;
+  const sheets = dataSheets_();
+  for (let i = 0; i < sheets.length; i++) {
+    const sh = sheets[i];
+    const last = sh.getLastRow();
+    if (last < FIRST_DATA_ROW) continue;
+    const names = sh.getRange(FIRST_DATA_ROW, COLS.NAME + 1, last - FIRST_DATA_ROW + 1, 1).getValues();
+    for (let r = 0; r < names.length; r++) {
+      if (normName_(names[r][0]) === want) return { sheet: sh, row: FIRST_DATA_ROW + r };
+    }
+  }
+  return null;
+}
+
+/**
+ * Records a (re-)application on a row that already exists. What it does:
+ *  - Contact Email: filled in if blank, so the portal invite can be sent.
+ *  - Pledge: filled in ONLY while the row isn't Approved yet. On an
+ *    Approved row it is NOT written, because Approved rows count toward the
+ *    public "Acts pledged" total, so a number nobody has reviewed must not
+ *    go live by itself. It is put in Internal Notes instead.
+ *  - Internal Notes: a dated line with who applied and what they pledged.
+ * Returns the text for _intake_log column C.
+ */
+function recordOnExistingRow_(hit, info) {
+  const sh = hit.sheet;
+  const row = hit.row;
+  const cell = (col) => sh.getRange(row, col + 1);
+  const id = String(cell(COLS.ID).getValue()).trim();
+  const approved = String(cell(COLS.STATUS).getValue()).trim().toLowerCase() === "approved";
+  const out = ["already in the sheet as " + id];
+  const note = [];
+
+  if (info.email && String(cell(COLS.CONTACT_EMAIL).getValue()).trim() === "") {
+    cell(COLS.CONTACT_EMAIL).setValue(info.email);
+    out.push("contact email saved");
+  }
+
+  if (info.pledge > 0) {
+    const current = String(cell(COLS.PLEDGE).getValue()).trim();
+    if (current === "" && !approved) {
+      cell(COLS.PLEDGE).setValue(info.pledge);
+      out.push("pledge " + info.pledge + " saved (counts once approved)");
+    } else if (current === "") {
+      out.push("pledge " + info.pledge + " NOT counted: row is Approved, so copy it into Pledge to count it");
+      note.push("requested pledge " + info.pledge + " (not counted until copied into Pledge)");
+    } else if (Number(current) !== info.pledge) {
+      out.push("pledge " + info.pledge + " differs from the sheet's " + current + ", left unchanged");
+      note.push("new pledge " + info.pledge + " (sheet has " + current + ")");
+    }
+  }
+
+  const stamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm");
+  const line = "GHL re-application " + stamp + (info.contact ? " — " + info.contact : "") + (note.length ? " — " + note.join("; ") : "");
+  const notesCell = cell(11);
+  const prev = String(notesCell.getValue()).trim();
+  // The same submission arrives once per GHL workflow, so skip it when this
+  // same contact is already noted today.
+  const seen = info.contact && prev.indexOf(info.contact) !== -1 && prev.indexOf(stamp.slice(0, 10)) !== -1;
+  if (!seen && prev.indexOf(line) === -1) notesCell.setValue(prev ? prev + "\n" + line : line);
+  return out.join("; ");
 }
 
 function intakeSheet_() {

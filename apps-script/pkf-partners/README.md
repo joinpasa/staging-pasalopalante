@@ -109,7 +109,16 @@ the partner's submitted acts.
    pledge from "Group Pledged Acts" (`partner_group_pledged_acts`), logo
    from "Your Logo". Each `_intake_log` row's column C says what happened
    (added / skipped and why).
-7. **Fields that don't map:** if a field doesn't land in the right column,
+7. **Organizations already in the sheet:** a form submission from a
+   partner who is already listed (the name is matched ignoring case,
+   spaces and "(...)" suffixes) never adds a second row and never drops
+   what they sent. Their contact email is saved if blank, a dated line goes
+   into Internal Notes, and the pledge is saved only while the row isn't
+   Approved yet. On an Approved row the pledge goes into the note instead,
+   since Approved rows count publicly; copy it into Pledge to count it.
+   `_intake_log` column C says exactly what happened. A crash is recorded
+   there as `ERROR: ...`.
+8. **Fields that don't map:** if a field doesn't land in the right column,
    add **Custom Data** in the Webhook action with one of these keys:
    `partner_name`, `category`, `website`, `facebook`, `logo`, `role`. Raw
    payloads are kept in the `_intake_log` tab (last 200).
