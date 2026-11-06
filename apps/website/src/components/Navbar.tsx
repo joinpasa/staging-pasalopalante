@@ -66,7 +66,6 @@ const Navbar = () => {
       key: "directory",
       label: t.navbar.groupDirectory,
       items: [
-        { label: t.navbar.ambassadorsDirectory, href: "/ambassadors" },
         { label: t.navbar.partners, href: "/partners" },
         { label: t.navbar.media, href: "/media" },
       ],

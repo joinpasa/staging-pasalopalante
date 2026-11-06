@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-11-06 — va.deedumlao@gmail.com
+
+- **Removed "Ambassadors Directory" from the website menu** (it was in the Directory group, which now holds just Partners and Media). The /ambassadors page itself is still live, so existing links and bookmarks keep working.
+
 ## 2026-11-05 — va.deedumlao@gmail.com
 
 - **Partner portal invite emails weren't going out, and the sync now says why.** Saving a partner's portal link onto their GHL contact was failing for every partner without any explanation. The sync now tries three ways of writing that GHL field and, if it still can't, reports the exact reason in the sheet script's log. Each failed partner is retried on every sync, so once the cause is fixed the invites send by themselves.
