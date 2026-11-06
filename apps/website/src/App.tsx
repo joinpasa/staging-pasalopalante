@@ -42,11 +42,10 @@ const LivePage = lazy(() => import("./pages/LivePage.tsx"));
 const MediaPage = lazy(() => import("./pages/MediaPage.tsx"));
 const JoinPage = lazy(() => import("./pages/JoinPage.tsx"));
 const PartnersPage = lazy(() => import("./pages/PartnersPage.tsx"));
-// Unlisted — live at these URLs but not linked from the Navbar, Footer, or
-// prerendered for SEO (see the /partners/apply and /ambassadors routes below).
-// Reachable only by someone who already has the direct link.
+// Unlisted — live at this URL but not linked from the Navbar, Footer, or
+// prerendered for SEO (see the /partners/apply route below). Reachable only by
+// someone who already has the direct link.
 const PartnersApplyPage = lazy(() => import("./pages/PartnersApplyPage.tsx"));
-const GlobalAmbassadorsPage = lazy(() => import("./pages/GlobalAmbassadorsPage.tsx"));
 const ProgramsPage = lazy(() => import("./pages/ProgramsPage.tsx"));
 const GetInvolvedPage = lazy(() => import("./pages/GetInvolvedPage.tsx"));
 const SchoolsEducatorsPage = lazy(() => import("./pages/SchoolsEducatorsPage.tsx"));
@@ -136,11 +135,14 @@ const App = () => (
               <Route path="/media" element={<MediaPage />} />
               <Route path="/join" element={<JoinPage />} />
               {/* Public: linked from the Explore menu, prerendered, in the sitemap.
-                  /partners/apply and /ambassadors below are still unlisted (see
-                  the comment at their imports) and stay out of the sitemap. */}
+                  /partners/apply below is still unlisted (see the comment at its
+                  import) and stays out of the sitemap. */}
               <Route path="/partners" element={<PartnersPage />} />
               <Route path="/partners/apply" element={<PartnersApplyPage />} />
-              <Route path="/ambassadors" element={<GlobalAmbassadorsPage />} />
+              {/* Retired Ambassadors Directory: the host 301s it to /partners
+                  (public/_redirects); this covers in-app navigation. The page
+                  itself (pages/GlobalAmbassadorsPage.tsx) is kept, unrouted. */}
+              <Route path="/ambassadors" element={<Navigate to="/partners" replace />} />
               <Route path="/programs" element={<ProgramsPage />} />
               {/* Old alias — same page as /programs; the host also 301s it
                   (public/_redirects), this covers in-app navigation. */}

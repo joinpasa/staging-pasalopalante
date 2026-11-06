@@ -4,3 +4,7 @@
 # canonical /programs) — one URL, so search engines don't see a duplicate.
 /how-it-works   /programs   301
 /how-it-works/  /programs   301
+# The Ambassadors Directory page was retired from the site; old links and
+# bookmarks land on the Partners page.
+/ambassadors    /partners   301
+/ambassadors/   /partners   301

@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-11-06 — va.deedumlao@gmail.com
 
+- **The retired Ambassadors Directory address (/ambassadors) now redirects to the Partners page.** Old links, bookmarks and shared URLs land on /partners instead of a hidden page. The directory's sheet and data sync are untouched.
 - **Removed "Ambassadors Directory" from the website menu** (it was in the Directory group, which now holds just Partners and Media). The /ambassadors page itself is still live, so existing links and bookmarks keep working.
 
 ## 2026-11-05 — va.deedumlao@gmail.com
