@@ -554,7 +554,7 @@ export default function LivePage() {
         {/* ------------------------------------------ Daaji & Heartfulness */}
         <section id="daaji" className="scroll-mt-24 bg-cyan-900 text-warm-cream">
           <div className="section-padding mx-auto max-w-6xl py-16 md:py-24">
-            <div className="grid items-start gap-10 lg:grid-cols-2 lg:gap-14">
+            <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
               <div>
                 <Eyebrow tone="dark">Post-11 · Daaji & Heartfulness</Eyebrow>
                 <h2 className="mt-4 font-display text-3xl leading-tight md:text-5xl">The world meditates together.</h2>
@@ -592,7 +592,9 @@ export default function LivePage() {
                 playsInline
                 preload="metadata"
                 src={DAAJI_VIDEO_SRC}
-                className="aspect-video w-full rounded-3xl bg-black shadow-[0_24px_60px_rgba(0,0,0,0.35)]"
+                // The Heartfulness video is portrait (9:16): sized by height so it
+                // fills its own frame with no black side bars.
+                className="mx-auto aspect-[9/16] h-[520px] max-w-full rounded-3xl bg-black object-contain shadow-[0_24px_60px_rgba(0,0,0,0.35)] md:h-[600px]"
               >
                 Your browser can't play this video.
               </video>
@@ -660,10 +662,7 @@ export default function LivePage() {
                       className={p.wide ? "h-14 w-auto max-w-[220px]" : "h-28 w-28 rounded-2xl object-cover"}
                     />
                   </div>
-                  <div>
-                    <h3 className="font-display text-2xl text-foreground">{p.name}</h3>
-                    <p className="mt-1.5 text-sm leading-snug text-foreground/65">{p.role}</p>
-                  </div>
+                  <p className="max-w-[240px] text-[15px] font-semibold leading-snug text-foreground/75">{p.role}</p>
                 </article>
               ))}
             </div>
