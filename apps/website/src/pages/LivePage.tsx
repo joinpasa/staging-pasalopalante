@@ -256,13 +256,12 @@ export default function LivePage() {
               11.11 Global Live Broadcast
             </h1>
             <p className="max-w-2xl text-base leading-relaxed text-warm-cream/75 md:text-lg">
-              A 24-hour live stream of kindness from around the world, and our first global synchronized kindness
-              moment. Help us create the world's largest heart-centered pause, together.
+              A 24-hour live stream of kindness from around the world. Join us for our first synchronized global
+              moment—the world's largest heart-centered pause.
             </p>
             <p className="max-w-2xl text-base font-semibold leading-relaxed text-warm-cream md:text-lg">
-              At 11:11, join people around the world for five minutes of heart-centered connection. Together, we'll
-              focus on feelings of love, kindness, gratitude, and compassion—connecting our hearts across all
-              cultures, faiths, and backgrounds.
+              At 11:11, people across all cultures and backgrounds will connect for five minutes of shared love,
+              gratitude, and compassion.
             </p>
 
             <div className="mt-4 flex w-full flex-col items-center gap-5">
