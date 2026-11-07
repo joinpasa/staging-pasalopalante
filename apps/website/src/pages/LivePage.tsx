@@ -259,6 +259,11 @@ export default function LivePage() {
               A 24-hour live stream of kindness from around the world, and our first global synchronized kindness
               moment. Help us create the world's largest heart-centered pause, together.
             </p>
+            <p className="max-w-2xl text-base font-semibold leading-relaxed text-warm-cream md:text-lg">
+              At 11:11, join people around the world for five minutes of heart-centered connection. Together, we'll
+              focus on feelings of love, kindness, gratitude, and compassion—connecting our hearts across all
+              cultures, faiths, and backgrounds.
+            </p>
 
             <div className="mt-4 flex w-full flex-col items-center gap-5">
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-warm-sky">
@@ -568,11 +573,6 @@ export default function LivePage() {
                 <h2 className="mt-4 font-display text-3xl leading-tight md:text-5xl">The world meditates together.</h2>
                 <p className="mt-4 text-base leading-relaxed text-warm-cream/75 md:text-lg">
                   Join a guided meditation with Daaji, streamed live to the world right after the 11:11 moment.
-                </p>
-                <p className="mt-3 text-base leading-relaxed text-warm-cream/75 md:text-lg">
-                  At 11:11, join people around the world for five minutes of heart-centered connection. Together,
-                  we'll focus on feelings of love, kindness, gratitude, and compassion—connecting our hearts across
-                  all cultures, faiths, and backgrounds.
                 </p>
                 <DetailRows
                   tone="dark"
