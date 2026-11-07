@@ -352,6 +352,14 @@ export default function LivePage() {
                 Apple / Outlook calendar
               </a>
             )}
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-4 border-t border-warm-cream/15 pt-6">
+              <p className="max-w-[220px] text-left text-base font-semibold leading-snug text-warm-cream/85">
+                Together with our Global Strategic Partner,
+              </p>
+              <span className="inline-flex items-center rounded-2xl bg-white px-6 py-4">
+                <img src={HEARTFULNESS_LOGO} alt="Heartfulness" className="h-8 w-auto" />
+              </span>
+            </div>
           </div>
           <div aria-hidden="true" className="flex h-1.5">
             <span className="flex-1" style={{ background: "#00a3e0" }} />
@@ -561,6 +569,11 @@ export default function LivePage() {
                 <p className="mt-4 text-base leading-relaxed text-warm-cream/75 md:text-lg">
                   Join a guided meditation with Daaji, streamed live to the world right after the 11:11 moment.
                 </p>
+                <p className="mt-3 text-base leading-relaxed text-warm-cream/75 md:text-lg">
+                  At 11:11, join people around the world for five minutes of heart-centered connection. Together,
+                  we'll focus on feelings of love, kindness, gratitude, and compassion—connecting our hearts across
+                  all cultures, faiths, and backgrounds.
+                </p>
                 <DetailRows
                   tone="dark"
                   rows={[
@@ -649,9 +662,9 @@ export default function LivePage() {
             </div>
             <div className="mt-10 grid gap-5 md:grid-cols-3">
               {[
-                { name: "Heartfulness", role: "Post-11 guided meditation with Daaji", src: HEARTFULNESS_LOGO, wide: true },
-                { name: "Yoga Vidya", role: "Hosting the Pre-11 live programme from Germany", src: "/partners/faith-based_yoga-vidya.jpg", wide: false },
-                { name: "AWAKEN", role: "Official Broadcast Sponsor", src: "/partners/corporate_awaken---michael-krauss.jpg", wide: false },
+                { name: "Heartfulness", src: HEARTFULNESS_LOGO, wide: true },
+                { name: "Yoga Vidya", src: "/partners/faith-based_yoga-vidya.jpg", wide: false },
+                { name: "AWAKEN", src: "/partners/corporate_awaken---michael-krauss.jpg", wide: false },
               ].map((p) => (
                 <article key={p.name} className="flex flex-col items-center gap-5 rounded-3xl border border-border bg-white p-8 text-center shadow-sm">
                   <div className="flex h-28 items-center justify-center">
@@ -662,7 +675,6 @@ export default function LivePage() {
                       className={p.wide ? "h-14 w-auto max-w-[220px]" : "h-28 w-28 rounded-2xl object-cover"}
                     />
                   </div>
-                  <p className="max-w-[240px] text-[15px] font-semibold leading-snug text-foreground/75">{p.role}</p>
                 </article>
               ))}
             </div>
