@@ -662,23 +662,18 @@ export default function LivePage() {
             </div>
             <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
               {[
-                { name: "MECYS · Ministry of Education, Culture, Youth & Sport", badge: "Founding Organization Partner", src: "/partners/education_mecys.png", wide: false, big: true },
+                { name: "MECYS · Ministry of Education, Culture, Youth & Sport", src: "/partners/education_mecys.png", wide: false, big: true },
                 { name: "Heartfulness", src: HEARTFULNESS_LOGO, wide: true },
                 { name: "Yoga Vidya", src: "/partners/faith-based_yoga-vidya.jpg", wide: false },
                 { name: "AWAKEN", src: "/partners/corporate_awaken---michael-krauss.jpg", wide: false },
               ].map((p) => (
                 <article key={p.name} className="flex flex-col items-center gap-5 rounded-3xl border border-border bg-white p-8 text-center shadow-sm">
-                  {"badge" in p && (
-                    <span className="rounded-full bg-warm-gold/20 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-foreground/80">
-                      {p.badge}
-                    </span>
-                  )}
                   <div className="flex h-36 items-center justify-center">
                     <img
                       src={p.src}
                       alt={`${p.name} logo`}
                       loading="lazy"
-                      className={p.wide ? "h-14 w-auto max-w-[220px]" : "big" in p ? "h-36 w-36 object-contain" : "h-28 w-28 rounded-2xl object-cover"}
+                      className={p.wide ? "h-auto w-full max-w-[200px]" : "big" in p ? "h-36 w-36 object-contain" : "h-28 w-28 rounded-2xl object-cover"}
                     />
                   </div>
                 </article>
