@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { Fragment, useEffect, useMemo, useState, type ReactNode } from "react";
 import { CalendarPlus, Clock, Play, Radio } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -6,10 +6,11 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import SEO from "@/components/SEO";
 import { useScrollToHash } from "@/hooks/useScrollToHash";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 
-// /live: the 11.11.2026 Global Live Broadcast event page. English only for
-// now (the copy is still being reviewed); everything the team may need to
-// change is in the constants at the top of this file.
+// /live: the 11.11.2026 Global Live Broadcast event page. All copy lives in
+// the `livePage` namespace of the i18n files; everything else the team may
+// need to change is in the constants at the top of this file.
 
 // ---------------------------------------------------------------- the event
 // 11:11 AM AST (Puerto Rico, UTC-4, no daylight saving) = 15:11 UTC.
@@ -50,16 +51,17 @@ const DAAJI_GOOGLE_CAL =
 const HERO_ICS = "/calendar/11-11-global-live-broadcast.ics";
 const DAAJI_ICS = "/calendar/11-11-daaji-meditation.ics";
 
-const SEGMENTS: Array<[string, string, string]> = [
-  ["01", "Kindness in Action", "1 min"],
-  ["02", "Voices of Kindness", "30 sec"],
-  ["03", "Health + Science", "4 min"],
-  ["04", "Hourly Challenge", "30 sec"],
-  ["05", "Human Story", "3 min"],
-  ["06", "Celebrity Inspiration", "60 sec"],
-  ["07", "Featured", "5 min"],
-  ["08", "Meditation", "5 min"],
-  ["09", "Fashionable to be Kind", "1–3 min"],
+// [number, i18n key, length number/range, unit key]
+const SEGMENTS: Array<[string, "seg1" | "seg2" | "seg3" | "seg4" | "seg5" | "seg6" | "seg7" | "seg8" | "seg9", string, "minAbbr" | "secAbbr"]> = [
+  ["01", "seg1", "1", "minAbbr"],
+  ["02", "seg2", "30", "secAbbr"],
+  ["03", "seg3", "4", "minAbbr"],
+  ["04", "seg4", "30", "secAbbr"],
+  ["05", "seg5", "3", "minAbbr"],
+  ["06", "seg6", "60", "secAbbr"],
+  ["07", "seg7", "5", "minAbbr"],
+  ["08", "seg8", "5", "minAbbr"],
+  ["09", "seg9", "1–3", "minAbbr"],
 ];
 
 // Time zones in the selector. The visitor's own zone is detected and chosen
@@ -85,40 +87,51 @@ const ZONES: Array<{ id: string; label: string }> = [
 ];
 
 // The rows of the FAQ's "what time is it for me" table.
-const FAQ_ZONES: Array<{ id: string; label: string }> = [
-  { id: "America/Los_Angeles", label: "Pacific (PST)" },
-  { id: "America/New_York", label: "Eastern (EST)" },
-  { id: "America/Puerto_Rico", label: "Puerto Rico (AST)" },
-  { id: "Europe/London", label: "UK (GMT)" },
-  { id: "Asia/Kolkata", label: "India (IST)" },
-  { id: "Asia/Manila", label: "Philippines (PHT)" },
-  { id: "Australia/Perth", label: "Australia, Perth (AWST)" },
-  { id: "Australia/Sydney", label: "Australia, Sydney (AEDT)" },
-];
+const FAQ_ZONES = [
+  { id: "America/Los_Angeles", label: "zonePacific" },
+  { id: "America/New_York", label: "zoneEastern" },
+  { id: "America/Puerto_Rico", label: "zonePR" },
+  { id: "Europe/London", label: "zoneUK" },
+  { id: "Asia/Kolkata", label: "zoneIndia" },
+  { id: "Asia/Manila", label: "zonePhil" },
+  { id: "Australia/Perth", label: "zonePerth" },
+  { id: "Australia/Sydney", label: "zoneSydney" },
+] as const;
 
 // -------------------------------------------------------------- time helpers
-function fmt(ms: number, timeZone: string, opts: Intl.DateTimeFormatOptions): string {
-  try {
-    return new Intl.DateTimeFormat("en-US", { timeZone, ...opts }).format(ms);
-  } catch {
-    return new Intl.DateTimeFormat("en-US", { timeZone: "America/Puerto_Rico", ...opts }).format(ms);
-  }
+function makeTime(loc: string) {
+  const fmt = (ms: number, timeZone: string, opts: Intl.DateTimeFormatOptions): string => {
+    try {
+      return new Intl.DateTimeFormat(loc, { timeZone, ...opts }).format(ms);
+    } catch {
+      return new Intl.DateTimeFormat("en-US", { timeZone: "America/Puerto_Rico", ...opts }).format(ms);
+    }
+  };
+  const timeOf = (ms: number, tz: string) => fmt(ms, tz, { hour: "numeric", minute: "2-digit" });
+  const longDay = (ms: number, tz: string) => fmt(ms, tz, { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+  const shortDay = (ms: number, tz: string) => fmt(ms, tz, { weekday: "short", month: "short", day: "numeric" });
+  const tzAbbr = (ms: number, tz: string) => {
+    // Friendly abbreviations from our own list ("PHT", not Intl's "GMT+8").
+    const known = ZONES.find((z) => z.id === tz && z.label.includes(" — "));
+    if (known) return known.label.split(" — ")[0];
+    try {
+      return new Intl.DateTimeFormat("en-US", { timeZone: tz, timeZoneName: "short" })
+        .formatToParts(ms)
+        .find((p) => p.type === "timeZoneName")?.value ?? "";
+    } catch {
+      return "";
+    }
+  };
+  return { fmt, timeOf, longDay, shortDay, tzAbbr };
 }
-const timeOf = (ms: number, tz: string) => fmt(ms, tz, { hour: "numeric", minute: "2-digit" });
-const longDay = (ms: number, tz: string) => fmt(ms, tz, { weekday: "long", month: "long", day: "numeric", year: "numeric" });
-const shortDay = (ms: number, tz: string) => fmt(ms, tz, { weekday: "short", month: "short", day: "numeric" });
-const tzAbbr = (ms: number, tz: string) => {
-  // Friendly abbreviations from our own list ("PHT", not Intl's "GMT+8").
-  const known = [...ZONES, ...FAQ_ZONES].find((z) => z.id === tz && z.label.includes(" — "));
-  if (known) return known.label.split(" — ")[0];
-  try {
-    return new Intl.DateTimeFormat("en-US", { timeZone: tz, timeZoneName: "short" })
-      .formatToParts(ms)
-      .find((p) => p.type === "timeZoneName")?.value ?? "";
-  } catch {
-    return "";
-  }
-};
+
+// Fills "{name}" placeholders in a translated string with React nodes (links).
+function rich(str: string, map: Record<string, ReactNode>): ReactNode {
+  return str.split(/(\{\w+\})/g).map((part, i) => {
+    const m = part.match(/^\{(\w+)\}$/);
+    return m && m[1] in map ? <Fragment key={i}>{map[m[1]]}</Fragment> : part;
+  });
+}
 
 function useNow(intervalMs = 1000) {
   const [now, setNow] = useState(() => Date.now());
@@ -146,8 +159,10 @@ function ZoneSelect({
   value,
   onChange,
   tone = "light",
+  label,
 }: {
   id: string;
+  label: string;
   zones: Array<{ id: string; label: string }>;
   value: string;
   onChange: (tz: string) => void;
@@ -158,7 +173,7 @@ function ZoneSelect({
       id={id}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      aria-label="Time zone"
+      aria-label={label}
       className={`h-9 max-w-full rounded-full border px-3 text-xs font-semibold outline-none focus-visible:ring-2 focus-visible:ring-warm-gold ${
         tone === "dark"
           ? "border-warm-cream/30 bg-white/10 text-warm-cream [&>option]:text-[#0e234b]"
@@ -200,6 +215,9 @@ const linkCls = "font-semibold text-warm-sky underline underline-offset-2 hover:
 // ------------------------------------------------------------------ the page
 export default function LivePage() {
   useScrollToHash();
+  const { lang, t } = useLanguage();
+  const tx = t.livePage;
+  const { fmt, timeOf, longDay, shortDay, tzAbbr } = useMemo(() => makeTime(lang), [lang]);
   const now = useNow();
 
   // Visitor's own zone is detected and pre-selected, so nobody has to choose.
@@ -214,8 +232,8 @@ export default function LivePage() {
     () =>
       ZONES.some((z) => z.id === detected)
         ? ZONES
-        : [{ id: detected, label: `Your device — ${detected.replace(/_/g, " ")}` }, ...ZONES],
-    [detected],
+        : [{ id: detected, label: tx.yourDevice.replace("{zone}", detected.replace(/_/g, " ")) }, ...ZONES],
+    [detected, tx.yourDevice],
   );
   const [tz, setTz] = useState(detected);
 
@@ -237,8 +255,8 @@ export default function LivePage() {
   return (
     <div className="min-h-screen bg-warm-cream">
       <SEO
-        title="Global Live Broadcast — 11.11.2026 | Kindness Forward"
-        description="Join the 11.11.2026 Global Live Broadcast: a 24-hour live stream of kindness and the world's first synchronized 11:11 kindness moment, with a global heart meditation from Puerto Rico."
+        title={tx.seoTitle}
+        description={tx.seoDesc}
         path="/live"
       />
       <Navbar />
@@ -252,36 +270,30 @@ export default function LivePage() {
             className="pointer-events-none absolute -end-24 top-8 w-[640px] max-w-none opacity-[0.06]"
           />
           <div className="section-padding relative mx-auto flex max-w-5xl flex-col items-center gap-6 pb-16 pt-32 text-center md:pt-36">
-            <Eyebrow tone="dark">11.11.2026 · Global Kindness Moment</Eyebrow>
+            <Eyebrow tone="dark">{tx.heroEyebrow}</Eyebrow>
             <h1 className="font-display text-5xl leading-[1.02] tracking-tight md:text-6xl lg:text-7xl">
-              11.11 Global Live Broadcast
+              {tx.heroTitle}
             </h1>
             <p className="max-w-2xl text-base leading-relaxed text-warm-cream/75 md:text-lg">
-              A 24-hour live stream of kindness from around the world. Join us for our first synchronized global
-              moment—the world's largest heart-centered pause.
+              {tx.heroIntro1}
             </p>
             <p className="max-w-2xl text-base font-semibold leading-relaxed text-warm-cream md:text-lg">
-              At 11:11, people across all cultures and backgrounds will connect for five minutes of shared love,
-              gratitude, and compassion.
+              {tx.heroIntro2}
             </p>
 
             <div className="mt-4 flex w-full flex-col items-center gap-5">
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-warm-sky">
-                {phase === "before"
-                  ? "The live broadcast begins in"
-                  : phase === "live"
-                    ? "The broadcast is live now"
-                    : "The live broadcast has ended"}
+                {phase === "before" ? tx.cdBefore : phase === "live" ? tx.cdLive : tx.cdEnded}
               </p>
 
               {phase === "before" && (
-                <div role="timer" aria-label="Countdown to the 11.11 live broadcast" className="flex w-full max-w-xl gap-3">
+                <div role="timer" aria-label={tx.timerLabel} className="flex w-full max-w-xl gap-3">
                   {(
                     [
-                      [cd.days, "Days"],
-                      [cd.hours, "Hours"],
-                      [cd.mins, "Minutes"],
-                      [cd.secs, "Seconds"],
+                      [cd.days, tx.days],
+                      [cd.hours, tx.hours],
+                      [cd.mins, tx.minutes],
+                      [cd.secs, tx.seconds],
                     ] as const
                   ).map(([n, label]) => (
                     <div key={label} className="min-w-0 flex-1 rounded-2xl border border-warm-cream/20 bg-white/10 px-2 py-4 backdrop-blur-sm md:py-5">
@@ -296,12 +308,12 @@ export default function LivePage() {
               <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm text-warm-cream/75">
                 <Clock size={16} className="shrink-0 text-warm-gold" aria-hidden="true" />
                 <span>
-                  {phase === "before" ? "Starts" : "Started"} 11:11 AM AST (Puerto Rico) ·{" "}
+                  {phase === "before" ? tx.heroStarts : tx.heroStarted}{" "}
                   <strong className="font-semibold text-warm-cream">
                     {startsAt}, {startsDay}
                   </strong>
                 </span>
-                <ZoneSelect id="hero-tz" zones={zones} value={tz} onChange={setTz} tone="dark" />
+                <ZoneSelect id="hero-tz" zones={zones} value={tz} onChange={setTz} tone="dark" label={tx.tzAria} />
               </div>
             </div>
 
@@ -310,7 +322,7 @@ export default function LivePage() {
               <div id="live" className="mt-4 w-full max-w-3xl scroll-mt-28 overflow-hidden rounded-3xl border border-warm-cream/20 bg-white/10 text-left backdrop-blur-sm">
                 <div className="flex items-center gap-2 border-b border-warm-cream/15 px-5 py-3 text-xs font-bold uppercase tracking-[0.16em]">
                   <span className="inline-flex h-2.5 w-2.5 animate-pulse rounded-full bg-[#d81b60]" aria-hidden="true" />
-                  Live · 11.11 Global Live Broadcast
+                  {tx.livePanel}
                 </div>
                 {LIVE_EMBED_SRC ? (
                   <div className="aspect-video w-full bg-black">
@@ -327,11 +339,10 @@ export default function LivePage() {
                   <div className="flex flex-col items-center gap-4 px-6 py-12 text-center">
                     <Radio size={36} className="text-warm-gold" aria-hidden="true" />
                     <p className="max-w-md text-base leading-relaxed text-warm-cream/85">
-                      The 24-hour broadcast is streaming now on our YouTube channel. Tune in and share it with your
-                      community.
+                      {tx.liveStreaming}
                     </p>
                     <a href={YOUTUBE_LIVE} target="_blank" rel="noopener noreferrer" className={btnPrimary}>
-                      <Play size={18} aria-hidden="true" /> Watch live on YouTube
+                      <Play size={18} aria-hidden="true" /> {tx.watchLive}
                     </a>
                   </div>
                 )}
@@ -340,26 +351,26 @@ export default function LivePage() {
 
             <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
               <a href={SUBMIT_URL} target="_blank" rel="noopener noreferrer" className={btnPrimary}>
-                Submit a video
+                {tx.submitVideo}
               </a>
               {phase === "ended" ? (
                 <a href={YOUTUBE_CHANNEL} target="_blank" rel="noopener noreferrer" className={btnOutlineDark}>
-                  <Play size={18} aria-hidden="true" /> Watch on YouTube
+                  <Play size={18} aria-hidden="true" /> {tx.watchYouTube}
                 </a>
               ) : (
                 <a href={HERO_GOOGLE_CAL} target="_blank" rel="noopener noreferrer" className={btnOutlineDark}>
-                  <CalendarPlus size={18} aria-hidden="true" /> Add to calendar
+                  <CalendarPlus size={18} aria-hidden="true" /> {tx.addCal}
                 </a>
               )}
             </div>
             {phase !== "ended" && (
               <a href={HERO_ICS} className="text-xs font-semibold text-warm-cream/70 underline underline-offset-2 hover:text-warm-cream">
-                Apple / Outlook calendar
+                {tx.appleOutlook}
               </a>
             )}
             <div className="mt-4 flex flex-wrap items-center justify-center gap-4 border-t border-warm-cream/15 pt-6">
               <p className="max-w-[220px] text-left text-base font-semibold leading-snug text-warm-cream/85">
-                Together with our Global Strategic Partner,
+                {tx.partnerIntro}
               </p>
               <span className="inline-flex items-center rounded-2xl bg-white px-6 py-4">
                 <img src={HEARTFULNESS_LOGO} alt="Heartfulness" className="h-8 w-auto" />
@@ -379,19 +390,18 @@ export default function LivePage() {
           <div className="section-padding mx-auto max-w-6xl py-16 md:py-24">
             <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
               <div className="flex flex-col gap-5">
-                <Eyebrow>Be part of the broadcast</Eyebrow>
+                <Eyebrow>{tx.submitEyebrow}</Eyebrow>
                 <h2 className="font-display text-3xl leading-tight text-foreground md:text-5xl">
-                  Your voice belongs in this moment.
+                  {tx.submitTitle}
                 </h2>
                 <p className="text-base leading-relaxed text-foreground/75 md:text-lg">
-                  Share a story, a message or an act of kindness and it could be featured in the 24-hour global
-                  broadcast. Record a short video, upload it, and we'll carry it around the world.
+                  {tx.submitBody}
                 </p>
                 <ol className="mt-2 flex flex-col gap-4">
                   {[
-                    "Pick a segment that feels right for you.",
-                    "Record horizontally, in a quiet space, in your own voice.",
-                    "Upload it with the submission form. Deadline: November 9.",
+                    tx.step1,
+                    tx.step2,
+                    tx.step3,
                   ].map((step, i) => (
                     <li key={step} className="flex items-start gap-4">
                       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-warm-terracotta text-sm font-bold text-white">
@@ -403,7 +413,7 @@ export default function LivePage() {
                 </ol>
                 <div className="mt-2">
                   <a href={SUBMIT_URL} target="_blank" rel="noopener noreferrer" className={btnPrimary}>
-                    Submit your video
+                    {tx.submitYourVideo}
                   </a>
                 </div>
               </div>
@@ -412,7 +422,7 @@ export default function LivePage() {
                   width="560"
                   height="315"
                   src={CAMPAIGN_VIDEO_SRC}
-                  title="YouTube video player"
+                  title={tx.videoTitle}
                   className="h-full w-full"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   referrerPolicy="strict-origin-when-cross-origin"
@@ -422,14 +432,14 @@ export default function LivePage() {
             </div>
 
             <div className="mt-14">
-              <h3 className="font-display text-2xl text-foreground md:text-3xl">Choose your segment</h3>
-              <p className="mt-2 text-sm text-foreground/65">You'll pick one on the submission form.</p>
+              <h3 className="font-display text-2xl text-foreground md:text-3xl">{tx.chooseSegment}</h3>
+              <p className="mt-2 text-sm text-foreground/65">{tx.chooseNote}</p>
               <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {SEGMENTS.map(([num, name, length]) => (
+                {SEGMENTS.map(([num, nameKey, n, unit]) => (
                   <li key={num} className="flex items-center gap-4 rounded-2xl border border-border bg-white px-5 py-4 shadow-sm">
                     <span className="w-9 shrink-0 font-display text-2xl tabular-nums text-warm-terracotta">{num}</span>
-                    <span className="min-w-0 flex-1 text-[15px] font-semibold leading-snug text-foreground">{name}</span>
-                    <span className="shrink-0 rounded-full bg-warm-sand px-3 py-1 text-xs font-bold text-foreground/70">{length}</span>
+                    <span className="min-w-0 flex-1 text-[15px] font-semibold leading-snug text-foreground">{tx[nameKey]}</span>
+                    <span className="shrink-0 rounded-full bg-warm-sand px-3 py-1 text-xs font-bold text-foreground/70">{n} {tx[unit]}</span>
                   </li>
                 ))}
               </ul>
@@ -441,41 +451,20 @@ export default function LivePage() {
         <section id="happening" className="scroll-mt-24 bg-white">
           <div className="section-padding mx-auto max-w-6xl py-16 md:py-24">
             <div className="flex max-w-2xl flex-col gap-4">
-              <Eyebrow>What's happening</Eyebrow>
+              <Eyebrow>{tx.happeningEyebrow}</Eyebrow>
               <h2 className="font-display text-3xl leading-tight text-foreground md:text-5xl">
-                One day. One moment. Every time zone.
+                {tx.happeningTitle}
               </h2>
               <p className="text-base leading-relaxed text-foreground/75 md:text-lg">
-                On 11.11 the world takes part in three connected activations. Join one, or all three.
+                {tx.happeningBody}
               </p>
             </div>
 
             <div className="mt-10 grid gap-5 md:grid-cols-3">
               {[
-                {
-                  n: 1,
-                  time: "11:11 AM",
-                  place: "Your local time",
-                  title: "Take a 1-minute pause",
-                  body: "Step away from every screen. Feel love for yourself, love for humanity, and love for planet Earth.",
-                  bar: "#00a3e0",
-                },
-                {
-                  n: 2,
-                  time: "11:11 AM AST",
-                  place: "Puerto Rico",
-                  title: "Join the 5-minute global heart moment",
-                  body: "Meditation, prayer, reflection and shared intention, originating from Puerto Rico, birthplace of the movement.",
-                  bar: "#f2701d",
-                },
-                {
-                  n: 3,
-                  time: "24-hour live stream",
-                  place: "Global Kindness Broadcast",
-                  title: "Stories of kindness from around the world",
-                  body: "Featuring world leaders, education and community leaders, business leaders, heart-centered celebrities, creators, influencers and athletes.",
-                  bar: "#fbb813",
-                },
+                { n: 1, time: tx.act1Time, place: tx.act1Place, title: tx.act1Title, body: tx.act1Body, bar: "#00a3e0" },
+                { n: 2, time: tx.act2Time, place: tx.act2Place, title: tx.act2Title, body: tx.act2Body, bar: "#f2701d" },
+                { n: 3, time: tx.act3Time, place: tx.act3Place, title: tx.act3Title, body: tx.act3Body, bar: "#fbb813" },
               ].map((c) => (
                 <article key={c.n} className="flex flex-col overflow-hidden rounded-3xl border border-border bg-white shadow-sm">
                   <div className="h-1.5" style={{ background: c.bar }} aria-hidden="true" />
@@ -491,13 +480,13 @@ export default function LivePage() {
             </div>
 
             <div className="mt-14">
-              <h3 className="text-xs font-bold uppercase tracking-[0.18em] text-foreground/60">11.11 at a glance</h3>
+              <h3 className="text-xs font-bold uppercase tracking-[0.18em] text-foreground/60">{tx.glanceTitle}</h3>
               <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 {[
-                  { href: "#happening", top: "All day · Every time zone", title: "Rolling 11:11 pause", body: "Pause for one minute at 11:11 wherever you are." },
-                  { href: "#germany", top: "15:15–16:18 CET", title: "Pre-11 · Germany", body: "Live from Yoga Vidya, building to the global moment." },
-                  { href: "#happening", top: "11:11 AM AST", title: "Global heart moment", body: "A 5-minute guided meditation from Puerto Rico." },
-                  { href: "#daaji", top: "After 11:11 AM AST", title: "Post-11 · Daaji & Heartfulness", body: "Guided meditation with Daaji." },
+                  { href: "#happening", top: tx.g1Top, title: tx.g1Title, body: tx.g1Body },
+                  { href: "#germany", top: tx.g2Top, title: tx.g2Title, body: tx.g2Body },
+                  { href: "#happening", top: tx.g3Top, title: tx.g3Title, body: tx.g3Body },
+                  { href: "#daaji", top: tx.g4Top, title: tx.g4Title, body: tx.g4Body },
                 ].map((g) => (
                   <a key={g.title} href={g.href} className="flex flex-col gap-1.5 rounded-2xl border border-border bg-warm-sand px-5 py-4 transition-colors hover:border-warm-terracotta">
                     <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-foreground/55">{g.top}</span>
@@ -509,11 +498,11 @@ export default function LivePage() {
 
               <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-2 rounded-2xl bg-cyan-900 px-6 py-5 text-warm-cream">
                 <div>
-                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-warm-gold">Global Kindness Season</p>
-                  <p className="font-display text-2xl">1 November 2026 – 31 January 2027</p>
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-warm-gold">{tx.seasonLabel}</p>
+                  <p className="font-display text-2xl">{tx.seasonDates}</p>
                 </div>
                 <p className="min-w-0 flex-1 basis-72 text-sm leading-relaxed text-warm-cream/80">
-                  Do at least one act of kindness each day, and as many as you can. After each act, invite others to pass it forward.
+                  {tx.seasonBody}
                 </p>
               </div>
             </div>
@@ -525,39 +514,36 @@ export default function LivePage() {
           <div className="section-padding mx-auto grid max-w-6xl items-center gap-10 py-16 md:py-24 lg:grid-cols-2 lg:gap-14">
             <img
               src={YOGA_VIDYA_IMAGE}
-              alt="Yoga Vidya mandala"
+              alt={tx.yogaAlt}
               loading="lazy"
               className="mx-auto aspect-square w-full max-w-[480px] rounded-3xl object-cover shadow-[0_24px_60px_rgba(14,35,75,0.18)]"
             />
             <div>
-              <Eyebrow>Pre-11 · Germany</Eyebrow>
+              <Eyebrow>{tx.germanyEyebrow}</Eyebrow>
               <h2 className="mt-4 font-display text-3xl leading-tight text-foreground md:text-5xl">
-                Countdown to a global moment of kindness
+                {tx.germanyTitle}
               </h2>
-              <p className="mt-4 text-sm font-bold uppercase tracking-[0.14em] text-warm-sky">Live from Yoga Vidya, Germany</p>
+              <p className="mt-4 text-sm font-bold uppercase tracking-[0.14em] text-warm-sky">{tx.germanyLive}</p>
               <p className="mt-3 text-base leading-relaxed text-foreground/75 md:text-lg">
-                From gratitude to music, joy and global unity, a live programme that builds toward the world's 11:11 moment.
+                {tx.germanyIntro}
               </p>
               <DetailRows
                 rows={[
+                  [tx.rowWhat, tx.germanyWhat],
                   [
-                    "What",
-                    "A live programme with a heart-to-heart conversation with Sukadev, a gratitude and heart meditation, and five songs, leading into the global moment.",
-                  ],
-                  [
-                    "When",
+                    tx.rowWhen,
                     <>
-                      Wed, 11 November 2026 · 15:15–16:18 CET
+                      {tx.germanyWhen}
                       <span className="mt-1 block font-semibold text-foreground">
-                        Your time: {timeOf(GERMANY_START, tz)}–{timeOf(GERMANY_END, tz)} {tzAbbr(GERMANY_START, tz)}, {shortDay(GERMANY_START, tz)}
+                        {tx.yourTime.replace(
+                          "{time}",
+                          `${timeOf(GERMANY_START, tz)}–${timeOf(GERMANY_END, tz)} ${tzAbbr(GERMANY_START, tz)}, ${shortDay(GERMANY_START, tz)}`,
+                        )}
                       </span>
                     </>,
                   ],
-                  ["Where", "Sivananda Hall, Yoga Vidya, Germany"],
-                  [
-                    "How",
-                    "Watch on the live broadcast at the top of this page, and join the “Pass kindness forward” activation from anywhere in the world.",
-                  ],
+                  [tx.rowWhere, tx.germanyWhere],
+                  [tx.rowHow, tx.germanyHow],
                 ]}
               />
             </div>
@@ -569,34 +555,35 @@ export default function LivePage() {
           <div className="section-padding mx-auto max-w-6xl py-16 md:py-24">
             <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
               <div>
-                <Eyebrow tone="dark">Post-11 · Daaji & Heartfulness</Eyebrow>
-                <h2 className="mt-4 font-display text-3xl leading-tight md:text-5xl">The world meditates together.</h2>
+                <Eyebrow tone="dark">{tx.daajiEyebrow}</Eyebrow>
+                <h2 className="mt-4 font-display text-3xl leading-tight md:text-5xl">{tx.daajiTitle}</h2>
                 <p className="mt-4 text-base leading-relaxed text-warm-cream/75 md:text-lg">
-                  Join a guided meditation with Daaji, streamed live to the world right after the 11:11 moment.
+                  {tx.daajiIntro}
                 </p>
                 <DetailRows
                   tone="dark"
                   rows={[
-                    ["What", "Guided meditation with Daaji"],
+                    [tx.rowWhat, tx.daajiWhat],
                     [
-                      "When",
+                      tx.rowWhen,
                       <>
-                        11:11 AM AST, Wednesday, 11 November 2026
+                        {tx.daajiWhen}
                         <span className="mt-1 block font-semibold text-warm-cream">
-                          Your time: {startsAt}, {startsDay}
+                          {tx.yourTime.replace("{time}", `${startsAt}, ${startsDay}`)}
                         </span>
                       </>,
                     ],
                     [
-                      "Where",
-                      <>
-                        Online, on the live broadcast at the top of this page and on our{" "}
-                        <a href={YOUTUBE_CHANNEL} target="_blank" rel="noopener noreferrer" className="font-semibold text-warm-gold underline underline-offset-2">
-                          YouTube channel
-                        </a>
-                      </>,
+                      tx.rowWhere,
+                      rich(tx.daajiWhere, {
+                        link: (
+                          <a href={YOUTUBE_CHANNEL} target="_blank" rel="noopener noreferrer" className="font-semibold text-warm-gold underline underline-offset-2">
+                            {tx.youtubeChannel}
+                          </a>
+                        ),
+                      }),
                     ],
-                    ["How", "Tune in live from anywhere in the world. No travel needed."],
+                    [tx.rowHow, tx.daajiHow],
                   ]}
                 />
               </div>
@@ -609,7 +596,7 @@ export default function LivePage() {
                 // fills its own frame with no black side bars.
                 className="mx-auto aspect-[9/16] h-[520px] max-w-full rounded-3xl bg-black object-contain shadow-[0_24px_60px_rgba(0,0,0,0.35)] md:h-[600px]"
               >
-                Your browser can't play this video.
+                {tx.videoUnsupported}
               </video>
             </div>
 
@@ -617,10 +604,10 @@ export default function LivePage() {
             <div className="mt-12 grid gap-8 rounded-3xl border border-warm-cream/15 bg-white/10 p-6 md:p-8 lg:grid-cols-2">
               <div className="flex flex-col justify-center gap-3">
                 <label htmlFor="daaji-tz" className="text-xs font-bold uppercase tracking-[0.16em] text-warm-cream/65">
-                  Your time zone
+                  {tx.yourTimeZone}
                 </label>
-                <ZoneSelect id="daaji-tz" zones={zones} value={tz} onChange={setTz} tone="dark" />
-                <p className="mt-3 text-sm text-warm-cream/65">Launch starts at</p>
+                <ZoneSelect id="daaji-tz" zones={zones} value={tz} onChange={setTz} tone="dark" label={tx.tzAria} />
+                <p className="mt-3 text-sm text-warm-cream/65">{tx.launchStarts}</p>
                 <p className="font-display text-6xl leading-none tabular-nums md:text-7xl">{timeOf(EVENT_START, tz)}</p>
                 <p className="text-sm text-warm-cream/75">
                   {longDay(EVENT_START, tz)} · {tzAbbr(EVENT_START, tz)}
@@ -628,12 +615,12 @@ export default function LivePage() {
               </div>
               <div className="flex flex-col justify-center gap-3">
                 <div className="rounded-2xl bg-white/10 px-5 py-4">
-                  <p className="font-bold">Guided meditation</p>
-                  <p className="text-sm text-warm-cream/70">with Daaji</p>
+                  <p className="font-bold">{tx.guidedMeditation}</p>
+                  <p className="text-sm text-warm-cream/70">{tx.withDaaji}</p>
                 </div>
                 <div className="rounded-2xl bg-white/10 px-5 py-4">
-                  <p className="font-bold">Live global broadcast</p>
-                  <p className="text-sm text-warm-cream/70">from 11:11 AM AST</p>
+                  <p className="font-bold">{tx.liveGlobal}</p>
+                  <p className="text-sm text-warm-cream/70">{tx.fromTime}</p>
                 </div>
                 <a
                   href={DAAJI_GOOGLE_CAL}
@@ -641,10 +628,10 @@ export default function LivePage() {
                   rel="noopener noreferrer"
                   className="mt-1 inline-flex h-[52px] items-center justify-center gap-2 rounded-full bg-white px-7 text-sm font-bold text-cyan-900 transition-transform duration-200 hover:scale-[1.02]"
                 >
-                  <CalendarPlus size={18} aria-hidden="true" /> Add to Google Calendar
+                  <CalendarPlus size={18} aria-hidden="true" /> {tx.addGoogleCal}
                 </a>
                 <a href={DAAJI_ICS} className="self-center text-xs font-semibold text-warm-cream/75 underline underline-offset-2 hover:text-warm-cream">
-                  Apple / Outlook calendar
+                  {tx.appleOutlook}
                 </a>
               </div>
             </div>
@@ -655,9 +642,9 @@ export default function LivePage() {
         <section id="partners" className="scroll-mt-24 bg-white">
           <div className="section-padding mx-auto max-w-6xl py-16 md:py-24">
             <div className="flex max-w-2xl flex-col gap-4">
-              <Eyebrow>Our featured partners</Eyebrow>
+              <Eyebrow>{tx.partnersEyebrow}</Eyebrow>
               <h2 className="font-display text-3xl leading-tight text-foreground md:text-5xl">
-                Different traditions. One shared moment.
+                {tx.partnersTitle}
               </h2>
             </div>
             <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
@@ -671,7 +658,7 @@ export default function LivePage() {
                   <div className="flex h-36 items-center justify-center">
                     <img
                       src={p.src}
-                      alt={`${p.name} logo`}
+                      alt={tx.logoAlt.replace("{name}", p.name)}
                       loading="lazy"
                       className={p.wide ? "h-auto w-full max-w-[200px]" : "big" in p ? "h-36 w-36 object-contain" : "h-28 w-28 rounded-2xl object-cover"}
                     />
@@ -681,7 +668,7 @@ export default function LivePage() {
             </div>
             <p className="mt-8 text-center">
               <Link to="/partners" className="text-base font-semibold text-warm-terracotta underline underline-offset-4 hover:text-foreground">
-                See all our partners who helped us make this happen →
+                {tx.partnersLink}
               </Link>
             </p>
           </div>
@@ -690,29 +677,20 @@ export default function LivePage() {
         {/* ------------------------------------------------------------ FAQ */}
         <section id="faq" className="scroll-mt-24 bg-warm-sand">
           <div className="section-padding mx-auto max-w-3xl py-16 md:py-24">
-            <Eyebrow>FAQ</Eyebrow>
-            <h2 className="mt-4 font-display text-3xl leading-tight text-foreground md:text-5xl">Questions, answered.</h2>
+            <Eyebrow>{tx.faqEyebrow}</Eyebrow>
+            <h2 className="mt-4 font-display text-3xl leading-tight text-foreground md:text-5xl">{tx.faqTitle}</h2>
             <div className="mt-8 flex flex-col gap-3">
               {(
                 [
+                  [tx.q1, <p key="a">{tx.a1}</p>],
                   [
-                    "What is the 11.11 Global Kindness Moment?",
-                    <p key="a">
-                      It is our first global synchronized kindness moment. On 11.11, people around the world pause together at 11:11
-                      in their local time, and join a 24-hour live broadcast of kindness stories.
-                    </p>,
-                  ],
-                  [
-                    "What time does it start in my time zone?",
+                    tx.q2,
                     <div key="a" className="flex flex-col gap-4">
-                      <p>
-                        The global moment is at 11:11 AM AST (Puerto Rico) on Wednesday, November 11, 2026. Here is what that looks
-                        like in popular time zones:
-                      </p>
+                      <p>{tx.a2a}</p>
                       <ul className="overflow-hidden rounded-xl border border-border bg-white">
                         {FAQ_ZONES.map((z) => (
                           <li key={z.id} className="flex items-center justify-between gap-4 border-b border-border px-4 py-2.5 text-sm last:border-b-0">
-                            <span className="font-semibold text-foreground">{z.label}</span>
+                            <span className="font-semibold text-foreground">{tx[z.label]}</span>
                             <span className="whitespace-nowrap tabular-nums text-foreground/70">
                               {timeOf(EVENT_START, z.id)} · {fmt(EVENT_START, z.id, { month: "short", day: "numeric" })}
                             </span>
@@ -720,94 +698,88 @@ export default function LivePage() {
                         ))}
                       </ul>
                       <p>
-                        Not on the list? Check your exact local time on{" "}
-                        <a href="https://www.worldtimebuddy.com/" target="_blank" rel="noopener noreferrer" className={linkCls}>
-                          World Time Buddy
-                        </a>
-                        .
+                        {rich(tx.a2b, {
+                          link: (
+                            <a href="https://www.worldtimebuddy.com/" target="_blank" rel="noopener noreferrer" className={linkCls}>
+                              World Time Buddy
+                            </a>
+                          ),
+                        })}
                       </p>
                     </div>,
                   ],
+                  [tx.q3, <p key="a">{tx.a3}</p>],
                   [
-                    "How do I join the 1-minute pause?",
+                    tx.q4,
                     <p key="a">
-                      At 11:11 AM wherever you are, step away from every screen for one minute. Feel love for yourself, for humanity
-                      and for planet Earth.
+                      {rich(tx.a4, {
+                        link: (
+                          <a href={YOUTUBE_CHANNEL} target="_blank" rel="noopener noreferrer" className={linkCls}>
+                            youtube.com/@passkindnessforward
+                          </a>
+                        ),
+                      })}
                     </p>,
                   ],
                   [
-                    "Do I need to be in Puerto Rico to join the 11:11 AST meditation?",
+                    tx.q5,
                     <p key="a">
-                      No. The 5-minute guided moment originates from Puerto Rico, the birthplace of the movement, and is open to
-                      everyone around the world. To tune in, subscribe to our YouTube channel:{" "}
-                      <a href={YOUTUBE_CHANNEL} target="_blank" rel="noopener noreferrer" className={linkCls}>
-                        youtube.com/@passkindnessforward
-                      </a>
-                      .
+                      {rich(tx.a5, {
+                        facebook: (
+                          <a href="https://facebook.com/passkindnessforward" target="_blank" rel="noopener noreferrer" className={linkCls}>
+                            Facebook
+                          </a>
+                        ),
+                        youtube: (
+                          <a href={YOUTUBE_CHANNEL} target="_blank" rel="noopener noreferrer" className={linkCls}>
+                            YouTube
+                          </a>
+                        ),
+                        site: (
+                          <a href={LIVE_PAGE_URL} className={linkCls}>
+                            passkindnessforward.com/live
+                          </a>
+                        ),
+                      })}
+                    </p>,
+                  ],
+                  [tx.q6, <p key="a">{tx.a6}</p>],
+                  [
+                    tx.q7,
+                    <p key="a">
+                      {rich(tx.a7, {
+                        link: (
+                          <a href={SUBMIT_URL} target="_blank" rel="noopener noreferrer" className={linkCls}>
+                            {tx.a7Link}
+                          </a>
+                        ),
+                      })}
+                    </p>,
+                  ],
+                  [tx.q8, <p key="a">{tx.a8}</p>],
+                  [tx.q9, <p key="a">{tx.a9}</p>],
+                  [
+                    tx.q10,
+                    <p key="a">
+                      {rich(tx.a10, {
+                        link: (
+                          <a href="/#get-involved-inline" className={linkCls}>
+                            {tx.a10Link}
+                          </a>
+                        ),
+                      })}
                     </p>,
                   ],
                   [
-                    "Where can I watch the live broadcast?",
+                    tx.q11,
                     <p key="a">
-                      You can watch through our social channels,{" "}
-                      <a href="https://facebook.com/passkindnessforward" target="_blank" rel="noopener noreferrer" className={linkCls}>
-                        Facebook
-                      </a>{" "}
-                      and{" "}
-                      <a href={YOUTUBE_CHANNEL} target="_blank" rel="noopener noreferrer" className={linkCls}>
-                        YouTube
-                      </a>
-                      , or on our website at{" "}
-                      <a href={LIVE_PAGE_URL} className={linkCls}>
-                        passkindnessforward.com/live
-                      </a>
-                      .
-                    </p>,
-                  ],
-                  ["Is it free to take part?", <p key="a">Yes.</p>],
-                  [
-                    "How do I submit a video to the broadcast?",
-                    <p key="a">
-                      <a href={SUBMIT_URL} target="_blank" rel="noopener noreferrer" className={linkCls}>
-                        Submit your video here
-                      </a>
-                      . Fill out the form, attach your video, add the event to your calendar, and follow our pages so you're notified
-                      when we go live.
-                    </p>,
-                  ],
-                  [
-                    "What are the video guidelines (length, format, deadline)?",
-                    <p key="a">
-                      Format: MP4 or MOV. Length varies depending on the type of video you're sending. The deadline is November 9.
-                    </p>,
-                  ],
-                  [
-                    "Can my school, workplace or community take part together?",
-                    <p key="a">
-                      Definitely. Your school can join and send a collaborative video of everyone for Kindness Season.
-                    </p>,
-                  ],
-                  [
-                    "What is Global Kindness Season?",
-                    <p key="a">
-                      Global Kindness Season is our worldwide movement to spark 1 billion acts of kindness, running from 1 November
-                      2026 to 31 January 2027. It grew out of Puerto Rico, where 1.1 million acts of kindness in November 2025 became a
-                      certified world record. Do at least one act of kindness each day, and as many as you can, then invite others to
-                      pass it forward.{" "}
-                      <a href="/#get-involved-inline" className={linkCls}>
-                        Make your pledge
-                      </a>{" "}
-                      to join.
-                    </p>,
-                  ],
-                  [
-                    "Will there be a replay?",
-                    <p key="a">
-                      Yes. The replay will be added to our{" "}
-                      <a href={YOUTUBE_CHANNEL} target="_blank" rel="noopener noreferrer" className={linkCls}>
-                        YouTube channel
-                      </a>{" "}
-                      and to our website.
+                      {rich(tx.a11, {
+                        link: (
+                          <a href={YOUTUBE_CHANNEL} target="_blank" rel="noopener noreferrer" className={linkCls}>
+                            {tx.youtubeChannel}
+                          </a>
+                        ),
+                      })}
                     </p>,
                   ],
                 ] as Array<[string, ReactNode]>
@@ -829,10 +801,10 @@ export default function LivePage() {
 
             <div className="mt-10 flex flex-wrap items-center gap-4">
               <a href={SUBMIT_URL} target="_blank" rel="noopener noreferrer" className={btnPrimary}>
-                Submit a video
+                {tx.submitVideo}
               </a>
               <a href="/" className="inline-flex items-center gap-1.5 text-sm font-bold text-warm-sky hover:underline">
-                Join the movement →
+                {tx.joinMovement}
               </a>
             </div>
           </div>

@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-11-08 — va.deedumlao@gmail.com
 
+- **The /live page now speaks 10 more languages** — Spanish, French, German, Portuguese, Russian, Slovenian, Chinese, Hindi, Arabic and Bengali. Visitors see it in the language they picked on the site, including the countdown, dates and times, and the FAQ. Translations are first drafts and should get a native-speaker check.
 - **The /live page is redesigned.** It now has a countdown to 11:11 AM AST on Nov 11 (shown in each visitor's own timezone), Add to Calendar buttons, a "Submit a video" button that opens the 24-hour broadcast form, the YouTube explainer with the segment list, the Yoga Vidya programme from Germany, the Daaji guided meditation with its own calendar link, our featured partners (MECYS as founding partner, Heartfulness, Yoga Vidya, AWAKEN) with a link to the full partners page, and an FAQ. The live viewing panel appears only once the countdown ends. English only for now.
 
 ## 2026-11-06 — va.deedumlao@gmail.com
