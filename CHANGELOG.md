@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-11-09 — va.deedumlao@gmail.com
+
+- **/live times corrected.** The Daaji guided meditation now starts at 11:16 AM Puerto Rico time (it was showing 11:11), including its time card and both "Add to calendar" links. The Germany pre-show now reads 10:15–11:18 AM Puerto Rico time. The "Together with our Global Strategic Partner" strip under the hero buttons is removed. All languages updated.
+
 ## 2026-11-08 — va.deedumlao@gmail.com
 
 - **The /live page now speaks 10 more languages** — Spanish, French, German, Portuguese, Russian, Slovenian, Chinese, Hindi, Arabic and Bengali. Visitors see it in the language they picked on the site, including the countdown, dates and times, and the FAQ. Translations are first drafts and should get a native-speaker check.

@@ -15,6 +15,8 @@ import { useLanguage } from "@shared/contexts/LanguageContext";
 // ---------------------------------------------------------------- the event
 // 11:11 AM AST (Puerto Rico, UTC-4, no daylight saving) = 15:11 UTC.
 const EVENT_START = Date.parse("2026-11-11T11:11:00-04:00");
+// Daaji's guided meditation starts 5 minutes after the 11:11 moment: 11:16 AM AST.
+const DAAJI_START = EVENT_START + 5 * 60 * 1000;
 const EVENT_END = EVENT_START + 24 * 3600 * 1000; // a 24-hour broadcast
 // Pre-11 programme from Yoga Vidya: 15:15–16:18 CET (UTC+1) = 14:15–15:18 UTC.
 const GERMANY_START = Date.UTC(2026, 10, 11, 14, 15);
@@ -47,7 +49,7 @@ const HERO_GOOGLE_CAL =
     location: YOUTUBE_CHANNEL,
   }).toString();
 const DAAJI_GOOGLE_CAL =
-  "https://calendar.google.com/calendar/render?action=TEMPLATE&text=Global+Kindness+Season+Launch+with+Daaji&dates=20261111T151100Z%2F20261111T161100Z&details=Meditate+with+Heartfulness%2C+perform+kindness%2C+pass+it+forward.+Join+people+worldwide+at+11%3A11+AM+AST.&location=Online";
+  "https://calendar.google.com/calendar/render?action=TEMPLATE&text=Global+Kindness+Season+Launch+with+Daaji&dates=20261111T151600Z%2F20261111T161600Z&details=Meditate+with+Heartfulness%2C+perform+kindness%2C+pass+it+forward.+Join+people+worldwide+at+11%3A16+AM+AST.&location=Online";
 const HERO_ICS = "/calendar/11-11-global-live-broadcast.ics";
 const DAAJI_ICS = "/calendar/11-11-daaji-meditation.ics";
 
@@ -251,6 +253,7 @@ export default function LivePage() {
 
   const startsAt = `${timeOf(EVENT_START, tz)} ${tzAbbr(EVENT_START, tz)}`.trim();
   const startsDay = shortDay(EVENT_START, tz);
+  const daajiAt = `${timeOf(DAAJI_START, tz)} ${tzAbbr(DAAJI_START, tz)}`.trim();
 
   return (
     <div className="min-h-screen bg-warm-cream">
@@ -368,14 +371,6 @@ export default function LivePage() {
                 {tx.appleOutlook}
               </a>
             )}
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-4 border-t border-warm-cream/15 pt-6">
-              <p className="max-w-[220px] text-left text-base font-semibold leading-snug text-warm-cream/85">
-                {tx.partnerIntro}
-              </p>
-              <span className="inline-flex items-center rounded-2xl bg-white px-6 py-4">
-                <img src={HEARTFULNESS_LOGO} alt="Heartfulness" className="h-8 w-auto" />
-              </span>
-            </div>
           </div>
           <div aria-hidden="true" className="flex h-1.5">
             <span className="flex-1" style={{ background: "#00a3e0" }} />
@@ -569,7 +564,7 @@ export default function LivePage() {
                       <>
                         {tx.daajiWhen}
                         <span className="mt-1 block font-semibold text-warm-cream">
-                          {tx.yourTime.replace("{time}", `${startsAt}, ${startsDay}`)}
+                          {tx.yourTime.replace("{time}", `${daajiAt}, ${shortDay(DAAJI_START, tz)}`)}
                         </span>
                       </>,
                     ],
@@ -608,9 +603,9 @@ export default function LivePage() {
                 </label>
                 <ZoneSelect id="daaji-tz" zones={zones} value={tz} onChange={setTz} tone="dark" label={tx.tzAria} />
                 <p className="mt-3 text-sm text-warm-cream/65">{tx.launchStarts}</p>
-                <p className="font-display text-6xl leading-none tabular-nums md:text-7xl">{timeOf(EVENT_START, tz)}</p>
+                <p className="font-display text-6xl leading-none tabular-nums md:text-7xl">{timeOf(DAAJI_START, tz)}</p>
                 <p className="text-sm text-warm-cream/75">
-                  {longDay(EVENT_START, tz)} · {tzAbbr(EVENT_START, tz)}
+                  {longDay(DAAJI_START, tz)} · {tzAbbr(DAAJI_START, tz)}
                 </p>
               </div>
               <div className="flex flex-col justify-center gap-3">
