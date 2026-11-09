@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-11-09 — va.deedumlao@gmail.com
 
+- **/live partners:** removed the Sint Maarten ministry (MECYS) logo from the featured partners.
 - **The yellow 11.11 ribbon now opens the /live page** instead of the video submission form. The "Submit a video" button on that page still goes to the form.
 - **Mobile menu now scrolls.** When the phone menu (especially with "More" expanded) was taller than the screen, the bottom links were cut off and couldn't be reached. The menu now scrolls inside itself, so Resources, About, Live Broadcast and Sign in are all reachable.
 - **/live times corrected.** The Daaji guided meditation now starts at 11:16 AM Puerto Rico time (it was showing 11:11), including its time card and both "Add to calendar" links. The Germany pre-show now reads 10:15–11:18 AM Puerto Rico time. The "Together with our Global Strategic Partner" strip under the hero buttons is removed. All languages updated.
