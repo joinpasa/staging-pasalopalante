@@ -294,9 +294,9 @@ const Navbar = () => {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             id="mobile-menu"
-            className="md:hidden bg-warm-cream border-t border-border overflow-hidden"
+            className="md:hidden max-h-[calc(100vh-7.25rem)] max-h-[calc(100dvh-7.25rem)] overflow-y-auto overscroll-contain bg-warm-cream border-t border-border [-webkit-overflow-scrolling:touch]"
           >
-            <div className="section-padding py-6 flex flex-col gap-4">
+            <div className="section-padding py-6 pb-28 flex flex-col gap-4">
               <LanguageSwitcher variant="inline" align="left" triggerClassName="text-lg font-medium text-foreground/80" />
               <div>
                 <button
