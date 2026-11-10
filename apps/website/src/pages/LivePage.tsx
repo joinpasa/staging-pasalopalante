@@ -476,12 +476,13 @@ export default function LivePage() {
 
             <div className="mt-14">
               <h3 className="text-xs font-bold uppercase tracking-[0.18em] text-foreground/60">{tx.glanceTitle}</h3>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
                 {[
                   { href: "#happening", top: tx.g1Top, title: tx.g1Title, body: tx.g1Body },
                   { href: "#germany", top: tx.g2Top, title: tx.g2Title, body: tx.g2Body },
                   { href: "#happening", top: tx.g3Top, title: tx.g3Title, body: tx.g3Body },
                   { href: "#daaji", top: tx.g4Top, title: tx.g4Title, body: tx.g4Body },
+                  { href: "#happening", top: tx.g5Top, title: tx.g5Title, body: tx.g5Body },
                 ].map((g) => (
                   <a key={g.title} href={g.href} className="flex flex-col gap-1.5 rounded-2xl border border-border bg-warm-sand px-5 py-4 transition-colors hover:border-warm-terracotta">
                     <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-foreground/55">{g.top}</span>

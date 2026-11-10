@@ -1574,6 +1574,9 @@ const translations = {
       intruthS4B: "The goal is never to override human choice, but to restore it. When we're not hijacked by reactivity, we have the space to respond with patience, grace and genuine care.",
       intruthCta: "Kindness begins when we have room to choose it.",
       intruthButton: "Get The App",
+      g5Top: "11:45 AM AST · 9:15 PM India",
+      g5Title: "Send Love to the Trees",
+      g5Body: "A moment to send love to the trees and to our Planet Earth.",
     },
   },
 } as const;
