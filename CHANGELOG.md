@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-11-10 — va.deedumlao@gmail.com
 
+- **Temporarily pulled "Live from the Wall" off the homepage during the 11.11 broadcast.** That section read from the database on every single homepage visit; with much higher traffic expected than usual, removing it lowers load on the free-tier database for the 24-hour window. Submitting and logging acts is unaffected. Will be added back after the broadcast.
 - **Fixed the "Something went wrong" screen after we publish an update.** A browser tab that was already open when a new version went live could show that error when clicking a nav link, until the visitor reloaded. The site now detects this and reloads itself once, so the link just works.
 - **Tracking on /live (GA4).** The page now sends named events so the live event can be measured: someone seeing the live stream, Share clicks (by network), the IN TRUTH app buttons, Add to calendar, Masterclass registration, Make a Pledge and View Stream Recording. The IN TRUTH links and shared links carry UTM tags so IN TRUTH and GA4 can tell which button or network sent each visitor. No visible change.
 - **After the stream ends**, the /live hero shows two buttons: "Make a Pledge" (to the pledge section on the homepage) and "View Stream Recording" (to the YouTube channel). Translated in all languages.
