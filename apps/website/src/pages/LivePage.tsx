@@ -348,7 +348,7 @@ export default function LivePage() {
             aria-hidden="true"
             className="pointer-events-none absolute -end-24 top-8 w-[640px] max-w-none opacity-[0.06]"
           />
-          <div className="section-padding relative mx-auto flex max-w-5xl flex-col items-center gap-6 pb-16 pt-32 text-center md:pt-36">
+          <div className="relative mx-auto flex max-w-7xl flex-col items-center gap-6 px-4 pb-16 pt-32 text-center sm:px-6 md:pt-36 lg:px-8">
             <Eyebrow tone="dark">{tx.heroEyebrow}</Eyebrow>
             <h1 className="font-display text-5xl leading-[1.02] tracking-tight md:text-6xl lg:text-7xl">
               {tx.heroTitle}
@@ -398,7 +398,7 @@ export default function LivePage() {
 
             {/* The live panel only appears once the countdown reaches zero. */}
             {phase === "live" && (
-              <div id="live" className="mt-4 w-full max-w-3xl scroll-mt-28 overflow-hidden rounded-3xl border border-warm-cream/20 bg-white/10 text-left backdrop-blur-sm">
+              <div id="live" className="mt-4 w-full scroll-mt-28 overflow-hidden rounded-3xl border border-warm-cream/20 bg-white/10 text-left backdrop-blur-sm">
                 <div className="flex items-center gap-2 border-b border-warm-cream/15 px-5 py-3 text-xs font-bold uppercase tracking-[0.16em]">
                   <span className="inline-flex h-2.5 w-2.5 animate-pulse rounded-full bg-[#d81b60]" aria-hidden="true" />
                   {tx.livePanel}
@@ -442,18 +442,20 @@ export default function LivePage() {
               </div>
             )}
 
-            <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
-              {phase === "ended" ? (
-                <a href={YOUTUBE_CHANNEL} target="_blank" rel="noopener noreferrer" className={btnPrimary}>
-                  <Play size={18} aria-hidden="true" /> {tx.watchYouTube}
-                </a>
-              ) : (
-                <a href={HERO_GOOGLE_CAL} target="_blank" rel="noopener noreferrer" className={btnPrimary}>
-                  <CalendarPlus size={18} aria-hidden="true" /> {tx.addCal}
-                </a>
-              )}
-            </div>
-            {phase !== "ended" && (
+            {phase !== "live" && (
+              <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
+                {phase === "ended" ? (
+                  <a href={YOUTUBE_CHANNEL} target="_blank" rel="noopener noreferrer" className={btnPrimary}>
+                    <Play size={18} aria-hidden="true" /> {tx.watchYouTube}
+                  </a>
+                ) : (
+                  <a href={HERO_GOOGLE_CAL} target="_blank" rel="noopener noreferrer" className={btnPrimary}>
+                    <CalendarPlus size={18} aria-hidden="true" /> {tx.addCal}
+                  </a>
+                )}
+              </div>
+            )}
+            {phase === "before" && (
               <a href={HERO_ICS} className="text-xs font-semibold text-warm-cream/70 underline underline-offset-2 hover:text-warm-cream">
                 {tx.appleOutlook}
               </a>
