@@ -1590,6 +1590,9 @@ const translations = {
       playVideo: "Play video",
       partnerGroupStrategic: "Global Strategic Partners",
       partnerGroupBroadcast: "Live Broadcast Partners",
+      heroBroadcastStarts: "Live broadcast starts ·",
+      kmCountdown: "The Global Kindness Moment begins in",
+      getIntruthApp: "Get the IN TRUTH app",
     },
   },
 } as const;

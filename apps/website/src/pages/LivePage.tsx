@@ -17,7 +17,11 @@ import { useLanguage } from "@shared/contexts/LanguageContext";
 const EVENT_START = Date.parse("2026-11-11T11:11:00-04:00");
 // Daaji's guided meditation starts 5 minutes after the 11:11 moment: 11:16 AM AST.
 const DAAJI_START = EVENT_START + 5 * 60 * 1000;
-const EVENT_END = EVENT_START + 24 * 3600 * 1000; // a 24-hour broadcast
+// The stream appears on the page from LIVE_FROM: 1:55 PM PST on 10 Nov 2026
+// (= 21:55 UTC). The 24-hour broadcast runs from there, with a 2-hour buffer
+// before the page switches to its "ended" state.
+const LIVE_FROM = Date.UTC(2026, 10, 10, 21, 55);
+const LIVE_END = LIVE_FROM + 26 * 3600 * 1000;
 // Pre-11 programme from Yoga Vidya: 15:15–16:18 CET (UTC+1) = 14:15–15:18 UTC.
 const GERMANY_START = Date.UTC(2026, 10, 11, 14, 15);
 const GERMANY_END = Date.UTC(2026, 10, 11, 15, 18);
@@ -33,8 +37,6 @@ const LIVE_PAGE_URL = "https://passkindnessforward.com/live";
 const LIVE_EMBED_SRC: string | null =
   "https://www.youtube.com/embed/live_stream?channel=UC2vk63vLFjSt-lgUhqFjr3Q&autoplay=1&mute=1&rel=0";
 
-// Hero video in "Be part of the broadcast".
-const CAMPAIGN_VIDEO_SRC = "https://www.youtube.com/embed/lZkmX6qO0xw?si=cfVn78GZaIJXFTwV";
 const MASTERCLASS_URL = "https://heartfulness.org/global/masterclass/";
 const DAAJI_POSTER = "/live/daaji-poster.jpg";
 const DAAJI_VIDEO_SRC = "https://cdn-prod.heartfulness.org/videos/kindness-2026/kindness-en.mp4?v=2";
@@ -48,24 +50,11 @@ const HERO_GOOGLE_CAL =
   new URLSearchParams({
     action: "TEMPLATE",
     text: "11.11 Global Live Broadcast",
-    dates: `${toCal(EVENT_START)}/${toCal(EVENT_END)}`,
+    dates: `${toCal(LIVE_FROM)}/${toCal(LIVE_FROM + 24 * 3600 * 1000)}`,
     details: `Watch live: ${LIVE_PAGE_URL}`,
     location: LIVE_PAGE_URL,
   }).toString();
 const HERO_ICS = "/calendar/11-11-global-live-broadcast.ics";
-
-// [number, i18n key, length number/range, unit key]
-const SEGMENTS: Array<[string, "seg1" | "seg2" | "seg3" | "seg4" | "seg5" | "seg6" | "seg7" | "seg8" | "seg9", string, "minAbbr" | "secAbbr"]> = [
-  ["01", "seg1", "1", "minAbbr"],
-  ["02", "seg2", "30", "secAbbr"],
-  ["03", "seg3", "4", "minAbbr"],
-  ["04", "seg4", "30", "secAbbr"],
-  ["05", "seg5", "3", "minAbbr"],
-  ["06", "seg6", "60", "secAbbr"],
-  ["07", "seg7", "5", "minAbbr"],
-  ["08", "seg8", "5", "minAbbr"],
-  ["09", "seg9", "1–3", "minAbbr"],
-];
 
 // Time zones in the selector. The visitor's own zone is detected and chosen
 // for them; this list is only for looking at another one.
@@ -145,6 +134,16 @@ function useNow(intervalMs = 1000) {
   return now;
 }
 
+function cdOf(diff: number) {
+  const d = Math.max(0, diff);
+  return {
+    days: Math.floor(d / 86400000),
+    hours: Math.floor((d / 3600000) % 24),
+    mins: Math.floor((d / 60000) % 60),
+    secs: Math.floor((d / 1000) % 60),
+  };
+}
+
 const pad = (n: number) => String(Math.max(0, n)).padStart(2, "0");
 
 // ---------------------------------------------------------------- small parts
@@ -153,6 +152,35 @@ function Eyebrow({ children, tone = "light" }: { children: ReactNode; tone?: "li
     <p className={`text-xs font-bold uppercase tracking-[0.18em] ${tone === "dark" ? "text-warm-gold" : "text-warm-terracotta"}`}>
       {children}
     </p>
+  );
+}
+
+function CountdownTiles({
+  diff,
+  label,
+  labels,
+}: {
+  diff: number;
+  label: string;
+  labels: { days: string; hours: string; minutes: string; seconds: string };
+}) {
+  const cd = cdOf(diff);
+  return (
+    <div role="timer" aria-label={label} className="flex w-full max-w-xl gap-3">
+      {(
+        [
+          [cd.days, labels.days],
+          [cd.hours, labels.hours],
+          [cd.mins, labels.minutes],
+          [cd.secs, labels.seconds],
+        ] as const
+      ).map(([n, l]) => (
+        <div key={l} className="min-w-0 flex-1 rounded-2xl border border-warm-cream/20 bg-white/10 px-2 py-4 backdrop-blur-sm md:py-5">
+          <div className="font-display text-4xl tabular-nums leading-none md:text-6xl">{pad(n)}</div>
+          <div className="mt-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-warm-cream/65 md:text-xs">{l}</div>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -359,15 +387,13 @@ export default function LivePage() {
 
   // ?preview=live shows the "live now" state, so the team can check it early.
   const forceLive = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("preview") === "live";
-  const phase: "before" | "live" | "ended" = forceLive || (now >= EVENT_START && now < EVENT_END) ? "live" : now < EVENT_START ? "before" : "ended";
-
-  const diff = Math.max(0, EVENT_START - now);
-  const cd = {
-    days: Math.floor(diff / 86400000),
-    hours: Math.floor((diff / 3600000) % 24),
-    mins: Math.floor((diff / 60000) % 60),
-    secs: Math.floor((diff / 1000) % 60),
-  };
+  const phase: "before" | "live" | "ended" = forceLive || (now >= LIVE_FROM && now < LIVE_END) ? "live" : now < LIVE_FROM ? "before" : "ended";
+  // Once the stream is up, a second countdown runs below it to the 11:11 AM
+  // AST Global Kindness Moment, and disappears when that moment arrives.
+  const momentPending = phase === "live" && now < EVENT_START;
+  const cdLabels = { days: tx.days, hours: tx.hours, minutes: tx.minutes, seconds: tx.seconds };
+  const liveAt = `${timeOf(LIVE_FROM, tz)} ${tzAbbr(LIVE_FROM, tz)}`.trim();
+  const liveDay = shortDay(LIVE_FROM, tz);
 
   const startsAt = `${timeOf(EVENT_START, tz)} ${tzAbbr(EVENT_START, tz)}`.trim();
   const startsDay = shortDay(EVENT_START, tz);
@@ -408,37 +434,24 @@ export default function LivePage() {
               </p>
 
               {phase === "before" && (
-                <div role="timer" aria-label={tx.timerLabel} className="flex w-full max-w-xl gap-3">
-                  {(
-                    [
-                      [cd.days, tx.days],
-                      [cd.hours, tx.hours],
-                      [cd.mins, tx.minutes],
-                      [cd.secs, tx.seconds],
-                    ] as const
-                  ).map(([n, label]) => (
-                    <div key={label} className="min-w-0 flex-1 rounded-2xl border border-warm-cream/20 bg-white/10 px-2 py-4 backdrop-blur-sm md:py-5">
-                      <div className="font-display text-4xl tabular-nums leading-none md:text-6xl">{pad(n)}</div>
-                      <div className="mt-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-warm-cream/65 md:text-xs">{label}</div>
-                    </div>
-                  ))}
-                </div>
+                <>
+                  <CountdownTiles diff={LIVE_FROM - now} label={tx.timerLabel} labels={cdLabels} />
+                  {/* Small zone picker right under the countdown. */}
+                  <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm text-warm-cream/75">
+                    <Clock size={16} className="shrink-0 text-warm-gold" aria-hidden="true" />
+                    <span>
+                      {tx.heroBroadcastStarts}{" "}
+                      <strong className="font-semibold text-warm-cream">
+                        {liveAt}, {liveDay}
+                      </strong>
+                    </span>
+                    <ZoneSelect id="hero-tz" zones={zones} value={tz} onChange={setTz} tone="dark" label={tx.tzAria} />
+                  </div>
+                </>
               )}
-
-              {/* Small zone picker right under the countdown. */}
-              <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm text-warm-cream/75">
-                <Clock size={16} className="shrink-0 text-warm-gold" aria-hidden="true" />
-                <span>
-                  {phase === "before" ? tx.heroStarts : tx.heroStarted}{" "}
-                  <strong className="font-semibold text-warm-cream">
-                    {startsAt}, {startsDay}
-                  </strong>
-                </span>
-                <ZoneSelect id="hero-tz" zones={zones} value={tz} onChange={setTz} tone="dark" label={tx.tzAria} />
-              </div>
             </div>
 
-            {/* The live panel only appears once the countdown reaches zero. */}
+            {/* The live panel appears from LIVE_FROM on. */}
             {phase === "live" && (
               <div id="live" className="mt-4 w-full scroll-mt-28 overflow-hidden rounded-3xl border border-warm-cream/20 bg-white/10 text-left backdrop-blur-sm">
                 <div className="flex items-center gap-2 border-b border-warm-cream/15 px-5 py-3 text-xs font-bold uppercase tracking-[0.16em]">
@@ -458,13 +471,23 @@ export default function LivePage() {
                       />
                     </div>
                     <div className="flex flex-col items-center gap-3 border-t border-warm-cream/15 px-5 py-4">
-                      <ShareButton
-                        label={tx.shareButton}
-                        text={tx.shareText}
-                        title={tx.heroTitle}
-                        copyLabel={tx.copyLink}
-                        copiedLabel={tx.linkCopied}
-                      />
+                      <div className="flex flex-wrap items-start justify-center gap-3">
+                        <ShareButton
+                          label={tx.shareButton}
+                          text={tx.shareText}
+                          title={tx.heroTitle}
+                          copyLabel={tx.copyLink}
+                          copiedLabel={tx.linkCopied}
+                        />
+                        <a
+                          href="https://www.intruth.io/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex h-[52px] items-center justify-center gap-2 rounded-full bg-white px-7 text-sm font-bold text-cyan-900 transition-transform duration-200 hover:scale-105"
+                        >
+                          {tx.getIntruthApp} <ExternalLink size={16} aria-hidden="true" />
+                        </a>
+                      </div>
                       <a href={YOUTUBE_LIVE} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-warm-cream/70 underline underline-offset-2 hover:text-warm-cream">
                         {tx.watchLive}
                       </a>
@@ -481,6 +504,23 @@ export default function LivePage() {
                     </a>
                   </div>
                 )}
+              </div>
+            )}
+
+            {momentPending && (
+              <div className="mt-4 flex w-full flex-col items-center gap-5">
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-warm-sky">{tx.kmCountdown}</p>
+                <CountdownTiles diff={EVENT_START - now} label={tx.kmCountdown} labels={cdLabels} />
+                <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm text-warm-cream/75">
+                  <Clock size={16} className="shrink-0 text-warm-gold" aria-hidden="true" />
+                  <span>
+                    {tx.heroStarts}{" "}
+                    <strong className="font-semibold text-warm-cream">
+                      {startsAt}, {startsDay}
+                    </strong>
+                  </span>
+                  <ZoneSelect id="hero-tz" zones={zones} value={tz} onChange={setTz} tone="dark" label={tx.tzAria} />
+                </div>
               </div>
             )}
 
@@ -508,68 +548,6 @@ export default function LivePage() {
             <span className="flex-1 bg-warm-terracotta" />
             <span className="flex-1 bg-warm-gold" />
             <span className="flex-1" style={{ background: "#d81b60" }} />
-          </div>
-        </section>
-
-        {/* ---------------------------------------- be part of the broadcast */}
-        <section id="submit" className="scroll-mt-24 bg-warm-sand">
-          <div className="section-padding mx-auto max-w-6xl py-16 md:py-24">
-            <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
-              <div className="flex flex-col gap-5">
-                <Eyebrow>{tx.submitEyebrow}</Eyebrow>
-                <h2 className="font-display text-3xl leading-tight text-foreground md:text-5xl">
-                  {tx.submitTitle}
-                </h2>
-                <p className="text-base leading-relaxed text-foreground/75 md:text-lg">
-                  {tx.submitBody}
-                </p>
-                <ol className="mt-2 flex flex-col gap-4">
-                  {[
-                    tx.step1,
-                    tx.step2,
-                    tx.step3,
-                  ].map((step, i) => (
-                    <li key={step} className="flex items-start gap-4">
-                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-warm-terracotta text-sm font-bold text-white">
-                        {i + 1}
-                      </span>
-                      <span className="pt-1 text-[15px] leading-snug text-foreground/85">{step}</span>
-                    </li>
-                  ))}
-                </ol>
-                <div className="mt-2">
-                  <a href={HERO_GOOGLE_CAL} target="_blank" rel="noopener noreferrer" className={btnPrimary}>
-                    <CalendarPlus size={18} aria-hidden="true" /> {tx.addCal}
-                  </a>
-                </div>
-              </div>
-              <div className="aspect-video w-full overflow-hidden rounded-3xl bg-black shadow-[0_24px_60px_rgba(14,35,75,0.18)]">
-                <iframe
-                  width="560"
-                  height="315"
-                  src={CAMPAIGN_VIDEO_SRC}
-                  title={tx.videoTitle}
-                  className="h-full w-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  allowFullScreen
-                />
-              </div>
-            </div>
-
-            <div className="mt-14">
-              <h3 className="font-display text-2xl text-foreground md:text-3xl">{tx.chooseSegment}</h3>
-              <p className="mt-2 text-sm text-foreground/65">{tx.chooseNote}</p>
-              <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {SEGMENTS.map(([num, nameKey, n, unit]) => (
-                  <li key={num} className="flex items-center gap-4 rounded-2xl border border-border bg-white px-5 py-4 shadow-sm">
-                    <span className="w-9 shrink-0 font-display text-2xl tabular-nums text-warm-terracotta">{num}</span>
-                    <span className="min-w-0 flex-1 text-[15px] font-semibold leading-snug text-foreground">{tx[nameKey]}</span>
-                    <span className="shrink-0 rounded-full bg-warm-sand px-3 py-1 text-xs font-bold text-foreground/70">{n} {tx[unit]}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
           </div>
         </section>
 
