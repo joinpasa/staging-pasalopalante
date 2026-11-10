@@ -1,7 +1,10 @@
 import { lazy, Suspense } from "react";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import LiveFromWall from "@/components/LiveFromWall";
+// LiveFromWall is pulled from the homepage for the 11.11 broadcast window
+// (removes its per-pageview Supabase reads while the site expects much
+// higher traffic than usual) — restore after the broadcast.
+// import LiveFromWall from "@/components/LiveFromWall";
 import TheStory from "@/components/TheStory";
 import HowItWorks from "@/components/HowItWorks";
 import AnthemSection from "@/components/AnthemSection";
@@ -33,7 +36,6 @@ const Index = () => {
       <Hero />
       <TwoPaths />
       <PartnersMarquee />
-      <LiveFromWall />
       <HowItWorks />
       <AnthemSection />
       <TheStory />
