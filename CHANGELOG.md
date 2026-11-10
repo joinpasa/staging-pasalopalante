@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-11-10 — va.deedumlao@gmail.com
 
+- **/live featured partners:** added the InTruth and HeartMath Institute logos and removed the Sint Maarten ministry logo. Five partners now sit in one row on desktop and two per row on phones.
 - **Homepage hero now shows our Global Strategic Partners.** A faint divider and a "Global Strategic Partners" label sit above the buttons, with one row of three logos (Te Amo PR, Heartfulness, Yoga Vidya) on phone and desktop. The label is translated in all languages.
 
 ## 2026-11-09 — va.deedumlao@gmail.com

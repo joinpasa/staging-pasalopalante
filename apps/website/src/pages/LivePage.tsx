@@ -642,19 +642,21 @@ export default function LivePage() {
                 {tx.partnersTitle}
               </h2>
             </div>
-            <div className="mt-10 grid gap-5 md:grid-cols-3">
+            <div className="mt-10 flex flex-wrap justify-center gap-5">
               {[
                 { name: "Heartfulness", src: HEARTFULNESS_LOGO, wide: true },
                 { name: "Yoga Vidya", src: "/partners/faith-based_yoga-vidya.jpg", wide: false },
                 { name: "AWAKEN", src: "/partners/corporate_awaken---michael-krauss.jpg", wide: false },
+                { name: "InTruth", src: "/partners/corporate_intruth.svg", wide: true },
+                { name: "HeartMath Institute", src: "/partners/nonprofits_hmi-logo.png", wide: true },
               ].map((p) => (
-                <article key={p.name} className="flex flex-col items-center gap-5 rounded-3xl border border-border bg-white p-8 text-center shadow-sm">
+                <article key={p.name} className="flex basis-[calc(50%-0.625rem)] flex-col items-center gap-5 rounded-3xl border border-border bg-white p-4 text-center shadow-sm sm:p-6 md:basis-[calc(33.333%-0.85rem)] lg:basis-[calc(20%-1rem)]">
                   <div className="flex h-28 items-center justify-center">
                     <img
                       src={p.src}
                       alt={tx.logoAlt.replace("{name}", p.name)}
                       loading="lazy"
-                      className={p.wide ? "h-auto w-full max-w-[200px]" : "h-28 w-28 rounded-2xl object-cover"}
+                      className={p.wide ? "h-auto w-full max-w-[170px]" : "h-28 w-28 rounded-2xl object-cover"}
                     />
                   </div>
                 </article>
