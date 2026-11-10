@@ -1609,7 +1609,7 @@
   "yogaAlt": "Yoga Vidya 曼陀罗",
   "daajiEyebrow": "11 点后 · Daaji 与 Heartfulness",
   "daajiTitle": "世界一起冥想。",
-  "daajiIntro": "加入与 Daaji 一起的引导冥想，在 11:11 时刻之后向全世界直播。",
+  "daajiIntro": "11 月 11 日、12 日和 13 日，与 Daaji 一起参加冥想课程，并把这份善意的精神带入你的日常生活。",
   "daajiWhat": "与 Daaji 一起的引导冥想",
   "daajiWhen": "11:16 AST，2026 年 11 月 11 日，星期三",
   "daajiWhere": "线上，通过本页顶部的直播以及我们的 {link}",
@@ -1685,6 +1685,12 @@
   "shareButton": "分享到社交媒体",
   "shareText": "和我一起收看 11.11 全球直播——来自世界各地的 24 小时善意直播。",
   "copyLink": "复制链接",
-  "linkCopied": "链接已复制！"
+  "linkCopied": "链接已复制！",
+  "daajiLead": "体验免费的 Heartfulness 大师课：",
+  "daajiThen": "然后，让我们齐聚一堂，让善意行动起来。",
+  "daajiRegister": "报名免费大师课",
+  "daajiPosterLabel": "Daaji 的寄语",
+  "daajiPosterTitle": "善意的真谛",
+  "playVideo": "播放视频"
  }
 }

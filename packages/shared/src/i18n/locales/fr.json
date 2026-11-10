@@ -1609,7 +1609,7 @@
     "yogaAlt": "Mandala de Yoga Vidya",
     "daajiEyebrow": "Post-11 · Daaji et Heartfulness",
     "daajiTitle": "Le monde médite ensemble.",
-    "daajiIntro": "Rejoignez une méditation guidée avec Daaji, diffusée en direct dans le monde juste après le moment 11h11.",
+    "daajiIntro": "Rejoignez Daaji pour les séances de méditation des 11, 12 et 13 novembre, et portez cet esprit de gentillesse dans votre vie quotidienne.",
     "daajiWhat": "Méditation guidée avec Daaji",
     "daajiWhen": "11h16 AST, mercredi 11 novembre 2026",
     "daajiWhere": "En ligne, sur la diffusion en direct en haut de cette page et sur notre {link}",
@@ -1685,6 +1685,12 @@
     "shareButton": "Partager sur les réseaux",
     "shareText": "Rejoignez-moi en direct pour la Diffusion mondiale en direct 11.11, 24 heures de gentillesse du monde entier.",
     "copyLink": "Copier le lien",
-    "linkCopied": "Lien copié !"
+    "linkCopied": "Lien copié !",
+    "daajiLead": "Découvrez les Masterclasses Heartfulness gratuites :",
+    "daajiThen": "Ensuite, unissons-nous et mettons la gentillesse en mouvement.",
+    "daajiRegister": "S'inscrire aux Masterclasses gratuites",
+    "daajiPosterLabel": "Le message de Daaji",
+    "daajiPosterTitle": "Le vrai sens de la gentillesse",
+    "playVideo": "Lire la vidéo"
   }
 }

@@ -1610,7 +1610,7 @@
   "yogaAlt": "Mandala de Yoga Vidya",
   "daajiEyebrow": "Pós-11 · Daaji e Heartfulness",
   "daajiTitle": "O mundo medita junto.",
-  "daajiIntro": "Participe de uma meditação guiada com Daaji, transmitida ao vivo para o mundo logo após o momento 11:11.",
+  "daajiIntro": "Junte-se a Daaji nas sessões de meditação de 11, 12 e 13 de novembro e leve esse espírito de bondade para o seu dia a dia.",
   "daajiWhat": "Meditação guiada com Daaji",
   "daajiWhen": "11:16 AST, quarta-feira, 11 de novembro de 2026",
   "daajiWhere": "Online, na transmissão ao vivo no topo desta página e no nosso {link}",
@@ -1686,6 +1686,12 @@
   "shareButton": "Compartilhar nas redes",
   "shareText": "Venha comigo à Transmissão Global ao Vivo 11.11, 24 horas de bondade de todo o mundo.",
   "copyLink": "Copiar link",
-  "linkCopied": "Link copiado!"
+  "linkCopied": "Link copiado!",
+  "daajiLead": "Experimente as Masterclasses gratuitas da Heartfulness:",
+  "daajiThen": "Depois, vamos nos unir e colocar a bondade em movimento.",
+  "daajiRegister": "Inscreva-se nas Masterclasses gratuitas",
+  "daajiPosterLabel": "Mensagem de Daaji",
+  "daajiPosterTitle": "O verdadeiro significado da bondade",
+  "playVideo": "Reproduzir vídeo"
  }
 }

@@ -1501,7 +1501,7 @@
     "yogaAlt": "Mandala Yoga Vidya",
     "daajiEyebrow": "Po 11 · Daaji in Heartfulness",
     "daajiTitle": "Svet meditira skupaj.",
-    "daajiIntro": "Pridruži se vodeni meditaciji z Daajijem, ki bo v živo prenašana svetu takoj po trenutku 11.11.",
+    "daajiIntro": "Pridruži se Daajiju na meditacijskih srečanjih 11., 12. in 13. novembra in ta duh prijaznosti ponesi v vsakdan.",
     "daajiWhat": "Vodena meditacija z Daajijem",
     "daajiWhen": "11.16 AST, sreda, 11. november 2026",
     "daajiWhere": "Na spletu, v prenosu v živo na vrhu te strani in na našem {link}",
@@ -1577,6 +1577,12 @@
     "shareButton": "Deli na družbenih omrežjih",
     "shareText": "Pridruži se mi v živo pri Globalnem prenosu v živo 11.11 – 24 ur prijaznosti z vsega sveta.",
     "copyLink": "Kopiraj povezavo",
-    "linkCopied": "Povezava kopirana!"
+    "linkCopied": "Povezava kopirana!",
+    "daajiLead": "Doživi brezplačne mojstrske delavnice Heartfulness:",
+    "daajiThen": "Nato se združimo in prijaznost spravimo v gibanje.",
+    "daajiRegister": "Prijavi se na brezplačne mojstrske delavnice",
+    "daajiPosterLabel": "Daajijevo sporočilo",
+    "daajiPosterTitle": "Pravi pomen prijaznosti",
+    "playVideo": "Predvajaj videoposnetek"
   }
 }

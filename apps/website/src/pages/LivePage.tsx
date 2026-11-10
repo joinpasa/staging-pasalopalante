@@ -1,5 +1,5 @@
-import { Fragment, useEffect, useMemo, useState, type ReactNode } from "react";
-import { CalendarPlus, Check, Clock, Link2, Play, Radio, Share2 } from "lucide-react";
+import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { CalendarPlus, Check, Clock, ExternalLink, Link2, Play, Radio, Share2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -35,11 +35,13 @@ const LIVE_EMBED_SRC: string | null =
 
 // Hero video in "Be part of the broadcast".
 const CAMPAIGN_VIDEO_SRC = "https://www.youtube.com/embed/lZkmX6qO0xw?si=cfVn78GZaIJXFTwV";
+const MASTERCLASS_URL = "https://heartfulness.org/global/masterclass/";
+const DAAJI_POSTER = "/live/daaji-poster.jpg";
 const DAAJI_VIDEO_SRC = "https://cdn-prod.heartfulness.org/videos/kindness-2026/kindness-en.mp4?v=2";
 const YOGA_VIDYA_IMAGE = "https://www.yoga-vidya.de/fileadmin/yv/Startseite/Featurette/yoga-vidya-mandala-500x500.jpg";
 const HEARTFULNESS_LOGO = "https://primary-assets.heartfulness.org/strapi-assets/Heartfulness_Logo_Blk_Pwd_8f65f0f06c.svg";
 
-// Calendar links. The Daaji link is the exact one supplied by Heartfulness.
+// Calendar links for the broadcast.
 const toCal = (ms: number) => new Date(ms).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
 const HERO_GOOGLE_CAL =
   "https://calendar.google.com/calendar/render?" +
@@ -50,10 +52,7 @@ const HERO_GOOGLE_CAL =
     details: `Watch live: ${LIVE_PAGE_URL}`,
     location: LIVE_PAGE_URL,
   }).toString();
-const DAAJI_GOOGLE_CAL =
-  "https://calendar.google.com/calendar/render?action=TEMPLATE&text=Global+Kindness+Season+Launch+with+Daaji&dates=20261111T151600Z%2F20261111T161600Z&details=Meditate+with+Heartfulness%2C+perform+kindness%2C+pass+it+forward.+Join+people+worldwide+at+11%3A16+AM+AST.&location=Online";
 const HERO_ICS = "/calendar/11-11-global-live-broadcast.ics";
-const DAAJI_ICS = "/calendar/11-11-daaji-meditation.ics";
 
 // [number, i18n key, length number/range, unit key]
 const SEGMENTS: Array<[string, "seg1" | "seg2" | "seg3" | "seg4" | "seg5" | "seg6" | "seg7" | "seg8" | "seg9", string, "minAbbr" | "secAbbr"]> = [
@@ -283,6 +282,49 @@ function ShareButton({
             {copied ? copiedLabel : copyLabel}
           </button>
         </div>
+      )}
+    </div>
+  );
+}
+
+// Daaji's message: portrait video with a poster (a still of Daaji, the label
+// and title, and a play button) so it never looks like an empty black box.
+function DaajiVideo({ label, title, playLabel, unsupported }: { label: string; title: string; playLabel: string; unsupported: string }) {
+  const [started, setStarted] = useState(false);
+  const ref = useRef<HTMLVideoElement>(null);
+  return (
+    <div className="relative mx-auto aspect-[9/16] h-[520px] max-w-full overflow-hidden rounded-3xl bg-black shadow-[0_24px_60px_rgba(0,0,0,0.35)] md:h-[600px]">
+      {/* The Heartfulness video is portrait (9:16), so it fills its own frame. */}
+      <video
+        ref={ref}
+        controls={started}
+        playsInline
+        preload="none"
+        poster={DAAJI_POSTER}
+        src={DAAJI_VIDEO_SRC}
+        className="h-full w-full bg-black object-cover"
+      >
+        {unsupported}
+      </video>
+      {!started && (
+        <button
+          type="button"
+          aria-label={playLabel}
+          onClick={() => {
+            setStarted(true);
+            void ref.current?.play();
+          }}
+          className="group absolute inset-0 flex items-center justify-center text-left"
+        >
+          <span className="absolute inset-x-0 bottom-0 h-[40%] bg-[linear-gradient(to_top,#0b1f6b_0%,rgba(11,31,107,0.7)_55%,transparent_100%)]" aria-hidden="true" />
+          <span className="relative flex h-20 w-20 items-center justify-center rounded-full bg-white shadow-lg transition-transform duration-200 group-hover:scale-110" aria-hidden="true">
+            <Play size={30} className="ms-1 fill-[#9b0f2f] text-[#9b0f2f]" />
+          </span>
+          <span className="absolute inset-x-0 bottom-0 flex flex-col gap-1.5 p-6">
+            <span className="text-xs font-bold uppercase tracking-[0.18em] text-[#e7a3b8]">{label}</span>
+            <span className="font-display text-2xl leading-tight text-white md:text-3xl">{title}</span>
+          </span>
+        </button>
       )}
     </div>
   );
@@ -642,9 +684,14 @@ export default function LivePage() {
               <div>
                 <Eyebrow tone="dark">{tx.daajiEyebrow}</Eyebrow>
                 <h2 className="mt-4 font-display text-3xl leading-tight md:text-5xl">{tx.daajiTitle}</h2>
-                <p className="mt-4 text-base leading-relaxed text-warm-cream/75 md:text-lg">
-                  {tx.daajiIntro}
+                <p className="mt-4 text-base leading-relaxed text-warm-cream md:text-lg">
+                  <strong className="font-bold">{tx.daajiLead}</strong>{" "}
+                  <a href={MASTERCLASS_URL} target="_blank" rel="noopener noreferrer" className="font-semibold text-warm-gold underline underline-offset-2">
+                    heartfulness.org/global/masterclass
+                  </a>
                 </p>
+                <p className="mt-3 text-base font-bold leading-relaxed text-warm-cream md:text-lg">{tx.daajiThen}</p>
+                <p className="mt-3 text-base leading-relaxed text-warm-cream/75 md:text-lg">{tx.daajiIntro}</p>
                 <DetailRows
                   tone="dark"
                   rows={[
@@ -672,17 +719,12 @@ export default function LivePage() {
                   ]}
                 />
               </div>
-              <video
-                controls
-                playsInline
-                preload="metadata"
-                src={DAAJI_VIDEO_SRC}
-                // The Heartfulness video is portrait (9:16): sized by height so it
-                // fills its own frame with no black side bars.
-                className="mx-auto aspect-[9/16] h-[520px] max-w-full rounded-3xl bg-black object-contain shadow-[0_24px_60px_rgba(0,0,0,0.35)] md:h-[600px]"
-              >
-                {tx.videoUnsupported}
-              </video>
+              <DaajiVideo
+                label={tx.daajiPosterLabel}
+                title={tx.daajiPosterTitle}
+                playLabel={tx.playVideo}
+                unsupported={tx.videoUnsupported}
+              />
             </div>
 
             {/* Time + calendar card */}
@@ -708,15 +750,12 @@ export default function LivePage() {
                   <p className="text-sm text-warm-cream/70">{tx.fromTime}</p>
                 </div>
                 <a
-                  href={DAAJI_GOOGLE_CAL}
+                  href={MASTERCLASS_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-1 inline-flex h-[52px] items-center justify-center gap-2 rounded-full bg-white px-7 text-sm font-bold text-cyan-900 transition-transform duration-200 hover:scale-[1.02]"
+                  className="mt-1 inline-flex min-h-[52px] items-center justify-center gap-2 rounded-full bg-white px-7 py-3 text-center text-sm font-bold text-cyan-900 transition-transform duration-200 hover:scale-[1.02]"
                 >
-                  <CalendarPlus size={18} aria-hidden="true" /> {tx.addGoogleCal}
-                </a>
-                <a href={DAAJI_ICS} className="self-center text-xs font-semibold text-warm-cream/75 underline underline-offset-2 hover:text-warm-cream">
-                  {tx.appleOutlook}
+                  {tx.daajiRegister} <ExternalLink size={16} aria-hidden="true" />
                 </a>
               </div>
             </div>
