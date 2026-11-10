@@ -1662,6 +1662,22 @@
     "a10Link": "Haz tu compromiso",
     "q11": "¿Habrá repetición?",
     "a11": "Sí. La repetición se añadirá a nuestro {link} y a nuestro sitio web.",
-    "joinMovement": "Únete al movimiento →"
+    "joinMovement": "Únete al movimiento →",
+    "intruthEyebrow": "La ciencia de la bondad · IN TRUTH",
+    "intruthTitle": "Demostremos que el amor funciona.",
+    "intruthBody1": "Cuando el mundo hace una pausa a las 11:11, ¿qué ocurre dentro de nosotros? IN TRUTH convierte señales biométricas en tiempo real, como los datos del intervalo entre latidos (BBI), en métricas claras de {valence} (tipo) y {arousal} (intensidad). Funciona como un espejo para el sistema nervioso y nos lleva de la reacción a la conciencia.",
+    "intruthValence": "Valencia",
+    "intruthArousal": "Activación",
+    "intruthBody2": "Así es como hacer visible nuestro estado interior facilita la bondad, hacia nosotros mismos y hacia los demás.",
+    "intruthS1T": "Haz una pausa antes de reaccionar",
+    "intruthS1B": "Cuando estamos abrumados o agotados, solemos culpar a quienes tenemos más cerca de un estrés que en realidad es nuestro. Ver nuestra línea base real nos ayuda a detectar esa reactividad antes de que se convierta en palabras duras.",
+    "intruthS2T": "Empieza siendo amable contigo",
+    "intruthS2B": "Los datos objetivos validan lo que sentimos. Convierten “¿Qué me pasa?” en “Mi activación está alta y necesito tiempo para recuperarme”.",
+    "intruthS3T": "Ve el sufrimiento silencioso de los demás",
+    "intruthS3B": "Mucha gente sufre en silencio. Entender nuestra propia línea base crea más empatía hacia las señales sutiles de sobrecarga en nuestros equipos, familias y amistades, para ofrecer apoyo antes de un punto de quiebre.",
+    "intruthS4T": "Que la decisión siga siendo tuya",
+    "intruthS4B": "El objetivo nunca es anular la decisión humana, sino devolverla. Cuando la reactividad no nos secuestra, tenemos espacio para responder con paciencia, gracia y verdadero cuidado.",
+    "intruthCta": "La bondad empieza cuando tenemos espacio para elegirla.",
+    "intruthButton": "Obtén la app"
   }
 }

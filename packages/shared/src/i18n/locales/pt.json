@@ -1663,6 +1663,22 @@
   "a10Link": "Faça seu compromisso",
   "q11": "Haverá reprise?",
   "a11": "Sim. A reprise será adicionada ao nosso {link} e ao nosso site.",
-  "joinMovement": "Junte-se ao movimento →"
+  "joinMovement": "Junte-se ao movimento →",
+  "intruthEyebrow": "A ciência da bondade · IN TRUTH",
+  "intruthTitle": "Vamos provar que o amor funciona.",
+  "intruthBody1": "Quando o mundo faz uma pausa às 11:11, o que acontece dentro de nós? O IN TRUTH transforma sinais biométricos em tempo real, como os dados do intervalo entre batimentos (BBI), em métricas claras de {valence} (tipo) e {arousal} (intensidade). Funciona como um espelho para o sistema nervoso e nos leva da reação à consciência.",
+  "intruthValence": "Valência",
+  "intruthArousal": "Ativação",
+  "intruthBody2": "Veja como tornar visível o nosso estado interior facilita a bondade, com nós mesmos e uns com os outros.",
+  "intruthS1T": "Faça uma pausa antes de reagir",
+  "intruthS1B": "Quando estamos sobrecarregados ou esgotados, costumamos culpar quem está mais perto de nós por um estresse que, na verdade, é nosso. Ver a nossa linha de base real ajuda a perceber essa reatividade antes que vire palavras duras.",
+  "intruthS2T": "Comece sendo gentil consigo",
+  "intruthS2B": "Dados objetivos validam o que sentimos. Eles transformam “O que há de errado comigo?” em “Minha ativação está alta e preciso de tempo para me recuperar.”",
+  "intruthS3T": "Enxergue o sofrimento silencioso nos outros",
+  "intruthS3B": "Muitas pessoas lutam em silêncio. Entender a nossa própria linha de base cria mais empatia pelos sinais sutis de sobrecarga em nossas equipes, famílias e amigos, para oferecermos apoio antes do limite.",
+  "intruthS4T": "Mantenha a escolha com você",
+  "intruthS4B": "O objetivo nunca é anular a escolha humana, e sim restaurá-la. Quando não somos dominados pela reatividade, temos espaço para responder com paciência, graça e cuidado genuíno.",
+  "intruthCta": "A bondade começa quando temos espaço para escolhê-la.",
+  "intruthButton": "Baixar o app"
  }
 }

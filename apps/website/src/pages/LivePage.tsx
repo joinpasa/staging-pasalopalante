@@ -670,6 +670,57 @@ export default function LivePage() {
           </div>
         </section>
 
+        {/* ------------------------------------------------------- IN TRUTH */}
+        <section id="intruth" className="scroll-mt-24 bg-cyan-900 text-warm-cream">
+          <div className="section-padding mx-auto max-w-6xl py-16 md:py-20">
+            <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-center">
+              <div className="max-w-2xl">
+                <Eyebrow tone="dark">{tx.intruthEyebrow}</Eyebrow>
+                <h2 className="mt-4 font-display text-3xl leading-tight md:text-5xl">{tx.intruthTitle}</h2>
+                <p className="mt-4 text-base leading-relaxed text-warm-cream/80 md:text-lg">
+                  {rich(tx.intruthBody1, {
+                    valence: <strong className="font-bold text-warm-cream">{tx.intruthValence}</strong>,
+                    arousal: <strong className="font-bold text-warm-cream">{tx.intruthArousal}</strong>,
+                  })}
+                </p>
+                <p className="mt-3 text-base leading-relaxed text-warm-cream/80 md:text-lg">{tx.intruthBody2}</p>
+              </div>
+              <span className="inline-flex shrink-0 items-center justify-center rounded-3xl bg-white px-10 py-8">
+                <img src="/partners/corporate_intruth.svg" alt={tx.logoAlt.replace("{name}", "IN TRUTH")} loading="lazy" className="h-auto w-40 md:w-52" />
+              </span>
+            </div>
+
+            <ol className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+              {(
+                [
+                  [tx.intruthS1T, tx.intruthS1B, "#00a3e0"],
+                  [tx.intruthS2T, tx.intruthS2B, "#f2701d"],
+                  [tx.intruthS3T, tx.intruthS3B, "#fbb813"],
+                  [tx.intruthS4T, tx.intruthS4B, "#d81b60"],
+                ] as const
+              ).map(([title, body, color], i) => (
+                <li key={title} className="flex flex-col gap-2.5 rounded-2xl border border-warm-cream/15 bg-white/10 p-4 sm:gap-3 sm:p-6">
+                  <span
+                    className="flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-cyan-900"
+                    style={{ background: color }}
+                  >
+                    {i + 1}
+                  </span>
+                  <h3 className="text-base font-bold leading-snug sm:text-lg">{title}</h3>
+                  <p className="text-[13px] leading-relaxed text-warm-cream/75 sm:text-sm">{body}</p>
+                </li>
+              ))}
+            </ol>
+
+            <div className="mt-8 flex flex-col items-start justify-between gap-5 rounded-3xl bg-white px-6 py-6 text-foreground sm:flex-row sm:items-center md:px-8">
+              <p className="font-display text-2xl leading-tight md:text-3xl">{tx.intruthCta}</p>
+              <a href="https://www.intruth.io/" target="_blank" rel="noopener noreferrer" className={`${btnPrimary} shrink-0`}>
+                {tx.intruthButton}
+              </a>
+            </div>
+          </div>
+        </section>
+
         {/* ------------------------------------------------------------ FAQ */}
         <section id="faq" className="scroll-mt-24 bg-warm-sand">
           <div className="section-padding mx-auto max-w-3xl py-16 md:py-24">

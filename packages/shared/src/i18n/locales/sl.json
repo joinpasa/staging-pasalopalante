@@ -1554,6 +1554,22 @@
     "a10Link": "Podaj svojo zaobljubo",
     "q11": "Ali bo na voljo ponovitev?",
     "a11": "Da. Ponovitev bo dodana na naš {link} in našo spletno stran.",
-    "joinMovement": "Pridruži se gibanju →"
+    "joinMovement": "Pridruži se gibanju →",
+    "intruthEyebrow": "Znanost prijaznosti · IN TRUTH",
+    "intruthTitle": "Dokažimo, da ljubezen deluje.",
+    "intruthBody1": "Ko se svet ob 11.11 ustavi, kaj se zgodi v nas? IN TRUTH pretvarja biometrične signale v realnem času, kot so podatki o intervalu med srčnimi utripi (BBI), v jasne kazalnike: {valence} (vrsta) in {arousal} (intenzivnost). Deluje kot ogledalo za živčni sistem in nas premakne od odziva k zavedanju.",
+    "intruthValence": "valenca",
+    "intruthArousal": "vzburjenost",
+    "intruthBody2": "Tako naredi vidnost našega notranjega stanja prijaznost lažjo – do nas samih in drug do drugega.",
+    "intruthS1T": "Ustavi se, preden se odzoveš",
+    "intruthS1B": "Ko smo preobremenjeni ali izčrpani, pogosto krivimo ljudi, ki so nam najbližje, za stres, ki je v resnici naš. Ko vidimo svojo pravo izhodiščno raven, to odzivnost opazimo, preden se spremeni v ostre besede.",
+    "intruthS2T": "Začni s prijaznostjo do sebe",
+    "intruthS2B": "Objektivni podatki potrdijo, kar čutimo. Vprašanje »Kaj je narobe z mano?« postane »Moja vzburjenost je visoka in potrebujem čas za okrevanje.«",
+    "intruthS3T": "Opazi tiho trpljenje drugih",
+    "intruthS3B": "Veliko ljudi se bori v tišini. Razumevanje lastne izhodiščne ravni poglobi sočutje do subtilnih znakov preobremenjenosti v naših ekipah, družinah in med prijatelji, da lahko ponudimo podporo, preden pride do zloma.",
+    "intruthS4T": "Izbira naj ostane tvoja",
+    "intruthS4B": "Cilj nikoli ni preglasiti človeške izbire, temveč jo povrniti. Ko nas odzivnost ne ugrabi, imamo prostor, da odgovorimo s potrpežljivostjo, milino in pristno skrbjo.",
+    "intruthCta": "Prijaznost se začne, ko imamo prostor, da jo izberemo.",
+    "intruthButton": "Prenesi aplikacijo"
   }
 }

@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-11-10 — va.deedumlao@gmail.com
 
+- **New IN TRUTH section on /live**, between the featured partners and the FAQ: "Let's prove love works", the IN TRUTH logo, four short ideas side by side (two per row on phones), and a "Get The App" button to intruth.io. Translated in all languages.
 - **Homepage hero:** added a small "See all our Founding Partners →" link under the partner logos, going to the Partners page (translated in all languages).
 - **/live featured partners:** added the InTruth and HeartMath Institute logos and removed the Sint Maarten ministry logo. Five partners now sit in one row on desktop and two per row on phones.
 - **Homepage hero now shows our Global Strategic Partners.** A faint divider and a "Global Strategic Partners" label sit above the buttons, with one row of three logos (Te Amo PR, Heartfulness, Yoga Vidya) on phone and desktop. The label is translated in all languages.

@@ -1662,6 +1662,22 @@
     "a10Link": "Gib dein Versprechen ab",
     "q11": "Wird es eine Aufzeichnung geben?",
     "a11": "Ja. Die Aufzeichnung wird zu unserem {link} und auf unserer Website hinzugefügt.",
-    "joinMovement": "Werde Teil der Bewegung →"
+    "joinMovement": "Werde Teil der Bewegung →",
+    "intruthEyebrow": "Die Wissenschaft der Freundlichkeit · IN TRUTH",
+    "intruthTitle": "Lass uns beweisen, dass Liebe wirkt.",
+    "intruthBody1": "Wenn die Welt um 11:11 Uhr innehält – was passiert in uns? IN TRUTH wandelt biometrische Echtzeitsignale wie die Herzschlag-Intervalle (BBI) in klare {valence}- (Art) und {arousal}-Werte (Intensität) um. Es wirkt wie ein Spiegel für das Nervensystem und führt uns von der Reaktion zur Bewusstheit.",
+    "intruthValence": "Valenz",
+    "intruthArousal": "Erregung",
+    "intruthBody2": "So macht es Freundlichkeit leichter, unseren inneren Zustand sichtbar zu machen – uns selbst und einander gegenüber.",
+    "intruthS1T": "Halte inne, bevor du reagierst",
+    "intruthS1B": "Wenn wir überfordert oder erschöpft sind, geben wir oft den Menschen um uns herum die Schuld für Stress, der eigentlich unser eigener ist. Unsere wahre Grundlinie zu sehen, hilft uns, diese Reaktivität zu bemerken, bevor sie zu harten Worten wird.",
+    "intruthS2T": "Beginne mit Freundlichkeit dir selbst gegenüber",
+    "intruthS2B": "Objektive Daten bestätigen, was wir fühlen. Aus „Was stimmt nicht mit mir?“ wird „Meine Erregung ist hoch, und ich brauche Zeit zur Erholung.“",
+    "intruthS3T": "Erkenne stilles Leid bei anderen",
+    "intruthS3B": "Viele Menschen kämpfen im Stillen. Die eigene Grundlinie zu verstehen, schafft mehr Einfühlung für die feinen Zeichen von Überlastung in unseren Teams, Familien und Freundeskreisen – damit wir Unterstützung anbieten können, bevor es zum Zusammenbruch kommt.",
+    "intruthS4T": "Die Wahl bleibt bei dir",
+    "intruthS4B": "Das Ziel ist nie, die menschliche Entscheidung zu übergehen, sondern sie wiederherzustellen. Wenn uns die Reaktivität nicht überrollt, haben wir den Raum, mit Geduld, Güte und echter Fürsorge zu antworten.",
+    "intruthCta": "Freundlichkeit beginnt, wenn wir Raum haben, sie zu wählen.",
+    "intruthButton": "App holen"
   }
 }

@@ -1662,6 +1662,22 @@
     "a10Link": "Faites votre engagement",
     "q11": "Y aura-t-il une rediffusion ?",
     "a11": "Oui. La rediffusion sera ajoutée à notre {link} et à notre site web.",
-    "joinMovement": "Rejoignez le mouvement →"
+    "joinMovement": "Rejoignez le mouvement →",
+    "intruthEyebrow": "La science de la gentillesse · IN TRUTH",
+    "intruthTitle": "Prouvons que l'amour fonctionne.",
+    "intruthBody1": "Quand le monde fait une pause à 11h11, que se passe-t-il en nous ? IN TRUTH transforme des signaux biométriques en temps réel, comme l'intervalle entre les battements (BBI), en indicateurs clairs de {valence} (type) et d'{arousal} (intensité). Il agit comme un miroir pour le système nerveux et nous fait passer de la réaction à la conscience.",
+    "intruthValence": "valence",
+    "intruthArousal": "activation",
+    "intruthBody2": "Voici comment rendre visible notre état intérieur facilite la gentillesse, envers nous-mêmes et envers les autres.",
+    "intruthS1T": "Faites une pause avant de réagir",
+    "intruthS1B": "Quand nous sommes dépassés ou épuisés, nous reprochons souvent à nos proches un stress qui est en réalité le nôtre. Voir notre véritable base de référence nous aide à repérer cette réactivité avant qu'elle ne devienne des paroles dures.",
+    "intruthS2T": "Commencez par être gentil avec vous-même",
+    "intruthS2B": "Les données objectives valident ce que nous ressentons. Elles transforment « Qu'est-ce qui ne va pas chez moi ? » en « Mon activation est élevée et j'ai besoin de temps pour récupérer. »",
+    "intruthS3T": "Voyez la souffrance silencieuse des autres",
+    "intruthS3B": "Beaucoup de gens luttent en silence. Comprendre notre propre base de référence développe plus d'empathie pour les signes discrets de surcharge dans nos équipes, nos familles et chez nos amis, afin d'offrir du soutien avant le point de rupture.",
+    "intruthS4T": "Gardez le choix entre vos mains",
+    "intruthS4B": "Le but n'est jamais de passer outre le choix humain, mais de le rétablir. Quand la réactivité ne nous submerge pas, nous avons l'espace de répondre avec patience, bienveillance et un soin sincère.",
+    "intruthCta": "La gentillesse commence quand nous avons la place de la choisir.",
+    "intruthButton": "Obtenir l'app"
   }
 }
