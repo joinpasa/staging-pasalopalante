@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-11-10 — va.deedumlao@gmail.com
 
+- **Tracking on /live (GA4).** The page now sends named events so the live event can be measured: someone seeing the live stream, Share clicks (by network), the IN TRUTH app buttons, Add to calendar, Masterclass registration, Make a Pledge and View Stream Recording. The IN TRUTH links and shared links carry UTM tags so IN TRUTH and GA4 can tell which button or network sent each visitor. No visible change.
 - **After the stream ends**, the /live hero shows two buttons: "Make a Pledge" (to the pledge section on the homepage) and "View Stream Recording" (to the YouTube channel). Translated in all languages.
 - **While the stream is live (from 1:55 PM PST on 10 Nov):** the yellow ribbon across the whole site changes to "LIVE BROADCAST HAPPENING NOW" with a pulsing dot, and /live hides its two intro paragraphs so the stream leads. Before that time, and after the broadcast ends, nothing changes. Translated in all languages.
 - **/live timing and layout.** The "Be part of the broadcast" section is removed. The live stream now appears on the page at 1:55 PM PST on 10 November; until then the hero keeps counting down to 11:11 AM AST (Puerto Rico). Once the stream is up, a second countdown sits right below it counting to the 11:11 AM AST Global Kindness Moment, then disappears when the moment arrives. A "Get the IN TRUTH app" button now sits next to "Share to social" under the stream. Translated in all languages.

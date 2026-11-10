@@ -8,6 +8,7 @@ import SEO from "@/components/SEO";
 import { useScrollToHash } from "@/hooks/useScrollToHash";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { LIVE_END, LIVE_FROM, isLivePreview } from "@/lib/liveBroadcast";
+import { trackEvent } from "@/lib/analytics";
 
 // /live: the 11.11.2026 Global Live Broadcast event page. All copy lives in
 // the `livePage` namespace of the i18n files; everything else the team may
@@ -33,6 +34,13 @@ const LIVE_PAGE_URL = "https://passkindnessforward.com/live";
 const LIVE_EMBED_SRC: string | null =
   "https://www.youtube.com/embed/live_stream?channel=UC2vk63vLFjSt-lgUhqFjr3Q&autoplay=1&mute=1&rel=0";
 
+// IN TRUTH tracks installs on their side; the UTM tags tell them which of our
+// buttons sent the visitor. "content" is the placement.
+const intruthUrl = (content: string) =>
+  `https://www.intruth.io/?utm_source=pasalopalante&utm_medium=live_page&utm_campaign=1111&utm_content=${content}`;
+// Shared links carry the network so GA4 can show which one brings people back.
+const shareUrl = (source: string) =>
+  `${LIVE_PAGE_URL}?utm_source=${source}&utm_medium=social&utm_campaign=1111_live`;
 const MASTERCLASS_URL = "https://heartfulness.org/global/masterclass/";
 const DAAJI_POSTER = "/live/daaji-poster.jpg";
 const DAAJI_VIDEO_SRC = "https://cdn-prod.heartfulness.org/videos/kindness-2026/kindness-en.mp4?v=2";
@@ -255,19 +263,19 @@ function ShareButton({
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const enc = encodeURIComponent;
-  const url = LIVE_PAGE_URL;
   const networks = [
-    { name: "Facebook", href: `https://www.facebook.com/sharer/sharer.php?u=${enc(url)}` },
-    { name: "X", href: `https://twitter.com/intent/tweet?text=${enc(text)}&url=${enc(url)}` },
-    { name: "WhatsApp", href: `https://wa.me/?text=${enc(`${text} ${url}`)}` },
-    { name: "LinkedIn", href: `https://www.linkedin.com/sharing/share-offsite/?url=${enc(url)}` },
+    { name: "Facebook", key: "facebook", href: `https://www.facebook.com/sharer/sharer.php?u=${enc(shareUrl("facebook"))}` },
+    { name: "X", key: "x", href: `https://twitter.com/intent/tweet?text=${enc(text)}&url=${enc(shareUrl("x"))}` },
+    { name: "WhatsApp", key: "whatsapp", href: `https://wa.me/?text=${enc(`${text} ${shareUrl("whatsapp")}`)}` },
+    { name: "LinkedIn", key: "linkedin", href: `https://www.linkedin.com/sharing/share-offsite/?url=${enc(shareUrl("linkedin"))}` },
   ];
 
   async function onClick() {
     const touch = typeof window !== "undefined" && window.matchMedia?.("(pointer: coarse)").matches;
     if (touch && typeof navigator !== "undefined" && typeof navigator.share === "function") {
       try {
-        await navigator.share({ title, text, url });
+        trackEvent("share_click", { method: "native" });
+        await navigator.share({ title, text, url: shareUrl("share_sheet") });
         return;
       } catch (e) {
         if ((e as DOMException)?.name === "AbortError") return;
@@ -278,7 +286,8 @@ function ShareButton({
 
   async function copy() {
     try {
-      await navigator.clipboard.writeText(url);
+      trackEvent("share_click", { method: "copy_link" });
+      await navigator.clipboard.writeText(shareUrl("copy_link"));
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -297,7 +306,7 @@ function ShareButton({
       {open && (
         <div className="flex flex-wrap items-center justify-center gap-2">
           {networks.map((n) => (
-            <a key={n.name} href={n.href} target="_blank" rel="noopener noreferrer" className={chip}>
+            <a key={n.name} href={n.href} target="_blank" rel="noopener noreferrer" className={chip} onClick={() => trackEvent("share_click", { method: n.key })}>
               {n.name}
             </a>
           ))}
@@ -386,6 +395,11 @@ export default function LivePage() {
   const phase: "before" | "live" | "ended" = forceLive || (now >= LIVE_FROM && now < LIVE_END) ? "live" : now < LIVE_FROM ? "before" : "ended";
   // Once the stream is up, a second countdown runs below it to the 11:11 AM
   // AST Global Kindness Moment, and disappears when that moment arrives.
+  // One "live_stream_view" per page load once the player is on screen. Not
+  // sent for the ?preview=live team check.
+  useEffect(() => {
+    if (phase === "live" && LIVE_EMBED_SRC && !forceLive) trackEvent("live_stream_view", { language: lang });
+  }, [phase, forceLive, lang]);
   const momentPending = phase === "live" && now < EVENT_START;
   const cdLabels = { days: tx.days, hours: tx.hours, minutes: tx.minutes, seconds: tx.seconds };
 
@@ -479,15 +493,16 @@ export default function LivePage() {
                           copiedLabel={tx.linkCopied}
                         />
                         <a
-                          href="https://www.intruth.io/"
+                          href={intruthUrl("live_player")}
                           target="_blank"
                           rel="noopener noreferrer"
+                          onClick={() => trackEvent("intruth_app_click", { placement: "live_player" })}
                           className="inline-flex h-[52px] items-center justify-center gap-2 rounded-full bg-white px-7 text-sm font-bold text-cyan-900 transition-transform duration-200 hover:scale-105"
                         >
                           {tx.getIntruthApp} <ExternalLink size={16} aria-hidden="true" />
                         </a>
                       </div>
-                      <a href={YOUTUBE_LIVE} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-warm-cream/70 underline underline-offset-2 hover:text-warm-cream">
+                      <a href={YOUTUBE_LIVE} target="_blank" rel="noopener noreferrer" onClick={() => trackEvent("watch_on_youtube_click", { placement: "live_player" })} className="text-xs font-semibold text-warm-cream/70 underline underline-offset-2 hover:text-warm-cream">
                         {tx.watchLive}
                       </a>
                     </div>
@@ -527,22 +542,22 @@ export default function LivePage() {
               <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
                 {phase === "ended" ? (
                   <>
-                    <a href="/#get-involved-inline" className={btnPrimary}>
+                    <a href="/#get-involved-inline" onClick={() => trackEvent("pledge_click", { placement: "hero_after_stream" })} className={btnPrimary}>
                       {t.navbar.makePledge}
                     </a>
-                    <a href={YOUTUBE_CHANNEL} target="_blank" rel="noopener noreferrer" className={btnOutlineDark}>
+                    <a href={YOUTUBE_CHANNEL} target="_blank" rel="noopener noreferrer" onClick={() => trackEvent("view_recording_click")} className={btnOutlineDark}>
                       <Play size={18} aria-hidden="true" /> {tx.viewRecording}
                     </a>
                   </>
                 ) : (
-                  <a href={HERO_GOOGLE_CAL} target="_blank" rel="noopener noreferrer" className={btnPrimary}>
+                  <a href={HERO_GOOGLE_CAL} target="_blank" rel="noopener noreferrer" onClick={() => trackEvent("add_to_calendar_click", { placement: "hero" })} className={btnPrimary}>
                     <CalendarPlus size={18} aria-hidden="true" /> {tx.addCal}
                   </a>
                 )}
               </div>
             )}
             {phase === "before" && (
-              <a href={HERO_ICS} className="text-xs font-semibold text-warm-cream/70 underline underline-offset-2 hover:text-warm-cream">
+              <a href={HERO_ICS} onClick={() => trackEvent("add_to_calendar_click", { placement: "hero_apple_outlook" })} className="text-xs font-semibold text-warm-cream/70 underline underline-offset-2 hover:text-warm-cream">
                 {tx.appleOutlook}
               </a>
             )}
@@ -668,7 +683,7 @@ export default function LivePage() {
                 <h2 className="mt-4 font-display text-3xl leading-tight md:text-5xl">{tx.daajiTitle}</h2>
                 <p className="mt-4 text-base leading-relaxed text-warm-cream md:text-lg">
                   <strong className="font-bold">{tx.daajiLead}</strong>{" "}
-                  <a href={MASTERCLASS_URL} target="_blank" rel="noopener noreferrer" className="font-semibold text-warm-gold underline underline-offset-2">
+                  <a href={MASTERCLASS_URL} target="_blank" rel="noopener noreferrer" onClick={() => trackEvent("masterclass_register_click", { placement: "daaji_text" })} className="font-semibold text-warm-gold underline underline-offset-2">
                     heartfulness.org/global/masterclass
                   </a>
                 </p>
@@ -735,6 +750,7 @@ export default function LivePage() {
                   href={MASTERCLASS_URL}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackEvent("masterclass_register_click", { placement: "daaji_card" })}
                   className="mt-1 inline-flex min-h-[52px] items-center justify-center gap-2 rounded-full bg-white px-7 py-3 text-center text-sm font-bold text-cyan-900 transition-transform duration-200 hover:scale-[1.02]"
                 >
                   {tx.daajiRegister} <ExternalLink size={16} aria-hidden="true" />
@@ -843,7 +859,7 @@ export default function LivePage() {
 
             <div className="mt-8 flex flex-col items-start justify-between gap-5 rounded-3xl bg-white px-6 py-6 text-foreground sm:flex-row sm:items-center md:px-8">
               <p className="font-display text-2xl leading-tight md:text-3xl">{tx.intruthCta}</p>
-              <a href="https://www.intruth.io/" target="_blank" rel="noopener noreferrer" className={`${btnPrimary} shrink-0`}>
+              <a href={intruthUrl("intruth_section")} target="_blank" rel="noopener noreferrer" onClick={() => trackEvent("intruth_app_click", { placement: "intruth_section" })} className={`${btnPrimary} shrink-0`}>
                 {tx.intruthButton}
               </a>
             </div>
@@ -976,7 +992,7 @@ export default function LivePage() {
             </div>
 
             <div className="mt-10 flex flex-wrap items-center gap-4">
-              <a href={HERO_GOOGLE_CAL} target="_blank" rel="noopener noreferrer" className={btnPrimary}>
+              <a href={HERO_GOOGLE_CAL} target="_blank" rel="noopener noreferrer" onClick={() => trackEvent("add_to_calendar_click", { placement: "faq" })} className={btnPrimary}>
                 <CalendarPlus size={18} aria-hidden="true" /> {tx.addCal}
               </a>
               <a href="/" className="inline-flex items-center gap-1.5 text-sm font-bold text-warm-sky hover:underline">
