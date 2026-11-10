@@ -526,9 +526,14 @@ export default function LivePage() {
             {phase !== "live" && (
               <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
                 {phase === "ended" ? (
-                  <a href={YOUTUBE_CHANNEL} target="_blank" rel="noopener noreferrer" className={btnPrimary}>
-                    <Play size={18} aria-hidden="true" /> {tx.watchYouTube}
-                  </a>
+                  <>
+                    <a href="/#get-involved-inline" className={btnPrimary}>
+                      {t.navbar.makePledge}
+                    </a>
+                    <a href={YOUTUBE_CHANNEL} target="_blank" rel="noopener noreferrer" className={btnOutlineDark}>
+                      <Play size={18} aria-hidden="true" /> {tx.viewRecording}
+                    </a>
+                  </>
                 ) : (
                   <a href={HERO_GOOGLE_CAL} target="_blank" rel="noopener noreferrer" className={btnPrimary}>
                     <CalendarPlus size={18} aria-hidden="true" /> {tx.addCal}

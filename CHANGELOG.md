@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-11-10 — va.deedumlao@gmail.com
 
+- **After the stream ends**, the /live hero shows two buttons: "Make a Pledge" (to the pledge section on the homepage) and "View Stream Recording" (to the YouTube channel). Translated in all languages.
 - **While the stream is live (from 1:55 PM PST on 10 Nov):** the yellow ribbon across the whole site changes to "LIVE BROADCAST HAPPENING NOW" with a pulsing dot, and /live hides its two intro paragraphs so the stream leads. Before that time, and after the broadcast ends, nothing changes. Translated in all languages.
 - **/live timing and layout.** The "Be part of the broadcast" section is removed. The live stream now appears on the page at 1:55 PM PST on 10 November; until then the hero keeps counting down to 11:11 AM AST (Puerto Rico). Once the stream is up, a second countdown sits right below it counting to the 11:11 AM AST Global Kindness Moment, then disappears when the moment arrives. A "Get the IN TRUTH app" button now sits next to "Share to social" under the stream. Translated in all languages.
 - **/live partners are now in two groups:** "Global Strategic Partners" (Te Amo PR, Heartfulness, Yoga Vidya) with "Live Broadcast Partners" (HeartMath Institute, AWAKEN, InTruth) just below, three logos per row on phones and desktop. Translated in all languages.

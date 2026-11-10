@@ -1594,6 +1594,7 @@ const translations = {
       heroBroadcastStarts: "Live broadcast starts ·",
       kmCountdown: "The Global Kindness Moment begins in",
       getIntruthApp: "Get the IN TRUTH app",
+      viewRecording: "View Stream Recording",
     },
   },
 } as const;
