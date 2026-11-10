@@ -72,6 +72,26 @@ const Hero = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.95 }}
+              className="mb-7 w-full max-w-md border-t border-warm-cream/15 pt-5"
+            >
+              <h5 className="mb-3 font-sans text-sm font-medium text-warm-cream/80 md:text-base">{t.hero.strategicPartners}</h5>
+              <div className="flex flex-nowrap items-center gap-2.5 md:gap-3">
+                {[
+                  { src: "/partners/nonprofits_te-amo-pr.png", alt: "Te Amo PR" },
+                  { src: "/partners/faith-based_purity-weaves-destiny-blue-3-1.webp", alt: "Heartfulness" },
+                  { src: "/partners/faith-based_yoga-vidya.jpg", alt: "Yoga Vidya" },
+                ].map((l) => (
+                  <span key={l.alt} className="flex h-14 min-w-0 flex-1 items-center justify-center rounded-xl bg-white px-2.5 py-2 md:h-16">
+                    <img src={l.src} alt={l.alt} loading="lazy" className="max-h-full max-w-full object-contain" />
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.1 }}
               className="flex flex-wrap items-center gap-4"
             >

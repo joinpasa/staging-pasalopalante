@@ -500,6 +500,7 @@ const translations = {
       title: "Join Us in Sparking Over<br/>\n<em>1 Billion Acts of Kindness</em> Worldwide",
       body1: "What started as neighbors helping neighbors after Hurricane Fiona became a certified world record: 1.1 million acts of kindness across all of Puerto Rico in November 2025.",
       body2: "In 2026 it's spreading globally. We're launching Global Kindness Season from November 1st - January 31st. Your single act joins the wave.",
+      strategicPartners: "Global Strategic Partners",
       cta: "Get Involved Today!",
       ctaSeeInAction: "See it in action",
       pressPlayPrefix: "Now playing, or",

@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-11-10 — va.deedumlao@gmail.com
+
+- **Homepage hero now shows our Global Strategic Partners.** A faint divider and a "Global Strategic Partners" label sit above the buttons, with one row of three logos (Te Amo PR, Heartfulness, Yoga Vidya) on phone and desktop. The label is translated in all languages.
+
 ## 2026-11-09 — va.deedumlao@gmail.com
 
 - **/live partners:** removed the Sint Maarten ministry (MECYS) logo from the featured partners.
