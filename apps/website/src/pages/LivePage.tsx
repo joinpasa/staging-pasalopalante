@@ -27,12 +27,17 @@ const YOUTUBE_CHANNEL = "https://www.youtube.com/@passkindnessforward";
 const YOUTUBE_LIVE = `${YOUTUBE_CHANNEL}/live`;
 const SUBMIT_URL = "https://forms.pasalopalante.com/24hr-global-live";
 const LIVE_PAGE_URL = "https://passkindnessforward.com/live";
-// The live panel embeds whichever stream the channel is broadcasting right
-// now (YouTube's "live_stream?channel=" embed), so scheduled streams swap in
-// on their own with no embed code to update. Set to null to fall back to a
-// plain "Watch on YouTube" button.
-const LIVE_EMBED_SRC: string | null =
-  "https://www.youtube.com/embed/live_stream?channel=UC2vk63vLFjSt-lgUhqFjr3Q&autoplay=1&mute=1&rel=0";
+// The stream shown in the live panel. With several streams live at once the
+// channel embed ("live_stream?channel=") picks one by YouTube's own rule, so we
+// pin the video: set LIVE_VIDEO_ID to the video ID of the segment that is on
+// air (the part after /live/ or v= in its YouTube link). Set it to null to
+// follow whichever stream the channel is broadcasting instead.
+const LIVE_VIDEO_ID: string | null = "Ih92iKbGk34";
+const LIVE_EMBED_SRC: string | null = LIVE_VIDEO_ID
+  ? `https://www.youtube.com/embed/${LIVE_VIDEO_ID}?autoplay=1&mute=1&rel=0`
+  : "https://www.youtube.com/embed/live_stream?channel=UC2vk63vLFjSt-lgUhqFjr3Q&autoplay=1&mute=1&rel=0";
+// Where "Watch live on YouTube" goes: the pinned stream, else the channel's live page.
+const WATCH_LIVE_URL = LIVE_VIDEO_ID ? `https://www.youtube.com/watch?v=${LIVE_VIDEO_ID}` : YOUTUBE_LIVE;
 
 // IN TRUTH tracks installs on their side; the UTM tags tell them which of our
 // buttons sent the visitor. "content" is the placement.
@@ -502,8 +507,8 @@ export default function LivePage() {
                           {tx.getIntruthApp} <ExternalLink size={16} aria-hidden="true" />
                         </a>
                       </div>
-                      <a href={YOUTUBE_LIVE} target="_blank" rel="noopener noreferrer" onClick={() => trackEvent("watch_on_youtube_click", { placement: "live_player" })} className="text-xs font-semibold text-warm-cream/70 underline underline-offset-2 hover:text-warm-cream">
-                        {tx.watchLive}
+                      <a href={WATCH_LIVE_URL} target="_blank" rel="noopener noreferrer" onClick={() => trackEvent("watch_on_youtube_click", { placement: "live_player" })} className="inline-flex items-center gap-1.5 text-sm font-semibold text-warm-cream/85 underline underline-offset-4 hover:text-warm-cream">
+                        <Play size={14} aria-hidden="true" /> {tx.watchLive}
                       </a>
                     </div>
                   </>
