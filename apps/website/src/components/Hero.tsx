@@ -87,6 +87,9 @@ const Hero = () => {
                   </span>
                 ))}
               </div>
+              <a href="/partners" className="mt-3 inline-block text-xs font-medium text-warm-cream/75 underline underline-offset-4 transition-colors hover:text-warm-cream md:text-sm">
+                {t.hero.seeAllPartners}
+              </a>
             </motion.div>
 
             <motion.div
