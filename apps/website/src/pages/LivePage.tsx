@@ -771,26 +771,44 @@ export default function LivePage() {
                 {tx.partnersTitle}
               </h2>
             </div>
-            <div className="mt-10 flex flex-wrap justify-center gap-5">
-              {[
-                { name: "Heartfulness", src: HEARTFULNESS_LOGO, wide: true },
-                { name: "Yoga Vidya", src: "/partners/faith-based_yoga-vidya.jpg", wide: false },
-                { name: "AWAKEN", src: "/partners/corporate_awaken---michael-krauss.jpg", wide: false },
-                { name: "InTruth", src: "/partners/corporate_intruth.svg", wide: true },
-                { name: "HeartMath Institute", src: "/partners/nonprofits_hmi-logo.png", wide: true },
-              ].map((p) => (
-                <article key={p.name} className="flex basis-[calc(50%-0.625rem)] flex-col items-center gap-5 rounded-3xl border border-border bg-white p-4 text-center shadow-sm sm:p-6 md:basis-[calc(33.333%-0.85rem)] lg:basis-[calc(20%-1rem)]">
-                  <div className="flex h-28 items-center justify-center">
-                    <img
-                      src={p.src}
-                      alt={tx.logoAlt.replace("{name}", p.name)}
-                      loading="lazy"
-                      className={p.wide ? "h-auto w-full max-w-[170px]" : "h-28 w-28 rounded-2xl object-cover"}
-                    />
-                  </div>
-                </article>
-              ))}
-            </div>
+            {(
+              [
+                [
+                  tx.partnerGroupStrategic,
+                  [
+                    { name: "Te Amo PR", src: "/partners/nonprofits_te-amo-pr.png", wide: true },
+                    { name: "Heartfulness", src: HEARTFULNESS_LOGO, wide: true },
+                    { name: "Yoga Vidya", src: "/partners/faith-based_yoga-vidya.jpg", wide: false },
+                  ],
+                ],
+                [
+                  tx.partnerGroupBroadcast,
+                  [
+                    { name: "HeartMath Institute", src: "/partners/nonprofits_hmi-logo.png", wide: true },
+                    { name: "AWAKEN", src: "/partners/corporate_awaken---michael-krauss.jpg", wide: false },
+                    { name: "InTruth", src: "/partners/corporate_intruth.svg", wide: true },
+                  ],
+                ],
+              ] as const
+            ).map(([group, partners]) => (
+              <div key={group} className="mt-10">
+                <h3 className="font-sans text-xs font-bold uppercase tracking-[0.18em] text-foreground/60">{group}</h3>
+                <div className="mt-4 grid grid-cols-3 gap-3 md:gap-5">
+                  {partners.map((p) => (
+                    <article key={p.name} className="flex items-center justify-center rounded-2xl border border-border bg-white p-3 shadow-sm sm:p-5 md:rounded-3xl md:p-6">
+                      <div className="flex h-20 items-center justify-center md:h-28">
+                        <img
+                          src={p.src}
+                          alt={tx.logoAlt.replace("{name}", p.name)}
+                          loading="lazy"
+                          className={p.wide ? "h-auto w-full max-w-[170px]" : "h-16 w-16 rounded-xl object-cover md:h-28 md:w-28 md:rounded-2xl"}
+                        />
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            ))}
             <p className="mt-8 text-center">
               <Link to="/partners" className="text-base font-semibold text-warm-terracotta underline underline-offset-4 hover:text-foreground">
                 {tx.partnersLink}

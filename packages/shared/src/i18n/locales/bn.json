@@ -1385,9 +1385,9 @@
   "becomePartner": "অংশীদার হও",
   "statPartners": "অংশীদার সংগঠন",
   "statActs": "দয়ার কাজ, একটি অভিন্ন লক্ষ্য",
-  "featuredEyebrow": "বৈশ্বিক কৌশলগত অংশীদার",
-  "strategicBadge": "বৈশ্বিক কৌশলগত অংশীদার",
+  "featuredEyebrow": "বিশেষ অংশীদার",
   "featuredHeading": "দয়ার পথে নেতৃত্ব দিচ্ছে",
+  "foundingBadge": "প্রতিষ্ঠাতা সংগঠন অংশীদার",
   "searchPartners": "অংশীদার খোঁজো",
   "showing": "{total}টির মধ্যে {shown}টি দেখানো হচ্ছে",
   "updatingNotice": "যোগ দিতে আগ্রহী সংগঠনগুলোর বিপুল সমর্থনে আমরা সত্যিই কৃতজ্ঞ। আমরা এই পেজটি সক্রিয়ভাবে আপডেট করছি এবং শীঘ্রই এটি নতুন করে সাজানো হবে।",
@@ -1688,6 +1688,8 @@
   "daajiRegister": "বিনামূল্যের মাস্টারক্লাসের জন্য নিবন্ধন করুন",
   "daajiPosterLabel": "দাজির বার্তা",
   "daajiPosterTitle": "দয়ার প্রকৃত অর্থ",
-  "playVideo": "ভিডিও চালান"
+  "playVideo": "ভিডিও চালান",
+  "partnerGroupStrategic": "বৈশ্বিক কৌশলগত অংশীদার",
+  "partnerGroupBroadcast": "লাইভ সম্প্রচার অংশীদার"
  }
 }

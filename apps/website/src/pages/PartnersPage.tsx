@@ -21,18 +21,26 @@ function initials(name: string) {
 
 function PartnerCard({ partner, featured = false }: { partner: PartnerEntry; featured?: boolean }) {
   const { t } = useLanguage();
-  const badge = t.partnersPage.strategicBadge;
   return (
     <article
       className={`relative flex flex-col overflow-hidden rounded-2xl bg-white ${
         featured ? "border-2 border-warm-gold shadow-md" : "border border-border shadow-sm"
       }`}
     >
-      {featured && (
-        <span className="absolute start-3 top-3 z-[1] inline-flex max-w-[calc(100%-1.5rem)] items-center gap-1 rounded-full bg-warm-gold px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#0e234b]">
-          <Star size={11} className="fill-current" />
-          {badge}
-        </span>
+      {(featured || partner.founding) && (
+        <div className="absolute start-3 top-3 z-[1] flex max-w-[calc(100%-1.5rem)] flex-col items-start gap-1.5">
+          {partner.founding && (
+            <span className="inline-flex items-center rounded-full bg-warm-gold px-2.5 py-1 text-[10px] font-extrabold uppercase leading-tight tracking-[0.12em] text-[#0e234b]">
+              {t.partnersPage.foundingBadge}
+            </span>
+          )}
+          {featured && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-warm-gold px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#0e234b]">
+              <Star size={11} className="fill-current" />
+              Featured
+            </span>
+          )}
+        </div>
       )}
       <div
         className={`flex items-center justify-center border-b border-border p-5 ${featured ? "h-40 md:h-56" : "h-44"} ${

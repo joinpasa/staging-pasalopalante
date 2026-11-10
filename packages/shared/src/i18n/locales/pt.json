@@ -1390,9 +1390,9 @@
   "becomePartner": "Seja um parceiro",
   "statPartners": "Organizações parceiras",
   "statActs": "Atos de gentileza, uma meta compartilhada",
-  "featuredEyebrow": "PARCEIROS ESTRATÉGICOS GLOBAIS",
-  "strategicBadge": "Parceiro Estratégico Global",
+  "featuredEyebrow": "PARCEIROS EM DESTAQUE",
   "featuredHeading": "Liderando o caminho da gentileza",
+  "foundingBadge": "Organização parceira fundadora",
   "searchPartners": "Buscar parceiros",
   "showing": "Mostrando {shown} de {total}",
   "updatingNotice": "Somos muito gratos pelo enorme apoio das organizações que querem participar. Estamos atualizando esta página ativamente e em breve ela será renovada.",
@@ -1693,6 +1693,8 @@
   "daajiRegister": "Inscreva-se nas Masterclasses gratuitas",
   "daajiPosterLabel": "Mensagem de Daaji",
   "daajiPosterTitle": "O verdadeiro significado da bondade",
-  "playVideo": "Reproduzir vídeo"
+  "playVideo": "Reproduzir vídeo",
+  "partnerGroupStrategic": "Parceiros Estratégicos Globais",
+  "partnerGroupBroadcast": "Parceiros da Transmissão ao Vivo"
  }
 }

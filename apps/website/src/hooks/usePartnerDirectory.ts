@@ -12,6 +12,8 @@ export interface PartnerEntry {
   dark: boolean;
   /** Shown in the Featured Partners section at the top of /partners. */
   featured: boolean;
+  /** Sheet's "Founding Partner" column: shows the yellow "Founding Organization Partner" tag. */
+  founding: boolean;
 }
 
 /**
@@ -43,6 +45,7 @@ export function usePartnerDirectory() {
           role: e.role,
           dark: e.dark,
           featured: (e as { featured?: boolean }).featured === true,
+          founding: (e as { founding?: boolean }).founding === true,
         }),
       );
     },

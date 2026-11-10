@@ -1389,9 +1389,9 @@
   "becomePartner": "साझेदार बनो",
   "statPartners": "साझेदार संगठन",
   "statActs": "दयालुता के कार्य, एक साझा लक्ष्य",
-  "featuredEyebrow": "वैश्विक रणनीतिक साझेदार",
-  "strategicBadge": "वैश्विक रणनीतिक साझेदार",
+  "featuredEyebrow": "विशेष साझेदार",
   "featuredHeading": "दयालुता की राह दिखाते हुए",
+  "foundingBadge": "संस्थापक संगठन साझेदार",
   "searchPartners": "साझेदार खोजो",
   "showing": "{total} में से {shown} दिखाए जा रहे हैं",
   "updatingNotice": "जुड़ना चाहने वाले संगठनों के भारी समर्थन के लिए हम बहुत आभारी हैं। हम इस पेज को सक्रिय रूप से अपडेट कर रहे हैं और जल्द ही इसे नया रूप देंगे।",
@@ -1692,6 +1692,8 @@
   "daajiRegister": "निःशुल्क मास्टरक्लास के लिए पंजीकरण करें",
   "daajiPosterLabel": "दाजी का संदेश",
   "daajiPosterTitle": "दयालुता का सच्चा अर्थ",
-  "playVideo": "वीडियो चलाएँ"
+  "playVideo": "वीडियो चलाएँ",
+  "partnerGroupStrategic": "वैश्विक रणनीतिक साझेदार",
+  "partnerGroupBroadcast": "लाइव प्रसारण साझेदार"
  }
 }

@@ -1389,9 +1389,9 @@
     "becomePartner": "Conviértete en socio",
     "statPartners": "Organizaciones socias",
     "statActs": "Actos de bondad, una meta compartida",
-    "featuredEyebrow": "SOCIOS ESTRATÉGICOS GLOBALES",
-    "strategicBadge": "Socio Estratégico Global",
+    "featuredEyebrow": "SOCIOS DESTACADOS",
     "featuredHeading": "Liderando el camino de la bondad",
+    "foundingBadge": "Organización socia fundadora",
     "searchPartners": "Buscar socios",
     "showing": "Mostrando {shown} de {total}",
     "updatingNotice": "Estamos muy agradecidos por el enorme apoyo de las organizaciones que desean unirse. Estamos actualizando activamente esta página y pronto estará renovada.",
@@ -1692,6 +1692,8 @@
     "daajiRegister": "Regístrate en las Masterclasses gratuitas",
     "daajiPosterLabel": "Mensaje de Daaji",
     "daajiPosterTitle": "El verdadero significado de la bondad",
-    "playVideo": "Reproducir video"
+    "playVideo": "Reproducir video",
+    "partnerGroupStrategic": "Socios Estratégicos Globales",
+    "partnerGroupBroadcast": "Socios de la Transmisión en Vivo"
   }
 }

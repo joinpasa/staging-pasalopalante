@@ -21,7 +21,7 @@ const CONFIG = {
 };
 
 // Column order: ID, Status, Featured?, Category, Name, Logo, Website, Facebook, Role, Dark, Sort Order, Internal Notes,
-// Portal Access, Contact Email, Portal Link, Pledge
+// Portal Access, Contact Email, Portal Link, Pledge, Founding Partner
 // (0-based indexes, used when reading a whole row as an array)
 const COLS = {
   ID: 0,
@@ -40,9 +40,10 @@ const COLS = {
   CONTACT_EMAIL: 13, // N — goes to the private portal org only, never to the website
   PORTAL_LINK: 14,   // O — filled in by the sync: the portal invite link to send them
   PLEDGE: 15,        // P — acts of kindness the organization pledges; counts toward "Acts pledged" once Approved
+  FOUNDING: 16,      // Q — "Yes" = yellow "Founding Organization Partner" tag on /partners
 };
-const TOTAL_COLS = 16;
-const PORTAL_HEADERS = { 13: "Portal Access", 14: "Contact Email", 15: "Portal Link", 16: "Pledge" }; // 1-based column → header
+const TOTAL_COLS = 17;
+const PORTAL_HEADERS = { 13: "Portal Access", 14: "Contact Email", 15: "Portal Link", 16: "Pledge", 17: "Founding Partner" }; // 1-based column → header
 
 // 1-based column numbers (what getRange() expects) — derived from COLS so the
 // two can never drift apart again if a column is added later.
@@ -87,6 +88,7 @@ function syncPartners() {
           : Number(row[COLS.SORT_ORDER]),
         // "Yes" / "No" / blank from the dropdown (a checkbox's TRUE/FALSE works too).
         featured: String(row[COLS.FEATURED] || "").trim(),
+        founding: String(row[COLS.FOUNDING] || "").trim(),
         portal: String(row[COLS.PORTAL] || "").trim(),
         contactEmail: String(row[COLS.CONTACT_EMAIL] || "").trim(),
         pledge: row[COLS.PLEDGE] === "" || row[COLS.PLEDGE] == null ? "" : String(row[COLS.PLEDGE]),
@@ -385,6 +387,7 @@ function handleApplication_(f, done) {
     row[COLS.ID] = prefix + "-" + nextNumber_(prefix);
     row[COLS.STATUS] = "Pending";
     row[COLS.FEATURED] = "No";
+    row[COLS.FOUNDING] = "No";
     row[COLS.CATEGORY] = category;
     row[COLS.NAME] = name;
     row[COLS.LOGO] = pick("your_logo", "logo", "logo_url", "organization_logo", "orgnization_logo");

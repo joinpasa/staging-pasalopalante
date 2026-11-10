@@ -43,6 +43,11 @@ file into the sheet, keep the sheet's existing secret line.
 | J | Dark | `TRUE` = dark logo tile |
 | K | Sort Order | Number |
 | L | Internal Notes | Never synced |
+| M | Portal Access | `Yes` → gets a partner-portal account once Approved |
+| N | Contact Email | Private; portal org only |
+| O | Portal Link | Filled in by the sync |
+| P | Pledge | Acts of kindness pledged |
+| Q | Founding Partner | `Yes` → yellow "Founding Organization Partner" tag on /partners |
 
 If you add, remove or move a column: update `COLS` in the sheet's script,
 here, and — if it's a new field — `sync-partners` and the `partner_entries`

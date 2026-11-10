@@ -68,6 +68,8 @@ interface Entry {
   /** Sheet's "Featured" column. Accepts a real boolean (checkbox) or a
    * yes/no-style string so either column type works in the sheet. */
   featured?: boolean | string;
+  /** Sheet's "Founding Partner" column (Yes/No): yellow "Founding Organization Partner" tag. */
+  founding?: boolean | string;
   /** Sheet's "Portal Access" column (Yes/No). */
   portal?: boolean | string;
   /** Sheet's "Contact Email" column — only ever goes to the private portal
@@ -146,6 +148,7 @@ Deno.serve(async (req) => {
       dark: e.dark === true,
       sort_order: typeof e.sortOrder === "number" ? e.sortOrder : null,
       featured: isTruthy(e.featured),
+      founding: isTruthy(e.founding),
       synced_at: new Date().toISOString(),
     }));
 

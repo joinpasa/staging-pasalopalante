@@ -1389,9 +1389,9 @@
   "becomePartner": "成为合作伙伴",
   "statPartners": "合作伙伴组织",
   "statActs": "善举，同一个目标",
-  "featuredEyebrow": "全球战略合作伙伴",
-  "strategicBadge": "全球战略合作伙伴",
+  "featuredEyebrow": "重点合作伙伴",
   "featuredHeading": "引领善意之路",
+  "foundingBadge": "创始组织合作伙伴",
   "searchPartners": "搜索合作伙伴",
   "showing": "显示 {shown} / {total}",
   "updatingNotice": "非常感谢众多希望加入的组织给予的大力支持。我们正在积极更新此页面，很快就会焕然一新。",
@@ -1692,6 +1692,8 @@
   "daajiRegister": "报名免费大师课",
   "daajiPosterLabel": "Daaji 的寄语",
   "daajiPosterTitle": "善意的真谛",
-  "playVideo": "播放视频"
+  "playVideo": "播放视频",
+  "partnerGroupStrategic": "全球战略合作伙伴",
+  "partnerGroupBroadcast": "直播合作伙伴"
  }
 }

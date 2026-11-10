@@ -1388,9 +1388,9 @@
   "becomePartner": "كن شريكًا",
   "statPartners": "منظمات شريكة",
   "statActs": "أعمال لطف، وهدف واحد مشترك",
-  "featuredEyebrow": "الشركاء الاستراتيجيون العالميون",
-  "strategicBadge": "شريك استراتيجي عالمي",
+  "featuredEyebrow": "شركاء مميزون",
   "featuredHeading": "يقودون طريق اللطف",
+  "foundingBadge": "منظمة شريكة مؤسِّسة",
   "searchPartners": "ابحث عن شركاء",
   "showing": "عرض {shown} من {total}",
   "updatingNotice": "نحن ممتنون جدًا للدعم الكبير من المنظمات الراغبة في الانضمام. نعمل حاليًا على تحديث هذه الصفحة وسيتم تجديدها قريبًا.",
@@ -1691,6 +1691,8 @@
   "daajiRegister": "سجّل في الماستركلاس المجانية",
   "daajiPosterLabel": "رسالة داجي",
   "daajiPosterTitle": "المعنى الحقيقي للطف",
-  "playVideo": "تشغيل الفيديو"
+  "playVideo": "تشغيل الفيديو",
+  "partnerGroupStrategic": "الشركاء الاستراتيجيون العالميون",
+  "partnerGroupBroadcast": "شركاء البث المباشر"
  }
 }

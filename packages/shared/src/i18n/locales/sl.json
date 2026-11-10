@@ -1281,9 +1281,9 @@
     "becomePartner": "Postani partner",
     "statPartners": "Partnerskih organizacij",
     "statActs": "Dejanj prijaznosti, en skupen cilj",
-    "featuredEyebrow": "GLOBALNI STRATEŠKI PARTNERJI",
-    "strategicBadge": "Globalni strateški partner",
+    "featuredEyebrow": "IZPOSTAVLJENI PARTNERJI",
     "featuredHeading": "Utirajo pot prijaznosti",
+    "foundingBadge": "Ustanovna partnerska organizacija",
     "searchPartners": "Išči partnerje",
     "showing": "Prikazano {shown} od {total}",
     "updatingNotice": "Zelo smo hvaležni za izjemno podporo organizacij, ki se želijo pridružiti. To stran aktivno posodabljamo in kmalu bo prenovljena.",
@@ -1584,6 +1584,8 @@
     "daajiRegister": "Prijavi se na brezplačne mojstrske delavnice",
     "daajiPosterLabel": "Daajijevo sporočilo",
     "daajiPosterTitle": "Pravi pomen prijaznosti",
-    "playVideo": "Predvajaj videoposnetek"
+    "playVideo": "Predvajaj videoposnetek",
+    "partnerGroupStrategic": "Globalni strateški partnerji",
+    "partnerGroupBroadcast": "Partnerji prenosa v živo"
   }
 }

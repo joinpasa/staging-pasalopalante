@@ -1389,9 +1389,9 @@
     "becomePartner": "Devenir partenaire",
     "statPartners": "Organisations partenaires",
     "statActs": "Actes de gentillesse, un objectif commun",
-    "featuredEyebrow": "PARTENAIRES STRATÉGIQUES MONDIAUX",
-    "strategicBadge": "Partenaire stratégique mondial",
+    "featuredEyebrow": "PARTENAIRES À LA UNE",
     "featuredHeading": "Ils montrent la voie de la gentillesse",
+    "foundingBadge": "Organisation partenaire fondatrice",
     "searchPartners": "Rechercher des partenaires",
     "showing": "{shown} sur {total} affichés",
     "updatingNotice": "Nous sommes très reconnaissants du formidable soutien des organisations qui souhaitent nous rejoindre. Nous mettons activement cette page à jour et elle sera bientôt renouvelée.",
@@ -1692,6 +1692,8 @@
     "daajiRegister": "S'inscrire aux Masterclasses gratuites",
     "daajiPosterLabel": "Le message de Daaji",
     "daajiPosterTitle": "Le vrai sens de la gentillesse",
-    "playVideo": "Lire la vidéo"
+    "playVideo": "Lire la vidéo",
+    "partnerGroupStrategic": "Partenaires stratégiques mondiaux",
+    "partnerGroupBroadcast": "Partenaires de la diffusion en direct"
   }
 }

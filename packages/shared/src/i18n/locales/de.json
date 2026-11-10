@@ -1389,9 +1389,9 @@
     "becomePartner": "Partner werden",
     "statPartners": "Partnerorganisationen",
     "statActs": "Akte der Freundlichkeit, ein gemeinsames Ziel",
-    "featuredEyebrow": "GLOBALE STRATEGISCHE PARTNER",
-    "strategicBadge": "Globaler strategischer Partner",
+    "featuredEyebrow": "AUSGEWÄHLTE PARTNER",
     "featuredHeading": "Vorreiter der Freundlichkeit",
+    "foundingBadge": "Gründungspartner-Organisation",
     "searchPartners": "Partner suchen",
     "showing": "{shown} von {total} angezeigt",
     "updatingNotice": "Wir sind sehr dankbar für die überwältigende Unterstützung von Organisationen, die mitmachen möchten. Wir aktualisieren diese Seite gerade und werden sie bald erneuern.",
@@ -1692,6 +1692,8 @@
     "daajiRegister": "Für die kostenlosen Masterclasses anmelden",
     "daajiPosterLabel": "Daajis Botschaft",
     "daajiPosterTitle": "Die wahre Bedeutung von Freundlichkeit",
-    "playVideo": "Video abspielen"
+    "playVideo": "Video abspielen",
+    "partnerGroupStrategic": "Globale strategische Partner",
+    "partnerGroupBroadcast": "Partner der Live-Übertragung"
   }
 }
