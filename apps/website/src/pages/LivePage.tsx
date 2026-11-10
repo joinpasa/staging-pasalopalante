@@ -50,7 +50,7 @@ const HERO_GOOGLE_CAL =
   new URLSearchParams({
     action: "TEMPLATE",
     text: "11.11 Global Live Broadcast",
-    dates: `${toCal(LIVE_FROM)}/${toCal(LIVE_FROM + 24 * 3600 * 1000)}`,
+    dates: `${toCal(EVENT_START)}/${toCal(EVENT_START + 24 * 3600 * 1000)}`,
     details: `Watch live: ${LIVE_PAGE_URL}`,
     location: LIVE_PAGE_URL,
   }).toString();
@@ -392,8 +392,6 @@ export default function LivePage() {
   // AST Global Kindness Moment, and disappears when that moment arrives.
   const momentPending = phase === "live" && now < EVENT_START;
   const cdLabels = { days: tx.days, hours: tx.hours, minutes: tx.minutes, seconds: tx.seconds };
-  const liveAt = `${timeOf(LIVE_FROM, tz)} ${tzAbbr(LIVE_FROM, tz)}`.trim();
-  const liveDay = shortDay(LIVE_FROM, tz);
 
   const startsAt = `${timeOf(EVENT_START, tz)} ${tzAbbr(EVENT_START, tz)}`.trim();
   const startsDay = shortDay(EVENT_START, tz);
@@ -435,14 +433,14 @@ export default function LivePage() {
 
               {phase === "before" && (
                 <>
-                  <CountdownTiles diff={LIVE_FROM - now} label={tx.timerLabel} labels={cdLabels} />
+                  <CountdownTiles diff={EVENT_START - now} label={tx.timerLabel} labels={cdLabels} />
                   {/* Small zone picker right under the countdown. */}
                   <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm text-warm-cream/75">
                     <Clock size={16} className="shrink-0 text-warm-gold" aria-hidden="true" />
                     <span>
-                      {tx.heroBroadcastStarts}{" "}
+                      {tx.heroStarts}{" "}
                       <strong className="font-semibold text-warm-cream">
-                        {liveAt}, {liveDay}
+                        {startsAt}, {startsDay}
                       </strong>
                     </span>
                     <ZoneSelect id="hero-tz" zones={zones} value={tz} onChange={setTz} tone="dark" label={tx.tzAria} />
