@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useMemo, useState, type ReactNode } from "react";
-import { CalendarPlus, Clock, Play, Radio } from "lucide-react";
+import { CalendarPlus, Check, Clock, Link2, Play, Radio, Share2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -26,10 +26,12 @@ const YOUTUBE_CHANNEL = "https://www.youtube.com/@passkindnessforward";
 const YOUTUBE_LIVE = `${YOUTUBE_CHANNEL}/live`;
 const SUBMIT_URL = "https://forms.pasalopalante.com/24hr-global-live";
 const LIVE_PAGE_URL = "https://passkindnessforward.com/live";
-// To embed the live stream on this page once it exists, set this to the
-// YouTube embed URL (https://www.youtube.com/embed/<videoId>). Until then the
-// live panel sends people to the channel's live stream.
-const LIVE_EMBED_SRC: string | null = null;
+// The live panel embeds whichever stream the channel is broadcasting right
+// now (YouTube's "live_stream?channel=" embed), so scheduled streams swap in
+// on their own with no embed code to update. Set to null to fall back to a
+// plain "Watch on YouTube" button.
+const LIVE_EMBED_SRC: string | null =
+  "https://www.youtube.com/embed/live_stream?channel=UC2vk63vLFjSt-lgUhqFjr3Q&autoplay=1&mute=1&rel=0";
 
 // Hero video in "Be part of the broadcast".
 const CAMPAIGN_VIDEO_SRC = "https://www.youtube.com/embed/lZkmX6qO0xw?si=cfVn78GZaIJXFTwV";
@@ -46,7 +48,7 @@ const HERO_GOOGLE_CAL =
     text: "11.11 Global Live Broadcast",
     dates: `${toCal(EVENT_START)}/${toCal(EVENT_END)}`,
     details: `Watch live: ${LIVE_PAGE_URL}`,
-    location: YOUTUBE_CHANNEL,
+    location: LIVE_PAGE_URL,
   }).toString();
 const DAAJI_GOOGLE_CAL =
   "https://calendar.google.com/calendar/render?action=TEMPLATE&text=Global+Kindness+Season+Launch+with+Daaji&dates=20261111T151600Z%2F20261111T161600Z&details=Meditate+with+Heartfulness%2C+perform+kindness%2C+pass+it+forward.+Join+people+worldwide+at+11%3A16+AM+AST.&location=Online";
@@ -212,6 +214,80 @@ function DetailRows({ rows, tone = "light" }: { rows: Array<[string, ReactNode]>
   );
 }
 
+// "Share to social": on phones it opens the native share sheet; elsewhere it
+// reveals links to the main networks plus copy-link.
+function ShareButton({
+  label,
+  text,
+  title,
+  copyLabel,
+  copiedLabel,
+}: {
+  label: string;
+  text: string;
+  title: string;
+  copyLabel: string;
+  copiedLabel: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const enc = encodeURIComponent;
+  const url = LIVE_PAGE_URL;
+  const networks = [
+    { name: "Facebook", href: `https://www.facebook.com/sharer/sharer.php?u=${enc(url)}` },
+    { name: "X", href: `https://twitter.com/intent/tweet?text=${enc(text)}&url=${enc(url)}` },
+    { name: "WhatsApp", href: `https://wa.me/?text=${enc(`${text} ${url}`)}` },
+    { name: "LinkedIn", href: `https://www.linkedin.com/sharing/share-offsite/?url=${enc(url)}` },
+  ];
+
+  async function onClick() {
+    const touch = typeof window !== "undefined" && window.matchMedia?.("(pointer: coarse)").matches;
+    if (touch && typeof navigator !== "undefined" && typeof navigator.share === "function") {
+      try {
+        await navigator.share({ title, text, url });
+        return;
+      } catch (e) {
+        if ((e as DOMException)?.name === "AbortError") return;
+      }
+    }
+    setOpen((v) => !v);
+  }
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* clipboard blocked: the network links above still work */
+    }
+  }
+
+  const chip =
+    "inline-flex h-9 items-center gap-1.5 rounded-full border border-warm-cream/30 px-4 text-xs font-bold text-warm-cream transition-colors hover:border-warm-cream hover:bg-white/10";
+
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <button type="button" onClick={onClick} aria-expanded={open} className={btnPrimary}>
+        <Share2 size={18} aria-hidden="true" /> {label}
+      </button>
+      {open && (
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          {networks.map((n) => (
+            <a key={n.name} href={n.href} target="_blank" rel="noopener noreferrer" className={chip}>
+              {n.name}
+            </a>
+          ))}
+          <button type="button" onClick={copy} className={chip}>
+            {copied ? <Check size={14} aria-hidden="true" /> : <Link2 size={14} aria-hidden="true" />}
+            {copied ? copiedLabel : copyLabel}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 const linkCls = "font-semibold text-warm-sky underline underline-offset-2 hover:text-foreground";
 
 // ------------------------------------------------------------------ the page
@@ -328,16 +404,30 @@ export default function LivePage() {
                   {tx.livePanel}
                 </div>
                 {LIVE_EMBED_SRC ? (
-                  <div className="aspect-video w-full bg-black">
-                    <iframe
-                      src={LIVE_EMBED_SRC}
-                      title="11.11 Global Live Broadcast"
-                      className="h-full w-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      referrerPolicy="strict-origin-when-cross-origin"
-                      allowFullScreen
-                    />
-                  </div>
+                  <>
+                    <div className="aspect-video w-full bg-black">
+                      <iframe
+                        src={LIVE_EMBED_SRC}
+                        title="11.11 Global Live Broadcast"
+                        className="h-full w-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        allowFullScreen
+                      />
+                    </div>
+                    <div className="flex flex-col items-center gap-3 border-t border-warm-cream/15 px-5 py-4">
+                      <ShareButton
+                        label={tx.shareButton}
+                        text={tx.shareText}
+                        title={tx.heroTitle}
+                        copyLabel={tx.copyLink}
+                        copiedLabel={tx.linkCopied}
+                      />
+                      <a href={YOUTUBE_LIVE} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-warm-cream/70 underline underline-offset-2 hover:text-warm-cream">
+                        {tx.watchLive}
+                      </a>
+                    </div>
+                  </>
                 ) : (
                   <div className="flex flex-col items-center gap-4 px-6 py-12 text-center">
                     <Radio size={36} className="text-warm-gold" aria-hidden="true" />
@@ -353,15 +443,12 @@ export default function LivePage() {
             )}
 
             <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
-              <a href={SUBMIT_URL} target="_blank" rel="noopener noreferrer" className={btnPrimary}>
-                {tx.submitVideo}
-              </a>
               {phase === "ended" ? (
-                <a href={YOUTUBE_CHANNEL} target="_blank" rel="noopener noreferrer" className={btnOutlineDark}>
+                <a href={YOUTUBE_CHANNEL} target="_blank" rel="noopener noreferrer" className={btnPrimary}>
                   <Play size={18} aria-hidden="true" /> {tx.watchYouTube}
                 </a>
               ) : (
-                <a href={HERO_GOOGLE_CAL} target="_blank" rel="noopener noreferrer" className={btnOutlineDark}>
+                <a href={HERO_GOOGLE_CAL} target="_blank" rel="noopener noreferrer" className={btnPrimary}>
                   <CalendarPlus size={18} aria-hidden="true" /> {tx.addCal}
                 </a>
               )}
@@ -407,8 +494,8 @@ export default function LivePage() {
                   ))}
                 </ol>
                 <div className="mt-2">
-                  <a href={SUBMIT_URL} target="_blank" rel="noopener noreferrer" className={btnPrimary}>
-                    {tx.submitYourVideo}
+                  <a href={HERO_GOOGLE_CAL} target="_blank" rel="noopener noreferrer" className={btnPrimary}>
+                    <CalendarPlus size={18} aria-hidden="true" /> {tx.addCal}
                   </a>
                 </div>
               </div>
@@ -848,8 +935,8 @@ export default function LivePage() {
             </div>
 
             <div className="mt-10 flex flex-wrap items-center gap-4">
-              <a href={SUBMIT_URL} target="_blank" rel="noopener noreferrer" className={btnPrimary}>
-                {tx.submitVideo}
+              <a href={HERO_GOOGLE_CAL} target="_blank" rel="noopener noreferrer" className={btnPrimary}>
+                <CalendarPlus size={18} aria-hidden="true" /> {tx.addCal}
               </a>
               <a href="/" className="inline-flex items-center gap-1.5 text-sm font-bold text-warm-sky hover:underline">
                 {tx.joinMovement}

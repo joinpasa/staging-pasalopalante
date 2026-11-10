@@ -1577,6 +1577,10 @@ const translations = {
       g5Top: "11:45 AM AST · 9:15 PM India",
       g5Title: "Send Love to the Trees",
       g5Body: "A moment to send love to the trees and to our Planet Earth.",
+      shareButton: "Share to social",
+      shareText: "Join me live at the 11.11 Global Live Broadcast, a 24-hour stream of kindness from around the world.",
+      copyLink: "Copy link",
+      linkCopied: "Link copied!",
     },
   },
 } as const;

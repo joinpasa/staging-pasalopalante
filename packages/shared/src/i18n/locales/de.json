@@ -1681,6 +1681,10 @@
     "intruthButton": "App holen",
     "g5Top": "11:45 Uhr AST · 21:15 Uhr Indien",
     "g5Title": "Sende den Bäumen Liebe",
-    "g5Body": "Ein Moment, um den Bäumen und unserem Planeten Erde Liebe zu schicken."
+    "g5Body": "Ein Moment, um den Bäumen und unserem Planeten Erde Liebe zu schicken.",
+    "shareButton": "In sozialen Netzwerken teilen",
+    "shareText": "Sei live dabei bei der 11.11 Globalen Live-Übertragung – 24 Stunden Freundlichkeit aus aller Welt.",
+    "copyLink": "Link kopieren",
+    "linkCopied": "Link kopiert!"
   }
 }

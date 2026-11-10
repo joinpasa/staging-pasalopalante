@@ -1573,6 +1573,10 @@
     "intruthButton": "Prenesi aplikacijo",
     "g5Top": "11.45 AST · 21.15 Indija",
     "g5Title": "Pošlji ljubezen drevesom",
-    "g5Body": "Trenutek, da drevesom in našemu planetu Zemlji pošljemo ljubezen."
+    "g5Body": "Trenutek, da drevesom in našemu planetu Zemlji pošljemo ljubezen.",
+    "shareButton": "Deli na družbenih omrežjih",
+    "shareText": "Pridruži se mi v živo pri Globalnem prenosu v živo 11.11 – 24 ur prijaznosti z vsega sveta.",
+    "copyLink": "Kopiraj povezavo",
+    "linkCopied": "Povezava kopirana!"
   }
 }

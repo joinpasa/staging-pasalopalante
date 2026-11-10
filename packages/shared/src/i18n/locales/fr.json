@@ -1681,6 +1681,10 @@
     "intruthButton": "Obtenir l'app",
     "g5Top": "11h45 AST · 21h15 Inde",
     "g5Title": "Envoyez de l'amour aux arbres",
-    "g5Body": "Un moment pour envoyer de l'amour aux arbres et à notre planète Terre."
+    "g5Body": "Un moment pour envoyer de l'amour aux arbres et à notre planète Terre.",
+    "shareButton": "Partager sur les réseaux",
+    "shareText": "Rejoignez-moi en direct pour la Diffusion mondiale en direct 11.11, 24 heures de gentillesse du monde entier.",
+    "copyLink": "Copier le lien",
+    "linkCopied": "Lien copié !"
   }
 }

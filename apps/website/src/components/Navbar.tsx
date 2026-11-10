@@ -262,14 +262,12 @@ const Navbar = () => {
             </Link>
           )}
 
-          <a
-            href="https://forms.pasalopalante.com/24hr-global-live"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            to="/live"
             className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.04]"
           >
             {t.navbar.joinLiveBroadcast}
-          </a>
+          </Link>
         </div>
 
         <button
@@ -355,15 +353,13 @@ const Navbar = () => {
                   )}
                 </AnimatePresence>
               </div>
-              <a
-                href="https://forms.pasalopalante.com/24hr-global-live"
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                to="/live"
                 onClick={() => setMobileOpen(false)}
                 className="btn-primary text-center mt-2"
               >
                 {t.navbar.joinLiveBroadcast}
-              </a>
+              </Link>
               {user ? (
                 <Link to="/account" onClick={() => setMobileOpen(false)} className="text-center text-foreground/70 text-sm flex items-center justify-center gap-2">
                   <User size={16} /> {t.navbar.myAccount} · {navStats.acts} {t.account.acts}{navStats.streak > 0 ? ` · ${navStats.streak} ${t.account.dayStreak}` : ""}

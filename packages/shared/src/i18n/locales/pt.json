@@ -1682,6 +1682,10 @@
   "intruthButton": "Baixar o app",
   "g5Top": "11:45 AST · 21:15 Índia",
   "g5Title": "Envie amor às árvores",
-  "g5Body": "Um momento para enviar amor às árvores e ao nosso planeta Terra."
+  "g5Body": "Um momento para enviar amor às árvores e ao nosso planeta Terra.",
+  "shareButton": "Compartilhar nas redes",
+  "shareText": "Venha comigo à Transmissão Global ao Vivo 11.11, 24 horas de bondade de todo o mundo.",
+  "copyLink": "Copiar link",
+  "linkCopied": "Link copiado!"
  }
 }
