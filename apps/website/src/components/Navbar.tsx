@@ -10,6 +10,7 @@ import SubNav from "@/components/SubNav";
 import LanguageSwitcher from "@shared/components/LanguageSwitcher";
 import { supabase } from "@shared/integrations/supabase/client";
 import { isSatelliteDomain } from "@shared/lib/canonicalDomain";
+import { useIsLive } from "@/lib/liveBroadcast";
 
 const SCROLL_THRESHOLD = 80;
 
@@ -19,6 +20,7 @@ const Navbar = () => {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [mobileExploreOpen, setMobileExploreOpen] = useState(false);
   const { t } = useLanguage();
+  const isLive = useIsLive();
   const { user } = useAuth();
   // On a satellite marketing domain (e.g. passkindnessforward.com), the
   // session cookie is scoped to pasalopalante.com and never reaches here, so
@@ -158,7 +160,8 @@ const Navbar = () => {
         to="/live"
         className="group flex h-9 items-center justify-center bg-warm-gold px-4 text-center text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#0e234b] transition-colors hover:bg-[#ffc93c] md:text-sm"
       >
-        <span className="truncate">{t.navbar.liveBanner}</span>
+        {isLive && <span className="me-2 inline-flex h-2 w-2 shrink-0 animate-pulse rounded-full bg-[#d81b60]" aria-hidden="true" />}
+        <span className="truncate">{isLive ? t.navbar.liveNowBanner : t.navbar.liveBanner}</span>
         <ArrowRight size={16} strokeWidth={2.75} className="ms-2 shrink-0 transition-transform group-hover:translate-x-1 rtl:rotate-180" />
       </Link>
       <div className="section-padding flex items-center justify-between h-20 gap-4">

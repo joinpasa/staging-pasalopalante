@@ -7,6 +7,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import SEO from "@/components/SEO";
 import { useScrollToHash } from "@/hooks/useScrollToHash";
 import { useLanguage } from "@shared/contexts/LanguageContext";
+import { LIVE_END, LIVE_FROM, isLivePreview } from "@/lib/liveBroadcast";
 
 // /live: the 11.11.2026 Global Live Broadcast event page. All copy lives in
 // the `livePage` namespace of the i18n files; everything else the team may
@@ -17,11 +18,6 @@ import { useLanguage } from "@shared/contexts/LanguageContext";
 const EVENT_START = Date.parse("2026-11-11T11:11:00-04:00");
 // Daaji's guided meditation starts 5 minutes after the 11:11 moment: 11:16 AM AST.
 const DAAJI_START = EVENT_START + 5 * 60 * 1000;
-// The stream appears on the page from LIVE_FROM: 1:55 PM PST on 10 Nov 2026
-// (= 21:55 UTC). The 24-hour broadcast runs from there, with a 2-hour buffer
-// before the page switches to its "ended" state.
-const LIVE_FROM = Date.UTC(2026, 10, 10, 21, 55);
-const LIVE_END = LIVE_FROM + 26 * 3600 * 1000;
 // Pre-11 programme from Yoga Vidya: 15:15–16:18 CET (UTC+1) = 14:15–15:18 UTC.
 const GERMANY_START = Date.UTC(2026, 10, 11, 14, 15);
 const GERMANY_END = Date.UTC(2026, 10, 11, 15, 18);
@@ -386,7 +382,7 @@ export default function LivePage() {
   const [tz, setTz] = useState(detected);
 
   // ?preview=live shows the "live now" state, so the team can check it early.
-  const forceLive = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("preview") === "live";
+  const forceLive = isLivePreview();
   const phase: "before" | "live" | "ended" = forceLive || (now >= LIVE_FROM && now < LIVE_END) ? "live" : now < LIVE_FROM ? "before" : "ended";
   // Once the stream is up, a second countdown runs below it to the 11:11 AM
   // AST Global Kindness Moment, and disappears when that moment arrives.
@@ -419,12 +415,17 @@ export default function LivePage() {
             <h1 className="font-display text-5xl leading-[1.02] tracking-tight md:text-6xl lg:text-7xl">
               {tx.heroTitle}
             </h1>
-            <p className="max-w-2xl text-base leading-relaxed text-warm-cream/75 md:text-lg">
-              {tx.heroIntro1}
-            </p>
-            <p className="max-w-2xl text-base font-semibold leading-relaxed text-warm-cream md:text-lg">
-              {tx.heroIntro2}
-            </p>
+            {/* The intro copy gives way to the stream once it is live. */}
+            {phase !== "live" && (
+              <>
+                <p className="max-w-2xl text-base leading-relaxed text-warm-cream/75 md:text-lg">
+                  {tx.heroIntro1}
+                </p>
+                <p className="max-w-2xl text-base font-semibold leading-relaxed text-warm-cream md:text-lg">
+                  {tx.heroIntro2}
+                </p>
+              </>
+            )}
 
             <div className="mt-4 flex w-full flex-col items-center gap-5">
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-warm-sky">

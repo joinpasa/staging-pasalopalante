@@ -478,6 +478,7 @@ const translations = {
       mediaSocial: "Social",
       live: "Live Broadcast",
       liveBanner: "Join the global live broadcast on 11.11.2026",
+      liveNowBanner: "Live Broadcast Happening Now",
       anthem: "Anthem",
       proof: "Proof",
       joinMovement: "Join the Movement",
