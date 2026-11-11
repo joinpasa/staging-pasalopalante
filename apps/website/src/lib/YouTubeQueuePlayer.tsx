@@ -2,11 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { ExternalLink } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 
-// Plays a list of YouTube videos one after another: when the current one ends
-// (a live stream finishing counts), the next one loads by itself; a scheduled
-// stream that has not started yet shows YouTube's own waiting room and turns
-// into the live stream when it starts. Uses YouTube's IFrame Player API, so no
-// API key is needed.
+// Plays one YouTube video and, when `videoId` changes (the page's schedule
+// moved on to the next segment), loads the new one in the same player, so
+// viewers who are already watching switch over without a refresh. Uses
+// YouTube's IFrame Player API, so no API key is needed.
 
 interface YTPlayer {
   loadVideoById: (id: string) => void;
@@ -53,64 +52,49 @@ function loadYouTubeApi(): Promise<void> {
   return apiPromise;
 }
 
-const ENDED = 0;
 const PLAYING = 1;
 const BUFFERING = 3;
 
 export default function YouTubeQueuePlayer({
-  ids,
+  videoId,
   title,
   blockedText,
   watchLabel,
-  onVideoChange,
 }: {
-  ids: string[];
+  videoId: string;
   title: string;
   /** Shown over the player if YouTube refuses to play the current video here. */
   blockedText: string;
   watchLabel: string;
-  onVideoChange?: (id: string) => void;
 }) {
   const hostRef = useRef<HTMLDivElement>(null);
-  const indexRef = useRef(0);
-  const callbackRef = useRef(onVideoChange);
-  callbackRef.current = onVideoChange;
+  const playerRef = useRef<YTPlayer | null>(null);
+  const currentRef = useRef(videoId);
   const [blocked, setBlocked] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<number | null>(null);
-  const key = ids.join(",");
 
+  // Create the player once.
   useEffect(() => {
     let dead = false;
-    let player: YTPlayer | null = null;
-    indexRef.current = 0;
-    setBlocked(null);
-    callbackRef.current?.(ids[0]);
     loadYouTubeApi().then(() => {
       if (dead || !hostRef.current || !window.YT) return;
       const mount = document.createElement("div");
       hostRef.current.appendChild(mount);
-      player = new window.YT.Player(mount, {
+      playerRef.current = new window.YT.Player(mount, {
         width: "100%",
         height: "100%",
-        videoId: ids[0],
+        videoId: currentRef.current,
         playerVars: { autoplay: 1, mute: 1, rel: 0, playsinline: 1, origin: window.location.origin },
         events: {
           onStateChange: (e) => {
             if (e.data === PLAYING || e.data === BUFFERING) setBlocked(null);
-            if (e.data === ENDED && indexRef.current < ids.length - 1) {
-              indexRef.current += 1;
-              const next = ids[indexRef.current];
-              setBlocked(null);
-              callbackRef.current?.(next);
-              player?.loadVideoById(next);
-            }
           },
           onError: (e) => {
             // YouTube's own code: 2 bad request, 5 player error, 100 not found,
             // 101/150 embedding turned off, 153 player configuration/referrer.
-            setBlocked(ids[indexRef.current]);
+            setBlocked(currentRef.current);
             setErrorCode(e.data);
-            trackEvent("live_player_error", { code: e.data, video_id: ids[indexRef.current] });
+            trackEvent("live_player_error", { code: e.data, video_id: currentRef.current });
           },
         },
       });
@@ -118,13 +102,22 @@ export default function YouTubeQueuePlayer({
     return () => {
       dead = true;
       try {
-        player?.destroy();
+        playerRef.current?.destroy();
       } catch {
         /* player already gone */
       }
+      playerRef.current = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key]);
+  }, []);
+
+  // Switch video when the schedule moves on.
+  useEffect(() => {
+    if (currentRef.current === videoId) return;
+    currentRef.current = videoId;
+    setBlocked(null);
+    setErrorCode(null);
+    playerRef.current?.loadVideoById(videoId);
+  }, [videoId]);
 
   return (
     <div className="relative aspect-video w-full bg-black" aria-label={title}>

@@ -30,13 +30,18 @@ const YOUTUBE_LIVE = `${YOUTUBE_CHANNEL}/live`;
 const SUBMIT_URL = "https://forms.pasalopalante.com/24hr-global-live";
 const LIVE_PAGE_URL = "https://passkindnessforward.com/live";
 // The live panel normally asks the live-stream function (YouTube Data API)
-// which stream is on air, so segments swap in by themselves. While that
-// function is not available (it needs a YouTube API key), the panel plays this
-// list in order and moves to the next video when one ends. Add each segment's
-// video ID (the part after /live/ or v= in its YouTube link) in running order.
-// Every stream needs "Allow embedding" ON in YouTube Studio BEFORE it goes live.
-const LIVE_VIDEO_QUEUE: string[] = ["t5kM1YlIN5k"];
-const WATCH_LIVE_URL = `https://www.youtube.com/watch?v=${LIVE_VIDEO_QUEUE[0]}`;
+// which stream is on air. While that function is not available (it needs a
+// YouTube API key), the panel follows this schedule: it plays the latest entry
+// whose "from" time has passed, and switches for people who are already
+// watching when the next one comes up. Add each segment's video ID (the part
+// after /live/ or v= in its YouTube link) with the time it should take over.
+// Every stream needs "Allow embedding" ON in YouTube Studio.
+const LIVE_SCHEDULE: Array<{ id: string; from: number }> = [
+  { id: "t5kM1YlIN5k", from: 0 }, // stream 3
+  { id: "go1XTjCm48Q", from: Date.UTC(2026, 10, 11, 10, 0) }, // segment 4: 3:00 AM Vancouver (UTC-7) on 11 Nov
+];
+const scheduledVideo = (now: number) => [...LIVE_SCHEDULE].reverse().find((e) => now >= e.from)?.id ?? LIVE_SCHEDULE[0].id;
+const WATCH_LIVE_URL = `https://www.youtube.com/watch?v=${LIVE_SCHEDULE[0].id}`;
 
 // IN TRUTH tracks installs on their side; the UTM tags tell them which of our
 // buttons sent the visitor. "content" is the placement.
@@ -408,7 +413,7 @@ export default function LivePage() {
       ? `https://www.youtube.com/embed/${stream.videoId}?autoplay=1&mute=1&rel=0`
       : null;
   const useQueue = stream.status === "error";
-  const [queueVideo, setQueueVideo] = useState(LIVE_VIDEO_QUEUE[0]);
+  const queueVideo = scheduledVideo(now);
   const watchUrl =
     stream.status === "live" && stream.videoId
       ? `https://www.youtube.com/watch?v=${stream.videoId}`
@@ -496,11 +501,10 @@ export default function LivePage() {
                   <div className="aspect-video w-full bg-black" aria-busy="true" />
                 ) : useQueue ? (
                   <YouTubeQueuePlayer
-                    ids={LIVE_VIDEO_QUEUE}
+                    videoId={queueVideo}
                     title="11.11 Global Live Broadcast"
                     blockedText={tx.liveStreaming}
                     watchLabel={tx.watchLive}
-                    onVideoChange={setQueueVideo}
                   />
                 ) : playerSrc ? (
                   <div className="aspect-video w-full bg-black">
