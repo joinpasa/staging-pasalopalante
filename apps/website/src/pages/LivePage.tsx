@@ -9,6 +9,8 @@ import { useScrollToHash } from "@/hooks/useScrollToHash";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { LIVE_END, LIVE_FROM, isLivePreview } from "@/lib/liveBroadcast";
 import { trackEvent } from "@/lib/analytics";
+import { useLiveStream } from "@/lib/useLiveStream";
+import YouTubeQueuePlayer from "@/lib/YouTubeQueuePlayer";
 
 // /live: the 11.11.2026 Global Live Broadcast event page. All copy lives in
 // the `livePage` namespace of the i18n files; everything else the team may
@@ -27,17 +29,14 @@ const YOUTUBE_CHANNEL = "https://www.youtube.com/@passkindnessforward";
 const YOUTUBE_LIVE = `${YOUTUBE_CHANNEL}/live`;
 const SUBMIT_URL = "https://forms.pasalopalante.com/24hr-global-live";
 const LIVE_PAGE_URL = "https://passkindnessforward.com/live";
-// The stream shown in the live panel. With several streams live at once the
-// channel embed ("live_stream?channel=") picks one by YouTube's own rule, so we
-// pin the video: set LIVE_VIDEO_ID to the video ID of the segment that is on
-// air (the part after /live/ or v= in its YouTube link). Set it to null to
-// follow whichever stream the channel is broadcasting instead.
-const LIVE_VIDEO_ID: string | null = "f2Ac2PgK1pU";
-const LIVE_EMBED_SRC: string | null = LIVE_VIDEO_ID
-  ? `https://www.youtube.com/embed/${LIVE_VIDEO_ID}?autoplay=1&mute=1&rel=0`
-  : "https://www.youtube.com/embed/live_stream?channel=UC2vk63vLFjSt-lgUhqFjr3Q&autoplay=1&mute=1&rel=0";
-// Where "Watch live on YouTube" goes: the pinned stream, else the channel's live page.
-const WATCH_LIVE_URL = LIVE_VIDEO_ID ? `https://www.youtube.com/watch?v=${LIVE_VIDEO_ID}` : YOUTUBE_LIVE;
+// The live panel normally asks the live-stream function (YouTube Data API)
+// which stream is on air, so segments swap in by themselves. While that
+// function is not available (it needs a YouTube API key), the panel plays this
+// list in order and moves to the next video when one ends. Add each segment's
+// video ID (the part after /live/ or v= in its YouTube link) in running order.
+// Every stream needs "Allow embedding" ON in YouTube Studio BEFORE it goes live.
+const LIVE_VIDEO_QUEUE: string[] = ["f2Ac2PgK1pU", "t5kM1YlIN5k"];
+const WATCH_LIVE_URL = `https://www.youtube.com/watch?v=${LIVE_VIDEO_QUEUE[0]}`;
 
 // IN TRUTH tracks installs on their side; the UTM tags tell them which of our
 // buttons sent the visitor. "content" is the placement.
@@ -400,11 +399,28 @@ export default function LivePage() {
   const phase: "before" | "live" | "ended" = forceLive || (now >= LIVE_FROM && now < LIVE_END) ? "live" : now < LIVE_FROM ? "before" : "ended";
   // Once the stream is up, a second countdown runs below it to the 11:11 AM
   // AST Global Kindness Moment, and disappears when that moment arrives.
+  // Which video the live panel shows: asked of the live-stream function
+  // (YouTube Data API) so the exact live segment is embedded and swaps by
+  // itself. If that lookup is unavailable, fall back to the pinned video.
+  const stream = useLiveStream(phase === "live");
+  const playerSrc =
+    stream.status === "live" && stream.embeddable && stream.videoId
+      ? `https://www.youtube.com/embed/${stream.videoId}?autoplay=1&mute=1&rel=0`
+      : null;
+  const useQueue = stream.status === "error";
+  const [queueVideo, setQueueVideo] = useState(LIVE_VIDEO_QUEUE[0]);
+  const watchUrl =
+    stream.status === "live" && stream.videoId
+      ? `https://www.youtube.com/watch?v=${stream.videoId}`
+      : useQueue
+        ? `https://www.youtube.com/watch?v=${queueVideo}`
+        : WATCH_LIVE_URL;
+  const streamLoading = stream.status === "loading";
   // One "live_stream_view" per page load once the player is on screen. Not
   // sent for the ?preview=live team check.
   useEffect(() => {
-    if (phase === "live" && LIVE_EMBED_SRC && !forceLive) trackEvent("live_stream_view", { language: lang });
-  }, [phase, forceLive, lang]);
+    if (phase === "live" && !streamLoading && !forceLive) trackEvent("live_stream_view", { language: lang, video_id: stream.videoId ?? queueVideo });
+  }, [phase, forceLive, lang, streamLoading, stream.videoId, queueVideo]);
   const momentPending = phase === "live" && now < EVENT_START;
   const cdLabels = { days: tx.days, hours: tx.hours, minutes: tx.minutes, seconds: tx.seconds };
 
@@ -476,53 +492,70 @@ export default function LivePage() {
                   <span className="inline-flex h-2.5 w-2.5 animate-pulse rounded-full bg-[#d81b60]" aria-hidden="true" />
                   {tx.livePanel}
                 </div>
-                {LIVE_EMBED_SRC ? (
-                  <>
-                    <div className="aspect-video w-full bg-black">
-                      <iframe
-                        src={LIVE_EMBED_SRC}
-                        title="11.11 Global Live Broadcast"
-                        className="h-full w-full"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        referrerPolicy="strict-origin-when-cross-origin"
-                        allowFullScreen
-                      />
-                    </div>
-                    <div className="flex flex-col items-center gap-3 border-t border-warm-cream/15 px-5 py-4">
-                      <div className="flex flex-wrap items-start justify-center gap-3">
-                        <ShareButton
-                          label={tx.shareButton}
-                          text={tx.shareText}
-                          title={tx.heroTitle}
-                          copyLabel={tx.copyLink}
-                          copiedLabel={tx.linkCopied}
-                        />
-                        <a
-                          href={intruthUrl("live_player")}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={() => trackEvent("intruth_app_click", { placement: "live_player" })}
-                          className="inline-flex h-[52px] items-center justify-center gap-2 rounded-full bg-white px-7 text-sm font-bold text-cyan-900 transition-transform duration-200 hover:scale-105"
-                        >
-                          {tx.getIntruthApp} <ExternalLink size={16} aria-hidden="true" />
-                        </a>
-                      </div>
-                      <a href={WATCH_LIVE_URL} target="_blank" rel="noopener noreferrer" onClick={() => trackEvent("watch_on_youtube_click", { placement: "live_player" })} className="inline-flex items-center gap-1.5 text-sm font-semibold text-warm-cream/85 underline underline-offset-4 hover:text-warm-cream">
-                        <Play size={14} aria-hidden="true" /> {tx.watchLive}
-                      </a>
-                    </div>
-                  </>
+                {streamLoading ? (
+                  <div className="aspect-video w-full bg-black" aria-busy="true" />
+                ) : useQueue ? (
+                  <YouTubeQueuePlayer
+                    ids={LIVE_VIDEO_QUEUE}
+                    title="11.11 Global Live Broadcast"
+                    blockedText={tx.liveStreaming}
+                    watchLabel={tx.watchLive}
+                    onVideoChange={setQueueVideo}
+                  />
+                ) : playerSrc ? (
+                  <div className="aspect-video w-full bg-black">
+                    <iframe
+                      key={playerSrc}
+                      src={playerSrc}
+                      title="11.11 Global Live Broadcast"
+                      className="h-full w-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      referrerPolicy="strict-origin-when-cross-origin"
+                      allowFullScreen
+                    />
+                  </div>
                 ) : (
                   <div className="flex flex-col items-center gap-4 px-6 py-12 text-center">
                     <Radio size={36} className="text-warm-gold" aria-hidden="true" />
                     <p className="max-w-md text-base leading-relaxed text-warm-cream/85">
                       {tx.liveStreaming}
                     </p>
-                    <a href={YOUTUBE_LIVE} target="_blank" rel="noopener noreferrer" className={btnPrimary}>
+                    <a href={watchUrl} target="_blank" rel="noopener noreferrer" className={btnPrimary}>
                       <Play size={18} aria-hidden="true" /> {tx.watchLive}
                     </a>
                   </div>
                 )}
+                <div className="flex flex-col items-center gap-3 border-t border-warm-cream/15 px-5 py-4">
+                  <div className="flex flex-wrap items-start justify-center gap-3">
+                    <ShareButton
+                      label={tx.shareButton}
+                      text={tx.shareText}
+                      title={tx.heroTitle}
+                      copyLabel={tx.copyLink}
+                      copiedLabel={tx.linkCopied}
+                    />
+                    <a
+                      href={intruthUrl("live_player")}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => trackEvent("intruth_app_click", { placement: "live_player" })}
+                      className="inline-flex h-[52px] items-center justify-center gap-2 rounded-full bg-white px-7 text-sm font-bold text-cyan-900 transition-transform duration-200 hover:scale-105"
+                    >
+                      {tx.getIntruthApp} <ExternalLink size={16} aria-hidden="true" />
+                    </a>
+                  </div>
+                  {(playerSrc || useQueue) && (
+                    <a
+                      href={watchUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => trackEvent("watch_on_youtube_click", { placement: "live_player" })}
+                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-warm-cream/85 underline underline-offset-4 hover:text-warm-cream"
+                    >
+                      <Play size={14} aria-hidden="true" /> {tx.watchLive}
+                    </a>
+                  )}
+                </div>
               </div>
             )}
 
