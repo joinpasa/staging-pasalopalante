@@ -5,6 +5,8 @@ project_id = "tipfbleltjexofsjffwb"
     verify_jwt = false
   [functions.daily-acts]
     verify_jwt = false
+  [functions.live-stream]
+    verify_jwt = false
   [functions.process-email-queue]
     verify_jwt = false
   [functions.sign-photo-upload]
