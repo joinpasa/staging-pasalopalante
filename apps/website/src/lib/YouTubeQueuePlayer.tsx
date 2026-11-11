@@ -52,6 +52,7 @@ function loadYouTubeApi(): Promise<void> {
   return apiPromise;
 }
 
+const ENDED = 0;
 const PLAYING = 1;
 const BUFFERING = 3;
 
@@ -60,8 +61,11 @@ export default function YouTubeQueuePlayer({
   title,
   blockedText,
   watchLabel,
+  loop = false,
 }: {
   videoId: string;
+  /** Play the video again from the start whenever it ends. */
+  loop?: boolean;
   title: string;
   /** Shown over the player if YouTube refuses to play the current video here. */
   blockedText: string;
@@ -70,6 +74,8 @@ export default function YouTubeQueuePlayer({
   const hostRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YTPlayer | null>(null);
   const currentRef = useRef(videoId);
+  const loopRef = useRef(loop);
+  loopRef.current = loop;
   const [blocked, setBlocked] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<number | null>(null);
 
@@ -88,6 +94,7 @@ export default function YouTubeQueuePlayer({
         events: {
           onStateChange: (e) => {
             if (e.data === PLAYING || e.data === BUFFERING) setBlocked(null);
+            if (e.data === ENDED && loopRef.current) playerRef.current?.loadVideoById(currentRef.current);
           },
           onError: (e) => {
             // YouTube's own code: 2 bad request, 5 player error, 100 not found,

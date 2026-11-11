@@ -36,13 +36,13 @@ const LIVE_PAGE_URL = "https://passkindnessforward.com/live";
 // watching when the next one comes up. Add each segment's video ID (the part
 // after /live/ or v= in its YouTube link) with the time it should take over.
 // Every stream needs "Allow embedding" ON in YouTube Studio.
-const LIVE_SCHEDULE: Array<{ id: string; from: number }> = [
+const LIVE_SCHEDULE: Array<{ id: string; from: number; loop?: boolean }> = [
   { id: "t5kM1YlIN5k", from: 0 }, // stream 3
   { id: "go1XTjCm48Q", from: Date.UTC(2026, 10, 11, 10, 0) }, // segment 4: 3:00 AM Vancouver (UTC-7) on 11 Nov
-  { id: "Fr2Fch8EPFo", from: Date.UTC(2026, 10, 11, 14, 0) }, // stream 5: 14:00 UTC on 11 Nov
-  { id: "4hPgiBI-9DM", from: Date.UTC(2026, 10, 11, 18, 0) }, // stream 6: 10:00 AM PST (UTC-8) on 11 Nov
+  { id: "Fr2Fch8EPFo", from: Date.UTC(2026, 10, 11, 14, 0), loop: true }, // stream 5: 14:00 UTC on 11 Nov; replays on a loop once it has ended, until stream 6 starts
+  { id: "4hPgiBI-9DM", from: Date.UTC(2026, 10, 11, 19, 0) }, // stream 6: moved one hour later, 11:00 AM PST (19:00 UTC) on 11 Nov
 ];
-const scheduledVideo = (now: number) => [...LIVE_SCHEDULE].reverse().find((e) => now >= e.from)?.id ?? LIVE_SCHEDULE[0].id;
+const scheduledEntry = (now: number) => [...LIVE_SCHEDULE].reverse().find((e) => now >= e.from) ?? LIVE_SCHEDULE[0];
 const WATCH_LIVE_URL = `https://www.youtube.com/watch?v=${LIVE_SCHEDULE[0].id}`;
 
 // IN TRUTH tracks installs on their side; the UTM tags tell them which of our
@@ -415,7 +415,8 @@ export default function LivePage() {
       ? `https://www.youtube.com/embed/${stream.videoId}?autoplay=1&mute=1&rel=0`
       : null;
   const useQueue = stream.status === "error";
-  const queueVideo = scheduledVideo(now);
+  const scheduled = scheduledEntry(now);
+  const queueVideo = scheduled.id;
   const watchUrl =
     stream.status === "live" && stream.videoId
       ? `https://www.youtube.com/watch?v=${stream.videoId}`
@@ -504,6 +505,7 @@ export default function LivePage() {
                 ) : useQueue ? (
                   <YouTubeQueuePlayer
                     videoId={queueVideo}
+                    loop={!!scheduled.loop}
                     title="11.11 Global Live Broadcast"
                     blockedText={tx.liveStreaming}
                     watchLabel={tx.watchLive}

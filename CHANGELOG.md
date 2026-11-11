@@ -14,6 +14,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-11-10 — va.deedumlao@gmail.com
 
+- **/live schedule change:** stream 6 now starts at 11:00 AM PST (an hour later than planned); until then the page replays stream 5 on a loop.
 - **/live now switches streams on a schedule.** The player plays stream 3 and moves to Segment 4 at 3:00 AM Vancouver time on 11 November, for visitors already watching as well as new ones, without relying on YouTube to signal that a stream ended.
 - **/live now plays stream 3** (the player starts on the current stream; the automatic hand-over from stream 2 did not trigger, so the current stream is set directly).
 - **/live player now moves to the next segment by itself.** The live panel asks a new "live-stream" lookup (YouTube Data API, needs an API key) which stream is on air; until that key is set, it plays a list of segment videos in order and loads the next one when the current one ends. If YouTube will not play a stream here (embedding turned off), the panel shows a "Watch live on YouTube" button instead of an empty "unavailable" box.
