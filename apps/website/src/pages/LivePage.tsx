@@ -40,6 +40,7 @@ const LIVE_SCHEDULE: Array<{ id: string; from: number }> = [
   { id: "t5kM1YlIN5k", from: 0 }, // stream 3
   { id: "go1XTjCm48Q", from: Date.UTC(2026, 10, 11, 10, 0) }, // segment 4: 3:00 AM Vancouver (UTC-7) on 11 Nov
   { id: "Fr2Fch8EPFo", from: Date.UTC(2026, 10, 11, 14, 0) }, // stream 5: 14:00 UTC on 11 Nov
+  { id: "4hPgiBI-9DM", from: Date.UTC(2026, 10, 11, 18, 0) }, // stream 6: 10:00 AM PST (UTC-8) on 11 Nov
 ];
 const scheduledVideo = (now: number) => [...LIVE_SCHEDULE].reverse().find((e) => now >= e.from)?.id ?? LIVE_SCHEDULE[0].id;
 const WATCH_LIVE_URL = `https://www.youtube.com/watch?v=${LIVE_SCHEDULE[0].id}`;
