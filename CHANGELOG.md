@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-11-11 — va.deedumlao@gmail.com
+
+- **New public endpoint for the live "acts pledged" total** (`pledge-total` edge function), so Heartfulness can embed the same real-time pledge count we show on our own site onto their own page. Read-only, no sign-in, same number already visible on pasalopalante.com — nothing new is exposed.
+
 ## 2026-11-10 — va.deedumlao@gmail.com
 
 - **/live now switches streams on a schedule.** The player plays stream 3 and moves to Segment 4 at 3:00 AM Vancouver time on 11 November, for visitors already watching as well as new ones, without relying on YouTube to signal that a stream ended.
