@@ -32,7 +32,7 @@ const LIVE_PAGE_URL = "https://passkindnessforward.com/live";
 // pin the video: set LIVE_VIDEO_ID to the video ID of the segment that is on
 // air (the part after /live/ or v= in its YouTube link). Set it to null to
 // follow whichever stream the channel is broadcasting instead.
-const LIVE_VIDEO_ID: string | null = null;
+const LIVE_VIDEO_ID: string | null = "f2Ac2PgK1pU";
 const LIVE_EMBED_SRC: string | null = LIVE_VIDEO_ID
   ? `https://www.youtube.com/embed/${LIVE_VIDEO_ID}?autoplay=1&mute=1&rel=0`
   : "https://www.youtube.com/embed/live_stream?channel=UC2vk63vLFjSt-lgUhqFjr3Q&autoplay=1&mute=1&rel=0";
