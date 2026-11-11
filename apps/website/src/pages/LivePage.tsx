@@ -35,7 +35,7 @@ const LIVE_PAGE_URL = "https://passkindnessforward.com/live";
 // list in order and moves to the next video when one ends. Add each segment's
 // video ID (the part after /live/ or v= in its YouTube link) in running order.
 // Every stream needs "Allow embedding" ON in YouTube Studio BEFORE it goes live.
-const LIVE_VIDEO_QUEUE: string[] = ["f2Ac2PgK1pU", "t5kM1YlIN5k"];
+const LIVE_VIDEO_QUEUE: string[] = ["t5kM1YlIN5k"];
 const WATCH_LIVE_URL = `https://www.youtube.com/watch?v=${LIVE_VIDEO_QUEUE[0]}`;
 
 // IN TRUTH tracks installs on their side; the UTM tags tell them which of our
