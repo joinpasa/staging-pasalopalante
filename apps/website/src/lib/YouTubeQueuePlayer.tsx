@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ExternalLink } from "lucide-react";
+import { trackEvent } from "@/lib/analytics";
 
 // Plays a list of YouTube videos one after another: when the current one ends
 // (a live stream finishing counts), the next one loads by itself; a scheduled
@@ -75,6 +76,7 @@ export default function YouTubeQueuePlayer({
   const callbackRef = useRef(onVideoChange);
   callbackRef.current = onVideoChange;
   const [blocked, setBlocked] = useState<string | null>(null);
+  const [errorCode, setErrorCode] = useState<number | null>(null);
   const key = ids.join(",");
 
   useEffect(() => {
@@ -103,7 +105,13 @@ export default function YouTubeQueuePlayer({
               player?.loadVideoById(next);
             }
           },
-          onError: () => setBlocked(ids[indexRef.current]),
+          onError: (e) => {
+            // YouTube's own code: 2 bad request, 5 player error, 100 not found,
+            // 101/150 embedding turned off, 153 player configuration/referrer.
+            setBlocked(ids[indexRef.current]);
+            setErrorCode(e.data);
+            trackEvent("live_player_error", { code: e.data, video_id: ids[indexRef.current] });
+          },
         },
       });
     });
@@ -124,6 +132,7 @@ export default function YouTubeQueuePlayer({
       {blocked && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/90 px-6 text-center">
           <p className="max-w-md text-base leading-relaxed text-white/90">{blockedText}</p>
+          {errorCode !== null && <p className="text-xs text-white/50">YouTube error {errorCode}</p>}
           <a
             href={`https://www.youtube.com/watch?v=${blocked}`}
             target="_blank"
