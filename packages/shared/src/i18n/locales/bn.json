@@ -39,6 +39,7 @@
   "live": "সরাসরি সম্প্রচার",
   "liveBanner": "11.11.2026 তারিখে বিশ্বব্যাপী সরাসরি সম্প্রচারে যোগ দাও",
   "liveNowBanner": "লাইভ সম্প্রচার এখন চলছে",
+  "masterclassNowBanner": "দাজির সঙ্গে ক্লিনজিং মাস্টারক্লাস এখন চলছে",
   "groupDirectory": "ডিরেক্টরি ও নেটওয়ার্ক",
   "groupOurImpact": "আমাদের প্রভাব",
   "groupResources": "সম্পদ",
@@ -1695,6 +1696,7 @@
   "heroBroadcastStarts": "লাইভ সম্প্রচার শুরু ·",
   "kmCountdown": "বৈশ্বিক দয়ার মুহূর্ত শুরু হতে বাকি",
   "getIntruthApp": "IN TRUTH অ্যাপ নিন",
-  "viewRecording": "সম্প্রচারের রেকর্ডিং দেখুন"
+  "viewRecording": "সম্প্রচারের রেকর্ডিং দেখুন",
+  "cdMasterclass": "দাজির সঙ্গে ক্লিনজিং মাস্টারক্লাস এখন চলছে"
  }
 }

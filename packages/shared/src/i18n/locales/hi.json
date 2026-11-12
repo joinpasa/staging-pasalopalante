@@ -39,6 +39,7 @@
   "live": "लाइव प्रसारण",
   "liveBanner": "11.11.2026 को वैश्विक लाइव प्रसारण से जुड़ो",
   "liveNowBanner": "लाइव प्रसारण अभी जारी है",
+  "masterclassNowBanner": "दाजी के साथ क्लींज़िंग मास्टरक्लास अभी जारी है",
   "groupDirectory": "निर्देशिका और नेटवर्क",
   "groupOurImpact": "हमारा प्रभाव",
   "groupResources": "संसाधन",
@@ -1699,6 +1700,7 @@
   "heroBroadcastStarts": "लाइव प्रसारण शुरू होगा ·",
   "kmCountdown": "वैश्विक दयालुता क्षण शुरू होने में",
   "getIntruthApp": "IN TRUTH ऐप पाएँ",
-  "viewRecording": "प्रसारण की रिकॉर्डिंग देखें"
+  "viewRecording": "प्रसारण की रिकॉर्डिंग देखें",
+  "cdMasterclass": "दाजी के साथ क्लींज़िंग मास्टरक्लास अभी जारी है"
  }
 }

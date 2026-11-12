@@ -479,6 +479,7 @@ const translations = {
       live: "Live Broadcast",
       liveBanner: "Join the global live broadcast on 11.11.2026",
       liveNowBanner: "Live Broadcast Happening Now",
+      masterclassNowBanner: "Cleansing Masterclass with Daaji now happening",
       anthem: "Anthem",
       proof: "Proof",
       joinMovement: "Join the Movement",
@@ -1595,6 +1596,7 @@ const translations = {
       kmCountdown: "The Global Kindness Moment begins in",
       getIntruthApp: "Get the IN TRUTH app",
       viewRecording: "View Stream Recording",
+      cdMasterclass: "Cleansing Masterclass with Daaji now happening",
     },
   },
 } as const;

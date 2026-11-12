@@ -25,6 +25,7 @@
     "live": "Prenos v živo",
     "liveBanner": "Pridruži se svetovnemu prenosu v živo 11. 11. 2026",
     "liveNowBanner": "Prenos v živo poteka zdaj",
+    "masterclassNowBanner": "Mojstrska delavnica čiščenja z Daajijem poteka zdaj",
     "groupDirectory": "Imenik in Mreža",
     "groupOurImpact": "Naš Vpliv",
     "groupResources": "Viri",
@@ -1591,6 +1592,7 @@
     "heroBroadcastStarts": "Prenos v živo se začne ·",
     "kmCountdown": "Globalni trenutek prijaznosti se začne čez",
     "getIntruthApp": "Prenesi aplikacijo IN TRUTH",
-    "viewRecording": "Poglej posnetek prenosa"
+    "viewRecording": "Poglej posnetek prenosa",
+    "cdMasterclass": "Mojstrska delavnica čiščenja z Daajijem poteka zdaj"
   }
 }

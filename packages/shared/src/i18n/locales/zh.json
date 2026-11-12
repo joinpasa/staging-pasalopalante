@@ -323,6 +323,7 @@
   "live": "直播",
   "liveBanner": "欢迎观看 2026年11月11日的全球直播",
   "liveNowBanner": "直播正在进行中",
+  "masterclassNowBanner": "与 Daaji 一起的净化大师课正在进行",
   "groupDirectory": "名录与网络",
   "groupOurImpact": "我们的影响力",
   "groupResources": "资源",
@@ -1699,6 +1700,7 @@
   "heroBroadcastStarts": "直播开始时间 ·",
   "kmCountdown": "全球善意时刻将在以下时间后开始",
   "getIntruthApp": "获取 IN TRUTH 应用",
-  "viewRecording": "观看直播回放"
+  "viewRecording": "观看直播回放",
+  "cdMasterclass": "与 Daaji 一起的净化大师课正在进行"
  }
 }

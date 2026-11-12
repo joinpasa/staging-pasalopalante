@@ -39,6 +39,7 @@
     "live": "Diffusion en direct",
     "liveBanner": "Rejoins la diffusion mondiale en direct le 11.11.2026",
     "liveNowBanner": "Diffusion en direct en cours",
+    "masterclassNowBanner": "Masterclass sur la purification avec Daaji en cours",
     "groupDirectory": "Répertoire et Réseau",
     "groupOurImpact": "Notre Impact",
     "groupResources": "Ressources",
@@ -1699,6 +1700,7 @@
     "heroBroadcastStarts": "La diffusion en direct commence ·",
     "kmCountdown": "Le Moment mondial de gentillesse commence dans",
     "getIntruthApp": "Obtenir l'app IN TRUTH",
-    "viewRecording": "Voir l'enregistrement de la diffusion"
+    "viewRecording": "Voir l'enregistrement de la diffusion",
+    "cdMasterclass": "Masterclass sur la purification avec Daaji en cours"
   }
 }

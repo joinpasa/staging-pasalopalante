@@ -74,6 +74,7 @@
     "live": "Transmisión en vivo",
     "liveBanner": "Únete a la transmisión global en vivo el 11.11.2026",
     "liveNowBanner": "Transmisión en vivo ahora mismo",
+    "masterclassNowBanner": "Masterclass de Limpieza con Daaji ocurriendo ahora",
     "anthem": "Himno",
     "proof": "Evidencia",
     "joinMovement": "Únete",
@@ -1699,6 +1700,7 @@
     "heroBroadcastStarts": "La transmisión en vivo comienza ·",
     "kmCountdown": "El Momento Global de Bondad comienza en",
     "getIntruthApp": "Obtén la app IN TRUTH",
-    "viewRecording": "Ver la grabación de la transmisión"
+    "viewRecording": "Ver la grabación de la transmisión",
+    "cdMasterclass": "Masterclass de Limpieza con Daaji ocurriendo ahora"
   }
 }

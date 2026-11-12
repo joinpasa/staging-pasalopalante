@@ -39,6 +39,7 @@
   "live": "بث مباشر",
   "liveBanner": "انضم إلى البث العالمي المباشر في 11.11.2026",
   "liveNowBanner": "البث المباشر جارٍ الآن",
+  "masterclassNowBanner": "ماستركلاس التطهير مع داجي يجري الآن",
   "groupDirectory": "الدليل والشبكة",
   "groupOurImpact": "تأثيرنا",
   "groupResources": "الموارد",
@@ -1698,6 +1699,7 @@
   "heroBroadcastStarts": "يبدأ البث المباشر ·",
   "kmCountdown": "تبدأ لحظة اللطف العالمية بعد",
   "getIntruthApp": "احصل على تطبيق IN TRUTH",
-  "viewRecording": "شاهد تسجيل البث"
+  "viewRecording": "شاهد تسجيل البث",
+  "cdMasterclass": "ماستركلاس التطهير مع داجي يجري الآن"
  }
 }

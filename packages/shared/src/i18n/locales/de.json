@@ -484,6 +484,7 @@
     "live": "Live-Übertragung",
     "liveBanner": "Sei bei der weltweiten Live-Übertragung am 11.11.2026 dabei",
     "liveNowBanner": "Live-Übertragung läuft jetzt",
+    "masterclassNowBanner": "Reinigungs-Masterclass mit Daaji läuft jetzt",
     "groupDirectory": "Verzeichnis & Netzwerk",
     "groupOurImpact": "Unsere Wirkung",
     "groupResources": "Ressourcen",
@@ -1699,6 +1700,7 @@
     "heroBroadcastStarts": "Die Live-Übertragung beginnt ·",
     "kmCountdown": "Der globale Freundlichkeitsmoment beginnt in",
     "getIntruthApp": "IN TRUTH App holen",
-    "viewRecording": "Aufzeichnung der Übertragung ansehen"
+    "viewRecording": "Aufzeichnung der Übertragung ansehen",
+    "cdMasterclass": "Reinigungs-Masterclass mit Daaji läuft jetzt"
   }
 }
