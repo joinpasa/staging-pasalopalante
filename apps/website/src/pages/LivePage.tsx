@@ -19,11 +19,13 @@ import YouTubeQueuePlayer from "@/lib/YouTubeQueuePlayer";
 // ---------------------------------------------------------------- the event
 // 11:11 AM AST (Puerto Rico, UTC-4, no daylight saving) = 15:11 UTC.
 const EVENT_START = Date.parse("2026-11-11T11:11:00-04:00");
-// Daaji's guided meditation starts 5 minutes after the 11:11 moment: 11:16 AM AST.
-const DAAJI_START = EVENT_START + 5 * 60 * 1000;
-// Pre-11 programme from Yoga Vidya: 15:15–16:18 CET (UTC+1) = 14:15–15:18 UTC.
-const GERMANY_START = Date.UTC(2026, 10, 11, 14, 15);
-const GERMANY_END = Date.UTC(2026, 10, 11, 15, 18);
+// The Heartfulness Masterclasses with Daaji, both at 11:16 AM AST (15:16 UTC).
+const MASTERCLASSES = [
+  { n: 2, nameKey: "mcCleansing", start: Date.UTC(2026, 10, 12, 15, 16) },
+  { n: 3, nameKey: "mcInner", start: Date.UTC(2026, 10, 13, 15, 16) },
+] as const;
+// The recordings of last 11.11 live on this playlist.
+const PLAYLIST_URL = "https://www.youtube.com/playlist?list=PLeJ8gSEkU3Cs";
 
 const YOUTUBE_CHANNEL = "https://www.youtube.com/@passkindnessforward";
 const YOUTUBE_LIVE = `${YOUTUBE_CHANNEL}/live`;
@@ -44,9 +46,6 @@ const intruthUrl = (content: string) =>
 const shareUrl = (source: string) =>
   `${LIVE_PAGE_URL}?utm_source=${source}&utm_medium=social&utm_campaign=1111_live`;
 const MASTERCLASS_URL = "https://heartfulness.org/global/masterclass/";
-const DAAJI_POSTER = "/live/daaji-poster.jpg";
-const DAAJI_VIDEO_SRC = "https://cdn-prod.heartfulness.org/videos/kindness-2026/kindness-en.mp4?v=2";
-const YOGA_VIDYA_IMAGE = "https://www.yoga-vidya.de/fileadmin/yv/Startseite/Featurette/yoga-vidya-mandala-500x500.jpg";
 const HEARTFULNESS_LOGO = "https://primary-assets.heartfulness.org/strapi-assets/Heartfulness_Logo_Blk_Pwd_8f65f0f06c.svg";
 
 // Calendar links for the broadcast.
@@ -322,49 +321,6 @@ function ShareButton({
   );
 }
 
-// Daaji's message: portrait video with a poster (a still of Daaji, the label
-// and title, and a play button) so it never looks like an empty black box.
-function DaajiVideo({ label, title, playLabel, unsupported }: { label: string; title: string; playLabel: string; unsupported: string }) {
-  const [started, setStarted] = useState(false);
-  const ref = useRef<HTMLVideoElement>(null);
-  return (
-    <div className="relative mx-auto aspect-[9/16] h-[520px] max-w-full overflow-hidden rounded-3xl bg-black shadow-[0_24px_60px_rgba(0,0,0,0.35)] md:h-[600px]">
-      {/* The Heartfulness video is portrait (9:16), so it fills its own frame. */}
-      <video
-        ref={ref}
-        controls={started}
-        playsInline
-        preload="none"
-        poster={DAAJI_POSTER}
-        src={DAAJI_VIDEO_SRC}
-        className="h-full w-full bg-black object-cover"
-      >
-        {unsupported}
-      </video>
-      {!started && (
-        <button
-          type="button"
-          aria-label={playLabel}
-          onClick={() => {
-            setStarted(true);
-            void ref.current?.play();
-          }}
-          className="group absolute inset-0 flex items-center justify-center text-left"
-        >
-          <span className="absolute inset-x-0 bottom-0 h-[40%] bg-[linear-gradient(to_top,#0b1f6b_0%,rgba(11,31,107,0.7)_55%,transparent_100%)]" aria-hidden="true" />
-          <span className="relative flex h-20 w-20 items-center justify-center rounded-full bg-white shadow-lg transition-transform duration-200 group-hover:scale-110" aria-hidden="true">
-            <Play size={30} className="ms-1 fill-[#9b0f2f] text-[#9b0f2f]" />
-          </span>
-          <span className="absolute inset-x-0 bottom-0 flex flex-col gap-1.5 p-6">
-            <span className="text-xs font-bold uppercase tracking-[0.18em] text-[#e7a3b8]">{label}</span>
-            <span className="font-display text-2xl leading-tight text-white md:text-3xl">{title}</span>
-          </span>
-        </button>
-      )}
-    </div>
-  );
-}
-
 const linkCls = "font-semibold text-warm-sky underline underline-offset-2 hover:text-foreground";
 
 // ------------------------------------------------------------------ the page
@@ -426,7 +382,6 @@ export default function LivePage() {
 
   const startsAt = `${timeOf(EVENT_START, tz)} ${tzAbbr(EVENT_START, tz)}`.trim();
   const startsDay = shortDay(EVENT_START, tz);
-  const daajiAt = `${timeOf(DAAJI_START, tz)} ${tzAbbr(DAAJI_START, tz)}`.trim();
 
   return (
     <div className="min-h-screen bg-warm-cream">
@@ -609,6 +564,59 @@ export default function LivePage() {
           </div>
         </section>
 
+        {/* ------------------------------------------- Masterclasses with Daaji */}
+        <section id="masterclass" className="scroll-mt-24 bg-warm-sand">
+          <div className="section-padding mx-auto max-w-6xl py-14 md:py-20">
+            <div className="grid gap-10 lg:grid-cols-2 lg:gap-14">
+              <div>
+                <Eyebrow>{tx.mcEyebrow}</Eyebrow>
+                <h2 className="mt-4 font-display text-3xl leading-tight text-foreground md:text-5xl">{tx.mcTitle}</h2>
+                <p className="mt-4 text-base leading-relaxed text-foreground md:text-lg">
+                  <strong className="font-bold">{tx.daajiLead}</strong>{" "}
+                  <a
+                    href={MASTERCLASS_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackEvent("masterclass_register_click", { placement: "masterclass_text" })}
+                    className="font-semibold text-warm-terracotta underline underline-offset-2"
+                  >
+                    heartfulness.org/global/masterclass
+                  </a>
+                </p>
+                <p className="mt-3 text-base font-bold leading-relaxed text-foreground md:text-lg">{tx.daajiThen}</p>
+                <p className="mt-3 text-base leading-relaxed text-foreground/75 md:text-lg">{tx.daajiIntro}</p>
+                <div className="mt-6 flex flex-wrap items-center gap-4">
+                  <a
+                    href={MASTERCLASS_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackEvent("masterclass_register_click", { placement: "masterclass_section" })}
+                    className={btnPrimary}
+                  >
+                    {tx.daajiRegister} <ExternalLink size={16} aria-hidden="true" />
+                  </a>
+                  <label htmlFor="mc-tz" className="sr-only">
+                    {tx.yourTimeZone}
+                  </label>
+                  <ZoneSelect id="mc-tz" zones={zones} value={tz} onChange={setTz} label={tx.tzAria} />
+                </div>
+              </div>
+              <div className="grid content-start gap-4 sm:grid-cols-2 lg:grid-cols-1">
+                {MASTERCLASSES.map((m) => (
+                  <article key={m.n} className="rounded-2xl border border-border bg-white p-6 shadow-sm">
+                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-warm-terracotta">{tx.mcNumbered.replace("{n}", String(m.n))}</p>
+                    <h3 className="mt-1 font-display text-2xl text-foreground">{tx[m.nameKey]}</h3>
+                    <p className="mt-3 text-sm text-foreground/65">{longDay(m.start, tz)}</p>
+                    <p className="font-display text-4xl tabular-nums text-foreground">
+                      {timeOf(m.start, tz)} <span className="text-base text-foreground/60">{tzAbbr(m.start, tz)}</span>
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* ------------------------------------------------ what's happening */}
         <section id="happening" className="scroll-mt-24 bg-white">
           <div className="section-padding mx-auto max-w-6xl py-16 md:py-24">
@@ -620,6 +628,17 @@ export default function LivePage() {
               <p className="text-base leading-relaxed text-foreground/75 md:text-lg">
                 {tx.happeningBody}
               </p>
+              <div className="mt-2">
+                <a
+                  href={PLAYLIST_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackEvent("watch_recording_click", { placement: "happened_section" })}
+                  className={`${btnPrimary} uppercase tracking-wide`}
+                >
+                  <Play size={18} aria-hidden="true" /> {tx.watchRecording}
+                </a>
+              </div>
             </div>
 
             <div className="mt-10 grid gap-5 md:grid-cols-3">
@@ -646,12 +665,12 @@ export default function LivePage() {
               <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
                 {[
                   { href: "#happening", top: tx.g1Top, title: tx.g1Title, body: tx.g1Body },
-                  { href: "#germany", top: tx.g2Top, title: tx.g2Title, body: tx.g2Body },
+                  { href: PLAYLIST_URL, top: tx.g2Top, title: tx.g2Title, body: tx.g2Body },
                   { href: "#happening", top: tx.g3Top, title: tx.g3Title, body: tx.g3Body },
-                  { href: "#daaji", top: tx.g4Top, title: tx.g4Title, body: tx.g4Body },
+                  { href: PLAYLIST_URL, top: tx.g4Top, title: tx.g4Title, body: tx.g4Body },
                   { href: "#happening", top: tx.g5Top, title: tx.g5Title, body: tx.g5Body },
                 ].map((g) => (
-                  <a key={g.title} href={g.href} className="flex flex-col gap-1.5 rounded-2xl border border-border bg-warm-sand px-5 py-4 transition-colors hover:border-warm-terracotta">
+                  <a key={g.title} href={g.href} {...(g.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer", onClick: () => trackEvent("watch_recording_click", { placement: "glance_tile" }) } : {})} className="flex flex-col gap-1.5 rounded-2xl border border-border bg-warm-sand px-5 py-4 transition-colors hover:border-warm-terracotta">
                     <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-foreground/55">{g.top}</span>
                     <span className="text-base font-bold text-foreground">{g.title}</span>
                     <span className="text-sm leading-snug text-foreground/65">{g.body}</span>
@@ -667,133 +686,6 @@ export default function LivePage() {
                 <p className="min-w-0 flex-1 basis-72 text-sm leading-relaxed text-warm-cream/80">
                   {tx.seasonBody}
                 </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ------------------------------------------------------- Germany */}
-        <section id="germany" className="scroll-mt-24 bg-warm-sand">
-          <div className="section-padding mx-auto grid max-w-6xl items-center gap-10 py-16 md:py-24 lg:grid-cols-2 lg:gap-14">
-            <img
-              src={YOGA_VIDYA_IMAGE}
-              alt={tx.yogaAlt}
-              loading="lazy"
-              className="mx-auto aspect-square w-full max-w-[480px] rounded-3xl object-cover shadow-[0_24px_60px_rgba(14,35,75,0.18)]"
-            />
-            <div>
-              <Eyebrow>{tx.germanyEyebrow}</Eyebrow>
-              <h2 className="mt-4 font-display text-3xl leading-tight text-foreground md:text-5xl">
-                {tx.germanyTitle}
-              </h2>
-              <p className="mt-4 text-sm font-bold uppercase tracking-[0.14em] text-warm-sky">{tx.germanyLive}</p>
-              <p className="mt-3 text-base leading-relaxed text-foreground/75 md:text-lg">
-                {tx.germanyIntro}
-              </p>
-              <DetailRows
-                rows={[
-                  [tx.rowWhat, tx.germanyWhat],
-                  [
-                    tx.rowWhen,
-                    <>
-                      {tx.germanyWhen}
-                      <span className="mt-1 block font-semibold text-foreground">
-                        {tx.yourTime.replace(
-                          "{time}",
-                          `${timeOf(GERMANY_START, tz)}–${timeOf(GERMANY_END, tz)} ${tzAbbr(GERMANY_START, tz)}, ${shortDay(GERMANY_START, tz)}`,
-                        )}
-                      </span>
-                    </>,
-                  ],
-                  [tx.rowWhere, tx.germanyWhere],
-                  [tx.rowHow, tx.germanyHow],
-                ]}
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* ------------------------------------------ Daaji & Heartfulness */}
-        <section id="daaji" className="scroll-mt-24 bg-cyan-900 text-warm-cream">
-          <div className="section-padding mx-auto max-w-6xl py-16 md:py-24">
-            <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
-              <div>
-                <Eyebrow tone="dark">{tx.daajiEyebrow}</Eyebrow>
-                <h2 className="mt-4 font-display text-3xl leading-tight md:text-5xl">{tx.daajiTitle}</h2>
-                <p className="mt-4 text-base leading-relaxed text-warm-cream md:text-lg">
-                  <strong className="font-bold">{tx.daajiLead}</strong>{" "}
-                  <a href={MASTERCLASS_URL} target="_blank" rel="noopener noreferrer" onClick={() => trackEvent("masterclass_register_click", { placement: "daaji_text" })} className="font-semibold text-warm-gold underline underline-offset-2">
-                    heartfulness.org/global/masterclass
-                  </a>
-                </p>
-                <p className="mt-3 text-base font-bold leading-relaxed text-warm-cream md:text-lg">{tx.daajiThen}</p>
-                <p className="mt-3 text-base leading-relaxed text-warm-cream/75 md:text-lg">{tx.daajiIntro}</p>
-                <DetailRows
-                  tone="dark"
-                  rows={[
-                    [tx.rowWhat, tx.daajiWhat],
-                    [
-                      tx.rowWhen,
-                      <>
-                        {tx.daajiWhen}
-                        <span className="mt-1 block font-semibold text-warm-cream">
-                          {tx.yourTime.replace("{time}", `${daajiAt}, ${shortDay(DAAJI_START, tz)}`)}
-                        </span>
-                      </>,
-                    ],
-                    [
-                      tx.rowWhere,
-                      rich(tx.daajiWhere, {
-                        link: (
-                          <a href={YOUTUBE_CHANNEL} target="_blank" rel="noopener noreferrer" className="font-semibold text-warm-gold underline underline-offset-2">
-                            {tx.youtubeChannel}
-                          </a>
-                        ),
-                      }),
-                    ],
-                    [tx.rowHow, tx.daajiHow],
-                  ]}
-                />
-              </div>
-              <DaajiVideo
-                label={tx.daajiPosterLabel}
-                title={tx.daajiPosterTitle}
-                playLabel={tx.playVideo}
-                unsupported={tx.videoUnsupported}
-              />
-            </div>
-
-            {/* Time + calendar card */}
-            <div className="mt-12 grid gap-8 rounded-3xl border border-warm-cream/15 bg-white/10 p-6 md:p-8 lg:grid-cols-2">
-              <div className="flex flex-col justify-center gap-3">
-                <label htmlFor="daaji-tz" className="text-xs font-bold uppercase tracking-[0.16em] text-warm-cream/65">
-                  {tx.yourTimeZone}
-                </label>
-                <ZoneSelect id="daaji-tz" zones={zones} value={tz} onChange={setTz} tone="dark" label={tx.tzAria} />
-                <p className="mt-3 text-sm text-warm-cream/65">{tx.launchStarts}</p>
-                <p className="font-display text-6xl leading-none tabular-nums md:text-7xl">{timeOf(DAAJI_START, tz)}</p>
-                <p className="text-sm text-warm-cream/75">
-                  {longDay(DAAJI_START, tz)} · {tzAbbr(DAAJI_START, tz)}
-                </p>
-              </div>
-              <div className="flex flex-col justify-center gap-3">
-                <div className="rounded-2xl bg-white/10 px-5 py-4">
-                  <p className="font-bold">{tx.guidedMeditation}</p>
-                  <p className="text-sm text-warm-cream/70">{tx.withDaaji}</p>
-                </div>
-                <div className="rounded-2xl bg-white/10 px-5 py-4">
-                  <p className="font-bold">{tx.liveGlobal}</p>
-                  <p className="text-sm text-warm-cream/70">{tx.fromTime}</p>
-                </div>
-                <a
-                  href={MASTERCLASS_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => trackEvent("masterclass_register_click", { placement: "daaji_card" })}
-                  className="mt-1 inline-flex min-h-[52px] items-center justify-center gap-2 rounded-full bg-white px-7 py-3 text-center text-sm font-bold text-cyan-900 transition-transform duration-200 hover:scale-[1.02]"
-                >
-                  {tx.daajiRegister} <ExternalLink size={16} aria-hidden="true" />
-                </a>
               </div>
             </div>
           </div>

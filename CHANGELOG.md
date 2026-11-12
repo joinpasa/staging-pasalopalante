@@ -14,6 +14,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-11-10 — va.deedumlao@gmail.com
 
+- **/live after the event.** "What's happening" is now "What happened last 11.11" with a "Watch recording" button to the 11.11 playlist on YouTube. The Pre-11 (Germany) and Post-11 (Daaji & Heartfulness) sections are hidden, and their tiles in "11.11 at a glance" now go to the playlist. A new section right under the hero presents the Heartfulness Masterclasses with Daaji (12 and 13 November, in the visitor's own time) with the registration button. Translated in all languages.
 - **Yellow ribbon follows the Masterclass schedule.** After today's Cleansing session (assumed 2 hours) it reads "Inner Connection Masterclass with Daaji happening tomorrow", then "…happening today" after midnight AST, then "Inner Connection Masterclass with Daaji now happening" during tomorrow's session. Translated in all languages.
 - **/live: Heartfulness Masterclasses scheduled, stream 7 on hold.** The player now switches to the Heartfulness Masterclass videos at 11:16 AM AST (8:46 PM IST): Masterclass #2 on 12 November and Masterclass #3 on 13 November. During the 12 November session, the yellow ribbon and the line above the player read "Cleansing Masterclass with Daaji now happening". The live window now runs until 00:00 UTC on 14 November. Translated in all languages.
 - **/live: stream 7 added.** It takes over from stream 6 when stream 6 ends (for people watching). A fixed start time will make the switch work for everyone, including new visitors.
