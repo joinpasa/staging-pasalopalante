@@ -62,10 +62,13 @@ export default function YouTubeQueuePlayer({
   blockedText,
   watchLabel,
   loop = false,
+  onEnded,
 }: {
   videoId: string;
   /** Play the video again from the start whenever it ends. */
   loop?: boolean;
+  /** Called with the video ID when it finishes (and is not looping). */
+  onEnded?: (id: string) => void;
   title: string;
   /** Shown over the player if YouTube refuses to play the current video here. */
   blockedText: string;
@@ -76,6 +79,8 @@ export default function YouTubeQueuePlayer({
   const currentRef = useRef(videoId);
   const loopRef = useRef(loop);
   loopRef.current = loop;
+  const endedRef = useRef(onEnded);
+  endedRef.current = onEnded;
   const [blocked, setBlocked] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<number | null>(null);
 
@@ -94,7 +99,10 @@ export default function YouTubeQueuePlayer({
         events: {
           onStateChange: (e) => {
             if (e.data === PLAYING || e.data === BUFFERING) setBlocked(null);
-            if (e.data === ENDED && loopRef.current) playerRef.current?.loadVideoById(currentRef.current);
+            if (e.data === ENDED) {
+              if (loopRef.current) playerRef.current?.loadVideoById(currentRef.current);
+              else endedRef.current?.(currentRef.current);
+            }
           },
           onError: (e) => {
             // YouTube's own code: 2 bad request, 5 player error, 100 not found,

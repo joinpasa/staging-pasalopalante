@@ -14,6 +14,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-11-10 — va.deedumlao@gmail.com
 
+- **/live: stream 7 added.** It takes over from stream 6 when stream 6 ends (for people watching). A fixed start time will make the switch work for everyone, including new visitors.
 - **Fixed /live losing its video late in the broadcast.** The page switched to its "ended" layout 26 hours after the start, but the streams ran later than planned, so the player disappeared while stream 6 was still on. The live window now runs until 00:00 UTC on 13 November.
 - **/live schedule change:** stream 6 now starts at 11:00 AM PST (an hour later than planned); until then the page replays stream 5 on a loop.
 - **/live now switches streams on a schedule.** The player plays stream 3 and moves to Segment 4 at 3:00 AM Vancouver time on 11 November, for visitors already watching as well as new ones, without relying on YouTube to signal that a stream ended.

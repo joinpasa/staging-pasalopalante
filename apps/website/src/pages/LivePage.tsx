@@ -36,13 +36,23 @@ const LIVE_PAGE_URL = "https://passkindnessforward.com/live";
 // watching when the next one comes up. Add each segment's video ID (the part
 // after /live/ or v= in its YouTube link) with the time it should take over.
 // Every stream needs "Allow embedding" ON in YouTube Studio.
-const LIVE_SCHEDULE: Array<{ id: string; from: number; loop?: boolean }> = [
+const LIVE_SCHEDULE: Array<{ id: string; from: number; loop?: boolean; afterEnd?: boolean }> = [
   { id: "t5kM1YlIN5k", from: 0 }, // stream 3
   { id: "go1XTjCm48Q", from: Date.UTC(2026, 10, 11, 10, 0) }, // segment 4: 3:00 AM Vancouver (UTC-7) on 11 Nov
   { id: "Fr2Fch8EPFo", from: Date.UTC(2026, 10, 11, 14, 0), loop: true }, // stream 5: 14:00 UTC on 11 Nov; replays on a loop once it has ended, until stream 6 starts
   { id: "4hPgiBI-9DM", from: Date.UTC(2026, 10, 11, 19, 0) }, // stream 6: moved one hour later, 11:00 AM PST (19:00 UTC) on 11 Nov
+  // Stream 7 has no start time yet: it takes over when stream 6 ends for
+  // people who are watching. Give it a real "from" time so everyone switches.
+  { id: "xdRNoG45u9A", from: Number.POSITIVE_INFINITY, afterEnd: true },
 ];
-const scheduledEntry = (now: number) => [...LIVE_SCHEDULE].reverse().find((e) => now >= e.from) ?? LIVE_SCHEDULE[0];
+const scheduledEntry = (now: number, ended: string[]) => {
+  let current = LIVE_SCHEDULE[0];
+  LIVE_SCHEDULE.forEach((e, i) => {
+    const prev = LIVE_SCHEDULE[i - 1];
+    if (now >= e.from || (e.afterEnd && prev && ended.includes(prev.id))) current = e;
+  });
+  return current;
+};
 const WATCH_LIVE_URL = `https://www.youtube.com/watch?v=${LIVE_SCHEDULE[0].id}`;
 
 // IN TRUTH tracks installs on their side; the UTM tags tell them which of our
@@ -415,7 +425,8 @@ export default function LivePage() {
       ? `https://www.youtube.com/embed/${stream.videoId}?autoplay=1&mute=1&rel=0`
       : null;
   const useQueue = stream.status === "error";
-  const scheduled = scheduledEntry(now);
+  const [endedVideos, setEndedVideos] = useState<string[]>([]);
+  const scheduled = scheduledEntry(now, endedVideos);
   const queueVideo = scheduled.id;
   const watchUrl =
     stream.status === "live" && stream.videoId
@@ -506,6 +517,7 @@ export default function LivePage() {
                   <YouTubeQueuePlayer
                     videoId={queueVideo}
                     loop={!!scheduled.loop}
+                    onEnded={(id) => setEndedVideos((prev) => (prev.includes(id) ? prev : [...prev, id]))}
                     title="11.11 Global Live Broadcast"
                     blockedText={tx.liveStreaming}
                     watchLabel={tx.watchLive}
