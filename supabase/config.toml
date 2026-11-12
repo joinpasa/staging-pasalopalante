@@ -3,6 +3,8 @@ project_id = "tipfbleltjexofsjffwb"
 [functions]
   [functions.auth-email-hook]
     verify_jwt = false
+  [functions.pledge-total]
+    verify_jwt = false
   [functions.daily-acts]
     verify_jwt = false
   [functions.live-stream]
