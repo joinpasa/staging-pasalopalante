@@ -20,8 +20,6 @@ export interface LiveEntry {
   loop?: boolean;
   /** No fixed time yet: takes over when the previous video ends (for people watching). */
   afterEnd?: boolean;
-  /** While now is in [from, masterclassUntil) the ribbon and the hero say "Cleansing Masterclass with Daaji now happening". */
-  masterclassUntil?: number;
 }
 
 // Every video needs "Allow embedding" ON in YouTube Studio.
@@ -32,7 +30,7 @@ export const LIVE_SCHEDULE: LiveEntry[] = [
   { id: "4hPgiBI-9DM", from: Date.UTC(2026, 10, 11, 19, 0) }, // stream 6: 11:00 AM PST (19:00 UTC) on 11 Nov
   // Stream 7 (xdRNoG45u9A) is on hold: not scheduled.
   // Heartfulness Masterclasses with Daaji, both at 8:46 PM IST = 11:16 AM AST = 15:16 UTC.
-  { id: "b_6-tX9U9xU", from: Date.UTC(2026, 10, 12, 15, 16), masterclassUntil: Date.UTC(2026, 10, 12, 15, 16) + 2 * HOUR }, // 12 Nov: Masterclass #2, Cleansing
+  { id: "b_6-tX9U9xU", from: Date.UTC(2026, 10, 12, 15, 16) }, // 12 Nov: Masterclass #2, Cleansing
   { id: "LE_AI1Vb4C0", from: Date.UTC(2026, 10, 13, 15, 16) }, // 13 Nov: Masterclass #3
 ];
 
@@ -55,23 +53,39 @@ export function isLiveAt(now: number): boolean {
   return isLivePreview() || (now >= LIVE_FROM && now < LIVE_END);
 }
 
+/** Which wording the yellow ribbon uses for the Masterclass sessions (null = the usual live/pre-event wording). */
+export type RibbonKey = "cleansingNow" | "masterclassTomorrow" | "masterclassToday" | "masterclassNow";
+
+const SESSION = 2 * HOUR; // each Masterclass runs about 2 hours
+const CLEANSING_START = Date.UTC(2026, 10, 12, 15, 16); // 12 Nov, 11:16 AM AST
+const NEXT_START = Date.UTC(2026, 10, 13, 15, 16); // 13 Nov, 11:16 AM AST
+const AST_MIDNIGHT_13 = Date.UTC(2026, 10, 13, 4, 0); // midnight AST at the start of 13 Nov
+
+export function ribbonKeyAt(now: number): RibbonKey | null {
+  if (now >= CLEANSING_START && now < CLEANSING_START + SESSION) return "cleansingNow";
+  if (now >= CLEANSING_START + SESSION && now < AST_MIDNIGHT_13) return "masterclassTomorrow";
+  if (now >= AST_MIDNIGHT_13 && now < NEXT_START) return "masterclassToday";
+  if (now >= NEXT_START && now < NEXT_START + SESSION) return "masterclassNow";
+  return null;
+}
+
 /** True during the Cleansing Masterclass session. */
 export function isMasterclassAt(now: number): boolean {
-  return LIVE_SCHEDULE.some((e) => e.masterclassUntil !== undefined && now >= e.from && now < e.masterclassUntil);
+  return ribbonKeyAt(now) === "cleansingNow";
 }
 
 /** Live flags for the ribbon. Re-checks every few seconds. */
-export function useLiveStatus(intervalMs = 5000): { live: boolean; masterclass: boolean } {
+export function useLiveStatus(intervalMs = 5000): { live: boolean; ribbon: RibbonKey | null } {
   const read = () => {
     const now = Date.now();
-    return { live: isLiveAt(now), masterclass: isMasterclassAt(now) };
+    return { live: isLiveAt(now), ribbon: ribbonKeyAt(now) };
   };
   const [status, setStatus] = useState(read);
   useEffect(() => {
     const check = () =>
       setStatus((prev) => {
         const next = read();
-        return prev.live === next.live && prev.masterclass === next.masterclass ? prev : next;
+        return prev.live === next.live && prev.ribbon === next.ribbon ? prev : next;
       });
     check();
     const id = setInterval(check, intervalMs);

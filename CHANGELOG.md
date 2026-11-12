@@ -14,6 +14,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-11-10 — va.deedumlao@gmail.com
 
+- **Yellow ribbon follows the Masterclass schedule.** After today's Cleansing session (assumed 2 hours) it reads "Masterclass with Daaji happening tomorrow", then "…happening today" after midnight AST, then "Masterclass with Daaji now happening" during tomorrow's session. Translated in all languages.
 - **/live: Heartfulness Masterclasses scheduled, stream 7 on hold.** The player now switches to the Heartfulness Masterclass videos at 11:16 AM AST (8:46 PM IST): Masterclass #2 on 12 November and Masterclass #3 on 13 November. During the 12 November session, the yellow ribbon and the line above the player read "Cleansing Masterclass with Daaji now happening". The live window now runs until 00:00 UTC on 14 November. Translated in all languages.
 - **/live: stream 7 added.** It takes over from stream 6 when stream 6 ends (for people watching). A fixed start time will make the switch work for everyone, including new visitors.
 - **Fixed /live losing its video late in the broadcast.** The page switched to its "ended" layout 26 hours after the start, but the streams ran later than planned, so the player disappeared while stream 6 was still on. The live window now runs until 00:00 UTC on 13 November.

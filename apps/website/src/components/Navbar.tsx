@@ -20,7 +20,7 @@ const Navbar = () => {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [mobileExploreOpen, setMobileExploreOpen] = useState(false);
   const { t } = useLanguage();
-  const { live: isLive, masterclass: isMasterclass } = useLiveStatus();
+  const { live: isLive, ribbon } = useLiveStatus();
   const { user } = useAuth();
   // On a satellite marketing domain (e.g. passkindnessforward.com), the
   // session cookie is scoped to pasalopalante.com and never reaches here, so
@@ -160,8 +160,18 @@ const Navbar = () => {
         to="/live"
         className="group flex h-9 items-center justify-center bg-warm-gold px-4 text-center text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#0e234b] transition-colors hover:bg-[#ffc93c] md:text-sm"
       >
-        {isLive && <span className="me-2 inline-flex h-2 w-2 shrink-0 animate-pulse rounded-full bg-[#d81b60]" aria-hidden="true" />}
-        <span className="truncate">{isMasterclass ? t.navbar.masterclassNowBanner : isLive ? t.navbar.liveNowBanner : t.navbar.liveBanner}</span>
+        {(ribbon === "cleansingNow" || ribbon === "masterclassNow" || (isLive && !ribbon)) && <span className="me-2 inline-flex h-2 w-2 shrink-0 animate-pulse rounded-full bg-[#d81b60]" aria-hidden="true" />}
+        <span className="truncate">{ribbon === "cleansingNow"
+            ? t.navbar.masterclassNowBanner
+            : ribbon === "masterclassNow"
+              ? t.navbar.masterclassGenericNowBanner
+              : ribbon === "masterclassTomorrow"
+                ? t.navbar.masterclassTomorrowBanner
+                : ribbon === "masterclassToday"
+                  ? t.navbar.masterclassTodayBanner
+                  : isLive
+                    ? t.navbar.liveNowBanner
+                    : t.navbar.liveBanner}</span>
         <ArrowRight size={16} strokeWidth={2.75} className="ms-2 shrink-0 transition-transform group-hover:translate-x-1 rtl:rotate-180" />
       </Link>
       <div className="section-padding flex items-center justify-between h-20 gap-4">
