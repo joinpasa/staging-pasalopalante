@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-11-13 — M.Schollmeyer@gmx.de
+
+- The sign-in/verification code in our emails no longer shows up as a tappable phone number on mobile. Tapping or long-pressing it now selects the whole code so it can be copied and pasted into the app.
+
 ## 2026-11-13 — va.deedumlao@gmail.com
 
 - **Directory sheet gets a "Date Registered" column.** Added the header to all 7 ambassador/champion roster tabs, plus the database and backend support to store it once the Apps Script starts sending it (the script itself still needs a manual update — see the team for the exact code).

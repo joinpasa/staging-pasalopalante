@@ -5,9 +5,10 @@ import {
   Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Text,
 } from 'npm:@react-email/components@0.0.22'
 import {
-  BRAND_NAME, BRAND_NAME_ES, LOGO_ALT, LOGO_URL, LOGO_WIDTH, TEAM_NAME, accentRule, button, buttonWrap, code, container,
+  BRAND_NAME, BRAND_NAME_ES, LOGO_ALT, LOGO_URL, LOGO_WIDTH, TEAM_NAME, accentRule, button, buttonWrap, container,
   footer, h1, logoImg, main, signature, text, textEs,
 } from './_styles.ts'
+import { OtpCode, OtpHead } from './_code.tsx'
 
 interface SignupEmailProps {
   siteName: string
@@ -19,7 +20,7 @@ interface SignupEmailProps {
 
 export const SignupEmail = ({ confirmationUrl, token }: SignupEmailProps) => (
   <Html lang="en" dir="ltr">
-    <Head />
+    <Head><OtpHead /></Head>
     <Preview>Welcome to {BRAND_NAME} — confirm your email</Preview>
     <Body style={main}>
       <Container style={container}>
@@ -38,7 +39,7 @@ export const SignupEmail = ({ confirmationUrl, token }: SignupEmailProps) => (
             iPhone especially — can't share sign-in with an already-installed
             app. Typing this code directly into the app avoids that entirely. */}
         <Text style={text}>Already have the app open? Enter this code there instead:</Text>
-        <Text style={code}>{token}</Text>
+        <OtpCode token={token} />
         <Text style={textEs}>
           Bienvenido a {BRAND_NAME_ES}. Confirma tu correo para comenzar a
           compartir y recibir actos de bondad.

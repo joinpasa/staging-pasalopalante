@@ -5,9 +5,10 @@ import {
   Body, Container, Head, Heading, Hr, Html, Img, Preview, Text,
 } from 'npm:@react-email/components@0.0.22'
 import {
-  BRAND_NAME, BRAND_NAME_ES, LOGO_ALT, LOGO_URL, LOGO_WIDTH, TEAM_NAME, accentRule, code, container, footer, h1, logoImg,
+  BRAND_NAME, BRAND_NAME_ES, LOGO_ALT, LOGO_URL, LOGO_WIDTH, TEAM_NAME, accentRule, container, footer, h1, logoImg,
   main, signature, text, textEs,
 } from './_styles.ts'
+import { OtpCode, OtpHead } from './_code.tsx'
 
 interface ReauthenticationEmailProps {
   token: string
@@ -15,7 +16,7 @@ interface ReauthenticationEmailProps {
 
 export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => (
   <Html lang="en" dir="ltr">
-    <Head />
+    <Head><OtpHead /></Head>
     <Preview>Your {BRAND_NAME} verification code</Preview>
     <Body style={main}>
       <Container style={container}>
@@ -25,7 +26,7 @@ export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => 
         <Text style={text}>
           Use the code below to confirm your identity on {BRAND_NAME}.
         </Text>
-        <Text style={code}>{token}</Text>
+        <OtpCode token={token} />
         <Text style={textEs}>
           Usa el código de arriba para confirmar tu identidad en {BRAND_NAME_ES}.
         </Text>
