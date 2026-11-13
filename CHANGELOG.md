@@ -11,6 +11,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 ## 2026-11-13 — M.Schollmeyer@gmx.de
 
 - The sign-in/verification code in our emails no longer shows up as a tappable phone number on mobile. Tapping or long-pressing it now selects the whole code so it can be copied and pasted into the app.
+- Sign-in and sign-up emails now have the code right in the subject line ("12345678 is your Kindness Forward login code"), so it's readable straight from the phone notification without opening the email.
 
 ## 2026-11-13 — va.deedumlao@gmail.com
 

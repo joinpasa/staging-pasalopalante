@@ -266,7 +266,12 @@ async function handleWebhook(req: Request): Promise<Response> {
       message_id: messageId,
       to: sendToEmail,
       from: `${SITE_NAME} <noreply@${SENDER_DOMAIN}>`,
-      subject: EMAIL_SUBJECTS[emailType] || 'Notification',
+      // Login emails lead with the code itself: it's readable straight from
+      // the notification, and phones offer it as a one-tap autofill.
+      subject:
+        (emailType === 'magiclink' || emailType === 'signup') && payload.email_data.token
+          ? `${payload.email_data.token} is your ${SITE_NAME} login code`
+          : EMAIL_SUBJECTS[emailType] || 'Notification',
       html,
       text,
       label: emailType,
