@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-11-13 — va.deedumlao@gmail.com
+
+- **New social share image.** Links to the site now preview with the new Kindness Forward "1 Billion Acts of Kindness" photo instead of the old image. Facebook, LinkedIn and others keep the old preview in their cache for a while; the link now carries a version tag so they pick the new image up.
+
 ## 2026-11-11 — va.deedumlao@gmail.com
 
 - **New public endpoint for the live "acts pledged" total** (`pledge-total` edge function), so Heartfulness can embed the same real-time pledge count we show on our own site onto their own page. Read-only, no sign-in, same number already visible on pasalopalante.com — nothing new is exposed.

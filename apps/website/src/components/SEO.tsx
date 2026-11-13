@@ -20,7 +20,7 @@ interface SEOProps {
 }
 
 const SITE_URL = "https://pasalopalante.com";
-const DEFAULT_IMAGE = `${SITE_URL}/social-share-kf.webp`;
+const DEFAULT_IMAGE = `${SITE_URL}/social-share-kf.webp?v=2`;
 const JSON_LD_ID = "seo-json-ld";
 
 function setMeta(attr: "name" | "property", key: string, content: string) {
