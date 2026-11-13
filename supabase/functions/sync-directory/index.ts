@@ -117,7 +117,11 @@ Deno.serve(async (req) => {
   const { error: upsertError } = await supabase.from("directory_entries").upsert(rows, { onConflict: "id" });
   if (upsertError) {
     console.error("directory upsert failed", upsertError);
-    return json({ error: "Could not sync directory entries" }, 500);
+    // TEMPORARY: surfacing the real Postgres error to diagnose the
+    // registered_at rollout (2026-11-13) - this endpoint is already
+    // secret-gated, not public, so this isn't a new exposure. Revert
+    // to the generic message once the rollout is confirmed working.
+    return json({ error: "Could not sync directory entries", detail: upsertError.message }, 500);
   }
 
   const { data: existingIds, error: listError } = await supabase.from("directory_entries").select("id");
