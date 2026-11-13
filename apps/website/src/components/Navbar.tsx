@@ -275,12 +275,13 @@ const Navbar = () => {
             </Link>
           )}
 
-          <Link
-            to="/live"
+          <button
+            type="button"
+            onClick={() => goToAnchor("get-involved-inline")}
             className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.04]"
           >
-            {t.navbar.joinLiveBroadcast}
-          </Link>
+            {t.navbar.makePledge}
+          </button>
         </div>
 
         <button
@@ -366,13 +367,13 @@ const Navbar = () => {
                   )}
                 </AnimatePresence>
               </div>
-              <Link
-                to="/live"
-                onClick={() => setMobileOpen(false)}
+              <button
+                type="button"
+                onClick={() => { setMobileOpen(false); goToAnchor("get-involved-inline"); }}
                 className="btn-primary text-center mt-2"
               >
-                {t.navbar.joinLiveBroadcast}
-              </Link>
+                {t.navbar.makePledge}
+              </button>
               {user ? (
                 <Link to="/account" onClick={() => setMobileOpen(false)} className="text-center text-foreground/70 text-sm flex items-center justify-center gap-2">
                   <User size={16} /> {t.navbar.myAccount} · {navStats.acts} {t.account.acts}{navStats.streak > 0 ? ` · ${navStats.streak} ${t.account.dayStreak}` : ""}

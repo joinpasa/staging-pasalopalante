@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-11-13 — va.deedumlao@gmail.com
 
+- **Navbar button is back to "Make a Pledge"** (desktop and phone menu), scrolling to the pledge section on the homepage. The yellow ribbon still links to the /live page.
 - **New social share image.** Links to the site now preview with the new Kindness Forward "1 Billion Acts of Kindness" photo instead of the old image. Facebook, LinkedIn and others keep the old preview in their cache for a while; the link now carries a version tag so they pick the new image up.
 
 ## 2026-11-11 — va.deedumlao@gmail.com
