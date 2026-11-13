@@ -55,6 +55,7 @@ interface Entry {
   bio?: string;
   socialLink?: string;
   sortOrder?: number;
+  registeredAt?: string;
 }
 
 interface Body {
@@ -98,6 +99,10 @@ Deno.serve(async (req) => {
       bio: e.bio?.trim() || null,
       social_link: e.socialLink?.trim() || null,
       sort_order: typeof e.sortOrder === "number" ? e.sortOrder : null,
+      // Only a well-formed YYYY-MM-DD is stored - a malformed date here
+      // would fail the whole batch upsert (every entry, every tab) rather
+      // than just this one field, so anything else quietly becomes null.
+      registered_at: /^\d{4}-\d{2}-\d{2}$/.test(e.registeredAt?.trim() ?? "") ? e.registeredAt!.trim() : null,
       synced_at: new Date().toISOString(),
     }));
 
