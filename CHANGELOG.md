@@ -11,6 +11,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 ## 2026-11-13 — va.deedumlao@gmail.com
 
 - **Directory sheet gets a "Date Registered" column.** Added the header to all 7 ambassador/champion roster tabs, plus the database and backend support to store it once the Apps Script starts sending it (the script itself still needs a manual update — see the team for the exact code).
+- **Fixed directory sync failing entirely.** Updating the Apps Script surfaced a pre-existing bug: the sync also pulled from the Masterlist rollup tab, which duplicates IDs already in the roster tabs, and the database rejects a batch with the same row twice. The script now only reads the 7 real roster tabs. Confirmed fixed and syncing again.
 
 ## 2026-11-13 — va.deedumlao@gmail.com
 
