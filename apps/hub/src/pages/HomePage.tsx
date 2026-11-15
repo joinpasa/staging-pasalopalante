@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, ArrowUpRight, Check, ChevronRight, Send } from "lucide-react";
 import { Avatar, cx, FormatBadge, LeverChip, PauseMark, StagePill } from "@/components/bits";
@@ -10,6 +11,12 @@ import type { Item, Member, Task } from "@/lib/types";
 import { addDays, briefFor, cardsOn, dayShort, goingOut, nearDay, planWeek, postsOn, todayKey, weekDays } from "@/lib/week";
 
 const num = (n: number) => n.toLocaleString("en-US");
+
+/** "Mon 16": short enough to sit beside a title in a narrow box. */
+const dayTiny = (key: string) => {
+  const d = new Date(`${key}T12:00:00Z`);
+  return `${new Intl.DateTimeFormat("en-US", { weekday: "short", timeZone: "UTC" }).format(d)} ${d.getUTCDate()}`;
+};
 
 /** What is waiting on this person, with the reason in plain words. */
 function waitingFor(me: Member | undefined, items: Item[]): { item: Item; why: string }[] {
@@ -123,6 +130,8 @@ export default function HomePage() {
           ))}
         </ol>
       </section>
+
+      <WhoDoesWhat me={me} members={members} cards={weekCards} tasks={weekTasks} />
 
       <div className="mt-12 grid gap-x-14 gap-y-12 lg:grid-cols-[minmax(0,1fr)_330px]">
         <div className="min-w-0 space-y-12">
@@ -252,6 +261,102 @@ export default function HomePage() {
         </aside>
       </div>
     </>
+  );
+}
+
+/** Who does what this week: one box per person with their posts and growth work, and one for anything without an owner yet. */
+function WhoDoesWhat({ me, members, cards, tasks }: { me?: Member; members: Member[]; cards: Item[]; tasks: Task[] }) {
+  const known = new Set(members.map((m) => m.id));
+  const ownerOf = (id?: string | null) => (id && known.has(id) ? id : "");
+  const people = [...members].sort((a, b) => Number(b.id === me?.id) - Number(a.id === me?.id) || a.name.localeCompare(b.name));
+  const boxes = [...people.map((m) => ({ key: m.id, member: m as Member | undefined })), { key: "", member: undefined }]
+    .map((b) => ({
+      ...b,
+      cards: cards.filter((c) => ownerOf(c.ownerId) === b.key).sort((x, y) => x.publishAt!.localeCompare(y.publishAt!)),
+      tasks: tasks.filter((t) => ownerOf(t.ownerId) === b.key).sort((x, y) => x.day.localeCompare(y.day)),
+    }))
+    .filter((b) => b.cards.length + b.tasks.length > 0);
+  if (boxes.length === 0) return null;
+  return (
+    <section className="mt-12" aria-labelledby="who-title">
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <h2 id="who-title" className="text-[20px] font-extrabold tracking-[-0.02em]">
+            Who does what
+          </h2>
+          <p className="mt-1 text-[14px] text-ink-muted">Each person's posts and growth work this week.</p>
+        </div>
+        <Link to="/growth" className="hidden shrink-0 items-center gap-1 text-[13.5px] font-semibold text-sky-ink hover:underline sm:flex">
+          Open the week in Growth <ArrowRight size={14} />
+        </Link>
+      </div>
+      <ul className="mt-4 grid items-start gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {boxes.map((b) => (
+          <PersonBox key={b.key || "nobody"} member={b.member} isMe={!!b.member && b.member.id === me?.id} cards={b.cards} tasks={b.tasks} />
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function PersonBox({ member, isMe, cards, tasks }: { member?: Member; isMe: boolean; cards: Item[]; tasks: Task[] }) {
+  const { open } = useHub();
+  const [all, setAll] = useState(false);
+  const LIMIT = 8;
+  const shownTasks = all ? tasks : tasks.slice(0, LIMIT);
+  const done = tasks.filter((t) => t.done).length;
+  return (
+    <li className="overflow-hidden rounded-xl border border-line bg-white">
+      <div className="flex items-center gap-3 border-b border-line px-4 py-3">
+        <Avatar member={member} size={30} />
+        <div className="min-w-0">
+          <p className="text-[15px] font-extrabold tracking-[-0.01em]">
+            {member ? member.name : "Not assigned yet"}
+            {isMe && <span className="ml-1.5 text-[12px] font-semibold text-ink-faint">you</span>}
+          </p>
+          <p className="text-[12.5px] text-ink-muted">
+            {cards.length} {cards.length === 1 ? "post or email" : "posts and emails"}, {tasks.length} growth {tasks.length === 1 ? "task" : "tasks"}
+            {done > 0 && `, ${done} done`}
+          </p>
+        </div>
+      </div>
+      {!member && <p className="px-4 pt-3 text-[12.5px] leading-snug text-ink-muted">Give these an owner once the person is in the hub (Settings, Team).</p>}
+      {cards.length > 0 && (
+        <ul className="px-2 pt-2">
+          {cards.map((c) => (
+            <li key={c.id}>
+              <button type="button" onClick={() => open(c.id)} className="flex w-full items-start gap-2.5 rounded-lg px-2 py-1.5 text-left transition hover:bg-paper" title={stageMeta(c.stage).label}>
+                <span className={cx("mt-[4px] h-3 w-[3px] shrink-0 rounded-full", stageMeta(c.stage).bar)} />
+                <span className="w-[52px] shrink-0 whitespace-nowrap pt-px text-[12px] font-semibold tabular-nums text-ink-muted">{dayTiny(prDateKey(c.publishAt!))}</span>
+                <span className="min-w-0 flex-1 text-[13.5px] font-semibold leading-snug">{c.title || "Untitled"}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+      {tasks.length > 0 && (
+        <ul className={cx("px-2 pb-2", cards.length > 0 ? "mt-1 border-t border-line pt-1" : "pt-2")}>
+          {shownTasks.map((t) => (
+            <li key={t.id}>
+              <Link to={`/growth#${t.day}`} className="flex items-start gap-2.5 rounded-lg px-2 py-1.5 transition hover:bg-paper">
+                <span className="w-[3px] shrink-0" aria-hidden />
+                <span className="w-[52px] shrink-0 whitespace-nowrap pt-px text-[12px] font-semibold tabular-nums text-ink-muted">{dayTiny(t.day)}</span>
+                <span className={cx("min-w-0 flex-1 text-[13.5px] leading-snug", t.done ? "text-ink-faint line-through" : "text-ink")}>{t.title}</span>
+                {t.done && <Check size={14} className="mt-[3px] shrink-0 text-sky-ink" />}
+              </Link>
+            </li>
+          ))}
+          {tasks.length > LIMIT && (
+            <li>
+              <button type="button" onClick={() => setAll(!all)} className="px-2 py-1.5 text-[12.5px] font-semibold text-sky-ink hover:underline">
+                {all ? "Show fewer" : `Show all ${tasks.length}`}
+              </button>
+            </li>
+          )}
+        </ul>
+      )}
+      {cards.length === 0 && tasks.length === 0 && <p className="px-4 py-3 text-[13px] text-ink-faint">Nothing this week.</p>}
+    </li>
   );
 }
 
