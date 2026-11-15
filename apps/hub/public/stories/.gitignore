@@ -1,0 +1,4 @@
+# Photos of real people used only by the local preview. They stay out of the repository
+# until the team confirms consent and says they can be published here.
+*
+!.gitignore

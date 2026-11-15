@@ -55,6 +55,15 @@ interface Body {
   country?: string | null;
   org_type?: string | null;
   lang?: string;
+  /** how the visitor arrived: the campaign tags of the link, or the site that sent them */
+  source?: { source?: string; medium?: string; campaign?: string; content?: string; referrer?: string } | null;
+}
+
+/** Campaign tags are short labels we write into our own links; anything else is dropped. */
+function tag(v: unknown, max = 100): string | null {
+  if (typeof v !== "string") return null;
+  const s = v.trim().toLowerCase().replace(/[^\w .:/@+-]/g, "").slice(0, max);
+  return s || null;
 }
 
 function bad(msg: string, status = 400) {
@@ -190,6 +199,11 @@ Deno.serve(async (req) => {
         help_role: body.type === "individual" ? helpRole : null,
         country,
         org_type: body.type === "organization" ? orgType : null,
+        utm_source: tag(body.source?.source),
+        utm_medium: tag(body.source?.medium),
+        utm_campaign: tag(body.source?.campaign),
+        utm_content: tag(body.source?.content),
+        referrer_host: tag(body.source?.referrer, 200),
       })
       .select("id")
       .single();

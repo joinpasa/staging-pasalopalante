@@ -47,3 +47,11 @@ project_id = "tipfbleltjexofsjffwb"
     verify_jwt = false
   [functions.sync-media]
     verify_jwt = false
+
+  # The Kindness Hub's pages for people without an account (the weekly kit and the suggestion box).
+  # hub-ghl is deliberately NOT listed: it keeps the gateway's own check that the caller is signed in.
+  [functions.hub-public]
+    verify_jwt = false
+  # The Kindness Hub's API for trusted tools. It checks its own key (HUB_API_KEY), not a sign-in.
+  [functions.hub-api]
+    verify_jwt = false

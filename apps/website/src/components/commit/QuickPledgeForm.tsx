@@ -31,6 +31,8 @@ import { COUNTRIES } from "@shared/data/countries";
 import { cn } from "@shared/lib/utils";
 import { submitPPLForm } from "@shared/lib/pplForm";
 import { getAuthErrorMessage } from "@shared/lib/authErrors";
+import { arrival } from "@/lib/attribution";
+import { trackEvent } from "@/lib/analytics";
 
 type HelpRole = "do_acts" | "champion" | "ambassador" | "civic" | "volunteer";
 
@@ -97,6 +99,7 @@ export default function QuickPledgeForm() {
           help_role: helpRole || null,
           country,
           lang,
+          source: arrival() ?? null,
         },
       });
       if (error) {
@@ -104,6 +107,7 @@ export default function QuickPledgeForm() {
         toast.error(msg);
         return;
       }
+      trackEvent("pledge_submitted", { pledge_type: "individual", ...(arrival() ?? {}) });
       try {
         await submitPPLForm("pledge", {
           fullName: `${firstName} ${lastName}`.trim(),

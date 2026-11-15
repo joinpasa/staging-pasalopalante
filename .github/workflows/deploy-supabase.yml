@@ -22,6 +22,10 @@ jobs:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
       SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
       PROJECT_REF: tipfbleltjexofsjffwb
+      # Optional. The Kindness Hub's HighLevel key; see the step that uses it.
+      HUB_GHL_TOKEN: ${{ secrets.HUB_GHL_TOKEN }}
+      # Optional. The key that turns on the Kindness Hub's API (hub-api); see the last step.
+      HUB_API_KEY: ${{ secrets.HUB_API_KEY }}
     steps:
       - uses: actions/checkout@v4
 
@@ -48,3 +52,16 @@ jobs:
         # --yes: CLI 3 asks to confirm deploys to the hosted project and
         # fails in CI (no terminal) without it.
         run: supabase functions deploy --use-api --yes
+
+      - name: Pass the Kindness Hub's HighLevel key to its function
+        # The hub's key is kept as a GitHub secret (HUB_GHL_TOKEN) so that adding or replacing
+        # it needs no Supabase dashboard access: this copies it to the edge functions' own
+        # secrets on every deploy. Skipped until the GitHub secret exists.
+        if: ${{ env.HUB_GHL_TOKEN != '' }}
+        run: supabase secrets set HUB_GHL_TOKEN="$HUB_GHL_TOKEN" --project-ref "$PROJECT_REF"
+
+      - name: Pass the Kindness Hub's API key to its function
+        # Same idea for hub-api: the key lives as the GitHub secret HUB_API_KEY, and the API stays
+        # switched off (it answers every request with "switched off") until that secret exists.
+        if: ${{ env.HUB_API_KEY != '' }}
+        run: supabase secrets set HUB_API_KEY="$HUB_API_KEY" --project-ref "$PROJECT_REF"

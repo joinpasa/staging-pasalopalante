@@ -32,6 +32,8 @@ import { COUNTRIES } from "@shared/data/countries";
 import { cn } from "@shared/lib/utils";
 import { submitPPLForm } from "@shared/lib/pplForm";
 import { getAuthErrorMessage } from "@shared/lib/authErrors";
+import { arrival } from "@/lib/attribution";
+import { trackEvent } from "@/lib/analytics";
 
 interface Props {
   onSuccess?: () => void;
@@ -121,13 +123,14 @@ export default function CommitFlow({ onSuccess, compact = false, prefilledEmail,
             };
 
       const { error } = await supabase.functions.invoke("submit-commitment", {
-        body: payload,
+        body: { ...payload, source: arrival() ?? null },
       });
       if (error) {
         const msg = isRateLimitedError(error) ? pickRateLimitCheer(lang) : error.message || t.commit.submitError;
         toast.error(msg);
         return;
       }
+      trackEvent("pledge_submitted", { pledge_type: mode, ...(arrival() ?? {}) });
       // PPL Integration — sync to Airtable + GHL
       try {
         await submitPPLForm("pledge", {

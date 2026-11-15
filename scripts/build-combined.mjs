@@ -149,4 +149,23 @@ for (const file of htmlFiles) {
 }
 console.log(`Injected manifest link into ${htmlFiles.length} website page(s).`);
 
+console.log("== the Kindness Hub at /hub/ ==");
+// The marketing team's planning space (apps/hub), served from this same origin under /hub/ so it
+// needs no Cloudflare project of its own. Everything in it sits behind its own sign-in, apart from
+// the partner pages (/hub/kit, /hub/space, /hub/suggest). Added after the manifest step on
+// purpose: the hub is not part of the installable app.
+run("npm run build --workspace=@pasalopalante/hub -- --base=/hub/");
+const hubDist = path.join(root, "apps/hub/dist");
+const embeddedHubDist = path.join(websiteDist, "hub");
+fs.rmSync(embeddedHubDist, { recursive: true, force: true });
+fs.cpSync(hubDist, embeddedHubDist, { recursive: true });
+// the same extension-less fallback shell as the app uses, for the same reasons (see above)
+fs.copyFileSync(path.join(embeddedHubDist, "index.html"), path.join(embeddedHubDist, "hub-shell"));
+// keep in sync with the routes in apps/hub/src/App.tsx
+const HUB_ROUTES = ["inbox", "plan", "stories", "videos", "community", "growth", "library", "ideas", "settings", "review", "suggest", "kit", "space", "pipeline", "calendar", "posts", "emails", "suggestions", "results"];
+const hubRules = [...HUB_ROUTES.map((r) => `/hub/${r}  /hub/hub-shell  200`), "/hub/newsletter/*  /hub/hub-shell  200"].join("\n");
+fs.writeFileSync(redirectsPath, `${fs.readFileSync(redirectsPath, "utf8").trimEnd()}\n${hubRules}\n`);
+const hubHeaders = "/hub/hub-shell\n  Content-Type: text/html; charset=utf-8\n\n/hub/*\n  X-Robots-Tag: noindex, nofollow\n";
+fs.writeFileSync(headersPath, `${fs.readFileSync(headersPath, "utf8").trimEnd()}\n${hubHeaders}`);
+
 console.log(`\nCombined build ready at ${websiteDist}`);

@@ -1,0 +1,733 @@
+{
+"snapshot": "2026-11-11",
+"partners": [
+{
+"name": "Adjuntas",
+"category": "Government"
+},
+{
+"name": "Aguada",
+"category": "Government"
+},
+{
+"name": "Aguadilla",
+"category": "Government"
+},
+{
+"name": "Aguas Buenas",
+"category": "Government"
+},
+{
+"name": "Ahorgah Keklebesi Foundation",
+"category": "Business"
+},
+{
+"name": "Aibonito",
+"category": "Government"
+},
+{
+"name": "All-Party Parliamentary Group on Indian Traditional Sciences (APPG)",
+"category": "Faith and spiritual"
+},
+{
+"name": "Añasco",
+"category": "Government"
+},
+{
+"name": "Arecibo",
+"category": "Government"
+},
+{
+"name": "Arroyo",
+"category": "Government"
+},
+{
+"name": "Awaken — Michael Krauss",
+"category": "Business"
+},
+{
+"name": "Barceloneta",
+"category": "Government"
+},
+{
+"name": "Barranquitas",
+"category": "Government"
+},
+{
+"name": "Bayamón",
+"category": "Government"
+},
+{
+"name": "bMedia",
+"category": "Media and press"
+},
+{
+"name": "C-Suite Network",
+"category": "Media and press"
+},
+{
+"name": "Cabo Rojo",
+"category": "Government"
+},
+{
+"name": "Caguas",
+"category": "Government"
+},
+{
+"name": "Camuy",
+"category": "Government"
+},
+{
+"name": "Canóvanas",
+"category": "Government"
+},
+{
+"name": "Caribbean Cinemas",
+"category": "Media and press"
+},
+{
+"name": "Carolina",
+"category": "Government"
+},
+{
+"name": "Carolina Turecki s.p.",
+"category": "Business"
+},
+{
+"name": "Cataño",
+"category": "Government"
+},
+{
+"name": "Cayey",
+"category": "Government"
+},
+{
+"name": "CBC Barbados",
+"category": "Media and press"
+},
+{
+"name": "Ceiba",
+"category": "Government"
+},
+{
+"name": "Ciales",
+"category": "Government"
+},
+{
+"name": "Cidra",
+"category": "Government"
+},
+{
+"name": "Coamo",
+"category": "Government"
+},
+{
+"name": "Comerío",
+"category": "Government"
+},
+{
+"name": "Connection Field",
+"category": "Business"
+},
+{
+"name": "Coquí Charities",
+"category": "Nonprofit"
+},
+{
+"name": "Corozal",
+"category": "Government"
+},
+{
+"name": "Culebra",
+"category": "Government"
+},
+{
+"name": "Defenix.AI",
+"category": "Faith and spiritual"
+},
+{
+"name": "Departamento de Educación PR",
+"category": "Education"
+},
+{
+"name": "DO GOOD INTERNATIONAL",
+"category": "Nonprofit"
+},
+{
+"name": "Dorado",
+"category": "Government"
+},
+{
+"name": "Eucaforest",
+"category": "Business"
+},
+{
+"name": "Fajardo",
+"category": "Government"
+},
+{
+"name": "Florida",
+"category": "Government"
+},
+{
+"name": "Global Coherence Pulse",
+"category": "Business"
+},
+{
+"name": "Good Deeds Day",
+"category": "Nonprofit"
+},
+{
+"name": "Guánica",
+"category": "Government"
+},
+{
+"name": "Guayama",
+"category": "Government"
+},
+{
+"name": "Guayanilla",
+"category": "Government"
+},
+{
+"name": "Guaynabo",
+"category": "Government"
+},
+{
+"name": "Gurabo",
+"category": "Government"
+},
+{
+"name": "Hatillo",
+"category": "Government"
+},
+{
+"name": "HeartMath Institute",
+"category": "Nonprofit"
+},
+{
+"name": "Helena TV (HTS)",
+"category": "Media and press"
+},
+{
+"name": "Hormigueros",
+"category": "Government"
+},
+{
+"name": "Humacao",
+"category": "Government"
+},
+{
+"name": "Instituto Brasileiro de Capoeira-Educação (IBCE)",
+"category": "Education"
+},
+{
+"name": "InTruth",
+"category": "Business"
+},
+{
+"name": "Isabela",
+"category": "Government"
+},
+{
+"name": "JA Worldwide",
+"category": "Education"
+},
+{
+"name": "Jane Goodall Institute's Roots and Shoots",
+"category": "Business"
+},
+{
+"name": "Jayuya",
+"category": "Government"
+},
+{
+"name": "Jen Hill Tribe",
+"category": "Business"
+},
+{
+"name": "Juana Díaz",
+"category": "Government"
+},
+{
+"name": "Juncos",
+"category": "Government"
+},
+{
+"name": "Kids for Peace",
+"category": "Nonprofit"
+},
+{
+"name": "Lajas",
+"category": "Government"
+},
+{
+"name": "Lares",
+"category": "Government"
+},
+{
+"name": "Las Marías",
+"category": "Government"
+},
+{
+"name": "Las Piedras",
+"category": "Government"
+},
+{
+"name": "Learning Planet Institute",
+"category": "Education"
+},
+{
+"name": "Loíza",
+"category": "Government"
+},
+{
+"name": "Loving AI",
+"category": "Business"
+},
+{
+"name": "Luquillo",
+"category": "Government"
+},
+{
+"name": "Manatí",
+"category": "Government"
+},
+{
+"name": "Maricao",
+"category": "Government"
+},
+{
+"name": "Maunabo",
+"category": "Government"
+},
+{
+"name": "Mayagüez",
+"category": "Government"
+},
+{
+"name": "Million Peacemakers",
+"category": "Nonprofit"
+},
+{
+"name": "Ministry of Education — Anguilla",
+"category": "Education"
+},
+{
+"name": "Ministry of Education, Culture, Youth & Sport (MECYS)",
+"category": "Education"
+},
+{
+"name": "Ministry of Education, Culture, Youth & Sport of Saint Martin",
+"category": "Other"
+},
+{
+"name": "Ministry of Education, Health & Social Services — Montserrat",
+"category": "Education"
+},
+{
+"name": "Moca",
+"category": "Government"
+},
+{
+"name": "Money & You / Excellerated Business Schools",
+"category": "Education"
+},
+{
+"name": "Morovis",
+"category": "Government"
+},
+{
+"name": "Naguabo",
+"category": "Government"
+},
+{
+"name": "Naranjito",
+"category": "Government"
+},
+{
+"name": "NuCalm",
+"category": "Business"
+},
+{
+"name": "Oneness",
+"category": "Faith and spiritual"
+},
+{
+"name": "Orocovis",
+"category": "Government"
+},
+{
+"name": "Patillas",
+"category": "Government"
+},
+{
+"name": "Peace and Love Inc. Ltd",
+"category": "Nonprofit"
+},
+{
+"name": "Peñuelas",
+"category": "Government"
+},
+{
+"name": "Platea PR",
+"category": "Media and press"
+},
+{
+"name": "Ponce",
+"category": "Government"
+},
+{
+"name": "Quebradillas",
+"category": "Government"
+},
+{
+"name": "Rincón",
+"category": "Government"
+},
+{
+"name": "Río Grande",
+"category": "Government"
+},
+{
+"name": "Rotary Club de Santurce",
+"category": "Nonprofit"
+},
+{
+"name": "Sabana Grande",
+"category": "Government"
+},
+{
+"name": "Salinas",
+"category": "Government"
+},
+{
+"name": "Salzburg Global",
+"category": "Nonprofit"
+},
+{
+"name": "Samavira Meditation",
+"category": "Business"
+},
+{
+"name": "San Germán",
+"category": "Government"
+},
+{
+"name": "San Juan",
+"category": "Government"
+},
+{
+"name": "San Lorenzo",
+"category": "Government"
+},
+{
+"name": "San Sebastián",
+"category": "Government"
+},
+{
+"name": "Santa Isabel",
+"category": "Government"
+},
+{
+"name": "SHRM Foundation",
+"category": "Business"
+},
+{
+"name": "Society for Human Resource Management (SHRM)",
+"category": "Business"
+},
+{
+"name": "Te Amo PR",
+"category": "Nonprofit"
+},
+{
+"name": "The Center of Love",
+"category": "Nonprofit"
+},
+{
+"name": "THE CHARITY CHAMPIONS",
+"category": "Nonprofit"
+},
+{
+"name": "The Foundation for World Harmony",
+"category": "Nonprofit"
+},
+{
+"name": "The Heartfulness Movement",
+"category": "Faith and spiritual"
+},
+{
+"name": "Toa Alta",
+"category": "Government"
+},
+{
+"name": "Toa Baja",
+"category": "Government"
+},
+{
+"name": "Trujillo Alto",
+"category": "Government"
+},
+{
+"name": "Unify.org",
+"category": "Nonprofit"
+},
+{
+"name": "United Religions Initiative (URI)",
+"category": "Business"
+},
+{
+"name": "Unity in the Gold Country",
+"category": "Business"
+},
+{
+"name": "Unstoppable Branding Agency",
+"category": "Business"
+},
+{
+"name": "Utuado",
+"category": "Government"
+},
+{
+"name": "Vega Alta",
+"category": "Government"
+},
+{
+"name": "Vega Baja",
+"category": "Government"
+},
+{
+"name": "Vieques",
+"category": "Government"
+},
+{
+"name": "Villalba",
+"category": "Government"
+},
+{
+"name": "Wild Success",
+"category": "Business"
+},
+{
+"name": "WIPR",
+"category": "Media and press"
+},
+{
+"name": "World Values Day",
+"category": "Nonprofit"
+},
+{
+"name": "World Yoga Community",
+"category": "Nonprofit"
+},
+{
+"name": "Yabucoa",
+"category": "Government"
+},
+{
+"name": "Yauco",
+"category": "Government"
+},
+{
+"name": "Yoga Vidya",
+"category": "Faith and spiritual"
+},
+{
+"name": "YOUNGA",
+"category": "Nonprofit"
+}
+],
+"rawCategories": 12,
+"ambassadors": {
+"total": 124,
+"countries": [
+[
+"United States",
+41
+],
+[
+"United Kingdom",
+14
+],
+[
+"Puerto Rico",
+8
+],
+[
+"Slovenia",
+7
+],
+[
+"Canada",
+7
+],
+[
+"India",
+6
+],
+[
+"Nigeria",
+2
+],
+[
+"Philippines",
+2
+],
+[
+"Portugal",
+2
+],
+[
+"Senegal",
+2
+],
+[
+"Cayman Islands",
+2
+],
+[
+"Australia",
+2
+],
+[
+"Germany",
+2
+],
+[
+"South Africa",
+1
+],
+[
+"Belgium",
+1
+],
+[
+"Burkina Faso",
+1
+],
+[
+"Albania",
+1
+],
+[
+"Switzerland",
+1
+],
+[
+"Brazil",
+1
+],
+[
+"Ghana",
+1
+],
+[
+"Deutschland",
+1
+],
+[
+"ISA",
+1
+],
+[
+"Jamaica",
+1
+],
+[
+"Kenya",
+1
+],
+[
+"Antigua & Barbuda",
+1
+],
+[
+"Sint Maarten",
+1
+],
+[
+"Ireland",
+1
+],
+[
+"Spain",
+1
+],
+[
+"United states",
+1
+],
+[
+"Mozambique",
+1
+],
+[
+"Liberia",
+1
+],
+[
+"Pakistan/USA",
+1
+],
+[
+"Saint Kitts and Nevis",
+1
+],
+[
+"Pakistan",
+1
+],
+[
+"Italien",
+1
+],
+[
+"San diego ca",
+1
+],
+[
+"Côte d’Ivoire",
+1
+],
+[
+"Honduras",
+1
+],
+[
+"Kyrgyzstan",
+1
+],
+[
+"Liechtenstein",
+1
+]
+],
+"roles": [
+[
+"Leader",
+54
+],
+[
+"Entrepreneur",
+34
+],
+[
+"Creator",
+9
+],
+[
+"Artist",
+3
+],
+[
+"Coach",
+2
+],
+[
+"Musician",
+2
+]
+]
+}
+}

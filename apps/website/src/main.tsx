@@ -5,6 +5,10 @@ import "@shared/styles/index.css";
 import { detectLanguage } from "@shared/contexts/LanguageContext";
 import { loadTranslations } from "@shared/i18n/translations";
 import { reloadOnceForStaleBuild } from "@shared/components/ErrorBoundary";
+import { rememberArrival } from "./lib/attribution";
+
+// which link or site brought this visit, for the pledge it may lead to
+rememberArrival();
 
 // A tab left open across a deploy asks for JS files that no longer exist.
 // Vite reports that here: reload once to pick up the new build.
