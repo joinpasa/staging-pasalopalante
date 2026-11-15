@@ -13,6 +13,7 @@ on:
       - claude/app-website-separation-lgg5nb
     paths:
       - "supabase/**"
+      - ".github/workflows/deploy-supabase.yml"
   workflow_dispatch: {}
 
 jobs:
@@ -56,12 +57,26 @@ jobs:
       - name: Pass the Kindness Hub's HighLevel key to its function
         # The hub's key is kept as a GitHub secret (HUB_GHL_TOKEN) so that adding or replacing
         # it needs no Supabase dashboard access: this copies it to the edge functions' own
-        # secrets on every deploy. Skipped until the GitHub secret exists.
-        if: ${{ env.HUB_GHL_TOKEN != '' }}
-        run: supabase secrets set HUB_GHL_TOKEN="$HUB_GHL_TOKEN" --project-ref "$PROJECT_REF"
+        # secrets on every deploy. Skipped until the GitHub secret exists. It goes through
+        # Supabase's Management API rather than `supabase secrets set`, which CLI 3.0.0 failed on.
+        if: ${{ !cancelled() && env.HUB_GHL_TOKEN != '' }}
+        run: |
+          jq -n --arg v "$HUB_GHL_TOKEN" '[{name: "HUB_GHL_TOKEN", value: $v}]' > /tmp/secret.json
+          curl -sS --fail-with-body -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/secrets" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H "Content-Type: application/json" \
+            --data-binary @/tmp/secret.json
+          rm -f /tmp/secret.json
+          echo "HUB_GHL_TOKEN copied to the edge functions"
 
       - name: Pass the Kindness Hub's API key to its function
         # Same idea for hub-api: the key lives as the GitHub secret HUB_API_KEY, and the API stays
         # switched off (it answers every request with "switched off") until that secret exists.
-        if: ${{ env.HUB_API_KEY != '' }}
-        run: supabase secrets set HUB_API_KEY="$HUB_API_KEY" --project-ref "$PROJECT_REF"
+        # Runs even if the step above failed, so one key never holds up the other.
+        if: ${{ !cancelled() && env.HUB_API_KEY != '' }}
+        run: |
+          jq -n --arg v "$HUB_API_KEY" '[{name: "HUB_API_KEY", value: $v}]' > /tmp/secret.json
+          curl -sS --fail-with-body -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/secrets" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H "Content-Type: application/json" \
+            --data-binary @/tmp/secret.json
+          rm -f /tmp/secret.json
+          echo "HUB_API_KEY copied to the edge functions"
