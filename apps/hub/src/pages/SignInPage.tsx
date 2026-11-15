@@ -12,6 +12,8 @@ function plain(message: string): string {
   if (/signups not allowed|user not found|otp.*disabled/i.test(message)) return "There is no account with that email yet. Create one on pasalopalante.com first, with the email the team added to the hub.";
   if (/expired|invalid.*token|token.*invalid/i.test(message)) return "That code didn't work or has run out. Ask for a new one.";
   if (/rate limit|too many|security purposes/i.test(message)) return "Too many tries in a short time. Wait a minute and try again.";
+  // the site's email sender (a Supabase hook) can be slow to wake, for example right after a deploy
+  if (/hook|maximum time|sending.*email|email.*send/i.test(message)) return "The email with your code didn't go out just now. Wait a minute and press Email me a code again.";
   return "That didn't work. Check your connection and try again.";
 }
 
