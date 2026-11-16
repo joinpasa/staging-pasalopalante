@@ -106,6 +106,48 @@ describe("what gets sent to HighLevel", () => {
     const posts = buildPosts(card({ format: "story", account_ids: ["ig-kf"] }), ACCOUNTS, FILM, "user-1");
     expect(posts[0]).toMatchObject({ summary: "", type: "story", facebookPostDetails: { type: "story" } });
   });
+  it("gives each language only its own slides, and sends story files as stories of their own", () => {
+    const f = (name: string, mime = "image/png", kind: "media" | "cover" = "media"): UploadedFile => ({ kind, url: `https://files.leadconnectorhq.com/file/x/${name}`, mime, name });
+    const files = [
+      f("tolerance-en-1-cover.png"), f("tolerance-en-2-question.png"), f("tolerance-en-story.mp4", "video/mp4"), f("tolerance-en-story-cover.png", "image/png", "cover"),
+      f("tolerance-es-1-cover.png"), f("tolerance-es-2-question.png"), f("tolerance-es-story.mp4", "video/mp4"), f("tolerance-es-story-cover.png"),
+      f("up-close-en-reel-cover.png"),
+    ];
+    const posts = buildPosts(card({ format: "carousel", account_ids: ["fb-kf", "ig-kf", "fb-pp", "ig-pp"] }), ACCOUNTS, files, "user-1");
+    const names = (p: Record<string, unknown>) => (p.media as { url: string }[]).map((m) => m.url.split("/").pop());
+    expect(posts.map((p) => [p.type, p.accountIds, names(p)])).toEqual([
+      ["post", ["fb-kf", "ig-kf"], ["tolerance-en-1-cover.png", "tolerance-en-2-question.png"]],
+      ["story", ["fb-kf", "ig-kf"], ["tolerance-en-story.mp4"]],
+      ["post", ["fb-pp", "ig-pp"], ["tolerance-es-1-cover.png", "tolerance-es-2-question.png"]],
+      ["story", ["fb-pp", "ig-pp"], ["tolerance-es-story.mp4"]],
+    ]);
+    expect(posts[1]).toMatchObject({ summary: "", instagramPostDetails: { type: "story" } });
+    expect(cannotSchedule({ ...card({ format: "carousel", account_ids: ["fb-kf", "ig-pp"] }), stage: "approved" }, ACCOUNTS, files, NOW)).toBeNull();
+  });
+  it("puts each language's own cover on its reel", () => {
+    const f = (name: string, mime: string, kind: "media" | "cover"): UploadedFile => ({ kind, url: `https://files.leadconnectorhq.com/file/x/${name}`, mime, name });
+    const files = [f("film-en.mp4", "video/mp4", "media"), f("cover-en.png", "image/png", "cover"), f("film-es.mp4", "video/mp4", "media"), f("portada-es.png", "image/png", "cover")];
+    const posts = buildPosts(card(), ACCOUNTS, files, "user-1");
+    expect(posts.map((p) => (p.media as { url: string; thumbnail?: string }[]).map((m) => [m.url.split("/").pop(), m.thumbnail?.split("/").pop()]))).toEqual([
+      [["film-en.mp4", "cover-en.png"]],
+      [["film-es.mp4", "portada-es.png"]],
+    ]);
+  });
+  it("posts an image card's cover picture when it is the post itself", () => {
+    const f = (name: string, kind: "media" | "cover"): UploadedFile => ({ kind, url: `https://files.leadconnectorhq.com/file/x/${name}`, mime: "image/png", name });
+    const files = [f("wear-blue-en-feed.png", "cover"), f("wear-blue-en-story.png", "media"), f("wear-blue-es-feed.png", "media"), f("wear-blue-es-story.png", "media")];
+    const posts = buildPosts(card({ format: "image", account_ids: ["ig-kf", "ig-pp"] }), ACCOUNTS, files, "user-1");
+    expect(posts.map((p) => [p.type, (p.media as { url: string }[]).map((m) => m.url.split("/").pop())])).toEqual([
+      ["post", ["wear-blue-en-feed.png"]],
+      ["story", ["wear-blue-en-story.png"]],
+      ["post", ["wear-blue-es-feed.png"]],
+      ["story", ["wear-blue-es-story.png"]],
+    ]);
+  });
+  it("says which language is missing its file", () => {
+    const files: UploadedFile[] = [{ kind: "media", url: "https://files.leadconnectorhq.com/file/x/a-en.png", mime: "image/png", name: "a-en.png" }];
+    expect(cannotSchedule({ ...card({ format: "image", account_ids: ["ig-kf", "ig-pp"] }), stage: "approved" }, ACCOUNTS, files, NOW)).toMatch(/no Spanish file/);
+  });
   it("titles a YouTube Short and opens TikTok comments", () => {
     const posts = buildPosts(card({ account_ids: ["tt", "yt"] }), ACCOUNTS, FILM, "user-1");
     expect(posts[0]).toMatchObject({ youtubePostDetails: { title: "World Kindness Day film", type: "short" }, tiktokPostDetails: { enableComment: true } });

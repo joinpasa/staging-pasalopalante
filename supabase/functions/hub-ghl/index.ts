@@ -289,12 +289,12 @@ async function schedule(db: Db, itemId: string, me: { id: string }) {
   if (error || !card) throw new Friendly("That card no longer exists.", 404);
   const accts = await accounts();
   const assets: { kind: "media" | "cover"; path?: string; url?: string; name?: string; mime?: string }[] = Array.isArray(card.assets) ? card.assets : [];
-  const shape = assets.map((a) => ({ kind: a.kind, url: "", mime: a.mime ?? "" })) as UploadedFile[];
+  const shape = assets.map((a) => ({ kind: a.kind, url: a.path ?? a.url ?? "", mime: a.mime ?? "", name: a.name })) as UploadedFile[];
   const stop = cannotSchedule(card, accts, shape);
   if (stop) throw new Friendly(stop);
 
   const files: UploadedFile[] = [];
-  for (const a of assets) files.push({ kind: a.kind, mime: a.mime ?? "", url: await toHighLevel(db, a) });
+  for (const a of assets) files.push({ kind: a.kind, mime: a.mime ?? "", name: a.name, url: await toHighLevel(db, a) });
   const userId = await postingUser();
   const ids: string[] = [];
   try {

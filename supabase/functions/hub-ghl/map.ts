@@ -149,29 +149,71 @@ export interface UploadedFile {
   kind: "media" | "cover";
   url: string;
   mime: string;
+  /** The file's name on the card. "-en-" or "-es-" in it ties the file to one language, and "story" makes it a story. */
+  name?: string;
+}
+
+const hasWord = (name: string | undefined, words: string) => new RegExp(`(^|[^a-z])(${words})([^a-z]|$)`).test((name ?? "").toLowerCase());
+
+/** The language a file is for, read from its name ("tolerance-es-2.png" is Spanish); null when it is for both. */
+export function fileLang(name?: string): "en" | "es" | null {
+  if (hasWord(name, "es|esp|espanol|español|spanish")) return "es";
+  if (hasWord(name, "en|eng|english")) return "en";
+  return null;
+}
+
+/** A story file riding along on a feed card, such as "tolerance-en-story.mp4". */
+export function isStoryFile(name?: string): boolean {
+  return hasWord(name, "story|stories|historia");
+}
+
+/** A spare cover kept on the card for reference ("...-story-cover.png", "...-reel-cover.png"). It is never posted itself. */
+function isSpareCover(name?: string): boolean {
+  return /(story|reel|historia)[-_ ]?(cover|portada)/i.test(name ?? "");
+}
+
+/**
+ * What goes out in one language: the feed files, the cover for a video, and any story files posted alongside.
+ * A file whose name says -en- or -es- goes to that language only; a file with neither goes to both.
+ */
+export function filesFor(card: { format: string }, files: UploadedFile[], lang: "en" | "es") {
+  const mine = files.filter((f) => {
+    const l = fileLang(f.name);
+    return !l || l === lang;
+  });
+  const storyCard = card.format === "story";
+  const postable = mine.filter((f) => f.kind === "media" && !isSpareCover(f.name));
+  let feed = postable.filter((f) => storyCard || !isStoryFile(f.name));
+  const stories = storyCard ? [] : postable.filter((f) => isStoryFile(f.name));
+  const cover = mine.find((f) => f.kind === "cover" && !isStoryFile(f.name));
+  // an image post whose picture is also the card's cover: that picture goes out, first
+  if ((card.format === "image" || card.format === "carousel") && cover && cover.mime.startsWith("image/") && !feed.some((f) => f.url === cover.url)) {
+    feed = [cover, ...feed];
+  }
+  return { feed, stories, cover };
 }
 
 /**
  * The posts to create in HighLevel for one approved card: one per language, because a post
- * carries a single caption for every account on it. Pinterest takes one image, so it gets a
- * post of its own when the card has more than one.
+ * carries a single caption for every account on it, and each language gets only its own files
+ * and cover. Story files on a feed card go out as stories of their own, on Instagram and
+ * Facebook. Pinterest takes one image, so it gets a post of its own when there are several.
  */
 export function buildPosts(card: HubCard, accounts: HubAccount[], files: UploadedFile[], userId: string) {
   const chosen = accounts.filter((a) => card.account_ids.includes(a.id));
-  const media = files.filter((f) => f.kind === "media");
-  const cover = files.find((f) => f.kind === "cover");
-  const isVideo = media.some((m) => m.mime.startsWith("video/"));
   const kind = card.format === "reel" ? "reel" : card.format === "story" ? "story" : "post";
   const posts: Record<string, unknown>[] = [];
 
   for (const lang of ["en", "es"] as const) {
     const group = chosen.filter((a) => a.lang === lang);
     if (!group.length) continue;
+    const { feed: media, stories, cover } = filesFor(card, files, lang);
+    const isVideo = media.some((m) => m.mime.startsWith("video/"));
     const caption = (lang === "es" ? card.caption_es : card.caption_en).trim();
     const pins = media.length > 1 ? group.filter((a) => a.platform === "pinterest") : [];
     const rest = group.filter((a) => !pins.includes(a));
     for (const [set, items] of [[rest, media], [pins, media.slice(0, 1)]] as const) {
-      if (!set.length) continue;
+      if (!set.length || !items.length) continue;
       const pin = set.find((a) => a.platform === "pinterest");
       posts.push({
         accountIds: set.map((a) => a.id),
@@ -189,6 +231,21 @@ export function buildPosts(card: HubCard, accounts: HubAccount[], files: Uploade
         ...(pin ? { pinterestPostDetails: { title: card.title.slice(0, 100), link: "" } } : {}),
       });
     }
+    // story files that ride along on a feed card: one story each, where stories exist
+    const storyAccounts = group.filter((a) => a.platform === "instagram" || a.platform === "facebook");
+    for (const s of storyAccounts.length ? stories : []) {
+      posts.push({
+        accountIds: storyAccounts.map((a) => a.id),
+        summary: "",
+        media: [{ url: s.url, type: s.mime }],
+        status: "scheduled",
+        scheduleDate: card.publish_at,
+        type: "story",
+        userId,
+        facebookPostDetails: { type: "story" },
+        instagramPostDetails: { type: "story", publishViaPushNotification: false, showOnFeed: true },
+      });
+    }
   }
   return posts;
 }
@@ -202,16 +259,19 @@ export function cannotSchedule(card: HubCard & { stage: string }, accounts: HubA
   const chosen = accounts.filter((a) => card.account_ids.includes(a.id));
   if (!chosen.length) return "Choose at least one account.";
   if (chosen.length !== card.account_ids.length) return "One of the chosen accounts is no longer connected in HighLevel.";
-  const media = files.filter((f) => f.kind === "media");
-  if (!media.length) return "Attach the file that should go out.";
-  const video = media.some((m) => m.mime.startsWith("video/"));
-  if ((card.format === "reel" || card.format === "video") && !video) return "A reel or video needs a video file.";
-  if (card.format === "reel" && media.length > 1) return "A reel takes one video.";
-  if (video && card.format !== "story" && !files.some((f) => f.kind === "cover")) return "Add a cover before a video goes out.";
-  if (card.format !== "story") {
-    if (chosen.some((a) => a.lang === "en") && !card.caption_en.trim()) return "The English caption is empty.";
-    if (chosen.some((a) => a.lang === "es") && !card.caption_es.trim()) return "The Spanish caption is empty.";
+  if (!files.some((f) => f.kind === "media" || (f.kind === "cover" && (card.format === "image" || card.format === "carousel")))) return "Attach the file that should go out.";
+  for (const lang of ["en", "es"] as const) {
+    const group = chosen.filter((a) => a.lang === lang);
+    if (!group.length) continue;
+    const name = lang === "en" ? "English" : "Spanish";
+    const { feed: media, cover } = filesFor(card, files, lang);
+    if (!media.length) return `There is no ${name} file on the card. Add one with -${lang}- in its name.`;
+    const video = media.some((m) => m.mime.startsWith("video/"));
+    if ((card.format === "reel" || card.format === "video") && !video) return "A reel or video needs a video file.";
+    if (card.format === "reel" && media.length > 1) return `A reel takes one video, and the ${name} side has ${media.length} files.`;
+    if (video && card.format !== "story" && !cover) return "Add a cover before a video goes out.";
+    if (card.format !== "story" && !(lang === "es" ? card.caption_es : card.caption_en).trim()) return `The ${name} caption is empty.`;
+    if (group.some((a) => (a.platform === "tiktok" || a.platform === "youtube") && !video)) return "TikTok and YouTube only take video.";
   }
-  if (chosen.some((a) => (a.platform === "tiktok" || a.platform === "youtube") && !video)) return "TikTok and YouTube only take video.";
   return null;
 }

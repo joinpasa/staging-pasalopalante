@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-11-16 — sim1
+
+- **Kindness Hub, scheduling cards that carry both languages:** when a card held English and Spanish files, pressing Schedule would have sent every file to every account. Now each language gets only its own files and its own cover, read from the file names (`-en-` or `-es-`), and story files on a feed card go out as separate stories on Instagram and Facebook. Spare covers kept on a card for reference are never posted. If a language has no file, the hub says so before anything is sent.
+
 ## 2026-11-15 — sim1
 
 - **New: the Kindness Hub (`apps/hub`), the marketing team's planning space.** Home shows the week and what needs whom; the Inbox gathers ideas, partner stories and community posts; the Plan holds every post and email from idea to scheduled (it hands approved posts to HighLevel); Growth lists each day's reach work with a step-by-step guide for every task (what we already have and where, what is missing, and the steps); Community holds the weekly partner kit and the community space; Videos keeps every video we have or found, with what we may use it for. It is served at /hub on the same site (pasalopalante.com/hub), built by `build:combined`, so it needs no Cloudflare project of its own; search engines are told to stay out. It is new and additive: the website and app pages are not changed by it, and HighLevel stays the CRM.
