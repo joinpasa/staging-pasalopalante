@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-11-20 — va.deedumlao@gmail.com
+
+- **The yellow ribbon banner at the top of the site is removed** on every page (the "live broadcast" / Masterclass banner). The navbar now sits at the very top, and the mobile menu height is adjusted to match.
+
 ## 2026-11-16 — sim1
 
 - **Kindness Hub, scheduling cards that carry both languages:** when a card held English and Spanish files, pressing Schedule would have sent every file to every account. Now each language gets only its own files and its own cover, read from the file names (`-en-` or `-es-`), and story files on a feed card go out as separate stories on Instagram and Facebook. Spare covers kept on a card for reference are never posted. If a language has no file, the hub says so before anything is sent.

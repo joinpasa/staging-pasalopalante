@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ChevronDown, Flame, Heart, Menu, User, X } from "lucide-react";
+import { ChevronDown, Flame, Heart, Menu, User, X } from "lucide-react";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useAuth } from "@shared/contexts/AuthContext";
 import { useUI } from "@shared/contexts/UIContext";
@@ -10,7 +10,6 @@ import SubNav from "@/components/SubNav";
 import LanguageSwitcher from "@shared/components/LanguageSwitcher";
 import { supabase } from "@shared/integrations/supabase/client";
 import { isSatelliteDomain } from "@shared/lib/canonicalDomain";
-import { useLiveStatus } from "@/lib/liveBroadcast";
 
 const SCROLL_THRESHOLD = 80;
 
@@ -20,7 +19,6 @@ const Navbar = () => {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [mobileExploreOpen, setMobileExploreOpen] = useState(false);
   const { t } = useLanguage();
-  const { live: isLive, ribbon } = useLiveStatus();
   const { user } = useAuth();
   // On a satellite marketing domain (e.g. passkindnessforward.com), the
   // session cookie is scoped to pasalopalante.com and never reaches here, so
@@ -132,17 +130,6 @@ const Navbar = () => {
     }
   }
 
-  // The yellow "live broadcast" ribbon sits above the navbar inside the same
-  // fixed header, so push the page down by its height while the navbar is
-  // mounted — every page's existing top padding (sized for the 80px navbar
-  // alone) then still lines up underneath it.
-  useEffect(() => {
-    document.body.style.paddingTop = "2.25rem";
-    return () => {
-      document.body.style.paddingTop = "";
-    };
-  }, []);
-
   if (anyShareFlowOpen) return null;
 
   const linkClass = isSolid ? "text-foreground/70 hover:text-foreground" : "text-white/80 hover:text-white";
@@ -156,24 +143,6 @@ const Navbar = () => {
         isSolid ? "bg-warm-cream/95 backdrop-blur-md border-b border-border shadow-sm" : "bg-transparent"
       }`}
     >
-      <Link
-        to="/live"
-        className="group flex h-9 items-center justify-center bg-warm-gold px-4 text-center text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#0e234b] transition-colors hover:bg-[#ffc93c] md:text-sm"
-      >
-        {(ribbon === "cleansingNow" || ribbon === "masterclassNow" || (isLive && !ribbon)) && <span className="me-2 inline-flex h-2 w-2 shrink-0 animate-pulse rounded-full bg-[#d81b60]" aria-hidden="true" />}
-        <span className="truncate">{ribbon === "cleansingNow"
-            ? t.navbar.masterclassNowBanner
-            : ribbon === "masterclassNow"
-              ? t.navbar.masterclassGenericNowBanner
-              : ribbon === "masterclassTomorrow"
-                ? t.navbar.masterclassTomorrowBanner
-                : ribbon === "masterclassToday"
-                  ? t.navbar.masterclassTodayBanner
-                  : isLive
-                    ? t.navbar.liveNowBanner
-                    : t.navbar.liveBanner}</span>
-        <ArrowRight size={16} strokeWidth={2.75} className="ms-2 shrink-0 transition-transform group-hover:translate-x-1 rtl:rotate-180" />
-      </Link>
       <div className="section-padding flex items-center justify-between h-20 gap-4">
         <Link to="/" className="shrink-0 flex items-center gap-2 md:gap-2.5">
           <img
@@ -304,7 +273,7 @@ const Navbar = () => {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             id="mobile-menu"
-            className="md:hidden max-h-[calc(100vh-7.25rem)] max-h-[calc(100dvh-7.25rem)] overflow-y-auto overscroll-contain bg-warm-cream border-t border-border [-webkit-overflow-scrolling:touch]"
+            className="md:hidden max-h-[calc(100vh-5rem)] max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain bg-warm-cream border-t border-border [-webkit-overflow-scrolling:touch]"
           >
             <div className="section-padding py-6 pb-28 flex flex-col gap-4">
               <LanguageSwitcher variant="inline" align="left" triggerClassName="text-lg font-medium text-foreground/80" />
