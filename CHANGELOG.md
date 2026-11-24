@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-11-24 — sim1
+
+- **The sign-up forms no longer leave a big empty gap after you submit.** A nonprofit partner reported that, after signing up, the thank-you message appeared far down the page with a large white space above it. HighLevel's own thank-you screen stretches to the full height of the long form when it sits inside our page. Now, on all six Get Involved forms (nonprofits, schools, companies, municipalities, ambassadors and partners), the form sits in a branded card, shows a soft loading state while it loads, and jumps back to the top when you press Next. When you finish, a Kindness Forward thank-you card appears right beside the heading in English or Spanish, with the next steps, a pledge button and a share button. The heading also stays in view beside the form on desktop.
+
 ## 2026-11-20 — va.deedumlao@gmail.com
 
 - **The yellow ribbon banner at the top of the site is removed** on every page (the "live broadcast" / Masterclass banner). The navbar now sits at the very top, and the mobile menu height is adjusted to match.

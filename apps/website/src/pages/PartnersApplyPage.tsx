@@ -27,9 +27,7 @@ export default function PartnersApplyPage() {
             {f.partnersBody}
           </p>
 
-          <div className="bg-white/70 border border-border rounded-2xl p-4 md:p-6">
-            <GHLFormEmbed formId="Od6Vms5T0VCdams7JT9b" title={f.partnersFormTitle} />
-          </div>
+          <GHLFormEmbed formId="Od6Vms5T0VCdams7JT9b" title={f.partnersFormTitle} audience="partners" />
         </div>
       </main>
       <Footer />

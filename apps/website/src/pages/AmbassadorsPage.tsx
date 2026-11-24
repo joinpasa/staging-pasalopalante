@@ -19,7 +19,7 @@ export default function AmbassadorsPage() {
       <Navbar />
       <main className="pt-32 pb-20 section-padding">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 md:gap-16 items-start">
-          <div>
+          <div className="md:sticky md:top-32">
             <p className="eyebrow">Pass Kindness Forward</p>
             <h1 className="headline-xl text-foreground mt-3 mb-4">
               {f.ambassadorsHeading}
@@ -29,7 +29,7 @@ export default function AmbassadorsPage() {
             </p>
           </div>
 
-          <GHLFormEmbed formId="xJ4tStNKJBn0QgQZb896" title={f.ambassadorsFormTitle} />
+          <GHLFormEmbed formId="xJ4tStNKJBn0QgQZb896" title={f.ambassadorsFormTitle} audience="ambassadors" />
         </div>
       </main>
       <Footer />
