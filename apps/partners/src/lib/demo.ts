@@ -402,7 +402,16 @@ export const demo = {
       ? [{ id: o.id, name: o.name, org_type: o.org_type, country: o.country, region: o.region, city: o.city, logo_path: null, entry_logo_url: null, about: null, website: "https://teenchallengepr.org" }]
       : [];
   },
-  kit: () => kit,
+  // the real kit when a copy of the live list is saved in demo-assets/kit-live.json (git-ignored)
+  kit: async (): Promise<KitItem[]> => {
+    try {
+      const r = await fetch("/src/demo-assets/kit-live.json");
+      if (r.ok) return (await r.json()) as KitItem[];
+    } catch {
+      /* fall back to the examples */
+    }
+    return kit;
+  },
   stats: (): HubStats => ({
     pledgers: PLEDGERS.map(([country, people]) => ({ country, people })),
     partners: [

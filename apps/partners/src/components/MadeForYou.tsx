@@ -111,14 +111,14 @@ export default function MadeForYou({ me, lang }: { me: Me; lang: "en" | "es" }) 
       {error && <p className="m-0 bg-rose-soft px-3 py-2 text-sm font-semibold text-rose-ink">{error}</p>}
 
       {photoForPictures && (
-        <Row title={h.withYourPhoto} note={photoUrl ? h.photoStaysHere : undefined}>
+        <Row title={h.withYourPhoto} note={photoUrl ? h.photoStaysHere : undefined} count={PHOTO_FORMATS.length}>
           {PHOTO_FORMATS.map((f) => (
             <Picture key={`${f}-${lang}-${photoForPictures}`} format={f} me={me} lang={lang} photoUrl={photoForPictures} logoUrl={solo ? null : me.logoUrl} />
           ))}
         </Row>
       )}
       {me.logoUrl && (
-        <Row title={h.withYourLogo}>
+        <Row title={h.withYourLogo} count={solo ? LOGO_FORMATS.length : LOGO_FORMATS.length + 1}>
           {(solo ? LOGO_FORMATS : [...LOGO_FORMATS, "profile" as CobrandFormat]).map((f) => (
             <Picture key={`${f}-${lang}-${me.logoUrl}`} format={f} me={me} lang={lang} photoUrl={null} logoUrl={me.logoUrl} />
           ))}
@@ -140,14 +140,19 @@ export default function MadeForYou({ me, lang }: { me: Me; lang: "en" | "es" }) 
   );
 }
 
-function Row({ title, note, children }: { title: string; note?: string; children: ReactNode }) {
+function Row({ title, note, count, children }: { title: string; note?: string; count: number; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap items-baseline gap-x-3">
         <h3 className="m-0 text-[15px] font-extrabold">{title}</h3>
         {note && <span className="text-[12.5px] font-semibold text-ink-faint">{note}</span>}
       </div>
-      <div className="-mx-4 flex gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:thin] lg:mx-0 lg:grid lg:grid-cols-4 lg:px-0">{children}</div>
+      <div
+        className="-mx-4 flex snap-x scroll-px-4 gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] lg:mx-0 lg:grid lg:px-0"
+        style={{ gridTemplateColumns: `repeat(${Math.min(Math.max(count, 3), 5)}, minmax(0, 1fr))` }}
+      >
+        {children}
+      </div>
     </div>
   );
 }
@@ -192,7 +197,7 @@ function Picture({ format, me, lang, photoUrl, logoUrl }: { format: CobrandForma
   }
 
   return (
-    <article className="flex w-[200px] shrink-0 flex-col gap-2 lg:w-auto">
+    <article className="flex w-[44%] shrink-0 snap-start flex-col gap-2 sm:w-[200px] lg:w-auto">
       <div ref={holder} className="flex aspect-square items-center justify-center overflow-hidden bg-tint-sky p-2">
         <Loader2 className="h-6 w-6 animate-spin text-sky" aria-hidden="true" />
       </div>
