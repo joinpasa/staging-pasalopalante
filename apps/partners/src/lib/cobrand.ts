@@ -31,9 +31,30 @@ export const PHOTO_FORMATS_SOLO: CobrandFormat[] = ["framePost", "frameStory", "
  * post and story are the partner kit's, re-rendered by partner-kit/photo_templates.py; the frames
  * are the get-to-know kit's "Share it" frames.
  */
-const PHOTO_TEMPLATES: Partial<Record<CobrandFormat, { file: (lang: "en" | "es") => string; window: [number, number, number, number]; focus: number }>> = {
-  announcePost: { file: (l) => `/hub/announce-post-${l}.png`, window: [0, 0, 1080, 760], focus: 0.4 },
-  announceStory: { file: (l) => `/hub/announce-story-${l}.png`, window: [0, 0, 1080, 1240], focus: 0.35 },
+const PHOTO_TEMPLATES: Partial<
+  Record<
+    CobrandFormat,
+    {
+      file: (lang: "en" | "es") => string;
+      window: [number, number, number, number];
+      focus: number;
+      /** the logo tab in the template, measured from the PNGs: where its right edge ends, per language */
+      tab?: { top: number; height: number; right: Record<"en" | "es", number>; radius: number; pad: number };
+    }
+  >
+> = {
+  announcePost: {
+    file: (l) => `/hub/announce-post-${l}.png`,
+    window: [0, 0, 1080, 760],
+    focus: 0.4,
+    tab: { top: 52, height: 104, right: { en: 369, es: 255 }, radius: 16, pad: 10 },
+  },
+  announceStory: {
+    file: (l) => `/hub/announce-story-${l}.png`,
+    window: [0, 0, 1080, 1240],
+    focus: 0.35,
+    tab: { top: 250, height: 120, right: { en: 421, es: 290 }, radius: 18, pad: 12 },
+  },
   framePost: { file: (l) => `/hub/frame-post-${l}.png`, window: [0, 0, 1080, 1028], focus: 0.4 },
   frameStory: { file: (l) => `/hub/frame-story-${l}.png`, window: [0, 0, 1080, 1318], focus: 0.35 },
 };
@@ -206,20 +227,22 @@ export async function drawCobrand(
     if (photo) cover(ctx, photo, x, y, w, h, template.focus);
     const overlay = await img(template.file(opts.lang));
     if (overlay) ctx.drawImage(overlay, 0, 0, W, H);
-    if (theirs && (format === "announcePost" || format === "announceStory")) {
-      // their logo on a white tab across from ours, the same height as ours
-      const story = format === "announceStory";
-      const tabH = story ? 120 : 104;
-      const top = story ? 250 : 52;
-      const pad = story ? 14 : 12;
+    if (theirs && template.tab) {
+      // their logo joins our logo's tab: one white pill, ours, a hairline, theirs, all one height
+      const t = template.tab;
+      const logoH = t.height - t.pad * 2;
       const ratio = Math.min(Math.max(theirs.width / theirs.height, 0.8), 3.2);
-      const tabW = Math.round((tabH - pad * 2) * ratio + pad * 2);
-      const left = W - (story ? 64 : 56) - tabW;
+      const logoW = Math.round(logoH * ratio);
+      const start = t.right[opts.lang] - t.radius - 1;
+      const gap = 16;
+      const end = t.right[opts.lang] + gap + 2 + gap + logoW + t.pad + 6;
       ctx.fillStyle = "#ffffff";
       ctx.beginPath();
-      ctx.roundRect(left, top, tabW, tabH, story ? 18 : 16);
+      ctx.roundRect(start, t.top, end - start, t.height, [0, t.radius, t.radius, 0]);
       ctx.fill();
-      contain(ctx, theirs, left + pad, top + pad, tabW - pad * 2, tabH - pad * 2);
+      ctx.fillStyle = "#dcecf5";
+      ctx.fillRect(t.right[opts.lang] + gap, t.top + t.pad + 6, 2, t.height - (t.pad + 6) * 2);
+      contain(ctx, theirs, t.right[opts.lang] + gap + 2 + gap, t.top + t.pad, logoW, logoH);
     }
     return c;
   }
