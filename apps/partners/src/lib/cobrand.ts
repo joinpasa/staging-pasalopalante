@@ -6,21 +6,37 @@ import type { Kind } from "./kinds";
  * logo and the official profile frames. The official artwork is drawn exactly as supplied, never
  * redrawn, and words never sit on the photo. Nothing is uploaded: the photo stays on the device.
  */
-export type CobrandFormat = "post" | "story" | "badge" | "banner" | "photoPost" | "photoStory" | "profile";
+export type CobrandFormat = "post" | "story" | "badge" | "banner" | "announcePost" | "announceStory" | "framePost" | "frameStory" | "profile";
 
 export const FORMATS: Record<CobrandFormat, { w: number; h: number; en: string; es: string }> = {
   post: { w: 1080, h: 1350, en: "Post", es: "Publicación" },
   story: { w: 1080, h: 1920, en: "Story", es: "Historia" },
   badge: { w: 1200, h: 400, en: "Badge for your website and email", es: "Insignia para tu web y correo" },
   banner: { w: 1584, h: 396, en: "LinkedIn banner", es: "Portada de LinkedIn" },
-  photoPost: { w: 1080, h: 1350, en: "Post with your photo", es: "Publicación con tu foto" },
-  photoStory: { w: 1080, h: 1920, en: "Story with your photo", es: "Historia con tu foto" },
+  announcePost: { w: 1080, h: 1350, en: "Announcement post", es: "Publicación de anuncio" },
+  announceStory: { w: 1080, h: 1920, en: "Announcement story", es: "Historia de anuncio" },
+  framePost: { w: 1080, h: 1350, en: "Photo frame post", es: "Publicación con marco" },
+  frameStory: { w: 1080, h: 1920, en: "Photo frame story", es: "Historia con marco" },
   profile: { w: 1080, h: 1080, en: "Profile picture with our frame", es: "Foto de perfil con nuestro marco" },
 };
 
 /** Which pictures need the logo, and which the photo. */
 export const LOGO_FORMATS: CobrandFormat[] = ["post", "story", "badge", "banner"];
-export const PHOTO_FORMATS: CobrandFormat[] = ["photoPost", "photoStory", "profile"];
+export const PHOTO_FORMATS: CobrandFormat[] = ["announcePost", "announceStory", "framePost", "frameStory", "profile"];
+/** An ambassador is one person, so the "we've joined" announcement isn't theirs; the frames are. */
+export const PHOTO_FORMATS_SOLO: CobrandFormat[] = ["framePost", "frameStory", "profile"];
+
+/**
+ * The official templates with a see-through photo area, and where that area is. The announcement
+ * post and story are the partner kit's, re-rendered by partner-kit/photo_templates.py; the frames
+ * are the get-to-know kit's "Share it" frames.
+ */
+const PHOTO_TEMPLATES: Partial<Record<CobrandFormat, { file: (lang: "en" | "es") => string; window: [number, number, number, number]; focus: number }>> = {
+  announcePost: { file: (l) => `/hub/announce-post-${l}.png`, window: [0, 0, 1080, 760], focus: 0.4 },
+  announceStory: { file: (l) => `/hub/announce-story-${l}.png`, window: [0, 0, 1080, 1240], focus: 0.35 },
+  framePost: { file: (l) => `/hub/frame-post-${l}.png`, window: [0, 0, 1080, 1028], focus: 0.4 },
+  frameStory: { file: (l) => `/hub/frame-story-${l}.png`, window: [0, 0, 1080, 1318], focus: 0.35 },
+};
 
 function frameFor(kind: Kind, lang: "en" | "es") {
   if (kind === "ambassador") return "/hub/frame-ambassador-en.png";
@@ -120,54 +136,47 @@ function logoTab(ctx: CanvasRenderingContext2D, im: HTMLImageElement | null, x: 
   if (im) contain(ctx, im, x + pad, y + pad, w - pad * 2, h - pad * 2);
 }
 
-/** Both logos side by side on one white strip: theirs, a hairline, ours. */
-function logoStrip(ctx: CanvasRenderingContext2D, W: number, y: number, h: number, theirs: HTMLImageElement | null, ours: HTMLImageElement | null, pad: number) {
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0, y, W, h);
-  const logoH = h - pad * 2;
-  if (theirs) {
-    const leftW = Math.round((W - 160) * 0.36);
-    contain(ctx, theirs, 80, y + pad, leftW, logoH);
-    const divX = 80 + leftW + 44;
-    ctx.fillStyle = "#dcecf5";
-    ctx.fillRect(divX, y + pad, 3, logoH);
-    if (ours) contain(ctx, ours, divX + 48, y + pad + logoH * 0.12, W - 80 - (divX + 48), logoH * 0.76);
-  } else if (ours) {
-    contain(ctx, ours, 80, y + pad + logoH * 0.1, W - 160, logoH * 0.8);
+/**
+ * Draws a logo as large as it can be inside a circle: it measures how far the logo's visible
+ * pixels reach from their centre, so a round logo fills the circle and a wide one fits its width.
+ */
+function fitInCircle(ctx: CanvasRenderingContext2D, im: HTMLImageElement, cx: number, cy: number, r: number) {
+  const probe = 240;
+  const k = probe / Math.max(im.width, im.height);
+  const pw = Math.max(1, Math.round(im.width * k));
+  const ph = Math.max(1, Math.round(im.height * k));
+  let reach = Math.hypot(pw, ph) / 2;
+  let ox = pw / 2;
+  let oy = ph / 2;
+  try {
+    const t = document.createElement("canvas");
+    t.width = pw;
+    t.height = ph;
+    const tc = t.getContext("2d")!;
+    tc.drawImage(im, 0, 0, pw, ph);
+    const d = tc.getImageData(0, 0, pw, ph).data;
+    let minX = pw, minY = ph, maxX = 0, maxY = 0;
+    const solid = (i: number) => d[i + 3] > 24 && !(d[i] > 245 && d[i + 1] > 245 && d[i + 2] > 245);
+    for (let y = 0; y < ph; y++)
+      for (let x = 0; x < pw; x++)
+        if (solid((y * pw + x) * 4)) {
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+        }
+    if (maxX >= minX && maxY >= minY) {
+      ox = (minX + maxX + 1) / 2;
+      oy = (minY + maxY + 1) / 2;
+      reach = 0;
+      for (let y = minY; y <= maxY; y++)
+        for (let x = minX; x <= maxX; x++) if (solid((y * pw + x) * 4)) reach = Math.max(reach, Math.hypot(x + 0.5 - ox, y + 0.5 - oy));
+    }
+  } catch {
+    /* a logo from another website can't be measured; the box is used instead */
   }
-}
-
-/** A photo with words under it (never on it) and the logo strip at the bottom. */
-function photoLayout(
-  ctx: CanvasRenderingContext2D,
-  W: number,
-  H: number,
-  photo: HTMLImageElement,
-  theirs: HTMLImageElement | null,
-  ours: HTMLImageElement | null,
-  o: { kind: Kind; lang: "en" | "es"; name: string; hot: string; story: boolean },
-) {
-  const photoH = o.story ? 1120 : 760;
-  cover(ctx, photo, 0, 0, W, photoH, 0.4);
-  bar(ctx, 0, photoH, W, 14);
-  let y = photoH + 14 + (o.story ? 70 : 44);
-  boxText(ctx, line1(o.kind, o.lang), 80, y, o.story ? 48 : 40, o.hot, "#ffffff");
-  y += o.story ? 96 : 80;
-  const lines = brandLines(o.lang);
-  const big = fit(ctx, `${lines[0]} ${lines[1]}`, W - 160, o.story ? 110 : 92, 40, 900);
-  ctx.font = `900 ${big}px Montserrat, Arial, sans-serif`;
-  ctx.fillStyle = NAVY;
-  ctx.fillText(`${lines[0]} ${lines[1]}`, 76, y + big * 0.82);
-  y += big + (o.story ? 40 : 26);
-  ctx.fillStyle = INK2;
-  const ns = fit(ctx, o.name, W - 160, o.story ? 44 : 36, 20, 700);
-  ctx.font = `700 ${ns}px Montserrat, Arial, sans-serif`;
-  ctx.fillText(o.name, 80, y + ns);
-  const stripH = o.story ? 300 : 240;
-  ctx.fillStyle = "#dcecf5";
-  ctx.fillRect(80, H - 14 - stripH, W - 160, 3);
-  logoStrip(ctx, W, H - 14 - stripH + 3, stripH - 3, theirs, ours, o.story ? 60 : 44);
-  bar(ctx, 0, H - 14, W, 14);
+  const scale = (r / Math.max(reach, 1)) * k;
+  ctx.drawImage(im, cx - ox * (scale / k), cy - oy * (scale / k), im.width * scale, im.height * scale);
 }
 
 export async function drawCobrand(
@@ -190,14 +199,34 @@ export async function drawCobrand(
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, W, H);
 
-  if (format === "photoPost" || format === "photoStory") {
-    if (photo) photoLayout(ctx, W, H, photo, theirs, ours, { kind: opts.kind, lang: opts.lang, name: opts.name, hot, story: format === "photoStory" });
+  const template = PHOTO_TEMPLATES[format];
+  if (template) {
+    // their photo fills the template's photo area; the official design goes on top
+    const [x, y, w, h] = template.window;
+    if (photo) cover(ctx, photo, x, y, w, h, template.focus);
+    const overlay = await img(template.file(opts.lang));
+    if (overlay) ctx.drawImage(overlay, 0, 0, W, H);
+    if (theirs && (format === "announcePost" || format === "announceStory")) {
+      // their logo on a white tab across from ours, the same height as ours
+      const story = format === "announceStory";
+      const tabH = story ? 120 : 104;
+      const top = story ? 250 : 52;
+      const pad = story ? 14 : 12;
+      const ratio = Math.min(Math.max(theirs.width / theirs.height, 0.8), 3.2);
+      const tabW = Math.round((tabH - pad * 2) * ratio + pad * 2);
+      const left = W - (story ? 64 : 56) - tabW;
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.roundRect(left, top, tabW, tabH, story ? 18 : 16);
+      ctx.fill();
+      contain(ctx, theirs, left + pad, top + pad, tabW - pad * 2, tabH - pad * 2);
+    }
     return c;
   }
   if (format === "profile") {
-    // their photo (or, without one, their logo on white) inside our official frame
+    // their photo fills the frame; a logo is sized to fill the circle inside the ring
     if (photo) cover(ctx, photo, 0, 0, W, H, 0.35);
-    else if (theirs) contain(ctx, theirs, W * 0.22, H * 0.22, W * 0.56, H * 0.56);
+    else if (theirs) fitInCircle(ctx, theirs, W / 2, H / 2, W * 0.4 * 0.9);
     const frame = await img(frameFor(opts.kind, opts.lang));
     if (frame) ctx.drawImage(frame, 0, 0, W, H);
     return c;

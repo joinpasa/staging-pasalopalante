@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Download, ImagePlus, Loader2, Sparkles, Upload } from "lucide-react";
 import { useHubCopy } from "@/lib/hubCopy";
 import { uploadLogo, useSaveProfile, type Me } from "@/lib/hub";
-import { canvasBlob, drawCobrand, FORMATS, LOGO_FORMATS, PHOTO_FORMATS, type CobrandFormat } from "@/lib/cobrand";
+import { canvasBlob, drawCobrand, FORMATS, LOGO_FORMATS, PHOTO_FORMATS, PHOTO_FORMATS_SOLO, type CobrandFormat } from "@/lib/cobrand";
 import { saveBlob } from "@/lib/certificate";
 
 /**
@@ -111,8 +111,8 @@ export default function MadeForYou({ me, lang }: { me: Me; lang: "en" | "es" }) 
       {error && <p className="m-0 bg-rose-soft px-3 py-2 text-sm font-semibold text-rose-ink">{error}</p>}
 
       {photoForPictures && (
-        <Row title={h.withYourPhoto} note={photoUrl ? h.photoStaysHere : undefined} count={PHOTO_FORMATS.length}>
-          {PHOTO_FORMATS.map((f) => (
+        <Row title={h.withYourPhoto} note={photoUrl ? h.photoStaysHere : undefined} count={(solo ? PHOTO_FORMATS_SOLO : PHOTO_FORMATS).length}>
+          {(solo ? PHOTO_FORMATS_SOLO : PHOTO_FORMATS).map((f) => (
             <Picture key={`${f}-${lang}-${photoForPictures}`} format={f} me={me} lang={lang} photoUrl={photoForPictures} logoUrl={solo ? null : me.logoUrl} />
           ))}
         </Row>
@@ -126,7 +126,7 @@ export default function MadeForYou({ me, lang }: { me: Me; lang: "en" | "es" }) 
       )}
       {!me.logoUrl && !photoUrl && (
         <div className="grid grid-cols-3 gap-3 sm:grid-cols-4" aria-hidden="true">
-          {(["photoPost", "photoStory", "profile", "badge"] as CobrandFormat[]).map((f) => (
+          {(["announcePost", "framePost", "profile", "badge"] as CobrandFormat[]).map((f) => (
             <div
               key={f}
               className="flex aspect-square items-center justify-center border-[1.5px] border-dashed border-hair bg-tint-sky/40 p-2 text-center text-[12px] font-bold text-ink-faint"
