@@ -1,18 +1,31 @@
 import type { Kind } from "./kinds";
 
 /**
- * "Made with your logo": four ready pictures drawn in the browser with the member's own logo
- * next to the official Kindness Forward (or, in Spanish, Pásalo Pa'lante) logo. The official
- * logos are drawn exactly as supplied, never redrawn. Nothing is uploaded.
+ * "Made for you": ready pictures drawn in the browser from the member's own logo and, if they add
+ * one, their own photo, next to the official Kindness Forward (or, in Spanish, Pásalo Pa'lante)
+ * logo and the official profile frames. The official artwork is drawn exactly as supplied, never
+ * redrawn, and words never sit on the photo. Nothing is uploaded: the photo stays on the device.
  */
-export type CobrandFormat = "post" | "story" | "badge" | "banner";
+export type CobrandFormat = "post" | "story" | "badge" | "banner" | "photoPost" | "photoStory" | "profile";
 
 export const FORMATS: Record<CobrandFormat, { w: number; h: number; en: string; es: string }> = {
   post: { w: 1080, h: 1350, en: "Post", es: "Publicación" },
   story: { w: 1080, h: 1920, en: "Story", es: "Historia" },
   badge: { w: 1200, h: 400, en: "Badge for your website and email", es: "Insignia para tu web y correo" },
   banner: { w: 1584, h: 396, en: "LinkedIn banner", es: "Portada de LinkedIn" },
+  photoPost: { w: 1080, h: 1350, en: "Post with your photo", es: "Publicación con tu foto" },
+  photoStory: { w: 1080, h: 1920, en: "Story with your photo", es: "Historia con tu foto" },
+  profile: { w: 1080, h: 1080, en: "Profile picture with our frame", es: "Foto de perfil con nuestro marco" },
 };
+
+/** Which pictures need the logo, and which the photo. */
+export const LOGO_FORMATS: CobrandFormat[] = ["post", "story", "badge", "banner"];
+export const PHOTO_FORMATS: CobrandFormat[] = ["photoPost", "photoStory", "profile"];
+
+function frameFor(kind: Kind, lang: "en" | "es") {
+  if (kind === "ambassador") return "/hub/frame-ambassador-en.png";
+  return lang === "es" ? "/hub/frame-partner-es.png" : "/hub/frame-partner-en.png";
+}
 
 const NAVY = "#0e234b";
 const MAGENTA = "#d81b60";
@@ -107,17 +120,88 @@ function logoTab(ctx: CanvasRenderingContext2D, im: HTMLImageElement | null, x: 
   if (im) contain(ctx, im, x + pad, y + pad, w - pad * 2, h - pad * 2);
 }
 
-export async function drawCobrand(format: CobrandFormat, opts: { kind: Kind; lang: "en" | "es"; name: string; logoUrl: string }): Promise<HTMLCanvasElement> {
+/** Both logos side by side on one white strip: theirs, a hairline, ours. */
+function logoStrip(ctx: CanvasRenderingContext2D, W: number, y: number, h: number, theirs: HTMLImageElement | null, ours: HTMLImageElement | null, pad: number) {
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, y, W, h);
+  const logoH = h - pad * 2;
+  if (theirs) {
+    const leftW = Math.round((W - 160) * 0.36);
+    contain(ctx, theirs, 80, y + pad, leftW, logoH);
+    const divX = 80 + leftW + 44;
+    ctx.fillStyle = "#dcecf5";
+    ctx.fillRect(divX, y + pad, 3, logoH);
+    if (ours) contain(ctx, ours, divX + 48, y + pad + logoH * 0.12, W - 80 - (divX + 48), logoH * 0.76);
+  } else if (ours) {
+    contain(ctx, ours, 80, y + pad + logoH * 0.1, W - 160, logoH * 0.8);
+  }
+}
+
+/** A photo with words under it (never on it) and the logo strip at the bottom. */
+function photoLayout(
+  ctx: CanvasRenderingContext2D,
+  W: number,
+  H: number,
+  photo: HTMLImageElement,
+  theirs: HTMLImageElement | null,
+  ours: HTMLImageElement | null,
+  o: { kind: Kind; lang: "en" | "es"; name: string; hot: string; story: boolean },
+) {
+  const photoH = o.story ? 1120 : 760;
+  cover(ctx, photo, 0, 0, W, photoH, 0.4);
+  bar(ctx, 0, photoH, W, 14);
+  let y = photoH + 14 + (o.story ? 70 : 44);
+  boxText(ctx, line1(o.kind, o.lang), 80, y, o.story ? 48 : 40, o.hot, "#ffffff");
+  y += o.story ? 96 : 80;
+  const lines = brandLines(o.lang);
+  const big = fit(ctx, `${lines[0]} ${lines[1]}`, W - 160, o.story ? 110 : 92, 40, 900);
+  ctx.font = `900 ${big}px Montserrat, Arial, sans-serif`;
+  ctx.fillStyle = NAVY;
+  ctx.fillText(`${lines[0]} ${lines[1]}`, 76, y + big * 0.82);
+  y += big + (o.story ? 40 : 26);
+  ctx.fillStyle = INK2;
+  const ns = fit(ctx, o.name, W - 160, o.story ? 44 : 36, 20, 700);
+  ctx.font = `700 ${ns}px Montserrat, Arial, sans-serif`;
+  ctx.fillText(o.name, 80, y + ns);
+  const stripH = o.story ? 300 : 240;
+  ctx.fillStyle = "#dcecf5";
+  ctx.fillRect(80, H - 14 - stripH, W - 160, 3);
+  logoStrip(ctx, W, H - 14 - stripH + 3, stripH - 3, theirs, ours, o.story ? 60 : 44);
+  bar(ctx, 0, H - 14, W, 14);
+}
+
+export async function drawCobrand(
+  format: CobrandFormat,
+  opts: { kind: Kind; lang: "en" | "es"; name: string; logoUrl: string | null; photoUrl?: string | null },
+): Promise<HTMLCanvasElement> {
   const { w: W, h: H } = FORMATS[format];
   const c = document.createElement("canvas");
   c.width = W;
   c.height = H;
   const ctx = c.getContext("2d")!;
   if (document.fonts?.load) await Promise.all([document.fonts.load("800 40px Montserrat"), document.fonts.load("600 40px Montserrat")]).catch(() => undefined);
-  const [sky, ours, theirs] = await Promise.all([img("/hub/sky.jpg"), img(opts.lang === "es" ? "/hub/ppl-logo.png" : "/hub/kf-logo-2x.png"), img(opts.logoUrl)]);
+  const [sky, ours, theirs, photo] = await Promise.all([
+    img("/hub/sky.jpg"),
+    img(opts.lang === "es" ? "/hub/ppl-logo.png" : "/hub/kf-logo-2x.png"),
+    opts.logoUrl ? img(opts.logoUrl) : Promise.resolve(null),
+    opts.photoUrl ? img(opts.photoUrl) : Promise.resolve(null),
+  ]);
   const hot = opts.lang === "es" ? CORAL : MAGENTA;
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, W, H);
+
+  if (format === "photoPost" || format === "photoStory") {
+    if (photo) photoLayout(ctx, W, H, photo, theirs, ours, { kind: opts.kind, lang: opts.lang, name: opts.name, hot, story: format === "photoStory" });
+    return c;
+  }
+  if (format === "profile") {
+    // their photo (or, without one, their logo on white) inside our official frame
+    if (photo) cover(ctx, photo, 0, 0, W, H, 0.35);
+    else if (theirs) contain(ctx, theirs, W * 0.22, H * 0.22, W * 0.56, H * 0.56);
+    const frame = await img(frameFor(opts.kind, opts.lang));
+    if (frame) ctx.drawImage(frame, 0, 0, W, H);
+    return c;
+  }
 
   if (format === "post" || format === "story") {
     // a full sunny sky, the big name of the movement, and both logos together on one white strip

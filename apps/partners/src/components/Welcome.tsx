@@ -24,7 +24,7 @@ export default function Welcome({ me, posted, onPost }: { me: Me; posted: boolea
     }
   })();
   const steps = [
-    { done: !!me.logoUrl && !!me.country, label: h.stepLogo, to: "/me/edit" },
+    { done: !!me.logoUrl && !!me.country, label: me.kind === "ambassador" ? h.addPhoto : h.stepLogo, to: "/me/edit" },
     { done: kitSeen, label: h.stepKit, to: "/kit" },
     { done: posted, label: h.stepPost, onClick: onPost },
   ];

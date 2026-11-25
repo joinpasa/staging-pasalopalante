@@ -1,12 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
-import { Check, Copy, Download, ExternalLink, FileText, Loader2, Sparkles } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Check, Copy, Download, ExternalLink, FileText } from "lucide-react";
 import Shell from "@/components/Shell";
 import { useHubCopy } from "@/lib/hubCopy";
-import { isNew, kitFileUrl, useKit, useMe, type KitItem, type Me } from "@/lib/hub";
+import { isNew, kitFileUrl, useKit, useMe, type KitItem } from "@/lib/hub";
+import MadeForYou from "@/components/MadeForYou";
 import { kitAudienceMatches } from "@/lib/kinds";
-import { canvasBlob, drawCobrand, FORMATS, type CobrandFormat } from "@/lib/cobrand";
-import { saveBlob } from "@/lib/certificate";
 
 const SECTION_ORDER = ["start", "social", "profile", "print", "email", "logos", "video", "other"] as const;
 
@@ -123,97 +121,6 @@ function KitCard({ item }: { item: KitItem }) {
           </button>
         )}
       </div>
-    </article>
-  );
-}
-
-/** Four pictures drawn with the member's own logo, ready to download. */
-function MadeForYou({ me, lang }: { me: Me; lang: "en" | "es" }) {
-  const { h } = useHubCopy();
-  if (!me.logoUrl)
-    return (
-      <section className="flex flex-wrap items-center justify-between gap-3 bg-tint-gold px-4 py-4">
-        <span className="flex items-center gap-2.5 text-[15px] font-bold text-navy">
-          <Sparkles className="h-5 w-5 text-orange" aria-hidden="true" />
-          {h.madeForYouNeedsLogo}
-        </span>
-        <Link to="/me/edit" className="btn-orange h-10 text-sm">
-          {h.addLogo}
-        </Link>
-      </section>
-    );
-  return (
-    <section className="flex flex-col gap-3">
-      <h2 className="h-section flex items-center gap-2">
-        <Sparkles className="h-5 w-5 text-orange" aria-hidden="true" />
-        {h.madeForYou}
-      </h2>
-      <div className="-mx-4 flex gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:thin] lg:mx-0 lg:grid lg:grid-cols-4 lg:px-0">
-        {(Object.keys(FORMATS) as CobrandFormat[]).map((f) => (
-          <Cobrand key={`${f}-${lang}-${me.logoUrl}`} format={f} me={me} lang={lang} />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function Cobrand({ format, me, lang }: { format: CobrandFormat; me: Me; lang: "en" | "es" }) {
-  const { h } = useHubCopy();
-  const holder = useRef<HTMLDivElement>(null);
-  const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
-  const [failed, setFailed] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const spec = FORMATS[format];
-
-  useEffect(() => {
-    let alive = true;
-    drawCobrand(format, { kind: me.kind, lang, name: me.name, logoUrl: me.logoUrl! }).then((c) => {
-      if (!alive) return;
-      c.style.width = "100%";
-      c.style.height = "100%";
-      c.style.objectFit = "contain";
-      setCanvas(c);
-    });
-    return () => {
-      alive = false;
-    };
-  }, [format, lang, me.kind, me.name, me.logoUrl]);
-
-  useEffect(() => {
-    if (canvas && holder.current) {
-      holder.current.replaceChildren(canvas);
-    }
-  }, [canvas]);
-
-  async function download() {
-    if (!canvas) return;
-    setBusy(true);
-    try {
-      const blob = await canvasBlob(canvas);
-      saveBlob(blob, `${me.name} - Kindness Forward ${spec.en.toLowerCase()}.png`);
-    } catch {
-      setFailed(true);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  return (
-    <article className="flex w-[220px] shrink-0 flex-col gap-2 lg:w-auto">
-      <div ref={holder} className="flex aspect-square items-center justify-center overflow-hidden bg-tint-sky p-2">
-        <Loader2 className="h-6 w-6 animate-spin text-sky" aria-hidden="true" />
-      </div>
-      <h3 className="m-0 text-[14.5px] font-extrabold leading-snug">{lang === "es" ? spec.es : spec.en}</h3>
-      {failed ? (
-        <Link to="/me/edit" className="text-[12.5px] font-semibold text-rose-ink">
-          {h.changeLogo}
-        </Link>
-      ) : (
-        <button type="button" onClick={download} disabled={!canvas || busy} className="btn-soft h-9 w-fit px-3 text-[13px]">
-          <Download className="h-4 w-4" aria-hidden="true" />
-          {h.download}
-        </button>
-      )}
     </article>
   );
 }

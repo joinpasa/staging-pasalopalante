@@ -180,9 +180,12 @@ export function useSaveProfile() {
   });
 }
 
-/** Puts a logo in the member's own profile folder and hands back its path. */
-export async function uploadLogo(file: File, partnerId: string): Promise<string> {
-  const blob = await squareLogo(file);
+/**
+ * Puts a logo (or, for an ambassador, a profile photo) in the member's own profile folder and hands
+ * back its path. A logo is fitted inside a square; a photo is cropped to fill it.
+ */
+export async function uploadLogo(file: File, partnerId: string, mode: "logo" | "photo" = "logo"): Promise<string> {
+  const blob = await squareLogo(file, mode === "photo");
   const path = `${partnerId}/profile/logo-${Date.now().toString(36)}.png`;
   if (DEMO) return (await loadDemo()).keepFile(path, blob);
   const { error } = await portal.storage.from(MEDIA_BUCKET).upload(path, blob, { contentType: "image/png", upsert: false });
@@ -190,8 +193,8 @@ export async function uploadLogo(file: File, partnerId: string): Promise<string>
   return path;
 }
 
-/** Fits a logo inside 600 x 600 on a transparent background, so it never looks stretched. */
-async function squareLogo(file: File): Promise<Blob> {
+/** Fits a logo inside 600 x 600 on a transparent background (or crops a photo to fill it), never stretched. */
+async function squareLogo(file: File, fill = false): Promise<Blob> {
   if (!/^image\/(png|jpe?g|webp|gif|svg\+xml)$/.test(file.type)) throw new Error("Choose a picture file (PNG, JPG or SVG).");
   if (file.size > 10 * 1024 * 1024) throw new Error("That picture is over 10 MB. Choose a smaller one.");
   const url = URL.createObjectURL(file);
@@ -209,7 +212,7 @@ async function squareLogo(file: File): Promise<Blob> {
     const ctx = canvas.getContext("2d")!;
     const w = img.naturalWidth || size;
     const h = img.naturalHeight || size;
-    const scale = Math.min((size * 0.92) / w, (size * 0.92) / h);
+    const scale = fill ? Math.max(size / w, size / h) : Math.min((size * 0.92) / w, (size * 0.92) / h);
     ctx.drawImage(img, (size - w * scale) / 2, (size - h * scale) / 2, w * scale, h * scale);
     return await new Promise<Blob>((resolve, reject) => canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("We couldn't read that picture."))), "image/png"));
   } finally {

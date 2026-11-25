@@ -47,7 +47,7 @@ export default function ProfileEditPage() {
     setError(null);
     setUploading(true);
     try {
-      const path = await uploadLogo(file, me!.id);
+      const path = await uploadLogo(file, me!.id, me!.kind === "ambassador" ? "photo" : "logo");
       setForm((f) => (f ? { ...f, logoPath: path } : f));
       setLogoPreview(URL.createObjectURL(file));
     } catch (e) {
@@ -93,7 +93,7 @@ export default function ProfileEditPage() {
             <div className="flex gap-3">
               <button type="button" onClick={() => fileRef.current?.click()} className="btn-quiet" disabled={uploading}>
                 {uploading ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Upload className="h-4 w-4" aria-hidden="true" />}
-                {me.logoUrl || logoPreview ? h.changeLogo : h.addLogo}
+                {me.kind === "ambassador" ? (me.logoUrl || logoPreview ? h.changePhoto : h.addPhoto) : me.logoUrl || logoPreview ? h.changeLogo : h.addLogo}
               </button>
               {(me.logoPath || logoPreview) && (
                 <button type="button" onClick={() => (setForm({ ...form, logoPath: "" }), setLogoPreview(null))} className="text-sm font-bold text-ink-faint hover:text-rose-ink">
