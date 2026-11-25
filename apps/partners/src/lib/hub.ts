@@ -741,8 +741,12 @@ export interface CommunityMember {
   founding: boolean;
 }
 
-/** Test accounts made for the team to look around with; never shown to members. */
-export const isTestAccount = (name: string) => /^TEST\b/.test(name) && /\(Kindness Forward team\)/.test(name);
+/**
+ * The team's own accounts, never listed to members as partners: the three test members
+ * ("TEST Organisation (Kindness Forward team)" and so on) and "Kindness Forward team", the
+ * account the team uses to look after the hub (25 Nov 2026).
+ */
+export const isTeamAccount = (name: string) => /Kindness Forward team/.test(name);
 
 /** The sheet's categories, in the hub's own kinds and types. */
 export function entryType(category: string | null): { kind: Kind; orgType: string | null } {
@@ -787,7 +791,7 @@ export function useCommunity() {
   const data = useMemo((): CommunityMember[] | undefined => {
     if (!stats.data || !entries.data) return undefined;
     const norm = (x: string) => x.toLowerCase().replace(/[^a-z0-9]+/g, "");
-    const hub = members.filter((m) => !isTestAccount(m.name));
+    const hub = members.filter((m) => !isTeamAccount(m.name));
     const taken = new Set([...hub.map((m) => norm(m.name)), ...hub.map((m) => m.entryLogo).filter(Boolean)]);
     const fromHub: CommunityMember[] = hub.map((m) => {
       const entry = entries.data!.find((e) => (m.entryLogo && e.logo_url === m.entryLogo) || norm(e.name) === norm(m.name));
