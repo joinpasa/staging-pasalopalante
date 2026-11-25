@@ -1,0 +1,207 @@
+import { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import { ArrowLeft, ArrowRight, Heart, Lightbulb, Package, Plus, UserRound, Users } from "lucide-react";
+import { kindWords, useHubCopy } from "@/lib/hubCopy";
+import { useMe } from "@/lib/hub";
+import { useSession } from "@/lib/session";
+
+/** Ask for the tour from anywhere (the Me page has a "Show me around" button). */
+export const TOUR_EVENT = "pkf-hub-tour";
+export function startTour() {
+  window.dispatchEvent(new Event(TOUR_EVENT));
+}
+
+const doneKey = (id: string) => `pkf-hub-tour-done-${id}`;
+
+type Step = { anchor: string | null; icon: typeof Heart; tint: string; en: [string, string]; es: [string, string] };
+
+/**
+ * The short tour a member sees the first time they come in (25 Nov 2026): six quick cards, each
+ * lighting up the part of the screen it talks about. Shown once per person on this device, and
+ * again any time from the Me page.
+ */
+export default function Tour() {
+  const { lang } = useHubCopy();
+  const { h } = useHubCopy();
+  const { staff, partner } = useSession();
+  const { data: me } = useMe();
+  const who = staff?.id ?? partner?.id ?? null;
+  const [open, setOpen] = useState(false);
+  const [i, setI] = useState(0);
+  const [rect, setRect] = useState<DOMRect | null>(null);
+
+  // first visit: open by itself, once the page has settled
+  useEffect(() => {
+    if (!who || !me) return;
+    let seen = true;
+    try {
+      seen = localStorage.getItem(doneKey(who)) === "1";
+    } catch {
+      /* private mode: don't nag */
+    }
+    if (seen) return;
+    const t = window.setTimeout(() => setOpen(true), 700);
+    return () => window.clearTimeout(t);
+  }, [who, me]);
+
+  useEffect(() => {
+    const onAsk = () => {
+      setI(0);
+      setOpen(true);
+    };
+    window.addEventListener(TOUR_EVENT, onAsk);
+    return () => window.removeEventListener(TOUR_EVENT, onAsk);
+  }, []);
+
+  const finish = useCallback(() => {
+    setOpen(false);
+    setI(0);
+    try {
+      if (who) localStorage.setItem(doneKey(who), "1");
+    } catch {
+      /* fine */
+    }
+  }, [who]);
+
+  const words = kindWords(me?.kind ?? "organisation", lang);
+  const solo = me?.kind === "ambassador";
+  const steps: Step[] = [
+    {
+      anchor: null,
+      icon: Heart,
+      tint: "bg-tint-orange text-orange",
+      en: ["Welcome to your Partners Hub", `${words.welcomeLine} Here's a quick look around.`],
+      es: ["Bienvenidos a tu Partners Hub", `${words.welcomeLine} Te mostramos todo en un momento.`],
+    },
+    {
+      anchor: "create",
+      icon: Plus,
+      tint: "bg-orange text-white",
+      en: ["Share your kindness", "Tap + to post a moment, log an act toward your pledge, or send us a story for our socials."],
+      es: ["Comparte tu bondad", "Toca + para publicar un momento, registrar un acto de tu compromiso o enviarnos una historia para nuestras redes."],
+    },
+    {
+      anchor: "kit",
+      icon: Package,
+      tint: "bg-tint-sky text-sky",
+      en: ["Your kit", solo ? "Ready posts and frames. Add your photo and they're made for you." : "Ready posts, frames and logos. Add your logo or a photo and they're made for you."],
+      es: ["Tu kit", solo ? "Publicaciones y marcos listos. Añade tu foto y se hacen para ti." : "Publicaciones, marcos y logos listos. Añade tu logo o una foto y se hacen para ti."],
+    },
+    {
+      anchor: "people",
+      icon: Users,
+      tint: "bg-tint-pink text-magenta",
+      en: ["Community", "Everyone passing kindness forward with you, and the map of new pledges coming in."],
+      es: ["Comunidad", "Todos los que pasan la bondad pa'lante contigo, y el mapa con los compromisos que van llegando."],
+    },
+    {
+      anchor: "ideas",
+      icon: Lightbulb,
+      tint: "bg-tint-gold text-[#8a6100]",
+      en: ["Ideas", "A challenge each week, simple ideas to try, and the days worth planning for."],
+      es: ["Ideas", "Un reto cada semana, ideas sencillas y los días que vale la pena planificar."],
+    },
+    {
+      anchor: "me",
+      icon: UserRound,
+      tint: "bg-tint-sky text-sky-deep",
+      en: ["Your profile", "Your pledge, the acts you've logged, your badges and your certificate."],
+      es: ["Tu perfil", "Tu compromiso, los actos que registras, tus insignias y tu certificado."],
+    },
+  ];
+  const step = steps[Math.min(i, steps.length - 1)];
+  const last = i >= steps.length - 1;
+
+  // light up the part of the screen this card is about
+  useLayoutEffect(() => {
+    if (!open || !step.anchor) return setRect(null);
+    const find = () => {
+      const el = [...document.querySelectorAll<HTMLElement>(`[data-tour="${step.anchor}"]`)].find((e) => {
+        const r = e.getBoundingClientRect();
+        return r.width > 0 && r.height > 0;
+      });
+      setRect(el ? el.getBoundingClientRect() : null);
+    };
+    find();
+    window.addEventListener("resize", find);
+    window.addEventListener("scroll", find, true);
+    return () => {
+      window.removeEventListener("resize", find);
+      window.removeEventListener("scroll", find, true);
+    };
+  }, [open, step.anchor]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") finish();
+      if (e.key === "ArrowRight") setI((x) => Math.min(x + 1, steps.length - 1));
+      if (e.key === "ArrowLeft") setI((x) => Math.max(x - 1, 0));
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open, finish, steps.length]);
+
+  if (!open || !me) return null;
+  const [title, body] = lang === "es" ? step.es : step.en;
+  const pad = 6;
+  // the card sits away from what it points at
+  const lower = rect ? rect.top + rect.height / 2 < window.innerHeight / 2 : false;
+  const wideScreen = window.innerWidth >= 1024;
+
+  return (
+    <div className="fixed inset-0 z-[60]" role="dialog" aria-modal="true" aria-label={title}>
+      {rect ? (
+        <div
+          className="pointer-events-none fixed"
+          style={{
+            left: rect.left - pad,
+            top: rect.top - pad,
+            width: rect.width + pad * 2,
+            height: rect.height + pad * 2,
+            boxShadow: "0 0 0 9999px rgba(14,35,75,0.55)",
+            outline: "3px solid #fdb813",
+          }}
+        />
+      ) : (
+        <div className="fixed inset-0 bg-navy/55" />
+      )}
+      <div
+        className={`fixed inset-x-4 mx-auto flex max-w-[400px] flex-col bg-white shadow-[0_24px_64px_rgba(14,35,75,0.35)] ${
+          !rect ? "top-1/2 -translate-y-1/2" : lower ? "bottom-24" : "top-20"
+        } ${rect && wideScreen ? "lg:start-[300px] lg:end-auto lg:w-[400px]" : ""}`}
+        style={rect && wideScreen ? { top: Math.min(Math.max(rect.top - 40, 24), window.innerHeight - 320), bottom: "auto" } : undefined}
+      >
+        <div className="h-1.5 bg-bar" aria-hidden="true" />
+        <div className="flex flex-col gap-3 px-6 pb-5 pt-6">
+          <span className={`flex h-12 w-12 items-center justify-center ${step.tint}`}>
+            <step.icon className="h-6 w-6" aria-hidden="true" />
+          </span>
+          <h2 className="m-0 text-[21px] font-extrabold leading-tight">{title}</h2>
+          <p className="m-0 text-[15px] font-medium leading-relaxed text-ink2">{body}</p>
+          <div className="mt-2 flex items-center justify-between gap-3">
+            <span className="flex gap-1.5" aria-hidden="true">
+              {steps.map((_, n) => (
+                <i key={n} className={`h-2 transition-all ${n === i ? "w-5 bg-orange" : "w-2 bg-hair"}`} />
+              ))}
+            </span>
+            <span className="flex items-center gap-1">
+              {i > 0 ? (
+                <button type="button" onClick={() => setI(i - 1)} className="btn-quiet h-10 px-2" aria-label={h.tourBack}>
+                  <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+                </button>
+              ) : (
+                <button type="button" onClick={finish} className="btn-quiet h-10 px-3 text-sm">
+                  {h.tourSkip}
+                </button>
+              )}
+              <button type="button" onClick={() => (last ? finish() : setI(i + 1))} className="btn-orange h-10 px-4 text-sm" autoFocus>
+                {last ? h.tourDone : h.tourNext}
+                {!last && <ArrowRight className="h-4 w-4" aria-hidden="true" />}
+              </button>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

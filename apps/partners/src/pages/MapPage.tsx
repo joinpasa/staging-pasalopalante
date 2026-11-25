@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { MapPin } from "lucide-react";
 import Shell from "@/components/Shell";
 import WorldMap, { type MapMode, type MapPick } from "@/components/WorldMap";
+import { CommunityTabs } from "@/pages/PeoplePage";
 import { useHubCopy } from "@/lib/hubCopy";
 import { timeAgo, useMe, useRecentPledges, useStats, type RecentPledge } from "@/lib/hub";
 import { KINDS, kindLabel, kindOf, KIND_COLOR, orgTypeLabel } from "@/lib/kinds";
@@ -72,6 +73,8 @@ export default function MapPage() {
             ))}
           </div>
         </div>
+
+        <CommunityTabs />
 
         {/* the live line */}
         <LiveLine item={live} index={tick} />

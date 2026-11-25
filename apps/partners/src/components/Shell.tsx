@@ -1,14 +1,17 @@
 import { useState, type ReactNode } from "react";
-import { Link, NavLink } from "react-router-dom";
-import { Globe, Home, Map as MapIcon, Package, Plus, UserRound } from "lucide-react";
+import { Link, NavLink, useLocation } from "react-router-dom";
+import { Globe, Home, Lightbulb, Map as MapIcon, Newspaper, Package, Plus, UserRound, Users } from "lucide-react";
 import { useHubCopy } from "@/lib/hubCopy";
 import { useMe } from "@/lib/hub";
 import Avatar from "./Avatar";
 import CreateSheet from "./CreateSheet";
+import Tour from "./Tour";
 
 /**
  * The Partners Hub frame (25 Nov 2026), laid out the way social apps are: a feed in the middle,
  * a left menu on a computer, a bottom tab bar with a big + on a phone. Light and square-edged.
+ * On a computer every tab is in the menu. On a phone the bar holds Home, Community, +, Ideas and
+ * Kit; the map sits inside Community, and News and Me are at the top, the way social apps do it.
  */
 export default function Shell({ children, aside, wide = false }: { children: ReactNode; aside?: ReactNode; wide?: boolean }) {
   const { h, toggle } = useHubCopy();
@@ -17,9 +20,18 @@ export default function Shell({ children, aside, wide = false }: { children: Rea
 
   const tabs = [
     { to: "/", label: h.home, icon: Home, end: true },
+    { to: "/people", label: h.community, icon: Users, end: false },
     { to: "/map", label: h.map, icon: MapIcon, end: false },
+    { to: "/ideas", label: h.ideas, icon: Lightbulb, end: false },
+    { to: "/updates", label: h.news, icon: Newspaper, end: false },
     { to: "/kit", label: h.kit, icon: Package, end: false },
     { to: "/me", label: h.me, icon: UserRound, end: false },
+  ];
+  const phoneTabs = [
+    { to: "/", label: h.home, icon: Home, end: true },
+    { to: "/people", label: h.community, icon: Users, end: false, also: ["/map"] },
+    { to: "/ideas", label: h.ideas, icon: Lightbulb, end: false },
+    { to: "/kit", label: h.kit, icon: Package, end: false },
   ];
 
   const railLink = ({ isActive }: { isActive: boolean }) =>
@@ -36,12 +48,20 @@ export default function Shell({ children, aside, wide = false }: { children: Rea
         <Link to="/" className="flex items-center no-underline" aria-label={h.home}>
           <img src="/kf-logo.webp" alt="Kindness Forward" className="h-8 w-auto" />
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
+          <NavLink
+            to="/updates"
+            className={({ isActive }) => `flex h-9 w-9 items-center justify-center ${isActive ? "bg-tint-sky text-sky-deep" : "text-ink2"}`}
+            aria-label={h.news}
+            data-tour="news"
+          >
+            <Newspaper className="h-5 w-5" aria-hidden="true" />
+          </NavLink>
           <button type="button" onClick={toggle} className="flex h-9 items-center gap-1.5 px-2 text-[13px] font-bold text-ink2" aria-label={h.language}>
             <Globe className="h-4 w-4 text-sky" aria-hidden="true" />
             {h.language === "Español" ? "ES" : "EN"}
           </button>
-          <Link to="/me" aria-label={h.me} className="no-underline">
+          <Link to="/me" aria-label={h.me} className="no-underline" data-tour="me">
             <Avatar name={me?.name ?? ""} url={me?.logoUrl} kind={me?.kind ?? "organisation"} size={34} />
           </Link>
         </div>
@@ -56,13 +76,13 @@ export default function Shell({ children, aside, wide = false }: { children: Rea
           </Link>
           <nav className="flex flex-col gap-1">
             {tabs.map((t) => (
-              <NavLink key={t.to} to={t.to} end={t.end} className={railLink}>
+              <NavLink key={t.to} to={t.to} end={t.end} className={railLink} data-tour={t.to === "/" ? "home" : t.to.slice(1)}>
                 <t.icon className="h-[22px] w-[22px]" aria-hidden="true" />
                 {t.label}
               </NavLink>
             ))}
           </nav>
-          <button type="button" onClick={() => setCreating(true)} className="btn-orange mt-4 h-12 w-full text-base">
+          <button type="button" onClick={() => setCreating(true)} className="btn-orange mt-4 h-12 w-full text-base" data-tour="create">
             <Plus className="h-5 w-5" aria-hidden="true" />
             {h.create}
           </button>
@@ -94,36 +114,40 @@ export default function Shell({ children, aside, wide = false }: { children: Rea
         className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t-[1.5px] border-hair bg-white/95 backdrop-blur lg:hidden"
         style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       >
-        {tabs.slice(0, 2).map((t) => (
+        {phoneTabs.slice(0, 2).map((t) => (
           <TabLink key={t.to} {...t} />
         ))}
-        <button type="button" onClick={() => setCreating(true)} className="flex flex-col items-center justify-center gap-0.5 py-1.5" aria-label={h.create}>
+        <button type="button" onClick={() => setCreating(true)} className="flex flex-col items-center justify-center gap-0.5 py-1.5" aria-label={h.create} data-tour="create">
           <span className="flex h-11 w-11 items-center justify-center bg-orange text-white">
             <Plus className="h-6 w-6" aria-hidden="true" />
           </span>
         </button>
-        {tabs.slice(2).map((t) => (
+        {phoneTabs.slice(2).map((t) => (
           <TabLink key={t.to} {...t} />
         ))}
       </nav>
 
       <CreateSheet open={creating} onClose={() => setCreating(false)} />
+      <Tour />
     </div>
   );
 }
 
-function TabLink({ to, label, icon: Icon, end }: { to: string; label: string; icon: typeof Home; end: boolean }) {
+function TabLink({ to, label, icon: Icon, end, also = [] }: { to: string; label: string; icon: typeof Home; end: boolean; also?: string[] }) {
+  const { pathname } = useLocation();
+  const extra = also.some((p) => pathname.startsWith(p));
   return (
     <NavLink
       to={to}
       end={end}
+      data-tour={to === "/" ? "home" : to.slice(1)}
       className={({ isActive }) =>
-        `flex flex-col items-center justify-center gap-1 py-2 text-[11px] font-bold no-underline ${isActive ? "text-navy" : "text-ink-faint"}`
+        `flex flex-col items-center justify-center gap-1 py-2 text-[11px] font-bold no-underline ${isActive || extra ? "text-navy" : "text-ink-faint"}`
       }
     >
       {({ isActive }) => (
         <>
-          <Icon className={`h-[22px] w-[22px] ${isActive ? "text-sky" : ""}`} aria-hidden="true" />
+          <Icon className={`h-[22px] w-[22px] ${isActive || extra ? "text-sky" : ""}`} aria-hidden="true" />
           {label}
         </>
       )}

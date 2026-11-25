@@ -1,9 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
-import { Check, ChevronDown, Copy, Download, ExternalLink, FileText, FileArchive, Package } from "lucide-react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { Check, ChevronDown, Copy, Download, ExternalLink, FileText, FileArchive, ImagePlus, Move, Package } from "lucide-react";
 import Shell from "@/components/Shell";
-import MadeForYou from "@/components/MadeForYou";
+import MadeForYou, { LivePicture } from "@/components/MadeForYou";
+import PhotoStudio, { type Adjustments } from "@/components/PhotoStudio";
 import { useHubCopy } from "@/lib/hubCopy";
-import { isNew, kitFileUrl, useKit, useMe, type KitItem } from "@/lib/hub";
+import { isNew, kitFileUrl, useKit, useMe, type KitItem, type Me } from "@/lib/hub";
+import { NO_ADJUST, PHOTO_FORMATS, PHOTO_FORMATS_SOLO, type CobrandFormat, type PhotoAdjust } from "@/lib/cobrand";
 import { kitAudienceMatches } from "@/lib/kinds";
 import type { Lang } from "@/lib/i18n";
 
@@ -24,6 +26,27 @@ const SHELVES: { id: ShelfId; sections: KitItem["section"][]; en: [string, strin
   { id: "meet", sections: ["other", "video"], en: ["Meetings", "Backgrounds and slides for your calls and team meetings."], es: ["Reuniones", "Fondos y diapositivas para tus llamadas y reuniones."], first: 4 },
   { id: "logos", sections: ["logos"], en: ["Official logos", "Use them exactly as they are."], es: ["Logos oficiales", "Úsalos tal cual."], first: 8 },
 ];
+
+/** Kit files that are photo-ready templates: they open in the picture editor with the member's photo. */
+function studioFormat(k: KitItem): CobrandFormat | null {
+  const t = k.title.toLowerCase();
+  // the company kit's announcement is its own design, so only the partner kit's opens in the editor
+  if (k.section === "social" && k.audience === "organisation" && t.startsWith("announcement post")) return "announcePost";
+  if (k.section === "social" && k.audience === "organisation" && t.startsWith("announcement story")) return "announceStory";
+  if (k.section === "social" && t.startsWith("photo frame for a post")) return "framePost";
+  if (k.section === "social" && t.startsWith("photo frame for a story")) return "frameStory";
+  if (k.section === "profile" && /profile (picture )?(frame|border)/.test(t)) return "profile";
+  return null;
+}
+
+/** The member's photo and how they placed it, shared by Made for you, the kit cards and the editor. */
+interface PhotoKit {
+  me: Me;
+  photoUrl: string | null;
+  adjust: Adjustments;
+  edit: (format: CobrandFormat, lang: "en" | "es") => void;
+}
+const PhotoCtx = createContext<PhotoKit | null>(null);
 
 const isZip = (k: KitItem) => !!k.mime?.includes("zip") || /\.zip$/i.test(k.file_path ?? "");
 const isGuide = (k: KitItem) => k.section === "start" && !isZip(k) && /^start here|^empieza aqu/i.test(`${k.title} ${k.title_es ?? ""}`);
@@ -77,8 +100,27 @@ export default function KitPage() {
   const firstLoad = Math.min(...(items ?? []).map((k) => new Date(k.added_at).getTime()), Date.now());
   const fresh = (k: KitItem) => new Date(k.added_at).getTime() > firstLoad + 2 * 86_400_000 && isNew(k.added_at, 14);
 
+  // the photo stays in this browser tab; it is never uploaded
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [adjust, setAdjust] = useState<Adjustments>({});
+  const [studio, setStudio] = useState<{ format: CobrandFormat; lang: "en" | "es" } | null>(null);
+  useEffect(
+    () => () => {
+      if (photoUrl) URL.revokeObjectURL(photoUrl);
+    },
+    [photoUrl],
+  );
+  const onPhoto = useCallback((file: File) => {
+    setPhotoUrl(URL.createObjectURL(file));
+    setAdjust({});
+  }, []);
+  const onAdjust = useCallback((f: CobrandFormat, a: PhotoAdjust) => setAdjust((x) => ({ ...x, [f]: a })), []);
+  const edit = useCallback((format: CobrandFormat, l: "en" | "es") => setStudio({ format, lang: l }), []);
+  const photoKit = useMemo(() => (me ? { me, photoUrl, adjust, edit } : null), [me, photoUrl, adjust, edit]);
+
   return (
     <Shell wide>
+      <PhotoCtx.Provider value={photoKit}>
       <div className="flex flex-col gap-8">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
@@ -102,7 +144,7 @@ export default function KitPage() {
 
         {(zip || guide) && <StartBanner zip={zip} guide={guide} />}
 
-        {me && <MadeForYou me={me} lang={pictureLang} />}
+        {me && <MadeForYou me={me} lang={pictureLang} photoUrl={photoUrl} onPhoto={onPhoto} adjust={adjust} onEdit={(f) => edit(f, pictureLang)} />}
 
         {isLoading && <div className="h-56 animate-pulse bg-tint-sky/60" />}
         {!isLoading && !mine.length && <p className="m-0 bg-tint-sky px-4 py-6 text-center font-semibold text-ink2">{h.kitEmpty}</p>}
@@ -111,6 +153,21 @@ export default function KitPage() {
           <Shelf key={s.id} id={s.id} title={lang === "es" ? s.es[0] : s.en[0]} blurb={lang === "es" ? s.es[1] : s.en[1]} items={s.items} first={s.first} showLang={show === "both"} fresh={fresh} />
         ))}
       </div>
+      {me && studio && (
+        <PhotoStudio
+          open
+          onClose={() => setStudio(null)}
+          me={me}
+          lang={studio.lang}
+          formats={me.kind === "ambassador" ? PHOTO_FORMATS_SOLO : PHOTO_FORMATS}
+          start={studio.format}
+          photoUrl={photoUrl}
+          onPhoto={onPhoto}
+          adjust={adjust}
+          onAdjust={onAdjust}
+        />
+      )}
+      </PhotoCtx.Provider>
     </Shell>
   );
 }
@@ -213,6 +270,10 @@ function KitCard({ item, compact, showLang, isFresh }: { item: KitItem; compact:
   const external = !item.file_path && !!item.url && /^https?:\/\//.test(item.url);
   const meta = [typeLabel(item), sizeLabel(item.size_bytes)].filter(Boolean).join(" · ");
   const textOnly = !!item.mime?.startsWith("text/");
+  const photoKit = useContext(PhotoCtx);
+  const format = photoKit ? studioFormat(item) : null;
+  const itemLang: "en" | "es" = item.lang === "es" ? "es" : item.lang === "en" ? "en" : lang;
+  const hasOwnPhoto = !!photoKit && !!(photoKit.photoUrl ?? (photoKit.me.kind === "ambassador" ? photoKit.me.logoUrl : null));
 
   async function copy() {
     if (!caption) return;
@@ -227,6 +288,22 @@ function KitCard({ item, compact, showLang, isFresh }: { item: KitItem; compact:
 
   return (
     <article className="flex h-full min-w-0 flex-col gap-2.5">
+      {format && photoKit ? (
+        <button
+          type="button"
+          onClick={() => photoKit.edit(format, itemLang)}
+          className="group relative flex aspect-[4/3] items-center justify-center overflow-hidden bg-tint-sky p-4"
+          aria-label={`${hasOwnPhoto ? h.adjust : h.editPhoto}: ${title}`}
+        >
+          <span className="h-full w-full drop-shadow-[0_6px_14px_rgba(14,35,75,0.18)] transition group-hover:scale-[1.03]">
+            <LivePicture format={format} me={photoKit.me} lang={itemLang} photoUrl={photoKit.photoUrl} adjust={photoKit.adjust} />
+          </span>
+          <span className="absolute start-2 top-2 flex gap-1">
+            {isFresh && <span className="chip bg-orange text-white">{h.newBadge}</span>}
+            {showLang && item.lang !== "both" && <span className="chip bg-white text-navy">{item.lang.toUpperCase()}</span>}
+          </span>
+        </button>
+      ) : (
       <a
         href={external ? href ?? undefined : kitFileUrl(item.file_path) ?? href ?? undefined}
         target="_blank"
@@ -250,12 +327,19 @@ function KitCard({ item, compact, showLang, isFresh }: { item: KitItem; compact:
           {showLang && item.lang !== "both" && <span className="chip bg-white text-navy">{item.lang.toUpperCase()}</span>}
         </span>
       </a>
+      )}
       <div className="min-w-0">
         <h3 className="m-0 text-[15px] font-extrabold leading-snug">{title}</h3>
         {desc && !compact && <p className="m-0 mt-0.5 line-clamp-2 text-[13px] font-medium leading-snug text-ink-muted">{desc}</p>}
         {meta && <span className="mt-1 block text-[11.5px] font-bold text-ink-faint">{meta}</span>}
       </div>
       <div className="mt-auto flex flex-wrap gap-2">
+        {format && photoKit && (
+          <button type="button" onClick={() => photoKit.edit(format, itemLang)} className="btn-orange h-9 px-3 text-[13px]">
+            {hasOwnPhoto ? <Move className="h-4 w-4" aria-hidden="true" /> : <ImagePlus className="h-4 w-4" aria-hidden="true" />}
+            {hasOwnPhoto ? h.adjust : h.editPhoto}
+          </button>
+        )}
         {href && (
           <a href={href} target="_blank" rel="noopener noreferrer" download={!external ? "" : undefined} className="btn-soft h-9 px-3 text-[13px]">
             {external ? <ExternalLink className="h-4 w-4" aria-hidden="true" /> : <Download className="h-4 w-4" aria-hidden="true" />}

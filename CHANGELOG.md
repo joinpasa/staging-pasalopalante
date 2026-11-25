@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-11-25 — sim1
 
+- **Partners Hub: a photo editor, a fuller hub and a first-time tour.** Members can now put their own photo into the kit's announcement post and story, the photo frames and the profile frame, then drag it into place and zoom, right on the Kit page (the photo never leaves their device). A logo on a coloured square now fills the profile frame's circle instead of sitting small inside it. Two new tabs: Community, with every member and listed partner (the same list as the website's partners page) and the map one tap away, and Ideas, with a weekly kindness challenge, the days worth planning for and simple ideas for each kind of member that log as an act in one tap. News now has its own place in the menu. New members get a six-step tour the first time they come in, and anyone can replay it from the Me menu.
 - **The partner portal is now the Partners Hub, at the same address (partners.passkindnessforward.com).** It works like a social app for our members, in English and Spanish, in the new Kindness Forward look:
   - **Three kinds of member:** organisations, companies and ambassadors. Each has its own label and colour, and sees its own kit.
   - **Home is a feed.** It opens with the weekly update from the team. Members post photos, videos and words, give hearts and comment. A post we use on our socials shows "Shared by Kindness Forward".

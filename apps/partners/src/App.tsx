@@ -17,6 +17,8 @@ import UpdatesPage from "@/pages/UpdatesPage";
 import BulkLogPage from "@/pages/BulkLogPage";
 import SuccessPage from "@/pages/SuccessPage";
 import InvitePage from "@/pages/InvitePage";
+import PeoplePage from "@/pages/PeoplePage";
+import IdeasPage from "@/pages/IdeasPage";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: true, staleTime: 15_000 } },
@@ -46,7 +48,8 @@ function GuestOnly({ children }: { children: ReactNode }) {
 
 /**
  * The Partners Hub (25 Nov 2026), grown out of the partner portal at the same address.
- * Tabs: Home (the feed), Map, Kit, Me; the + makes a post, logs an act or sends us a story.
+ * Tabs: Home (the feed), Community (members and the map), Ideas, News, Kit, Me; the + makes a
+ * post, logs an act or sends us a story. A short tour opens the first time someone comes in.
  * The old addresses (/log, /edit/:id, /bulk, /invite, /done, /join/:token) all still work.
  */
 const App = () => (
@@ -62,6 +65,8 @@ const App = () => (
               <Route path="/link/:token" element={<LinkPage />} />
               <Route path="/" element={<RequireStaff><HomePage /></RequireStaff>} />
               <Route path="/map" element={<RequireStaff><MapPage /></RequireStaff>} />
+              <Route path="/people" element={<RequireStaff><PeoplePage /></RequireStaff>} />
+              <Route path="/ideas" element={<RequireStaff><IdeasPage /></RequireStaff>} />
               <Route path="/kit" element={<RequireStaff><KitPage /></RequireStaff>} />
               <Route path="/me" element={<RequireStaff><MePage /></RequireStaff>} />
               <Route path="/me/edit" element={<RequireStaff><ProfileEditPage /></RequireStaff>} />

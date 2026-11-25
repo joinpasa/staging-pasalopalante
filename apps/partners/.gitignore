@@ -1,3 +1,5 @@
 
 # a copy of the live kit list for the local preview
 src/demo-assets/kit-live.json
+# a copy of the live partners list for the local preview (the same list as the website's partners page)
+src/demo-assets/entries-live.json

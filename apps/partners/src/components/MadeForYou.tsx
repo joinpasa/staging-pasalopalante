@@ -1,33 +1,41 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { Download, ImagePlus, Loader2, Sparkles, Upload } from "lucide-react";
+import { Download, ImagePlus, Loader2, Move, Sparkles, Upload } from "lucide-react";
 import { useHubCopy } from "@/lib/hubCopy";
 import { uploadLogo, useSaveProfile, type Me } from "@/lib/hub";
 import { canvasBlob, drawCobrand, FORMATS, LOGO_FORMATS, PHOTO_FORMATS, PHOTO_FORMATS_SOLO, type CobrandFormat } from "@/lib/cobrand";
 import { saveBlob } from "@/lib/certificate";
+import { pictureSource, type Adjustments } from "./PhotoStudio";
 
 /**
  * "Made for you" on the Kit page: the member adds their logo (saved to their profile) and/or a
  * photo (kept on the device only), and their kit is drawn for them. With a logo: post, story,
- * badge, LinkedIn banner and a framed profile picture. With a photo: a post, a story and a framed
- * profile picture. An ambassador's profile photo stands in for a logo.
+ * badge, LinkedIn banner and a framed profile picture. With a photo: the announcement post and
+ * story, the photo frames and a framed profile picture, each one opening in the editor to move
+ * and zoom the photo. An ambassador's profile photo stands in for a logo.
  */
-export default function MadeForYou({ me, lang }: { me: Me; lang: "en" | "es" }) {
+export default function MadeForYou({
+  me,
+  lang,
+  photoUrl,
+  onPhoto,
+  adjust,
+  onEdit,
+}: {
+  me: Me;
+  lang: "en" | "es";
+  photoUrl: string | null;
+  onPhoto: (file: File) => void;
+  adjust: Adjustments;
+  onEdit: (format: CobrandFormat) => void;
+}) {
   const { h } = useHubCopy();
   const save = useSaveProfile();
   const logoRef = useRef<HTMLInputElement>(null);
   const photoRef = useRef<HTMLInputElement>(null);
-  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const solo = me.kind === "ambassador";
-
-  useEffect(
-    () => () => {
-      if (photoUrl) URL.revokeObjectURL(photoUrl);
-    },
-    [photoUrl],
-  );
 
   async function addLogo(file: File) {
     setError(null);
@@ -54,14 +62,9 @@ export default function MadeForYou({ me, lang }: { me: Me; lang: "en" | "es" }) 
     }
   }
 
-  function addPhoto(file: File) {
-    setError(null);
-    if (!file.type.startsWith("image/")) return setError(h.somethingWrong);
-    setPhotoUrl(URL.createObjectURL(file));
-  }
-
   const logoLabel = solo ? (me.logoUrl ? h.changePhoto : h.addPhoto) : me.logoUrl ? h.changeLogo : h.addLogo;
-  const photoForPictures = photoUrl ?? (solo ? me.logoUrl : null);
+  const hasPhoto = !!(photoUrl ?? (solo ? me.logoUrl : null));
+  const photoFormats = solo ? PHOTO_FORMATS_SOLO : PHOTO_FORMATS;
 
   return (
     <section className="flex flex-col gap-4">
@@ -104,23 +107,31 @@ export default function MadeForYou({ me, lang }: { me: Me; lang: "en" | "es" }) 
           onChange={(e) => {
             const f = e.target.files?.[0];
             e.target.value = "";
-            if (f) addPhoto(f);
+            if (f && f.type.startsWith("image/")) onPhoto(f);
+            else if (f) setError(h.somethingWrong);
           }}
         />
       </div>
       {error && <p className="m-0 bg-rose-soft px-3 py-2 text-sm font-semibold text-rose-ink">{error}</p>}
 
-      {photoForPictures && (
-        <Row title={h.withYourPhoto} note={photoUrl ? h.photoStaysHere : undefined} count={(solo ? PHOTO_FORMATS_SOLO : PHOTO_FORMATS).length}>
-          {(solo ? PHOTO_FORMATS_SOLO : PHOTO_FORMATS).map((f) => (
-            <Picture key={`${f}-${lang}-${photoForPictures}`} format={f} me={me} lang={lang} photoUrl={photoForPictures} logoUrl={solo ? null : me.logoUrl} />
+      {hasPhoto && (
+        <Row title={h.withYourPhoto} note={photoUrl ? h.photoStaysHere : undefined} count={photoFormats.length}>
+          {photoFormats.map((f) => (
+            <Picture key={f} format={f} me={me} lang={lang} photoUrl={photoUrl} adjust={adjust} onEdit={() => onEdit(f)} />
           ))}
         </Row>
       )}
-      {me.logoUrl && (
-        <Row title={h.withYourLogo} count={solo ? LOGO_FORMATS.length : LOGO_FORMATS.length + 1}>
-          {(solo ? LOGO_FORMATS : [...LOGO_FORMATS, "profile" as CobrandFormat]).map((f) => (
-            <Picture key={`${f}-${lang}-${me.logoUrl}`} format={f} me={me} lang={lang} photoUrl={null} logoUrl={me.logoUrl} />
+      {me.logoUrl && !solo && (
+        <Row title={h.withYourLogo} count={LOGO_FORMATS.length + (hasPhoto ? 0 : 1)}>
+          {(hasPhoto ? LOGO_FORMATS : [...LOGO_FORMATS, "profile" as CobrandFormat]).map((f) => (
+            <Picture key={f} format={f} me={me} lang={lang} photoUrl={null} adjust={adjust} onEdit={f === "profile" ? () => onEdit(f) : undefined} />
+          ))}
+        </Row>
+      )}
+      {me.logoUrl && solo && (
+        <Row title={h.withYourLogo} count={LOGO_FORMATS.length}>
+          {LOGO_FORMATS.map((f) => (
+            <Picture key={f} format={f} me={me} lang={lang} photoUrl={null} adjust={adjust} />
           ))}
         </Row>
       )}
@@ -157,38 +168,82 @@ function Row({ title, note, count, children }: { title: string; note?: string; c
   );
 }
 
-function Picture({ format, me, lang, photoUrl, logoUrl }: { format: CobrandFormat; me: Me; lang: "en" | "es"; photoUrl: string | null; logoUrl: string | null }) {
-  const { h } = useHubCopy();
+/** A live preview of one picture, drawn in the browser. Used here and on kit cards. */
+export function LivePicture({
+  format,
+  me,
+  lang,
+  photoUrl,
+  adjust,
+  logoOnly = false,
+  onCanvas,
+}: {
+  format: CobrandFormat;
+  me: Me;
+  lang: "en" | "es";
+  photoUrl: string | null;
+  adjust: Adjustments;
+  logoOnly?: boolean;
+  onCanvas?: (c: HTMLCanvasElement) => void;
+}) {
   const holder = useRef<HTMLDivElement>(null);
-  const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
-  const [failed, setFailed] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const spec = FORMATS[format];
+  const [ready, setReady] = useState(false);
+  const src = pictureSource(format, me, photoUrl);
+  const opts = logoOnly ? { kind: me.kind, lang, name: me.name, logoUrl: me.logoUrl, photoUrl: null } : src.opts(lang, adjust[format]);
+  const a = adjust[format];
+  const key = `${format}|${lang}|${opts.photoUrl}|${opts.logoUrl}|${me.kind}|${me.name}|${a?.zoom}|${a?.x}|${a?.y}`;
 
   useEffect(() => {
     let alive = true;
-    drawCobrand(format, { kind: me.kind, lang, name: me.name, logoUrl, photoUrl }).then((c) => {
-      if (!alive) return;
-      c.style.width = "100%";
-      c.style.height = "100%";
-      c.style.objectFit = "contain";
-      setCanvas(c);
+    drawCobrand(format, opts).then((c) => {
+      if (!alive || !holder.current) return;
+      c.className = "block max-h-full max-w-full object-contain";
+      holder.current.replaceChildren(c);
+      setReady(true);
+      onCanvas?.(c);
     });
     return () => {
       alive = false;
     };
-  }, [format, lang, me.kind, me.name, logoUrl, photoUrl]);
+    // the key covers everything the drawing depends on
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
 
-  useEffect(() => {
-    if (canvas && holder.current) holder.current.replaceChildren(canvas);
-  }, [canvas]);
+  return (
+    <div className="relative flex h-full w-full items-center justify-center">
+      <div ref={holder} className="flex h-full w-full items-center justify-center" />
+      {!ready && <Loader2 className="absolute h-6 w-6 animate-spin text-sky" aria-hidden="true" />}
+    </div>
+  );
+}
+
+function Picture({
+  format,
+  me,
+  lang,
+  photoUrl,
+  adjust,
+  onEdit,
+}: {
+  format: CobrandFormat;
+  me: Me;
+  lang: "en" | "es";
+  photoUrl: string | null;
+  adjust: Adjustments;
+  onEdit?: () => void;
+}) {
+  const { h } = useHubCopy();
+  const canvas = useRef<HTMLCanvasElement | null>(null);
+  const [failed, setFailed] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const spec = FORMATS[format];
+  const logoOnly = photoUrl === null && !onEdit;
 
   async function download() {
-    if (!canvas) return;
+    if (!canvas.current) return;
     setBusy(true);
     try {
-      const blob = await canvasBlob(canvas);
-      saveBlob(blob, `${me.name} - Kindness Forward ${spec.en.toLowerCase()}.png`);
+      saveBlob(await canvasBlob(canvas.current), `${me.name} - Kindness Forward ${spec.en.toLowerCase()}.png`);
     } catch {
       setFailed(true);
     } finally {
@@ -196,21 +251,40 @@ function Picture({ format, me, lang, photoUrl, logoUrl }: { format: CobrandForma
     }
   }
 
+  const preview = (
+    <LivePicture format={format} me={me} lang={lang} photoUrl={photoUrl} adjust={adjust} logoOnly={logoOnly} onCanvas={(c) => (canvas.current = c)} />
+  );
+
   return (
     <article className="flex w-[44%] shrink-0 snap-start flex-col gap-2 sm:w-[200px] lg:w-auto">
-      <div ref={holder} className="flex aspect-square items-center justify-center overflow-hidden bg-tint-sky p-2">
-        <Loader2 className="h-6 w-6 animate-spin text-sky" aria-hidden="true" />
-      </div>
+      {onEdit ? (
+        <button type="button" onClick={onEdit} className="group relative flex aspect-square items-center justify-center overflow-hidden bg-tint-sky p-2" aria-label={`${h.adjust}: ${lang === "es" ? spec.es : spec.en}`}>
+          {preview}
+          <span className="absolute bottom-2 end-2 flex h-8 w-8 items-center justify-center bg-white/95 text-sky-deep shadow transition group-hover:bg-sky group-hover:text-white">
+            <Move className="h-4 w-4" aria-hidden="true" />
+          </span>
+        </button>
+      ) : (
+        <div className="flex aspect-square items-center justify-center overflow-hidden bg-tint-sky p-2">{preview}</div>
+      )}
       <h4 className="m-0 text-[14px] font-extrabold leading-snug">{lang === "es" ? spec.es : spec.en}</h4>
       {failed ? (
         <Link to="/me/edit" className="text-[12.5px] font-semibold text-rose-ink">
           {h.changeLogo}
         </Link>
       ) : (
-        <button type="button" onClick={download} disabled={!canvas || busy} className="btn-soft h-9 w-fit px-3 text-[13px]">
-          <Download className="h-4 w-4" aria-hidden="true" />
-          {h.download}
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button type="button" onClick={download} disabled={busy} className="btn-soft h-9 w-fit px-3 text-[13px]">
+            <Download className="h-4 w-4" aria-hidden="true" />
+            {h.download}
+          </button>
+          {onEdit && (
+            <button type="button" onClick={onEdit} className="btn h-9 border-[1.5px] border-hair px-3 text-[13px] text-ink2 hover:border-sky">
+              <Move className="h-4 w-4" aria-hidden="true" />
+              {h.adjust}
+            </button>
+          )}
+        </div>
       )}
     </article>
   );

@@ -3,7 +3,7 @@
  * VITE_PARTNERS_DEMO=1). Never part of a production build: hub.ts, session.tsx and submissions.ts
  * only import this file behind import.meta.env.DEV. The pictures are plain dev-server paths, so a build
  * never picks them up. Add ?kind=company or ?kind=ambassador to the
- * address to see the other kinds of member. The country figures for pledgers are the real totals
+ * address to see the other kinds of member, ?logo=1 for a logo, ?logo=square for a logo on a coloured square. The country figures for pledgers are the real totals
  * read on 25 Nov 2026; everything else here is invented for the preview.
  */
 const cleanup = "/src/demo-assets/cleanup.jpg";
@@ -14,8 +14,16 @@ const kitBadge = "/src/demo-assets/kit-badge.png";
 const kitPost = "/src/demo-assets/kit-post.jpg";
 const kitStory = "/src/demo-assets/kit-story.jpg";
 const kitLinkedin = "/src/demo-assets/kit-linkedin.jpg";
-const demoLogo = "/src/demo-assets/logo-demo.png";
-import type { FeedRow, KitItem, PledgeAdd, TeamPerson, Update, HubStats, Comment } from "./hub";
+const demoLogo = (() => {
+  try {
+    const q = new URLSearchParams(window.location.search).get("logo");
+    if (q) sessionStorage.setItem("pkf-demo-logo-file", q);
+    return sessionStorage.getItem("pkf-demo-logo-file") === "square" ? "/src/demo-assets/logo-square.png" : "/src/demo-assets/logo-demo.png";
+  } catch {
+    return "/src/demo-assets/logo-demo.png";
+  }
+})();
+import type { FeedRow, KitItem, PledgeAdd, TeamPerson, Update, HubStats, Comment, PartnerEntry } from "./hub";
 import type { Submission } from "./submissions";
 
 type DemoKind = "organisation" | "company" | "ambassador";
@@ -423,6 +431,22 @@ export const demo = {
     listedPartners: 144,
     pledgedActs: 38911183,
   }),
+  // the real partners list when a copy is saved in demo-assets/entries-live.json (git-ignored)
+  entries: async (): Promise<PartnerEntry[]> => {
+    try {
+      const r = await fetch("/src/demo-assets/entries-live.json");
+      if (r.ok) return (await r.json()) as PartnerEntry[];
+    } catch {
+      /* fall back to the examples */
+    }
+    return [
+      { id: "e1", category: "Nonprofits", name: "Comedores del Barrio", logo_url: null, website: null, role: null, featured: false, founding: true, sort_order: 1 },
+      { id: "e2", category: "Education", name: "Colegio del Mar", logo_url: null, website: null, role: null, featured: false, founding: false, sort_order: 2 },
+      { id: "e3", category: "Corporate", name: "Brisa Bank", logo_url: null, website: null, role: null, featured: false, founding: false, sort_order: 3 },
+      { id: "e4", category: "Government", name: "Municipio de Ejemplo", logo_url: null, website: null, role: "Mayor: Example Name", featured: false, founding: false, sort_order: 4 },
+      { id: "e5", category: "Media & Press", name: "Radio Bondad", logo_url: null, website: null, role: null, featured: false, founding: false, sort_order: 5 },
+    ];
+  },
   submissions: () => submissions,
   recentPledges: () => [
     { created_at: ago(0.05), country: "Germany", kind: "person" as const, org_name: null, acts: 12 },

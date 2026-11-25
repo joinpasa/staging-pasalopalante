@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { portal, SUPABASE_URL } from "./portalClient";
 import { useSession } from "./session";
@@ -354,6 +355,8 @@ export interface FeedFilter {
   country?: string | null;
   audience?: "community" | "team" | null;
   limit?: number;
+  /** don't load anything (a member card with no hub account) */
+  off?: boolean;
 }
 
 const KIND_ORG_TYPE: Record<Kind, string | null> = { organisation: null, company: "company", ambassador: "ambassador" };
@@ -391,7 +394,7 @@ export function useFeed(filter: FeedFilter = {}) {
   const limit = filter.limit ?? 12;
   return useInfiniteQuery({
     queryKey: ["feed", partner?.id, filter.kind ?? null, filter.country ?? null, filter.audience ?? null, filter.partnerId ?? null, limit],
-    enabled: !!partner,
+    enabled: !!partner && !filter.off,
     initialPageParam: null as string | null,
     queryFn: async ({ pageParam }): Promise<Post[]> => {
       let rows: FeedRow[];
@@ -703,6 +706,134 @@ export function useStats() {
       };
     },
   });
+}
+
+// ---------- the community ----------
+
+/** A listed partner from the partners sheet: the same list as the website's partners page. */
+export interface PartnerEntry {
+  id: string;
+  category: string | null;
+  name: string;
+  logo_url: string | null;
+  website: string | null;
+  role: string | null;
+  featured: boolean | null;
+  founding: boolean | null;
+  sort_order: number | null;
+}
+
+export interface CommunityMember {
+  key: string;
+  /** set for members with a hub account (their posts and profile can be opened) */
+  partnerId: string | null;
+  name: string;
+  kind: Kind;
+  orgType: string | null;
+  category: string | null;
+  logoUrl: string | null;
+  website: string | null;
+  role: string | null;
+  city: string | null;
+  country: string | null;
+  inHub: boolean;
+  acts: number;
+  founding: boolean;
+}
+
+/** Test accounts made for the team to look around with; never shown to members. */
+export const isTestAccount = (name: string) => /^TEST\b/.test(name) && /\(Kindness Forward team\)/.test(name);
+
+/** The sheet's categories, in the hub's own kinds and types. */
+export function entryType(category: string | null): { kind: Kind; orgType: string | null } {
+  const c = (category ?? "").toLowerCase();
+  if (/corporate|company|business/.test(c)) return { kind: "company", orgType: "company" };
+  if (/government|municip/.test(c)) return { kind: "organisation", orgType: "government" };
+  if (/education|school/.test(c)) return { kind: "organisation", orgType: "school" };
+  if (/faith|spiri/.test(c)) return { kind: "organisation", orgType: "faith" };
+  if (/non-?profit|ngo/.test(c)) return { kind: "organisation", orgType: "ngo" };
+  if (/media|press/.test(c)) return { kind: "organisation", orgType: "media" };
+  return { kind: "organisation", orgType: "other" };
+}
+
+/**
+ * Everyone in the movement: members with a hub account first, then every listed partner on the
+ * website's partners page (public there already), so the community is full from day one.
+ */
+export function useCommunity() {
+  const { partner } = useSession();
+  const stats = useStats();
+  const entries = useQuery({
+    queryKey: ["partner-entries"],
+    enabled: !!partner,
+    staleTime: 30 * 60_000,
+    queryFn: async (): Promise<PartnerEntry[]> => {
+      if (DEMO) return (await loadDemo()).entries();
+      const { data, error } = await portal
+        .from("partner_entries")
+        .select("id, category, name, logo_url, website, role, featured, founding, sort_order")
+        .eq("status", "Approved");
+      if (error) throw error;
+      return (data ?? []) as PartnerEntry[];
+    },
+  });
+  const members = stats.data?.partners ?? [];
+  const signed = useQuery({
+    queryKey: ["community-logos", members.map((m) => m.logoPath).join("|")],
+    enabled: members.length > 0,
+    staleTime: 50 * 60_000,
+    queryFn: () => signPaths(members.map((m) => m.logoPath)),
+  });
+  const data = useMemo((): CommunityMember[] | undefined => {
+    if (!stats.data || !entries.data) return undefined;
+    const norm = (x: string) => x.toLowerCase().replace(/[^a-z0-9]+/g, "");
+    const hub = members.filter((m) => !isTestAccount(m.name));
+    const taken = new Set([...hub.map((m) => norm(m.name)), ...hub.map((m) => m.entryLogo).filter(Boolean)]);
+    const fromHub: CommunityMember[] = hub.map((m) => {
+      const entry = entries.data!.find((e) => (m.entryLogo && e.logo_url === m.entryLogo) || norm(e.name) === norm(m.name));
+      return {
+        key: m.id,
+        partnerId: m.id,
+        name: m.name,
+        kind: kindOf(m.orgType),
+        orgType: m.orgType,
+        category: entry?.category ?? null,
+        logoUrl: logoUrl(signed.data ?? new Map(), m.logoPath, m.entryLogo),
+        website: entry?.website ?? null,
+        role: entry?.role ?? null,
+        city: m.city,
+        country: m.country,
+        inHub: m.joined,
+        acts: m.acts,
+        founding: !!entry?.founding,
+      };
+    });
+    const listed: CommunityMember[] = entries.data
+      .filter((e) => !taken.has(norm(e.name)) && !(e.logo_url && taken.has(e.logo_url)))
+      .sort((a, b) => Number(!!b.founding) - Number(!!a.founding) || (a.sort_order ?? 9999) - (b.sort_order ?? 9999) || a.name.localeCompare(b.name))
+      .map((e) => {
+        const t = entryType(e.category);
+        return {
+          key: `entry:${e.id}`,
+          partnerId: null,
+          name: e.name,
+          kind: t.kind,
+          orgType: t.orgType,
+          category: e.category,
+          logoUrl: e.logo_url,
+          website: e.website,
+          role: e.role,
+          city: null,
+          country: null,
+          inHub: false,
+          acts: 0,
+          founding: !!e.founding,
+        };
+      });
+    fromHub.sort((a, b) => Number(b.inHub) - Number(a.inHub) || b.acts - a.acts || a.name.localeCompare(b.name));
+    return [...fromHub, ...listed];
+  }, [stats.data, entries.data, members, signed.data]);
+  return { data, isLoading: stats.isLoading || entries.isLoading, error: stats.error ?? entries.error };
 }
 
 export interface RecentPledge {

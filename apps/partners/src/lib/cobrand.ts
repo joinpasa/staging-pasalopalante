@@ -102,18 +102,6 @@ function img(src: string): Promise<HTMLImageElement | null> {
   return cache.get(src)!;
 }
 
-function cover(ctx: CanvasRenderingContext2D, im: HTMLImageElement, x: number, y: number, w: number, h: number, focusY = 0.35) {
-  const s = Math.max(w / im.width, h / im.height);
-  const dw = im.width * s;
-  const dh = im.height * s;
-  ctx.save();
-  ctx.beginPath();
-  ctx.rect(x, y, w, h);
-  ctx.clip();
-  ctx.drawImage(im, x + (w - dw) / 2, y + (h - dh) * focusY, dw, dh);
-  ctx.restore();
-}
-
 function contain(ctx: CanvasRenderingContext2D, im: HTMLImageElement, x: number, y: number, w: number, h: number) {
   const s = Math.min(w / im.width, h / im.height);
   ctx.drawImage(im, x + (w - im.width * s) / 2, y + (h - im.height * s) / 2, im.width * s, im.height * s);
@@ -157,18 +145,75 @@ function logoTab(ctx: CanvasRenderingContext2D, im: HTMLImageElement | null, x: 
   if (im) contain(ctx, im, x + pad, y + pad, w - pad * 2, h - pad * 2);
 }
 
+/** How a member has moved and zoomed their photo (or logo) in the editor. */
+export interface PhotoAdjust {
+  zoom: number;
+  /** offsets as a share of the photo area's width and height */
+  x: number;
+  y: number;
+}
+export const NO_ADJUST: PhotoAdjust = { zoom: 1, x: 0, y: 0 };
+export const MAX_ZOOM = 4;
+
+/** The part of the picture the photo fills, and where its natural focus sits. */
+export function photoArea(format: CobrandFormat) {
+  const t = PHOTO_TEMPLATES[format];
+  if (t) {
+    const [x, y, w, h] = t.window;
+    return { x, y, w, h, focus: t.focus };
+  }
+  return { x: 0, y: 0, w: FORMATS[format].w, h: FORMATS[format].h, focus: 0.35 };
+}
+
+/** Keeps a moved photo covering its area, so no empty edge ever shows. */
+export function clampAdjust(format: CobrandFormat, im: { width: number; height: number } | null, a: PhotoAdjust, asLogo = false): PhotoAdjust {
+  const zoom = Math.min(MAX_ZOOM, Math.max(asLogo ? 0.4 : 1, a.zoom));
+  if (!im || asLogo) return { zoom, x: Math.max(-0.3, Math.min(0.3, a.x)), y: Math.max(-0.3, Math.min(0.3, a.y)) };
+  const { w, h, focus } = photoArea(format);
+  const s = Math.max(w / im.width, h / im.height) * zoom;
+  const ex = (im.width * s - w) / w;
+  const ey = (im.height * s - h) / h;
+  return { zoom, x: Math.max(-ex / 2, Math.min(ex / 2, a.x)), y: Math.max(-ey * (1 - focus), Math.min(ey * focus, a.y)) };
+}
+
+/** A photo filling an area (cropped to fit), moved and zoomed the way the member set it. */
+function place(ctx: CanvasRenderingContext2D, im: HTMLImageElement, x: number, y: number, w: number, h: number, focusY: number, a: PhotoAdjust = NO_ADJUST) {
+  const s = Math.max(w / im.width, h / im.height) * Math.max(1, a.zoom);
+  const dw = im.width * s;
+  const dh = im.height * s;
+  const px = Math.min(x, Math.max(x + w - dw, x + (w - dw) / 2 + a.x * w));
+  const py = Math.min(y, Math.max(y + h - dh, y + (h - dh) * focusY + a.y * h));
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(x, y, w, h);
+  ctx.clip();
+  ctx.drawImage(im, px, py, dw, dh);
+  ctx.restore();
+}
+
 /**
- * Draws a logo as large as it can be inside a circle: it measures how far the logo's visible
- * pixels reach from their centre, so a round logo fills the circle and a wide one fits its width.
+ * What a logo is like, measured once: a logo on a see-through background, a logo on a plain
+ * coloured square (an app icon, a profile picture with a flat background), or a photo. It also
+ * finds the middle of what's actually drawn and how far it reaches, so it can fill a circle.
  */
-function fitInCircle(ctx: CanvasRenderingContext2D, im: HTMLImageElement, cx: number, cy: number, r: number) {
+interface LogoShape {
+  mode: "clear" | "solid" | "photo";
+  bg: string | null;
+  ox: number;
+  oy: number;
+  reach: number;
+  k: number;
+}
+const shapes = new WeakMap<HTMLImageElement, LogoShape>();
+
+export function logoShape(im: HTMLImageElement): LogoShape {
+  const known = shapes.get(im);
+  if (known) return known;
   const probe = 240;
   const k = probe / Math.max(im.width, im.height);
   const pw = Math.max(1, Math.round(im.width * k));
   const ph = Math.max(1, Math.round(im.height * k));
-  let reach = Math.hypot(pw, ph) / 2;
-  let ox = pw / 2;
-  let oy = ph / 2;
+  let shape: LogoShape = { mode: "clear", bg: null, ox: pw / 2, oy: ph / 2, reach: Math.hypot(pw, ph) / 2, k };
   try {
     const t = document.createElement("canvas");
     t.width = pw;
@@ -176,46 +221,124 @@ function fitInCircle(ctx: CanvasRenderingContext2D, im: HTMLImageElement, cx: nu
     const tc = t.getContext("2d")!;
     tc.drawImage(im, 0, 0, pw, ph);
     const d = tc.getImageData(0, 0, pw, ph).data;
+    const at = (x: number, y: number) => (y * pw + x) * 4;
+    // the edge: see-through, one flat colour, or a busy photo
+    const edge: number[] = [];
+    for (let x = 0; x < pw; x++) edge.push(at(x, 0), at(x, ph - 1));
+    for (let y = 1; y < ph - 1; y++) edge.push(at(0, y), at(pw - 1, y));
+    const opaque = edge.filter((i) => d[i + 3] > 200);
+    let mode: LogoShape["mode"] = "clear";
+    let bg: [number, number, number] | null = null;
+    if (opaque.length / edge.length > 0.6) {
+      const mean = [0, 1, 2].map((c) => opaque.reduce((n, i) => n + d[i + c], 0) / opaque.length) as [number, number, number];
+      const near = opaque.filter((i) => Math.hypot(d[i] - mean[0], d[i + 1] - mean[1], d[i + 2] - mean[2]) < 40).length;
+      if (near / opaque.length > 0.85) {
+        mode = "solid";
+        bg = mean;
+      } else mode = "photo";
+    }
+    const solid = (i: number) =>
+      d[i + 3] > 24 &&
+      (bg ? Math.hypot(d[i] - bg[0], d[i + 1] - bg[1], d[i + 2] - bg[2]) > 48 : !(d[i] > 245 && d[i + 1] > 245 && d[i + 2] > 245));
     let minX = pw, minY = ph, maxX = 0, maxY = 0;
-    const solid = (i: number) => d[i + 3] > 24 && !(d[i] > 245 && d[i + 1] > 245 && d[i + 2] > 245);
     for (let y = 0; y < ph; y++)
       for (let x = 0; x < pw; x++)
-        if (solid((y * pw + x) * 4)) {
+        if (solid(at(x, y))) {
           if (x < minX) minX = x;
           if (x > maxX) maxX = x;
           if (y < minY) minY = y;
           if (y > maxY) maxY = y;
         }
-    if (maxX >= minX && maxY >= minY) {
-      ox = (minX + maxX + 1) / 2;
-      oy = (minY + maxY + 1) / 2;
-      reach = 0;
+    shape = { ...shape, mode, bg: bg ? `rgb(${bg.map((v) => Math.round(v)).join(",")})` : null };
+    if (mode !== "photo" && maxX >= minX && maxY >= minY) {
+      const ox = (minX + maxX + 1) / 2;
+      const oy = (minY + maxY + 1) / 2;
+      let reach = 0;
       for (let y = minY; y <= maxY; y++)
-        for (let x = minX; x <= maxX; x++) if (solid((y * pw + x) * 4)) reach = Math.max(reach, Math.hypot(x + 0.5 - ox, y + 0.5 - oy));
+        for (let x = minX; x <= maxX; x++) if (solid(at(x, y))) reach = Math.max(reach, Math.hypot(x + 0.5 - ox, y + 0.5 - oy));
+      shape = { ...shape, ox, oy, reach };
     }
   } catch {
-    /* a logo from another website can't be measured; the box is used instead */
+    /* a logo from another website can't be measured; it is fitted by its box instead */
   }
-  const scale = (r / Math.max(reach, 1)) * k;
-  ctx.drawImage(im, cx - ox * (scale / k), cy - oy * (scale / k), im.width * scale, im.height * scale);
+  shapes.set(im, shape);
+  return shape;
 }
 
-export async function drawCobrand(
-  format: CobrandFormat,
-  opts: { kind: Kind; lang: "en" | "es"; name: string; logoUrl: string | null; photoUrl?: string | null },
-): Promise<HTMLCanvasElement> {
-  const { w: W, h: H } = FORMATS[format];
-  const c = document.createElement("canvas");
-  c.width = W;
-  c.height = H;
-  const ctx = c.getContext("2d")!;
+/**
+ * A logo in the profile frame's circle. A logo on a see-through or white background is drawn as
+ * large as fits; one on a coloured square gets the circle filled with that colour, so the square
+ * disappears into it; a photo fills the whole circle.
+ */
+function logoInCircle(ctx: CanvasRenderingContext2D, im: HTMLImageElement, W: number, H: number, a: PhotoAdjust = NO_ADJUST) {
+  const shape = logoShape(im);
+  if (shape.mode === "photo") {
+    place(ctx, im, 0, 0, W, H, 0.5, { ...a, zoom: Math.max(1, a.zoom) });
+    return;
+  }
+  const cx = W / 2 + a.x * W;
+  const cy = H / 2 + a.y * H;
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(W / 2, H / 2, W * 0.43, 0, Math.PI * 2);
+  ctx.clip();
+  if (shape.bg) {
+    ctx.fillStyle = shape.bg;
+    ctx.fillRect(0, 0, W, H);
+  }
+  const r = W * 0.4 * (shape.bg ? 0.82 : 0.9) * a.zoom;
+  const scale = (r / Math.max(shape.reach, 1)) * shape.k;
+  ctx.drawImage(im, cx - shape.ox * (scale / shape.k), cy - shape.oy * (scale / shape.k), im.width * scale, im.height * scale);
+  ctx.restore();
+}
+
+export interface CobrandOpts {
+  kind: Kind;
+  lang: "en" | "es";
+  name: string;
+  logoUrl: string | null;
+  photoUrl?: string | null;
+  /** how the member moved and zoomed the photo, or the logo in the profile frame */
+  adjust?: PhotoAdjust;
+}
+
+/** Everything a picture needs, loaded before anything is drawn, so drawing is instant. */
+export interface CobrandAssets {
+  sky: HTMLImageElement | null;
+  ours: HTMLImageElement | null;
+  theirs: HTMLImageElement | null;
+  photo: HTMLImageElement | null;
+  overlay: HTMLImageElement | null;
+}
+
+export async function loadCobrand(format: CobrandFormat, opts: CobrandOpts): Promise<CobrandAssets> {
   if (document.fonts?.load) await Promise.all([document.fonts.load("800 40px Montserrat"), document.fonts.load("600 40px Montserrat")]).catch(() => undefined);
-  const [sky, ours, theirs, photo] = await Promise.all([
+  const template = PHOTO_TEMPLATES[format];
+  const [sky, ours, theirs, photo, overlay] = await Promise.all([
     img("/hub/sky.jpg"),
     img(opts.lang === "es" ? "/hub/ppl-logo.png" : "/hub/kf-logo-2x.png"),
     opts.logoUrl ? img(opts.logoUrl) : Promise.resolve(null),
     opts.photoUrl ? img(opts.photoUrl) : Promise.resolve(null),
+    template ? img(template.file(opts.lang)) : format === "profile" ? img(frameFor(opts.kind, opts.lang)) : Promise.resolve(null),
   ]);
+  return { sky, ours, theirs, photo, overlay };
+}
+
+export async function drawCobrand(format: CobrandFormat, opts: CobrandOpts): Promise<HTMLCanvasElement> {
+  const assets = await loadCobrand(format, opts);
+  const c = document.createElement("canvas");
+  paintCobrand(c, format, opts, assets);
+  return c;
+}
+
+/** Draws a picture onto a canvas from assets already loaded. Quick enough to run while dragging. */
+export function paintCobrand(c: HTMLCanvasElement, format: CobrandFormat, opts: CobrandOpts, assets: CobrandAssets) {
+  const { w: W, h: H } = FORMATS[format];
+  if (c.width !== W) c.width = W;
+  if (c.height !== H) c.height = H;
+  const ctx = c.getContext("2d")!;
+  const { sky, ours, theirs, photo, overlay } = assets;
+  const adjust = opts.adjust ?? NO_ADJUST;
   const hot = opts.lang === "es" ? CORAL : MAGENTA;
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, W, H);
@@ -224,8 +347,7 @@ export async function drawCobrand(
   if (template) {
     // their photo fills the template's photo area; the official design goes on top
     const [x, y, w, h] = template.window;
-    if (photo) cover(ctx, photo, x, y, w, h, template.focus);
-    const overlay = await img(template.file(opts.lang));
+    if (photo) place(ctx, photo, x, y, w, h, template.focus, adjust);
     if (overlay) ctx.drawImage(overlay, 0, 0, W, H);
     if (theirs && template.tab) {
       // their logo joins our logo's tab: one white pill, ours, a hairline, theirs, all one height
@@ -247,18 +369,17 @@ export async function drawCobrand(
     return c;
   }
   if (format === "profile") {
-    // their photo fills the frame; a logo is sized to fill the circle inside the ring
-    if (photo) cover(ctx, photo, 0, 0, W, H, 0.35);
-    else if (theirs) fitInCircle(ctx, theirs, W / 2, H / 2, W * 0.4 * 0.9);
-    const frame = await img(frameFor(opts.kind, opts.lang));
-    if (frame) ctx.drawImage(frame, 0, 0, W, H);
+    // a photo fills the frame; a logo is fitted to the circle inside the ring
+    if (photo) place(ctx, photo, 0, 0, W, H, 0.35, adjust);
+    else if (theirs) logoInCircle(ctx, theirs, W, H, adjust);
+    if (overlay) ctx.drawImage(overlay, 0, 0, W, H);
     return c;
   }
 
   if (format === "post" || format === "story") {
     // a full sunny sky, the big name of the movement, and both logos together on one white strip
     const story = format === "story";
-    if (sky) cover(ctx, sky, 0, 0, W, H, 0.3);
+    if (sky) place(ctx, sky, 0, 0, W, H, 0.3);
     else {
       ctx.fillStyle = "#8fd3f2";
       ctx.fillRect(0, 0, W, H);
@@ -321,7 +442,7 @@ export async function drawCobrand(
   } else {
     // LinkedIn puts the profile picture over the bottom left, so the words sit in the middle and
     // both logos share one white panel on the right
-    if (sky) cover(ctx, sky, 0, 0, W, H, 0.4);
+    if (sky) place(ctx, sky, 0, 0, W, H, 0.4);
     const panelW = 520;
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(W - panelW, 0, panelW, H - 14);

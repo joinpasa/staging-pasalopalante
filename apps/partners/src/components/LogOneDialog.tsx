@@ -15,12 +15,12 @@ import { useUploads } from "@/lib/useUploads";
  * With `editing`, it opens pre-filled with a "Needs Changes" act and
  * resubmits it instead of creating a new one.
  */
-function LogOneForm({ onClose, editing }: { onClose: () => void; editing?: Submission }) {
+function LogOneForm({ onClose, editing, prefill }: { onClose: () => void; editing?: Submission; prefill?: string }) {
   const { t } = useCopy();
   const navigate = useNavigate();
   const submit = useSubmitActs();
   const uploads = useUploads(editing?.media ?? []);
-  const [description, setDescription] = useState(editing?.description ?? "");
+  const [description, setDescription] = useState(editing?.description ?? prefill ?? "");
   const [date, setDate] = useState(editing?.act_date ?? todayISO());
   const [group, setGroup] = useState((editing?.people_count ?? 1) > 1);
   const [count, setCount] = useState(Math.max(2, editing?.people_count ?? 2));
@@ -248,10 +248,13 @@ export default function LogOneDialog({
   open,
   onClose,
   editing,
+  prefill,
 }: {
   open: boolean;
   onClose: () => void;
   editing?: Submission;
+  /** an idea from the Ideas tab, filled in as the description */
+  prefill?: string;
 }) {
   return (
     <Dialog.Root open={open} onOpenChange={(o) => !o && onClose()}>
@@ -260,7 +263,7 @@ export default function LogOneDialog({
         <Dialog.Content
           className="fixed inset-0 z-50 flex flex-col bg-white text-ink outline-none lg:inset-auto lg:start-1/2 lg:top-1/2 lg:max-h-[90vh] lg:w-[680px] lg:-translate-x-1/2 lg:-translate-y-1/2 lg:shadow-[0_24px_64px_rgba(14,35,75,0.25)] rtl:lg:translate-x-1/2"
         >
-          {open && <LogOneForm key={editing?.id ?? "new"} onClose={onClose} editing={editing} />}
+          {open && <LogOneForm key={editing?.id ?? "new"} onClose={onClose} editing={editing} prefill={prefill} />}
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

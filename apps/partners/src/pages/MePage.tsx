@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Award, Download, Globe, HandHeart, Heart, Image as ImageIcon, Layers, LifeBuoy, LogOut, MapPin, MessageSquareHeart, MessageSquareWarning, MoreHorizontal, Pencil, PenLine, Plus, QrCode, Sparkles, Trophy, Users } from "lucide-react";
+import { Award, Download, Globe, HandHeart, Heart, Image as ImageIcon, Layers, LifeBuoy, LogOut, MapPin, MessageSquareHeart, MessageSquareWarning, MoreHorizontal, Pencil, PenLine, Plus, QrCode, Sparkles, Trophy, Users, Compass } from "lucide-react";
 import Shell from "@/components/Shell";
 import Avatar from "@/components/Avatar";
 import Sheet from "@/components/Sheet";
@@ -8,6 +8,7 @@ import PostCard from "@/components/PostCard";
 import StatusPill from "@/components/StatusPill";
 import ActMenu from "@/components/ActMenu";
 import LogOneDialog from "@/components/LogOneDialog";
+import { startTour } from "@/components/Tour";
 import { kindWords, useHubCopy } from "@/lib/hubCopy";
 import { useSession } from "@/lib/session";
 import { timeAgo, useAddPledge, useFeed, useMe, usePledgeAdds, useTeam, type Post } from "@/lib/hub";
@@ -125,6 +126,10 @@ export default function MePage() {
                 >
                   <LifeBuoy className="h-4 w-4 text-sky" aria-hidden="true" />
                   {h.help}
+                </button>
+                <button type="button" onClick={() => (startTour(), setMenu(false))} className="flex h-11 items-center gap-2.5 px-3 text-sm font-semibold hover:bg-tint-sky">
+                  <Compass className="h-4 w-4 text-sky" aria-hidden="true" />
+                  {h.showAround}
                 </button>
                 <button type="button" onClick={() => void logout()} className="flex h-11 items-center gap-2.5 px-3 text-sm font-semibold text-rose-ink hover:bg-rose-soft">
                   <LogOut className="h-4 w-4" aria-hidden="true" />
@@ -307,7 +312,12 @@ export default function MePage() {
       <Sheet open={!!openPost} onClose={() => setOpenPost(null)} title={h.posts} wide>
         {openPost && <PostCard post={openPost} />}
       </Sheet>
-      <LogOneDialog open={logOpen || !!editing} editing={editing} onClose={() => navigate("/me")} />
+      <LogOneDialog
+        open={logOpen || !!editing}
+        editing={editing}
+        prefill={(location.state as { prefill?: string } | null)?.prefill}
+        onClose={() => navigate("/me")}
+      />
     </Shell>
   );
 }
