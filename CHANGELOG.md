@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-11-26 — sim1
+
+- **Partners Hub: one link for everyone to join, and easier on phones and computers.** partners.passkindnessforward.com/join is a single link to share anywhere. People choose whether they're an organisation, a company or an ambassador and fill in every detail (name, type, contact, email, country, city, website or social page, what they do, and their pledge). They then get their own Partners Hub link by email, which proves the address is theirs. They show in Community once they've opened it. Sideways rows (photo editor tabs, member stories, badges, Made for you, post photos) now have arrows on a computer, small buttons are bigger to tap on phones, and the team's own Partners Hub account is never listed as a member.
+
 ## 2026-11-25 — sim1
 
 - **Partners Hub: a photo editor, a fuller hub and a first-time tour.** Members can now put their own photo into the kit's announcement post and story, the photo frames and the profile frame, then drag it into place and zoom, right on the Kit page (the photo never leaves their device). A logo on a coloured square now fills the profile frame's circle instead of sitting small inside it. Two new tabs: Community, with every member and listed partner (the same list as the website's partners page) and the map one tap away, and Ideas, with a weekly kindness challenge, the days worth planning for and simple ideas for each kind of member that log as an act in one tap. News now has its own place in the menu. New members get a six-step tour the first time they come in, and anyone can replay it from the Me menu.

@@ -6,6 +6,7 @@ import { uploadLogo, useSaveProfile, type Me } from "@/lib/hub";
 import { canvasBlob, drawCobrand, FORMATS, LOGO_FORMATS, PHOTO_FORMATS, PHOTO_FORMATS_SOLO, type CobrandFormat } from "@/lib/cobrand";
 import { saveBlob } from "@/lib/certificate";
 import { pictureSource, type Adjustments } from "./PhotoStudio";
+import ScrollRow from "@/components/ScrollRow";
 
 /**
  * "Made for you" on the Kit page: the member adds their logo (saved to their profile) and/or a
@@ -158,12 +159,14 @@ function Row({ title, note, count, children }: { title: string; note?: string; c
         <h3 className="m-0 text-[15px] font-extrabold">{title}</h3>
         {note && <span className="text-[12.5px] font-semibold text-ink-faint">{note}</span>}
       </div>
-      <div
-        className="-mx-4 flex snap-x scroll-px-4 gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] lg:mx-0 lg:grid lg:px-0"
-        style={{ gridTemplateColumns: `repeat(${Math.min(Math.max(count, 3), 5)}, minmax(0, 1fr))` }}
+      <ScrollRow
+        className="-mx-4 lg:mx-0"
+        rowClassName="snap-x scroll-px-4 gap-4 px-4 pb-2 lg:grid lg:px-0"
+        rowStyle={{ gridTemplateColumns: `repeat(${Math.min(Math.max(count, 3), 5)}, minmax(0, 1fr))` }}
+        arrowTop="38%"
       >
         {children}
-      </div>
+      </ScrollRow>
     </div>
   );
 }

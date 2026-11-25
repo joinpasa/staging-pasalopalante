@@ -11,6 +11,7 @@ import path from "node:path";
 const HUB = fs.readFileSync(path.resolve(__dirname, "../../supabase/migrations/20261115120000_kindness_hub.sql"), "utf8");
 const MIGRATION = fs.readFileSync(path.resolve(__dirname, "../../supabase/migrations/20261125120000_partners_hub.sql"), "utf8");
 const WELCOME = fs.readFileSync(path.resolve(__dirname, "../../supabase/migrations/20261125150000_partners_welcome.sql"), "utf8");
+const OPEN_JOIN = fs.readFileSync(path.resolve(__dirname, "../../supabase/migrations/20261126100000_partners_open_join.sql"), "utf8");
 
 const SCHEMA = `
   CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role BYPASSRLS;
@@ -118,6 +119,7 @@ beforeEach(async () => {
   await db.exec(HUB);
   await db.exec(MIGRATION);
   await db.exec(WELCOME);
+  await db.exec(OPEN_JOIN);
   await db.exec(GRANTS);
 });
 
@@ -263,6 +265,14 @@ describe("Partners Hub: updates, kit and the team", () => {
     const stats = (await as<{ s: { pledgers: { country: string; people: number }[] } }>("a", "SELECT public.partner_hub_stats() AS s")).rows[0].s;
     expect(stats.pledgers).toEqual([{ country: "Germany", people: 2 }]);
     expect(JSON.stringify(stats)).not.toMatch(/jo@x\.org|Jo\b/);
+  });
+
+  it("says who joined through the open link, so Community can wait until they confirm", async () => {
+    await member("a");
+    await db.query("INSERT INTO public.partners (name, org_type, joined_via) VALUES ('Open Sign-up School', 'school', 'open_link')");
+    const stats = (await as<{ s: { partners: { name: string; joined: boolean; joinedVia: string | null }[] } }>("a", "SELECT public.partner_hub_stats() AS s")).rows[0].s;
+    expect(stats.partners.find((p) => p.name === "Open Sign-up School")).toMatchObject({ joined: false, joinedVia: "open_link" });
+    await expect(db.query("INSERT INTO public.partners (name, joined_via) VALUES ('X', 'somewhere')")).rejects.toThrow();
   });
 
   it("lists the newest pledges by country, naming only listed partners", async () => {

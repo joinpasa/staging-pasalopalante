@@ -77,7 +77,7 @@ export default function HomePage() {
         </button>
 
         {/* filter by kind of member */}
-        <div className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none]">
+        <div className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
           {[null, ...KINDS].map((k) => (
             <button
               key={k ?? "all"}

@@ -677,6 +677,8 @@ export interface MapMember {
   entryLogo: string | null;
   acts: number;
   joined: boolean;
+  /** "open_link" for people who joined through the open link */
+  joinedVia?: string | null;
 }
 
 export interface HubStats {
@@ -698,7 +700,8 @@ export function useStats() {
       const s = DEMO ? (await loadDemo()).stats() : await rpc<HubStats>("partner_hub_stats");
       return {
         pledgers: s.pledgers ?? [],
-        partners: (s.partners ?? []).map((p) => ({ ...p, acts: Number(p.acts) || 0 })),
+        // someone who used the open link shows only once they've opened the link we emailed them
+        partners: (s.partners ?? []).filter((p) => !(p.joinedVia === "open_link" && !p.joined)).map((p) => ({ ...p, acts: Number(p.acts) || 0 })),
         actsLogged: Number(s.actsLogged) || 0,
         posts: Number(s.posts) || 0,
         listedPartners: Number(s.listedPartners) || 0,

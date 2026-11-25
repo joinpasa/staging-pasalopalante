@@ -24,7 +24,7 @@ function LangToggle({ className = "" }: { className?: string }) {
 export default function AuthLayout({ chip, headline, body, children }: Props) {
   return (
     <div className="flex min-h-screen flex-col bg-white text-ink lg:flex-row">
-      <aside className="relative flex shrink-0 flex-col justify-between gap-6 bg-[#8fd3f2] bg-[url('/hub/sky.jpg')] bg-cover bg-[center_35%] px-5 pb-6 pt-5 lg:w-[46%] lg:max-w-[640px] lg:px-14 lg:py-12">
+      <aside className="relative flex shrink-0 flex-col justify-between gap-6 bg-[#8fd3f2] bg-[url('/hub/sky.jpg')] bg-cover bg-[center_35%] px-5 pb-6 pt-5 lg:sticky lg:top-0 lg:h-screen lg:self-start lg:w-[46%] lg:max-w-[640px] lg:px-14 lg:py-12">
         <div className="flex items-start justify-between gap-3">
           <span className="bg-white px-3.5 py-2.5">
             <img src="/kf-logo.webp" alt="Kindness Forward" width={164} height={48} className="h-9 w-auto lg:h-11" />

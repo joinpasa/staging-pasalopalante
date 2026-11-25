@@ -180,7 +180,7 @@ export default function PhotoStudio({
     <Sheet open={open} onClose={onClose} title={h.studioTitle} wide>
       <div className="flex flex-col gap-4">
         {/* which picture */}
-        <div ref={chipsRef} className="-mx-5 flex gap-2 overflow-x-auto px-5 [scrollbar-width:none]" role="tablist">
+        <div ref={chipsRef} className="-mx-5 flex gap-2 overflow-x-auto px-5 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0" role="tablist">
           {formats.map((f) => (
             <button
               key={f}

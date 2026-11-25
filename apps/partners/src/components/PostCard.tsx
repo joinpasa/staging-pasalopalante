@@ -7,6 +7,7 @@ import { timeAgo, toggleHeart, useAddComment, useComments, useDeleteComment, use
 import { kindLabel, KIND_COLOR, KIND_TINT } from "@/lib/kinds";
 import { countryLabel } from "@/lib/geo";
 import Avatar from "./Avatar";
+import ScrollRow from "@/components/ScrollRow";
 
 /** One post, laid out like a social feed: who, the picture, the words, hearts and comments. */
 export default function PostCard({ post, compact = false }: { post: Post; compact?: boolean }) {
@@ -111,7 +112,7 @@ export default function PostCard({ post, compact = false }: { post: Post; compac
         <p className={`m-0 mt-3 whitespace-pre-line text-[15.5px] font-medium leading-relaxed text-navy ${post.postKind === "testimonial" ? "border-s-4 border-magenta ps-3" : ""}`}>
           {long && !expanded ? `${post.body.slice(0, 200).trimEnd()}… ` : post.body}
           {long && (
-            <button type="button" onClick={() => setExpanded((e) => !e)} className="ms-1 text-sm font-bold text-sky-deep">
+            <button type="button" onClick={() => setExpanded((e) => !e)} className="ms-1 text-sm font-bold text-sky-deep [@media(pointer:coarse)]:-my-3 [@media(pointer:coarse)]:py-3">
               {expanded ? h.showLess : h.readMore}
             </button>
           )}
@@ -120,12 +121,12 @@ export default function PostCard({ post, compact = false }: { post: Post; compac
 
       {post.media.length > 0 && <Media items={post.media} compact={compact} />}
 
-      <div className="mt-3 flex items-center gap-5">
-        <button type="button" onClick={heart} className="flex items-center gap-1.5 text-sm font-bold text-ink2" aria-pressed={hearted}>
+      <div className="mt-2 flex items-center gap-2">
+        <button type="button" onClick={heart} className="-ms-2 flex min-h-10 min-w-10 items-center justify-center gap-1.5 px-2 text-sm font-bold text-ink2" aria-pressed={hearted}>
           <Heart className={`h-[22px] w-[22px] transition ${hearted ? "scale-110 fill-magenta text-magenta" : ""}`} aria-hidden="true" />
           {hearts > 0 && hearts}
         </button>
-        <button type="button" onClick={() => setOpen((o) => !o)} className="flex items-center gap-1.5 text-sm font-bold text-ink2" aria-expanded={open}>
+        <button type="button" onClick={() => setOpen((o) => !o)} className="flex min-h-10 min-w-10 items-center justify-center gap-1.5 px-2 text-sm font-bold text-ink2" aria-expanded={open}>
           <MessageCircle className="h-[22px] w-[22px]" aria-hidden="true" />
           {post.comments > 0 && post.comments}
         </button>
@@ -142,14 +143,7 @@ function Media({ items, compact }: { items: Post["media"]; compact: boolean }) {
   const one = items.length === 1;
   return (
     <div className="relative mt-3">
-      <div
-        ref={ref}
-        onScroll={(e) => {
-          const el = e.currentTarget;
-          setIndex(Math.round(el.scrollLeft / el.clientWidth));
-        }}
-        className={`flex snap-x snap-mandatory overflow-x-auto ${one ? "" : "[scrollbar-width:none]"}`}
-      >
+      <ScrollRow rowClassName="snap-x snap-mandatory" onScroll={(el) => setIndex(Math.round(Math.abs(el.scrollLeft) / el.clientWidth))}>
         {items.map((m) => (
           <div key={m.path} className="w-full shrink-0 snap-center bg-tint-sky">
             {m.type === "video" ? (
@@ -159,7 +153,7 @@ function Media({ items, compact }: { items: Post["media"]; compact: boolean }) {
             )}
           </div>
         ))}
-      </div>
+      </ScrollRow>
       {!one && (
         <>
           <span className="absolute end-2 top-2 bg-white/90 px-2 py-0.5 text-xs font-extrabold text-navy">

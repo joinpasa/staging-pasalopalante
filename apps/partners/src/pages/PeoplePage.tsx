@@ -10,6 +10,7 @@ import { useCommunity, useFeed, useMe, useMemberCard, type CommunityMember } fro
 import { KINDS, kindLabel, KIND_COLOR, orgTypeLabel, type Kind } from "@/lib/kinds";
 import { countryLabel } from "@/lib/geo";
 import type { Lang } from "@/lib/i18n";
+import ScrollRow from "@/components/ScrollRow";
 
 /** "Who's in · Map" at the top of both Community pages, so the map is one tap away on a phone. */
 export function CommunityTabs() {
@@ -70,7 +71,7 @@ export default function PeoplePage() {
               <BadgeCheck className="h-4 w-4" aria-hidden="true" />
               {h.inHub}
             </h2>
-            <div className="-mx-4 flex gap-4 overflow-x-auto px-4 pb-1 [scrollbar-width:none] lg:mx-0 lg:px-0">
+            <ScrollRow className="-mx-4 lg:mx-0" rowClassName="gap-4 px-4 pb-1 lg:px-0" arrowTop="40%" label={h.inHub}>
               {inHub.map((p) => (
                 <button key={p.key} type="button" onClick={() => setOpen(p)} className="flex w-[76px] shrink-0 flex-col items-center gap-1.5 text-center">
                   <span className="p-[3px]" style={{ background: `linear-gradient(135deg, ${KIND_COLOR[p.kind]}, #f37023)` }}>
@@ -81,7 +82,7 @@ export default function PeoplePage() {
                   <span className="line-clamp-2 text-[11.5px] font-bold leading-tight text-navy">{p.partnerId === me?.id ? h.you : p.name}</span>
                 </button>
               ))}
-            </div>
+            </ScrollRow>
           </section>
         )}
 
@@ -97,7 +98,7 @@ export default function PeoplePage() {
               type="search"
             />
           </label>
-          <div className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:px-0">
+          <div className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
             {[null, ...KINDS].map((k) => (
               <button
                 key={k ?? "all"}

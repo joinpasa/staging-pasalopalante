@@ -17,6 +17,7 @@ import { kindLabel, KIND_COLOR, KIND_TINT, orgTypeLabel } from "@/lib/kinds";
 import { countryLabel } from "@/lib/geo";
 import { drawCertificate, saveBlob } from "@/lib/certificate";
 import { openSupportChat } from "@/lib/supportChat";
+import ScrollRow from "@/components/ScrollRow";
 
 type Tab = "acts" | "posts" | "team";
 
@@ -184,7 +185,7 @@ export default function MePage() {
               </button>
             )}
           </div>
-          <div className="-mx-4 mt-2.5 flex gap-2.5 overflow-x-auto px-4 pb-1 [scrollbar-width:none]">
+          <ScrollRow className="-mx-4 mt-2.5" rowClassName="gap-2.5 px-4 pb-1" label={es ? "Insignias" : "Badges"}>
             {[...badges.filter((b) => b.done), ...badges.filter((b) => !b.done)].map((b) => (
               <div
                 key={b.label}
@@ -195,7 +196,7 @@ export default function MePage() {
                 <span className={`text-[11.5px] font-extrabold leading-tight ${b.done ? "text-navy" : "text-ink-faint"}`}>{b.label}</span>
               </div>
             ))}
-          </div>
+          </ScrollRow>
         </div>
 
         {/* tabs */}

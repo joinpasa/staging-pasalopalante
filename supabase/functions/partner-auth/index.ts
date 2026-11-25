@@ -12,6 +12,8 @@ import type { SupabaseClient } from "npm:@supabase/supabase-js@2";
  *                                              the person's name and gives them a Kindness ID too
  *   { action: "send_welcome", partner_id }  -> the team (signed in to the Kindness Hub) sends a
  *                                              member the welcome email again
+ *   { action: "self_join", kind, ... }       -> the open link (26 Nov 2026): someone fills in every
+ *                                              detail, and we email them their own join link
  */
 const LINK_MINUTES = 30;
 const PORTAL = "https://partners.passkindnessforward.com";
@@ -302,6 +304,86 @@ Deno.serve(async (req) => {
         staff: { id: staff.id, name: staff.name },
         staff_code: staffCode,
       });
+    }
+
+    if (action === "self_join") {
+      // One open link for everyone (26 Nov 2026): every detail is required, and the account is only
+      // usable once they open the link we email them, which proves the address is theirs.
+      const ok = json({ ok: true });
+      if (String(body.website2 ?? "").trim()) return ok; // a field people never see: only bots fill it in
+      const kind = String(body.kind ?? "");
+      if (kind !== "organisation" && kind !== "company" && kind !== "ambassador") return json({ error: "Choose organisation, company or ambassador." }, 400);
+      const ORG_TYPES = ["school", "ngo", "faith", "government", "community", "other"];
+      const orgType = kind === "company" ? "company" : kind === "ambassador" ? "ambassador" : String(body.org_type ?? "");
+      if (kind === "organisation" && !ORG_TYPES.includes(orgType)) return json({ error: "Choose what kind of organisation it is." }, 400);
+      const clean = (v: unknown, max: number) => String(v ?? "").trim().replace(/\s+/g, " ").slice(0, max);
+      const name = clean(body.name, 120);
+      const person = kind === "ambassador" ? name : clean(body.person, 120);
+      const email = String(body.email ?? "").trim().toLowerCase();
+      const country = clean(body.country, 80);
+      const city = clean(body.city, 80);
+      const about = String(body.about ?? "").trim().slice(0, 600);
+      const pledge = Number(body.pledge);
+      let link = clean(body.link, 300);
+      if (name.length < 2) return json({ error: kind === "ambassador" ? "Type your full name." : "Type the name of your organisation." }, 400);
+      if (person.length < 2) return json({ error: "Type your name." }, 400);
+      if (!EMAIL_RE.test(email) || email.length > 200 || isPlaceholderEmail(email)) return json({ error: "Type a real email address. We send your link there." }, 400);
+      if (country.length < 2) return json({ error: "Choose your country." }, 400);
+      if (city.length < 2) return json({ error: "Type your city or town." }, 400);
+      if (!link) return json({ error: "Add your website or a social media page." }, 400);
+      if (!/^https?:\/\//i.test(link)) link = `https://${link.replace(/^\/+/, "")}`;
+      let host = "";
+      try {
+        host = new URL(link).hostname.toLowerCase();
+      } catch {
+        /* checked below */
+      }
+      if (!host.includes(".")) return json({ error: "That link doesn't look right. Check your website or social media page." }, 400);
+      if (about.length < 10) return json({ error: "Tell us in a sentence what you do." }, 400);
+      if (!Number.isInteger(pledge) || pledge < 1 || pledge > 10_000_000) return json({ error: "Type how many acts of kindness you pledge, from 1 to 10,000,000." }, 400);
+      if (body.agree !== true) return json({ error: "Tick the box to agree to the community guidelines." }, 400);
+
+      const [ipCount, emailCount, allCount] = await Promise.all([
+        recentCount(admin, `selfjoin-ip:${ip}`, 60),
+        recentCount(admin, `selfjoin:${email}`, 24 * 60),
+        recentCount(admin, "selfjoin-all", 60),
+      ]);
+      if (ipCount >= 5 || emailCount >= 3 || allCount >= 100) return json({ error: "Too many sign-ups at once. Please try again in an hour." }, 429);
+      await admin.from("partner_login_attempts").insert([{ key: `selfjoin-ip:${ip}` }, { key: `selfjoin:${email}` }, { key: "selfjoin-all" }]);
+
+      // the same person filling the form in twice gets the same account, with the email sent again
+      const { data: same } = await admin
+        .from("partners")
+        .select("id, name, org_type, contact_email, invite_token, welcome_sent_at")
+        .ilike("contact_email", email)
+        .ilike("name", name.replace(/[%_\\]/g, (c) => `\\${c}`))
+        .limit(1)
+        .maybeSingle();
+      if (same) {
+        await sendWelcome(admin, same, true);
+        return ok;
+      }
+
+      const social = /(^|\.)instagram\.com$/.test(host) ? "instagram" : /(^|\.)facebook\.com$|(^|\.)fb\.com$/.test(host) ? "facebook" : /(^|\.)linkedin\.com$/.test(host) ? "linkedin" : "website";
+      const { data: created, error: insErr } = await admin
+        .from("partners")
+        .insert({
+          name,
+          org_type: orgType,
+          country,
+          city,
+          about,
+          contact_name: person,
+          contact_email: email,
+          pledge_goal: pledge,
+          joined_via: "open_link",
+          [social]: social === "instagram" ? link.slice(0, 200) : link,
+        })
+        .select("id, name, org_type, contact_email, invite_token, welcome_sent_at")
+        .single();
+      if (insErr || !created) throw new Error(`could not add the member: ${insErr?.message}`);
+      await sendWelcome(admin, created);
+      return ok;
     }
 
     if (action === "send_welcome") {

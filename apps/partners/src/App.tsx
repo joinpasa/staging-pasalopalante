@@ -19,6 +19,7 @@ import SuccessPage from "@/pages/SuccessPage";
 import InvitePage from "@/pages/InvitePage";
 import PeoplePage from "@/pages/PeoplePage";
 import IdeasPage from "@/pages/IdeasPage";
+import OpenJoinPage from "@/pages/OpenJoinPage";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: true, staleTime: 15_000 } },
@@ -61,6 +62,8 @@ const App = () => (
             <Routes>
               <Route path="/login" element={<GuestOnly><LoginPage /></GuestOnly>} />
               {/* Not guest-only: it shows the new Kindness ID *after* signing in. */}
+              {/* one open link for everyone (26 Nov 2026); /join/:token is a member's own link */}
+              <Route path="/join" element={<OpenJoinPage />} />
               <Route path="/join/:token" element={<JoinPage />} />
               <Route path="/link/:token" element={<LinkPage />} />
               <Route path="/" element={<RequireStaff><HomePage /></RequireStaff>} />

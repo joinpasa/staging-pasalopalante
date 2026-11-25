@@ -56,11 +56,11 @@ export default function Welcome({ me, posted, onPost }: { me: Me; posted: boolea
           return (
             <li key={s.label}>
               {s.to ? (
-                <Link to={s.to} className="flex items-center gap-3 no-underline">
+                <Link to={s.to} className="flex min-h-10 items-center gap-3 no-underline">
                   {inner}
                 </Link>
               ) : (
-                <button type="button" onClick={s.onClick} className="flex items-center gap-3">
+                <button type="button" onClick={s.onClick} className="flex min-h-10 items-center gap-3">
                   {inner}
                 </button>
               )}

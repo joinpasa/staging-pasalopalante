@@ -40,6 +40,10 @@
   }
   .btn-quiet {
     @apply inline-flex items-center gap-1.5 text-sm font-bold text-sky-deep no-underline hover:text-navy;
+    /* a finger needs a bigger target than a mouse */
+    @media (pointer: coarse) {
+      min-height: 2.5rem;
+    }
   }
   .box {
     @apply inline-block px-[0.42em] pb-[0.16em] pt-[0.12em] font-extrabold leading-tight;
