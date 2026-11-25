@@ -6,6 +6,7 @@ import { escapeHtml, SENDER_DOMAIN } from "./ops.ts";
  * company or ambassador — sent the moment their account exists, in English and Spanish in one
  * message. It carries their invite link (the first sign-in) and explains the email sign-in for
  * next time. Sent through the site's own email queue, so it doesn't depend on HighLevel.
+ * Used by sync-partners, sync-ambassador and partner-auth (send_welcome).
  */
 
 export const HUB_URL = "https://partners.passkindnessforward.com";
