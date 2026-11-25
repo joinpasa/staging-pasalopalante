@@ -19,9 +19,9 @@ export default function StatusPill({ status }: { status: SubmissionStatus }) {
   const s = STYLES[status] ?? STYLES.pending;
   return (
     <span
-      className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[13px] font-bold ${s.pill}`}
+      className={`inline-flex items-center gap-1.5 whitespace-nowrap px-2.5 py-1 text-[13px] font-bold ${s.pill}`}
     >
-      <span className={`h-2 w-2 rounded-full ${s.dot}`} />
+      <span className={`h-2 w-2 ${s.dot}`} />
       {label}
     </span>
   );

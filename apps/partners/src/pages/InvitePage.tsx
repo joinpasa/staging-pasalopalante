@@ -214,7 +214,7 @@ export default function InvitePage() {
                 type="button"
                 onClick={() => void doReset()}
                 disabled={reset.isPending}
-                className="inline-flex h-12 flex-[1.4] items-center justify-center whitespace-nowrap rounded-[14px] bg-navy px-4 text-[15px] font-bold text-white disabled:opacity-50"
+                className="inline-flex h-12 flex-[1.4] items-center justify-center whitespace-nowrap rounded-sm bg-orange px-4 text-[15px] font-bold text-white disabled:opacity-50"
               >
                 {reset.isPending ? t.resetting : t.resetLink}
               </button>

@@ -327,7 +327,7 @@ function ThankYou({ copy, nextHeading, pledgeCta, shareCta, copied, headingRef }
       {/* a ribbon flourish in the corner, in the brand colours */}
       <svg
         aria-hidden="true"
-        className="pointer-events-none absolute -right-6 -top-4 h-24 w-32 opacity-90 sm:-right-10 sm:-top-6 sm:h-44 sm:w-56"
+        className="pointer-events-none absolute -end-6 -top-4 h-24 w-32 opacity-90 sm:-end-10 sm:-top-6 sm:h-44 sm:w-56"
         viewBox="0 0 224 176"
         fill="none"
       >

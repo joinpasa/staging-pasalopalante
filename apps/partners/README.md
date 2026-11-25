@@ -1,4 +1,9 @@
-# Partner Portal (`apps/partners`)
+# Partners Hub (`apps/partners`)
+
+Since 25 Nov 2026 the partner portal is the **Partners Hub**: a social home for organisations, companies and ambassadors (feed, weekly update, kit, map, profile with badges, sharing with consent). Data and access rules: `supabase/migrations/20261125120000_partners_hub.sql`. The team's side is the Partners Hub page in the Kindness Hub (`apps/hub`, `/partners-hub`). Preview with made-up data: `npm run dev -- --mode demo` with `VITE_PARTNERS_DEMO=1` in `.env.demo` (add `?kind=company`, `?kind=ambassador` or `?logo=1`).
+
+What follows is the original portal, which still works underneath.
+
 
 partners.passkindnessforward.com is where schools and partner orgs log their acts of kindness. Submissions go to a Google Sheet for review, and approved ones are published to the Wall of Kindness.
 
@@ -27,19 +32,27 @@ Send the coordinator `https://partners.passkindnessforward.com/join/<invite_toke
 
 ## Screens → routes
 
-| Route         | Screen                                  |
-|---------------|-----------------------------------------|
-| `/login`      | School search + Staff ID                |
-| `/join/:token`| Create account → shows the new Staff ID |
-| `/`           | Dashboard (empty state when no acts)    |
-| `/log`        | Log 1 Act (modal over the dashboard)    |
-| `/bulk`       | Bulk Log                                |
-| `/done`       | Success                                 |
+| Route          | Screen                                                        |
+|----------------|---------------------------------------------------------------|
+| `/login`       | Email sign-in link, or organisation + Kindness ID             |
+| `/link/:token` | Sign-in link from the email (asks for a name the first time)  |
+| `/join/:token` | Create account → shows the new Kindness ID                    |
+| `/`            | Home: weekly update, then the feed                            |
+| `/map`         | Members and pledgers on a map, newest pledges live            |
+| `/kit`         | The member's kit, plus pictures made with their logo          |
+| `/me`          | Profile, pledge, badges, acts, posts, team                    |
+| `/me/edit`     | Edit profile (logo, country, region, links)                   |
+| `/story`       | Send us your story (photo, video, testimonial)                |
+| `/updates`     | Past weekly updates                                           |
+| `/log`, `/edit/:id` | Log 1 Act (over Me)                                      |
+| `/bulk`        | Bulk Log                                                      |
+| `/invite`      | Invite your team (QR)                                         |
+| `/done`        | Success                                                       |
 
 ## Backend pieces
 
 - Migration: `supabase/migrations/20261007120000_partner_portal.sql`
-- Edge functions: `partner-auth`, `partner-submit`, `partner-sheet`
+- Edge functions: `partner-auth` (also email sign-in links: `email_link`, `redeem`), `partner-submit`, `partner-sheet`
 - Photos and videos: private `partner-media` Supabase Storage bucket, one folder per partner, 50 MB per file
 - Review sheet: `supabase/sheets/` (Apps Script and setup steps)
 

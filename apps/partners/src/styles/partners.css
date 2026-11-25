@@ -14,16 +14,53 @@
 
 @layer components {
   .field {
-    @apply h-[52px] w-full rounded-xl border-[1.5px] border-line bg-white px-4 text-base text-ink outline-none transition focus:border-sky focus:shadow-[0_0_0_4px_rgba(0,163,224,0.15)];
+    @apply h-[52px] w-full rounded-sm border-[1.5px] border-hair bg-white px-4 text-base text-ink outline-none transition focus:border-sky focus:shadow-[0_0_0_4px_rgba(0,163,224,0.15)];
   }
   .btn-primary {
-    @apply inline-flex h-14 items-center justify-center rounded-[14px] bg-orange px-7 text-lg font-bold text-white shadow-cta transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex h-14 items-center justify-center rounded-sm bg-orange px-7 text-lg font-bold text-white transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60;
   }
   .btn-secondary {
-    @apply inline-flex h-14 items-center justify-center rounded-[14px] border-2 border-navy bg-white px-7 text-[17px] font-bold text-navy transition hover:bg-sand;
+    @apply inline-flex h-14 items-center justify-center rounded-sm border-2 border-navy bg-white px-7 text-[17px] font-bold text-navy transition hover:bg-tint-sky;
   }
   .label {
     @apply text-sm font-semibold;
+  }
+  /* Partners Hub building blocks */
+  .btn {
+    @apply inline-flex h-11 items-center justify-center gap-2 rounded-sm px-4 text-[15px] font-bold no-underline transition disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  .btn-orange {
+    @apply btn bg-orange text-white hover:brightness-105;
+  }
+  .btn-line {
+    @apply btn border-2 border-navy bg-white text-navy hover:bg-tint-sky;
+  }
+  .btn-soft {
+    @apply btn bg-tint-sky text-navy hover:bg-sky-soft;
+  }
+  .btn-quiet {
+    @apply inline-flex items-center gap-1.5 text-sm font-bold text-sky-deep no-underline hover:text-navy;
+  }
+  .box {
+    @apply inline-block px-[0.42em] pb-[0.16em] pt-[0.12em] font-extrabold leading-tight;
+  }
+  .eyebrow {
+    @apply text-sm font-extrabold text-sky-deep;
+  }
+  .h-page {
+    @apply m-0 text-[28px] font-extrabold leading-tight tracking-[-0.01em] lg:text-[34px];
+  }
+  .h-section {
+    @apply m-0 text-xl font-extrabold leading-snug;
+  }
+  .hairline {
+    @apply border-t-[1.5px] border-hair;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-extrabold;
+  }
+  .textarea {
+    @apply w-full rounded-sm border-[1.5px] border-hair bg-white px-4 py-3 text-base text-ink outline-none transition focus:border-sky focus:shadow-[0_0_0_4px_rgba(0,163,224,0.15)];
   }
 }
 
@@ -34,5 +71,22 @@
   html,
   body {
     background: #fff !important;
+  }
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-ping,
+  [class*="animate-[fadein"] {
+    animation: none !important;
   }
 }

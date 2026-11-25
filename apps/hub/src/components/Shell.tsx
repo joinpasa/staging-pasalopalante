@@ -1,7 +1,7 @@
 import { signOut } from "@/pages/SignInPage";
 import type { ReactNode } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { BookOpen, CalendarRange, Clapperboard, HeartHandshake, Home, Images, Inbox, Lightbulb, Plus, Settings, TrendingUp } from "lucide-react";
+import { BookOpen, CalendarRange, Clapperboard, HeartHandshake, Home, Images, Inbox, Lightbulb, Plus, Settings, TrendingUp, Globe2 } from "lucide-react";
 import { Avatar, cx, PauseMark } from "./bits";
 import { useAct, useHub, useInbox, useItems, useMe, useMembers, useSuggestions, useTasks } from "@/lib/hub";
 import { spaceWaiting, useSpace } from "@/lib/space";
@@ -19,6 +19,7 @@ const MAIN: NavItem[] = [
   { to: "/stories", label: "Story bank", hint: "Real moments, with consent", icon: Images },
   { to: "/videos", label: "Videos", hint: "Every video, sorted and ready to use", icon: Clapperboard },
   { to: "/community", label: "Community", hint: "Partners and ambassadors", icon: HeartHandshake },
+  { to: "/partners-hub", label: "Partners Hub", hint: "Members' posts, weekly update, kit", icon: Globe2 },
   { to: "/growth", label: "Growth", hint: "Reach work and results", icon: TrendingUp, badge: "growth" },
 ];
 const MORE: NavItem[] = [

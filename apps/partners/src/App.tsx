@@ -6,7 +6,14 @@ import { LangProvider } from "@/lib/i18n";
 import { SessionProvider, useSession } from "@/lib/session";
 import LoginPage from "@/pages/LoginPage";
 import JoinPage from "@/pages/JoinPage";
-import DashboardPage from "@/pages/DashboardPage";
+import LinkPage from "@/pages/LinkPage";
+import HomePage from "@/pages/HomePage";
+import MapPage from "@/pages/MapPage";
+import KitPage from "@/pages/KitPage";
+import MePage from "@/pages/MePage";
+import ProfileEditPage from "@/pages/ProfileEditPage";
+import StoryPage from "@/pages/StoryPage";
+import UpdatesPage from "@/pages/UpdatesPage";
 import BulkLogPage from "@/pages/BulkLogPage";
 import SuccessPage from "@/pages/SuccessPage";
 import InvitePage from "@/pages/InvitePage";
@@ -17,7 +24,7 @@ const queryClient = new QueryClient({
 
 function Splash() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-canvas">
+    <div className="flex min-h-screen items-center justify-center bg-white">
       <img src="/kf-heart.webp" alt="" className="h-14 w-14 animate-pulse" />
     </div>
   );
@@ -37,6 +44,11 @@ function GuestOnly({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
+/**
+ * The Partners Hub (25 Nov 2026), grown out of the partner portal at the same address.
+ * Tabs: Home (the feed), Map, Kit, Me; the + makes a post, logs an act or sends us a story.
+ * The old addresses (/log, /edit/:id, /bulk, /invite, /done, /join/:token) all still work.
+ */
 const App = () => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
@@ -45,11 +57,18 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/login" element={<GuestOnly><LoginPage /></GuestOnly>} />
-              {/* Not guest-only: it shows the new Staff ID *after* signing in. */}
+              {/* Not guest-only: it shows the new Kindness ID *after* signing in. */}
               <Route path="/join/:token" element={<JoinPage />} />
-              <Route path="/" element={<RequireStaff><DashboardPage /></RequireStaff>} />
-              <Route path="/log" element={<RequireStaff><DashboardPage /></RequireStaff>} />
-              <Route path="/edit/:id" element={<RequireStaff><DashboardPage /></RequireStaff>} />
+              <Route path="/link/:token" element={<LinkPage />} />
+              <Route path="/" element={<RequireStaff><HomePage /></RequireStaff>} />
+              <Route path="/map" element={<RequireStaff><MapPage /></RequireStaff>} />
+              <Route path="/kit" element={<RequireStaff><KitPage /></RequireStaff>} />
+              <Route path="/me" element={<RequireStaff><MePage /></RequireStaff>} />
+              <Route path="/me/edit" element={<RequireStaff><ProfileEditPage /></RequireStaff>} />
+              <Route path="/log" element={<RequireStaff><MePage /></RequireStaff>} />
+              <Route path="/edit/:id" element={<RequireStaff><MePage /></RequireStaff>} />
+              <Route path="/story" element={<RequireStaff><StoryPage /></RequireStaff>} />
+              <Route path="/updates" element={<RequireStaff><UpdatesPage /></RequireStaff>} />
               <Route path="/bulk" element={<RequireStaff><BulkLogPage /></RequireStaff>} />
               <Route path="/invite" element={<RequireStaff><InvitePage /></RequireStaff>} />
               <Route path="/done" element={<RequireStaff><SuccessPage /></RequireStaff>} />

@@ -20,6 +20,12 @@ interface AuthResponse {
   staff_code?: string;
 }
 
+/** What a sign-in link gives back: signed in, or "tell us your name first". */
+export type RedeemResult = { needsName: true; partnerName: string } | { needsName: false; staffCode: string };
+
+// Local preview only (VITE_PARTNERS_DEMO=1): signed in as a made-up member. Compiled out of builds.
+const DEMO = import.meta.env.DEV && import.meta.env.VITE_PARTNERS_DEMO === "1";
+
 type Status = "loading" | "out" | "in";
 
 interface SessionCtx {
@@ -30,6 +36,8 @@ interface SessionCtx {
   login: (partnerId: string, staffCode: string) => Promise<void>;
   /** Creates a Staff ID from an invite link; resolves to the new plain ID. */
   join: (inviteToken: string, name: string) => Promise<string>;
+  /** Signs in with a link from the sign-in email. */
+  redeemLink: (token: string, name?: string) => Promise<RedeemResult>;
   logout: () => Promise<void>;
 }
 
@@ -69,6 +77,16 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let cancelled = false;
+    if (DEMO) {
+      import("./demo").then((m) => {
+        if (cancelled) return;
+        setWho(m.demoSession);
+        setStatus("in");
+      });
+      return () => {
+        cancelled = true;
+      };
+    }
     portal.auth.getSession().then(async ({ data }) => {
       if (cancelled) return;
       const stored = readStored();
@@ -134,6 +152,20 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     [finish],
   );
 
+  const redeemLink = useCallback(
+    async (token: string, name?: string): Promise<RedeemResult> => {
+      const res = await callFunction<AuthResponse & { needs_name?: boolean; partner: Partner }>("partner-auth", {
+        action: "redeem",
+        token,
+        name,
+      });
+      if (res.needs_name) return { needsName: true, partnerName: res.partner?.name ?? "" };
+      await finish(res);
+      return { needsName: false, staffCode: res.staff_code ?? "" };
+    },
+    [finish],
+  );
+
   const logout = useCallback(async () => {
     writeStored(null);
     await portal.auth.signOut();
@@ -142,7 +174,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   return (
     <Ctx.Provider
-      value={{ status, session, partner: who?.partner ?? null, staff: who?.staff ?? null, login, join, logout }}
+      value={{ status, session, partner: who?.partner ?? null, staff: who?.staff ?? null, login, join, redeemLink, logout }}
     >
       {children}
     </Ctx.Provider>

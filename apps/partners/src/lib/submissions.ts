@@ -3,6 +3,9 @@ import { callFunction, portal } from "./portalClient";
 import { useSession } from "./session";
 import type { UploadedMedia } from "./upload";
 
+// Local preview only (VITE_PARTNERS_DEMO=1). Compiled out of builds.
+const DEMO = import.meta.env.DEV && import.meta.env.VITE_PARTNERS_DEMO === "1";
+
 export type SubmissionStatus = "pending" | "approved" | "changes_requested" | "rejected";
 
 export interface Submission {
@@ -29,6 +32,7 @@ export function usePartnerSummary() {
     queryKey: ["partner", partner?.id],
     enabled: !!partner,
     queryFn: async (): Promise<PartnerSummary> => {
+      if (DEMO) return { pledge_goal: (await import("./demo")).demo.me().pledge_total };
       const { data, error } = await portal.from("partners").select("pledge_goal").eq("id", partner!.id).single();
       if (error) throw error;
       return data as PartnerSummary;
@@ -43,6 +47,7 @@ export function useTeamSize() {
     queryKey: ["team-size", partner?.id],
     enabled: !!partner,
     queryFn: async () => {
+      if (DEMO) return (await import("./demo")).demo.team().length;
       const { count, error } = await portal
         .from("partner_staff")
         .select("id", { count: "exact", head: true })
@@ -60,6 +65,7 @@ export function useSubmissions() {
     queryKey: ["submissions", partner?.id],
     enabled: !!partner,
     queryFn: async (): Promise<Submission[]> => {
+      if (DEMO) return (await import("./demo")).demo.submissions();
       const { data, error } = await portal
         .from("partner_submissions")
         .select("id, description, people_count, act_date, status, review_note, media, link_url, created_at")
@@ -122,6 +128,7 @@ export function useSubmitActs() {
       editId?: string;
       email: string;
     }) => {
+      if (DEMO) return { activities: items.length, acts: items.reduce((n, i) => n + i.people_count, 0), resubmitted: !!editId } as SubmitResult;
       const { data } = await portal.auth.getSession();
       const token = data.session?.access_token ?? session?.access_token;
       const body = editId

@@ -12,6 +12,7 @@
 //   node tools/hub.mjs update tasks <id> '{"done":true}'
 //   node tools/hub.mjs remove tasks <id>
 //   node tools/hub.mjs upload <cardId> film.mp4 [--cover]   put a picture or video on a card
+//   node tools/hub.mjs kit badge.png '{"title":"Badge","audience":"organisation"}' [--thumb t.jpg]   add to the partner kit
 //   node tools/hub.mjs import plan.json        a whole plan (see tools/export-plan.mts)
 //   node tools/hub.mjs log                     what has changed through the API
 //
@@ -129,6 +130,26 @@ try {
       await call("POST", "/attach", { cardId, path: ask.path, name: path.basename(file), mime, kind: flags.cover ? "cover" : "media" });
       break;
     }
+    case "kit": {
+      // node tools/hub.mjs kit <file> '{"title":"Proud partner badge","audience":"organisation","section":"social"}' [--thumb small.jpg] [--folder partner]
+      // puts a file in the public partner-kit store and adds it to the Partners Hub kit
+      const [file] = args;
+      if (!file) throw new Error('Use: kit <file> \'{"title": "..."}\' [--thumb small.jpg] [--folder name]');
+      const fields = body();
+      const KIT_MIME = { ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp", ".gif": "image/gif", ".svg": "image/svg+xml", ".pdf": "application/pdf", ".zip": "application/zip", ".mp4": "video/mp4", ".txt": "text/plain", ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document", ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation" };
+      const put = async (f) => {
+        const data = fs.readFileSync(f);
+        const mime = KIT_MIME[path.extname(f).toLowerCase()] ?? "application/octet-stream";
+        const ask = await api("POST", "/kit-files", { name: path.basename(f), mime, size: data.length, folder: flags.folder ?? "kit" });
+        const res = await fetch(ask.uploadUrl, { method: "PUT", headers: { "Content-Type": mime, "x-upsert": "false", "cache-control": "max-age=86400" }, body: data });
+        if (!res.ok) throw new Error(`The upload did not go through (${res.status}): ${(await res.text()).slice(0, 200)}`);
+        return { path: ask.path, mime, size: data.length };
+      };
+      const main = await put(file);
+      const thumb = flags.thumb && flags.thumb !== "true" ? await put(flags.thumb) : null;
+      await call("POST", "/partnerKit", { ...fields, filePath: main.path, mime: main.mime, sizeBytes: main.size, ...(thumb ? { thumbPath: thumb.path } : {}) });
+      break;
+    }
     case "import":
       await call("POST", "/import", JSON.parse(fs.readFileSync(args[0] ?? flags.file, "utf8")));
       break;
@@ -136,7 +157,7 @@ try {
       await call("GET", `/log${qs({ limit: flags.limit ?? 50 })}`);
       break;
     default:
-      console.error(`Unknown command "${cmd}". Try: week, list, get, add, update, remove, import, log.`);
+      console.error(`Unknown command "${cmd}". Try: week, list, get, add, update, remove, upload, kit, import, log.`);
       process.exit(2);
   }
 } catch (e) {

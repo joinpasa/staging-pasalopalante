@@ -1,5 +1,51 @@
-import { adminClient, corsHeaders, json, UUID_RE, type PartnerRow } from "../_shared/partner.ts";
+import { adminClient, corsHeaders, isPlaceholderEmail, json, UUID_RE, type PartnerRow } from "../_shared/partner.ts";
+import { escapeHtml, SENDER_DOMAIN } from "../_shared/ops.ts";
 import type { SupabaseClient } from "npm:@supabase/supabase-js@2";
+
+/*
+ * Partners Hub (25 Nov 2026) adds sign-in by email for an organisation's contact person:
+ *
+ *   { action: "email_link", email, lang }   -> emails a one-time link to every organisation whose
+ *                                              contact email this is; always answers ok
+ *   { action: "redeem", token, name? }      -> session token, like login; the first time, asks for
+ *                                              the person's name and gives them a Kindness ID too
+ */
+const LINK_MINUTES = 30;
+const PORTAL = "https://partners.passkindnessforward.com";
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
+async function sha256Hex(s: string) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function randomToken() {
+  const bytes = crypto.getRandomValues(new Uint8Array(24));
+  return [...bytes].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function linkEmail(lang: "en" | "es", rows: { name: string; url: string }[]) {
+  const es = lang === "es";
+  const subject = es ? "Tu enlace para entrar al Partners Hub" : "Your link to the Partners Hub";
+  const intro = es
+    ? `Toca el enlace para entrar al Partners Hub de Kindness Forward. Funciona una vez y vence en ${LINK_MINUTES} minutos.`
+    : `Tap the link to sign in to the Kindness Forward Partners Hub. It works once and expires in ${LINK_MINUTES} minutes.`;
+  const ignore = es
+    ? "Si no pediste este enlace, puedes ignorar este correo."
+    : "If you didn't ask for this link, you can ignore this email.";
+  const button = (r: { name: string; url: string }) =>
+    `<p style="margin:0 0 14px"><a href="${r.url}" style="display:inline-block;background:#0e234b;color:#ffffff;font-weight:700;text-decoration:none;padding:12px 18px">${
+      escapeHtml(es ? `Entrar como ${r.name}` : `Sign in as ${r.name}`)
+    }</a></p>`;
+  const html = `<div style="font-family:Montserrat,Arial,sans-serif;color:#0e234b;max-width:520px">
+<div style="height:8px;background:linear-gradient(90deg,#fdb813,#f37023)"></div>
+<h1 style="font-size:22px;margin:22px 0 10px">${escapeHtml(subject)}</h1>
+<p style="font-size:15px;line-height:1.55;color:#33415e;margin:0 0 18px">${escapeHtml(intro)}</p>
+${rows.map(button).join("\n")}
+<p style="font-size:13px;color:#6b7790;margin:18px 0 0">${escapeHtml(ignore)}</p></div>`;
+  const text = `${subject}\n\n${intro}\n\n${rows.map((r) => `${r.name}: ${r.url}`).join("\n")}\n\n${ignore}`;
+  return { subject, html, text };
+}
 
 /**
  * Partner portal sign-in. No email or password per person: each partner
@@ -149,6 +195,109 @@ Deno.serve(async (req) => {
         token_hash: await sessionToken(admin, email),
         partner: { id: partner.id, name: partner.name, city: partner.city },
         staff: { id: staff.staff_id, name: staff.staff_name },
+      });
+    }
+
+    if (action === "email_link") {
+      const email = String(body.email ?? "").trim().toLowerCase();
+      const lang = body.lang === "es" ? "es" : "en";
+      if (!EMAIL_RE.test(email) || email.length > 200) return json({ error: "Type the email address we have for your organisation." }, 400);
+      // Same answer whether or not the address is known, so this can't be used to find contacts.
+      const ok = json({ ok: true });
+      if (isPlaceholderEmail(email)) return ok;
+      const [ipCount, emailCount] = await Promise.all([recentCount(admin, `link-ip:${ip}`, 60), recentCount(admin, `link:${email}`, 60)]);
+      if (ipCount >= 10 || emailCount >= 3) return json({ error: "Too many links asked for. Try again in an hour." }, 429);
+      await admin.from("partner_login_attempts").insert([{ key: `link-ip:${ip}` }, { key: `link:${email}` }]);
+
+      const { data: partners } = await admin.from("partners").select("id, name").ilike("contact_email", email).limit(10);
+      const { data: staffRows } = await admin.from("partner_staff").select("partner_id, partners(id, name)").ilike("email", email).eq("active", true).limit(10);
+      const found = new Map<string, string>();
+      for (const p of partners ?? []) found.set(p.id, p.name);
+      for (const s of (staffRows ?? []) as { partner_id: string; partners: { id: string; name: string } | null }[]) {
+        if (s.partners) found.set(s.partners.id, s.partners.name);
+      }
+      if (found.size === 0) return ok;
+
+      const links: { name: string; url: string }[] = [];
+      const expires = new Date(Date.now() + LINK_MINUTES * 60_000).toISOString();
+      for (const [partnerId, name] of found) {
+        const token = randomToken();
+        const { error } = await admin.from("partner_login_links").insert({
+          partner_id: partnerId,
+          email,
+          token_hash: await sha256Hex(token),
+          expires_at: expires,
+        });
+        if (error) throw new Error(`could not save the link: ${error.message}`);
+        links.push({ name, url: `${PORTAL}/link/${token}` });
+      }
+      const mail = linkEmail(lang, links);
+      const { error: qErr } = await admin.rpc("enqueue_email", {
+        queue_name: "transactional_emails",
+        payload: {
+          message_id: crypto.randomUUID(),
+          to: email,
+          from: `Kindness Forward <noreply@${SENDER_DOMAIN}>`,
+          subject: mail.subject,
+          html: mail.html,
+          text: mail.text,
+          label: "partner_sign_in_link",
+          queued_at: new Date().toISOString(),
+        },
+      });
+      if (qErr) throw new Error(`could not queue the email: ${qErr.message}`);
+      return ok;
+    }
+
+    if (action === "redeem") {
+      const token = String(body.token ?? "").trim();
+      if (!/^[0-9a-f]{48}$/.test(token)) return json({ error: "This sign-in link isn't valid. Ask for a new one." }, 400);
+      const { data: link } = await admin
+        .from("partner_login_links")
+        .select("id, partner_id, email, expires_at, used_at")
+        .eq("token_hash", await sha256Hex(token))
+        .maybeSingle();
+      if (!link || link.used_at || new Date(link.expires_at).getTime() < Date.now()) {
+        return json({ error: "This sign-in link has expired or was already used. Ask for a new one." }, 410);
+      }
+      const { data: partner } = await admin.from("partners").select("id, name, city, account_user_id").eq("id", link.partner_id).single();
+
+      let { data: staff } = await admin
+        .from("partner_staff")
+        .select("id, name")
+        .eq("partner_id", link.partner_id)
+        .ilike("email", link.email)
+        .eq("active", true)
+        .order("created_at")
+        .limit(1)
+        .maybeSingle();
+      let staffCode: string | undefined;
+      if (!staff) {
+        const name = String(body.name ?? "").trim().slice(0, 120);
+        // Not used up yet: the person types their name, then the same link signs them in.
+        if (!name) return json({ needs_name: true, partner: { id: partner.id, name: partner.name } });
+        const { data: rows, error } = await admin.rpc("partner_staff_create", { _partner_id: link.partner_id, _name: name });
+        if (error || !rows?.[0]) throw new Error(`partner_staff_create failed: ${error?.message}`);
+        const created = rows[0] as { staff_id: string; staff_code: string };
+        await admin.from("partner_staff").update({ email: link.email }).eq("id", created.staff_id);
+        staff = { id: created.staff_id, name };
+        staffCode = created.staff_code;
+      }
+      const { data: used } = await admin
+        .from("partner_login_links")
+        .update({ used_at: new Date().toISOString(), staff_id: staff.id })
+        .eq("id", link.id)
+        .is("used_at", null)
+        .select("id");
+      if (!used?.length) return json({ error: "This sign-in link was already used. Ask for a new one." }, 410);
+
+      const email = await ensureAccount(admin, partner as PartnerRow);
+      await admin.from("partner_staff").update({ last_login_at: new Date().toISOString() }).eq("id", staff.id);
+      return json({
+        token_hash: await sessionToken(admin, email),
+        partner: { id: partner.id, name: partner.name, city: partner.city },
+        staff: { id: staff.id, name: staff.name },
+        staff_code: staffCode,
       });
     }
 

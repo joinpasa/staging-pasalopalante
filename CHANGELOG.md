@@ -8,6 +8,19 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-11-25 — sim1
+
+- **The partner portal is now the Partners Hub, at the same address (partners.passkindnessforward.com).** It works like a social app for our members, in English and Spanish, in the new Kindness Forward look:
+  - **Three kinds of member:** organisations, companies and ambassadors. Each has its own label and colour, and sees its own kit.
+  - **Home is a feed.** It opens with the weekly update from the team. Members post photos, videos and words, give hearts and comment. A post we use on our socials shows "Shared by Kindness Forward".
+  - **The + button** makes a post, logs an act, or sends us a story, a photo, a video or a testimonial. Everything sent carries two consent boxes: one lets us share it, the other confirms everyone shown agreed, with a parent or guardian's yes for anyone under 18.
+  - **Kit:** every kit we've made, sorted into sections. It also makes four pictures with the member's own logo beside ours: a post, a story, a badge and a LinkedIn banner.
+  - **Map:** where members are and where pledgers come from (country totals only), with a live line of the newest pledges from anywhere.
+  - **Me:** a profile with logo, country and region, plus pledge progress, adding to the pledge, logged acts, badges and a certificate to download.
+- **Signing in is easier.** Members type their email and get a link, so nobody has to know whether they "have an account". Kindness IDs and invite links still work.
+- **New "Partners Hub" page in the Kindness Hub, for the team.** It shows what members post and send. The team can hide a post, reply as Kindness Forward, mark a post as shared, or copy it into the story bank with its consent. The team can also write and publish the weekly update in English and Spanish, manage the kit, and see every member with their invite link. The team can add ambassadors and other members by hand, and tick off pledge additions once they're in the partners sheet.
+- **A small spacing fix on the sign-up forms' thank-you card,** so it works the same in right-to-left languages.
+
 ## 2026-11-24 — sim1
 
 - **The sign-up forms no longer leave a big empty gap after you submit.** A nonprofit partner reported that, after signing up, the thank-you message appeared far down the page with a large white space above it. HighLevel's own thank-you screen stretches to the full height of the long form when it sits inside our page. Now, on all six Get Involved forms (nonprofits, schools, companies, municipalities, ambassadors and partners), the form sits in a branded card, shows a soft loading state while it loads, and jumps back to the top when you press Next. When you finish, a Kindness Forward thank-you card appears right beside the heading in English or Spanish, with the next steps, a pledge button and a share button. The heading also stays in view beside the form on desktop.

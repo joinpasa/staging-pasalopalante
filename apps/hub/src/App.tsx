@@ -8,6 +8,7 @@ import Shell from "@/components/Shell";
 import StoryPanel from "@/components/StoryPanel";
 import { HubProvider } from "@/lib/hub";
 import CommunityPage from "@/pages/CommunityPage";
+import PartnersHubPage from "@/pages/PartnersHubPage";
 import GrowthPage from "@/pages/GrowthPage";
 import HomePage from "@/pages/HomePage";
 import IdeasPage from "@/pages/IdeasPage";
@@ -40,6 +41,7 @@ function Inside() {
         <Route path="/videos" element={<VideosPage />} />
         <Route path="/newsletter/:id" element={<NewsletterPage />} />
         <Route path="/community" element={<CommunityPage />} />
+        <Route path="/partners-hub" element={<PartnersHubPage />} />
         <Route path="/growth" element={<GrowthPage />} />
         <Route path="/library" element={<LibraryPage />} />
         <Route path="/ideas" element={<IdeasPage />} />

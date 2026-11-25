@@ -91,7 +91,7 @@ function LogOneForm({ onClose, editing }: { onClose: () => void; editing?: Submi
           <div className="flex gap-3 rounded-2xl bg-rose-soft p-4">
             <MessageSquareWarning className="mt-0.5 h-5 w-5 shrink-0 text-rose" aria-hidden="true" />
             <div className="flex flex-col gap-1">
-              <span className="text-xs font-bold uppercase tracking-[0.06em] text-rose-ink">{t.reviewerNote}</span>
+              <span className="text-xs font-bold tracking-[0.06em] text-rose-ink">{t.reviewerNote}</span>
               <span className="text-[15px] font-medium text-navy">{editing.review_note}</span>
             </div>
           </div>
@@ -258,7 +258,7 @@ export default function LogOneDialog({
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-40 bg-navy/50" />
         <Dialog.Content
-          className="fixed inset-0 z-50 flex flex-col bg-white text-ink outline-none lg:inset-auto lg:start-1/2 lg:top-1/2 lg:max-h-[90vh] lg:w-[680px] lg:-translate-x-1/2 lg:-translate-y-1/2 lg:rounded-[28px] lg:shadow-[0_24px_64px_rgba(14,35,75,0.25)] rtl:lg:translate-x-1/2"
+          className="fixed inset-0 z-50 flex flex-col bg-white text-ink outline-none lg:inset-auto lg:start-1/2 lg:top-1/2 lg:max-h-[90vh] lg:w-[680px] lg:-translate-x-1/2 lg:-translate-y-1/2 lg:shadow-[0_24px_64px_rgba(14,35,75,0.25)] rtl:lg:translate-x-1/2"
         >
           {open && <LogOneForm key={editing?.id ?? "new"} onClose={onClose} editing={editing} />}
         </Dialog.Content>

@@ -3,6 +3,9 @@ import { portal } from "./portalClient";
 import { useSession } from "./session";
 import { mediaTypeOf, uploadMedia, UploadError, type UploadErrorReason, type UploadedMedia } from "./upload";
 
+// Local preview only (VITE_PARTNERS_DEMO=1). Compiled out of builds.
+const DEMO = import.meta.env.DEV && import.meta.env.VITE_PARTNERS_DEMO === "1";
+
 export type UploadState = "uploading" | "done" | "failed";
 
 export interface UploadItem {
@@ -44,6 +47,13 @@ export function useUploads(initial: UploadedMedia[] = []) {
 
   const start = useCallback(
     async (key: string, file: File) => {
+      if (DEMO) {
+        // local preview: keep the file in the browser and pretend it uploaded
+        const { demo } = await import("./demo");
+        const path = demo.keepFile(`demo/${key}-${file.name}`, file);
+        patch(key, { state: "done", progress: 100, result: { path, type: mediaTypeOf(file).startsWith("video/") ? "video" : "image", name: file.name } });
+        return;
+      }
       const { data } = await portal.auth.getSession();
       const token = data.session?.access_token;
       if (!partner || !token) {

@@ -25,7 +25,7 @@ export interface ApiStore {
   remove(table: string, key: string, value: string): Promise<boolean>;
   log(entry: { actor: string; action: "create" | "update" | "delete" | "import"; resource: string; record_id: string | null; summary: string }): Promise<void>;
   /** A one-time link to put a file straight into the hub's private file store. */
-  signedUpload(path: string): Promise<{ uploadUrl: string }>;
+  signedUpload(path: string, bucket?: string): Promise<{ uploadUrl: string }>;
 }
 
 export interface ApiRequest {
@@ -200,6 +200,56 @@ export const RESOURCES: Record<string, Resource> = {
     required: ["text"],
     order: [["created_at", false]],
     search: ["body", "from_name"],
+  },
+  // Partners Hub (25 Nov 2026): the kit partners download, and the weekly update they read
+  partnerKit: {
+    table: "partner_kit_items",
+    key: "id",
+    write: {
+      title: "title",
+      titleEs: "title_es",
+      description: "description",
+      descriptionEs: "description_es",
+      section: "section",
+      audience: "audience",
+      lang: "lang",
+      filePath: "file_path",
+      thumbPath: "thumb_path",
+      url: "url",
+      mime: "mime",
+      sizeBytes: "size_bytes",
+      width: "width",
+      height: "height",
+      caption: "caption",
+      captionEs: "caption_es",
+      sort: "sort",
+      hidden: "hidden",
+    },
+    read: { ...COMMON_READ, addedAt: "added_at" },
+    required: ["title"],
+    order: [["sort", true], ["added_at", false]],
+    search: ["title", "description"],
+  },
+  partnerUpdates: {
+    table: "partner_updates",
+    key: "id",
+    write: {
+      weekStart: "week_start",
+      title: "title",
+      titleEs: "title_es",
+      intro: "intro",
+      introEs: "intro_es",
+      items: "items",
+      spotlightPartnerId: "spotlight_partner_id",
+      spotlightText: "spotlight_text",
+      spotlightTextEs: "spotlight_text_es",
+      imagePath: "image_path",
+    },
+    // publishing is for people in the hub, never the API
+    read: { ...COMMON_READ, publishedAt: "published_at", updatedAt: "updated_at" },
+    required: ["weekStart"],
+    week: { column: "week_start", kind: "date" },
+    order: [["week_start", false]],
   },
   members: {
     table: "hub_members",
@@ -517,7 +567,7 @@ export async function handle(req: ApiRequest, deps: { store: ApiStore; apiKey: s
           about: "The Kindness Hub API. It reads and changes the hub's own data. It never posts, schedules, emails or approves.",
           thisWeek: thisWeek(ctx.now),
           resources: Object.fromEntries(Object.entries(RESOURCES).map(([n, r]) => [n, { fields: Object.keys(r.write), readOnly: !!r.readOnly, byWeek: !!r.week }])),
-          also: ["GET /week?start=YYYY-MM-DD", "POST /import", "POST /files then POST /attach (put a picture or video on a card)"],
+          also: ["GET /week?start=YYYY-MM-DD", "POST /import", "POST /files then POST /attach (put a picture or video on a card)", "POST /kit-files then POST /partnerKit (add to the partner kit)"],
         },
       };
     }
@@ -528,6 +578,19 @@ export async function handle(req: ApiRequest, deps: { store: ApiStore; apiKey: s
       const q = new URLSearchParams({ week: start });
       const [cards, tasks, briefs, kit] = await Promise.all([list(ctx, "cards", RESOURCES.cards, q), list(ctx, "tasks", RESOURCES.tasks, q), list(ctx, "briefs", RESOURCES.briefs, q), list(ctx, "kit", RESOURCES.kit, q)]);
       return { status: 200, body: { weekStart: start, brief: briefs[0] ?? null, kit: kit[0] ?? null, cards, tasks } };
+    }
+
+    if (name === "kit-files") {
+      // a one-time upload link into the public partner-kit bucket; then POST /partnerKit with the path
+      if (method !== "POST") throw new ApiError(405, "Use POST to ask for an upload link.");
+      if (!isObject(req.body)) throw new ApiError(400, 'Send {"name": "badge.png", "mime": "image/png", "size": 12345}.');
+      const b = req.body;
+      if (Number(b.size) > 50 * 1024 * 1024) throw new ApiError(400, "That file is over 50 MB. Export a smaller copy.");
+      const safe = String(b.name ?? "file").toLowerCase().replace(/[^\w.-]+/g, "-").slice(-80) || "file";
+      const folder = String(b.folder ?? "kit").toLowerCase().replace(/[^\w-]+/g, "-").slice(0, 40) || "kit";
+      const path = `${folder}/${ctx.now.getTime().toString(36)}-${safe}`;
+      const { uploadUrl } = await ctx.store.signedUpload(path, "partner-kit");
+      return { status: 201, body: { path, uploadUrl, next: `POST /partnerKit with {"title": "...", "filePath": "${path}"}` } };
     }
 
     if (name === "files") {

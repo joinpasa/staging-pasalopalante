@@ -52,8 +52,8 @@ function supabaseStore(): ApiStore {
       // the log is a record, not a gate: a failed log line never undoes the change
       await db.from("hub_api_log").insert(entry);
     },
-    async signedUpload(path: string) {
-      const { data, error } = await db.storage.from("hub-media").createSignedUploadUrl(path);
+    async signedUpload(path: string, bucket = "hub-media") {
+      const { data, error } = await db.storage.from(bucket).createSignedUploadUrl(path);
       if (error || !data) throw new Error(error?.message ?? "The file store did not give an upload link.");
       return { uploadUrl: data.signedUrl };
     },
