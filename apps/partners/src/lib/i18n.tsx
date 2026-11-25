@@ -29,7 +29,7 @@ const en = {
   // join
   invited: "You've been invited",
   joinHero: (school: string) => `Welcome to the movement, ${school}.`,
-  joinHeroBody: "Create your account to start logging your organization's acts of kindness this Global Kindness Season.",
+  joinHeroBody: "Your Partners Hub: your kit, your pledge and a place to share your kindness. Type your name and you're in.",
   createAccount: "Create your account",
   createSub: "It takes less than a minute.",
   setByInvite: "Set by your organization's invite link",
@@ -265,7 +265,7 @@ const es: Copy = {
   newPartner: "¿Socio nuevo? Usa el enlace de registro que te envió tu coordinador.",
   invited: "Has sido invitado",
   joinHero: (school: string) => `Bienvenidos al movimiento, ${school}.`,
-  joinHeroBody: "Crea tu cuenta para comenzar a registrar los actos de bondad de tu organización esta Temporada Global de Bondad.",
+  joinHeroBody: "Tu Partners Hub: tu kit, tu compromiso y un lugar para compartir tu bondad. Escribe tu nombre y ya estás dentro.",
   createAccount: "Crea tu cuenta",
   createSub: "Toma menos de un minuto.",
   setByInvite: "Definido por el enlace de invitación de tu organización",

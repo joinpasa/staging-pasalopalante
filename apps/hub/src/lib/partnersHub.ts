@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { HUB_LIVE, hubDb, SUPABASE_URL } from "./client";
+import { HUB_LIVE, hubDb, SUPABASE_KEY, SUPABASE_URL } from "./client";
 
 /*
  * The team's side of the Partners Hub (partners.passkindnessforward.com, 25 Nov 2026): what
@@ -326,6 +326,20 @@ export interface PHMember {
   posts: number;
   last_post: string | null;
   invite_url: string;
+  welcome_sent_at: string | null;
+}
+
+/** Emails a member the Partners Hub welcome (their link, and how to sign in by email next time). */
+export async function sendWelcomeEmail(partnerId: string): Promise<string> {
+  const { data } = await hubDb.auth.getSession();
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/partner-auth`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY, Authorization: `Bearer ${data.session?.access_token ?? ""}` },
+    body: JSON.stringify({ action: "send_welcome", partner_id: partnerId }),
+  });
+  const out = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(out?.error ?? "The welcome email didn't go out. Try again.");
+  return String(out.to ?? "");
 }
 
 export function useMembers() {
@@ -359,8 +373,8 @@ export function useMemberActions() {
   const qc = useQueryClient();
   return {
     add: useMutation({
-      mutationFn: async (m: { name: string; orgType: string; email: string; contactName: string; country: string; pledge: number }) =>
-        (need(
+      mutationFn: async (m: { name: string; orgType: string; email: string; contactName: string; country: string; pledge: number }) => {
+        const row = (need(
           await hubDb.rpc("hub_add_member", {
             _name: m.name,
             _org_type: m.orgType,
@@ -369,7 +383,16 @@ export function useMemberActions() {
             _country: m.country,
             _pledge_goal: m.pledge,
           }),
-        ) as { id: string; invite_url: string }[])[0],
+        ) as { id: string; invite_url: string }[])[0];
+        // with an email, the welcome email goes out straight away
+        let emailed: string | null = null;
+        if (m.email.trim()) emailed = await sendWelcomeEmail(row.id).catch(() => null);
+        return { ...row, emailed };
+      },
+      onSuccess: () => qc.invalidateQueries({ queryKey: ["ph-members"] }),
+    }),
+    welcome: useMutation({
+      mutationFn: (id: string) => sendWelcomeEmail(id),
       onSuccess: () => qc.invalidateQueries({ queryKey: ["ph-members"] }),
     }),
     setKind: useMutation({

@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { sendWelcome } from "../_shared/partnerWelcome.ts";
 
 /**
  * The PKF_Partners Google Sheet's only door into the database. Called by a
@@ -23,10 +24,16 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
  * `portalLinks` so the script can write it back into the sheet. Portal orgs
  * are never deleted from here — they hold the partner's submitted acts.
  *
+ * Welcome email (Partners Hub, 25 Nov 2026): once per org, the hub itself
+ * emails the Contact Email its link (_shared/partnerWelcome.ts), whether or
+ * not the contact is in GHL.
+ *
  * GHL: once per org, the invite link is saved on the contact (matched by
  * the row's Contact Email) in the custom field `partner_portal_url`, and
- * the tag `partner-portal-invite` is added — a GHL workflow on that tag
- * sends the invite email. Retried each sync until it succeeds.
+ * the tag `partners-hub-member` is added, for lists and segments. (Until
+ * 25 Nov 2026 the tag was `partner-portal-invite`, which fired GHL's own
+ * "Partner Portal" invite email; the welcome email above replaces it.)
+ * Retried each sync until it succeeds.
  *
  * Pledges: an Approved row with a Pledge number counts toward the public
  * "Acts pledged" total as one organization commitment (keyed by the sheet
@@ -88,7 +95,7 @@ function pledgeCount(v: unknown): number {
 const PORTAL_JOIN_URL = "https://partners.passkindnessforward.com/join/";
 const GHL_BASE_URL = "https://services.leadconnectorhq.com";
 const GHL_PORTAL_FIELD = "partner_portal_url";
-const GHL_PORTAL_TAG = "partner-portal-invite";
+const GHL_PORTAL_TAG = "partners-hub-member";
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
 /** Sheet Category → the portal's org_type (free text in the sheet). */
@@ -287,8 +294,9 @@ async function syncPortalOrgs(supabase: any, incoming: Entry[]) {
 
     const portalLinks: Record<string, string> = {};
     for (const [id, token] of tokenById) portalLinks[id] = PORTAL_JOIN_URL + token;
+    const welcomed = await sendWelcomes(supabase, toPush);
     const ghl = await pushInvitesToGhl(supabase, toPush);
-    return { portalLinks, portalCreated: created, ...ghl };
+    return { portalLinks, portalCreated: created, ...welcomed, ...ghl };
   } catch (err) {
     console.error("portal org sync failed", err);
     return { portalWarning: `Could not create portal orgs: ${(err as { message?: string })?.message ?? err}` };
@@ -379,6 +387,26 @@ async function setPortalField(headers: Record<string, string>, locationId: strin
  * the next sync instead of being lost.
  */
 // deno-lint-ignore no-explicit-any
+/** The hub's welcome email for each new member, once (sendWelcome skips anyone already welcomed). */
+async function sendWelcomes(supabase: any, toPush: Map<string, { email: string; link: string }>) {
+  const welcomed: string[] = [];
+  const failed: string[] = [];
+  for (const [orgId, { email }] of toPush) {
+    try {
+      const { data: p } = await supabase
+        .from("partners")
+        .select("id, name, org_type, contact_email, invite_token, welcome_sent_at")
+        .eq("id", orgId)
+        .maybeSingle();
+      if (p && (await sendWelcome(supabase, { ...p, contact_email: p.contact_email ?? email }))) welcomed.push(email);
+    } catch (err) {
+      console.error("welcome email failed", email, err);
+      failed.push(email);
+    }
+  }
+  return welcomed.length || failed.length ? { welcomeSent: welcomed, ...(failed.length ? { welcomeFailed: failed } : {}) } : {};
+}
+
 async function pushInvitesToGhl(supabase: any, toPush: Map<string, { email: string; link: string }>) {
   const apiKey = Deno.env.get("GHL_API_KEY");
   const locationId = Deno.env.get("GHL_LOCATION_ID");

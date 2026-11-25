@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { sendWelcome } from "../_shared/partnerWelcome.ts";
 
 /**
  * The Ambassador Kit Google Sheet's only door into the database. Called by
@@ -151,5 +152,62 @@ Deno.serve(async (req) => {
     console.error("ambassador insert failed", insertError);
     return json({ error: "Could not save ambassador" }, 500);
   }
-  return json({ ok: true, id: inserted.id, created: true });
+  // A NEW ambassador also gets a Partners Hub account and the welcome email (25 Nov 2026).
+  // Only here, on the first save: an update (the badge call, or a re-sync of the whole sheet)
+  // never creates accounts or sends email. A problem here never fails the ambassador's sign-up.
+  let hub: Record<string, unknown> = {};
+  try {
+    hub = await joinPartnersHub(supabase, email, fields, body);
+  } catch (err) {
+    console.error("partners hub account for ambassador failed", err);
+    hub = { hubError: String((err as { message?: string })?.message ?? err).slice(0, 300) };
+  }
+  return json({ ok: true, id: inserted.id, created: true, ...hub });
 });
+
+/** Creates the ambassador's Partners Hub account (a member of one), with their photo, and welcomes them. */
+async function joinPartnersHub(supabase: any, email: string, fields: Record<string, unknown>, body: Body) {
+  const { data: already } = await supabase
+    .from("partners")
+    .select("id, name, org_type, contact_email, invite_token, welcome_sent_at")
+    .eq("org_type", "ambassador")
+    .ilike("contact_email", email)
+    .limit(1)
+    .maybeSingle();
+  let member = already;
+  if (!member) {
+    const { data, error } = await supabase
+      .from("partners")
+      .insert({
+        name: String(fields.name).slice(0, 160),
+        org_type: "ambassador",
+        contact_email: email,
+        contact_name: String(fields.name).slice(0, 120),
+        country: (fields.country as string) ?? null,
+        region: (fields.region as string) ?? null,
+        about: typeof fields.role === "string" ? String(fields.role).slice(0, 600) : null,
+        instagram: typeof fields.instagram === "string" ? String(fields.instagram).slice(0, 200) : null,
+        facebook: typeof fields.facebook === "string" ? String(fields.facebook).slice(0, 300) : null,
+        website: typeof fields.website === "string" && /^https?:\/\//i.test(String(fields.website)) ? fields.website : null,
+      })
+      .select("id, name, org_type, contact_email, invite_token, welcome_sent_at")
+      .single();
+    if (error) throw new Error(`partners insert: ${error.message}`);
+    member = data;
+    // their sign-up photo becomes their Partners Hub picture
+    if (body.photoBase64) {
+      try {
+        const mime = (body.photoMimeType || "image/png").toString();
+        const ext = mime.includes("jpeg") ? "jpg" : mime.includes("webp") ? "webp" : "png";
+        const bytes = Uint8Array.from(atob(body.photoBase64), (c) => c.charCodeAt(0));
+        const path = `${member.id}/profile/photo.${ext}`;
+        const up = await supabase.storage.from("partner-media").upload(path, bytes, { contentType: mime, upsert: true });
+        if (!up.error) await supabase.from("partners").update({ logo_path: path }).eq("id", member.id);
+      } catch (e) {
+        console.error("ambassador hub photo failed", e);
+      }
+    }
+  }
+  const sent = await sendWelcome(supabase, member);
+  return { hubMemberId: member.id, welcomeSent: sent };
+}

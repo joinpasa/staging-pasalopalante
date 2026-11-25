@@ -630,7 +630,7 @@ function Members() {
         </button>
       </div>
       <p className="text-[13px] text-ink-muted">
-        Partners from the PKF_Partners sheet arrive here by themselves once their row says Approved and Portal Access Yes (HighLevel emails their invite). Add ambassadors, and anyone not in the sheet, here; then copy their invite link.
+        How members arrive: organisations and companies from the PKF_Partners sheet once their row says Approved and Portal Access Yes; ambassadors as soon as they sign up on the website. Each gets the welcome email with their link automatically. Add anyone else here.
       </p>
 
       {adding && (
@@ -643,7 +643,8 @@ function Members() {
               {
                 onSuccess: (r) => {
                   setAdding(false);
-                  void copy(r.invite_url, "Added. Their invite link is copied: send it to them.");
+                  if (r.emailed) toast.success(`Added. The welcome email is on its way to ${r.emailed}.`);
+                  else void copy(r.invite_url, "Added. Their invite link is copied: send it to them.");
                 },
                 onError: (err) => toast.error((err as Error).message),
               },
@@ -685,7 +686,7 @@ function Members() {
           </label>
           <div className="sm:col-span-3">
             <button type="submit" className="btn-primary" disabled={act.add.isPending || !m.name.trim()}>
-              Add and copy their invite link
+              {m.email.trim() ? "Add and email them their welcome" : "Add and copy their invite link"}
             </button>
           </div>
         </form>
@@ -704,12 +705,23 @@ function Members() {
               <th className="py-2 pr-3 text-right">Acts</th>
               <th className="py-2 pr-3 text-right">Pledge</th>
               <th className="py-2 pr-3 text-right">Posts</th>
+              <th className="py-2 pr-3">Welcome email</th>
               <th className="py-2">Invite</th>
             </tr>
           </thead>
           <tbody>
             {shown.map((x) => (
-              <MemberRow key={x.id} member={x} onKind={(orgType) => act.setKind.mutate({ id: x.id, orgType })} />
+              <MemberRow
+                key={x.id}
+                member={x}
+                onKind={(orgType) => act.setKind.mutate({ id: x.id, orgType })}
+                onWelcome={() =>
+                  act.welcome.mutate(x.id, {
+                    onSuccess: (to) => toast.success(`Welcome email sent to ${to}`),
+                    onError: (e) => toast.error((e as Error).message),
+                  })
+                }
+              />
             ))}
           </tbody>
         </table>
@@ -718,7 +730,7 @@ function Members() {
   );
 }
 
-function MemberRow({ member: x, onKind }: { member: PHMember; onKind: (orgType: string) => void }) {
+function MemberRow({ member: x, onKind, onWelcome }: { member: PHMember; onKind: (orgType: string) => void; onWelcome: () => void }) {
   const missing = [!x.contact_email && "email", !x.country && "country", !x.logo_path && !x.entry_logo_url && "logo"].filter(Boolean);
   return (
     <tr className="border-b border-line align-top">
@@ -747,6 +759,18 @@ function MemberRow({ member: x, onKind }: { member: PHMember; onKind: (orgType: 
         {x.pledge_waiting > 0 && <span className="block text-[11.5px] font-semibold text-sun-ink">+{x.pledge_waiting.toLocaleString()} waiting</span>}
       </td>
       <td className="py-2.5 pr-3 text-right tabular-nums">{x.posts}</td>
+      <td className="py-2.5 pr-3">
+        {x.contact_email ? (
+          <span className="flex flex-col items-start gap-0.5">
+            {x.welcome_sent_at && <span className="text-[12px] text-ink-muted">Sent {when(x.welcome_sent_at)}</span>}
+            <button type="button" className="btn-quiet" onClick={onWelcome}>
+              <Send size={13} /> {x.welcome_sent_at ? "Send again" : "Send"}
+            </button>
+          </span>
+        ) : (
+          <span className="text-[12px] text-ink-faint">No email</span>
+        )}
+      </td>
       <td className="py-2.5">
         <button type="button" className="btn-quiet" onClick={() => copy(x.invite_url, `Invite link for ${x.name} copied`)}>
           <Copy size={13} /> Copy

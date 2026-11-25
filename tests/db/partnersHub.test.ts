@@ -10,6 +10,7 @@ import path from "node:path";
  */
 const HUB = fs.readFileSync(path.resolve(__dirname, "../../supabase/migrations/20261115120000_kindness_hub.sql"), "utf8");
 const MIGRATION = fs.readFileSync(path.resolve(__dirname, "../../supabase/migrations/20261125120000_partners_hub.sql"), "utf8");
+const WELCOME = fs.readFileSync(path.resolve(__dirname, "../../supabase/migrations/20261125150000_partners_welcome.sql"), "utf8");
 
 const SCHEMA = `
   CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role BYPASSRLS;
@@ -116,6 +117,7 @@ beforeEach(async () => {
   await db.exec(SCHEMA);
   await db.exec(HUB);
   await db.exec(MIGRATION);
+  await db.exec(WELCOME);
   await db.exec(GRANTS);
 });
 
@@ -243,6 +245,9 @@ describe("Partners Hub: updates, kit and the team", () => {
     await teamMember("simone");
     const added = (await as<{ id: string; invite_url: string }>("simone", "SELECT * FROM public.hub_add_member('Maya Cruz', 'ambassador', 'maya@example.org', 'Maya', 'Philippines', 100)")).rows[0];
     expect(added.invite_url).toMatch(/^https:\/\/partners\.passkindnessforward\.com\/join\/[0-9a-f]{32}$/);
+    await db.query("UPDATE public.partners SET welcome_sent_at = now() WHERE name = 'Maya Cruz'");
+    const sent = (await as<{ w: string | null }>("simone", "SELECT welcome_sent_at AS w FROM public.hub_partners() WHERE name = 'Maya Cruz'")).rows[0].w;
+    expect(sent).not.toBeNull();
     const list = (await as<{ name: string; org_type: string; joined: boolean }>("simone", "SELECT name, org_type, joined FROM public.hub_partners()")).rows;
     expect(list).toEqual([
       { name: "a org", org_type: "school", joined: true },

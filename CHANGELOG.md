@@ -20,6 +20,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 - **Signing in is easier.** Members type their email and get a link, so nobody has to know whether they "have an account". Kindness IDs and invite links still work.
 - **New "Partners Hub" page in the Kindness Hub, for the team.** It shows what members post and send. The team can hide a post, reply as Kindness Forward, mark a post as shared, or copy it into the story bank with its consent. The team can also write and publish the weekly update in English and Spanish, manage the kit, and see every member with their invite link. The team can add ambassadors and other members by hand, and tick off pledge additions once they're in the partners sheet.
 - **A small spacing fix on the sign-up forms' thank-you card,** so it works the same in right-to-left languages.
+- **New members get one welcome email, automatically.** Organisations and companies get it as soon as they're approved in the partners sheet. Ambassadors get it as soon as they sign up on the website, which now also creates their Partners Hub account, with their sign-up photo as their picture. The email is in English and Spanish. It carries their link and explains that next time they just type their email to get a sign-in link, with no password. It replaces HighLevel's old "Partner Portal" invite email, which is no longer triggered. The team can resend it from the Kindness Hub, and adding a member there with an email sends it straight away.
 
 ## 2026-11-24 — sim1
 

@@ -1,5 +1,6 @@
 import { adminClient, corsHeaders, isPlaceholderEmail, json, UUID_RE, type PartnerRow } from "../_shared/partner.ts";
 import { escapeHtml, SENDER_DOMAIN } from "../_shared/ops.ts";
+import { sendWelcome } from "../_shared/partnerWelcome.ts";
 import type { SupabaseClient } from "npm:@supabase/supabase-js@2";
 
 /*
@@ -9,6 +10,8 @@ import type { SupabaseClient } from "npm:@supabase/supabase-js@2";
  *                                              contact email this is; always answers ok
  *   { action: "redeem", token, name? }      -> session token, like login; the first time, asks for
  *                                              the person's name and gives them a Kindness ID too
+ *   { action: "send_welcome", partner_id }  -> the team (signed in to the Kindness Hub) sends a
+ *                                              member the welcome email again
  */
 const LINK_MINUTES = 30;
 const PORTAL = "https://partners.passkindnessforward.com";
@@ -299,6 +302,29 @@ Deno.serve(async (req) => {
         staff: { id: staff.id, name: staff.name },
         staff_code: staffCode,
       });
+    }
+
+    if (action === "send_welcome") {
+      const bearer = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "");
+      const { data: who } = bearer ? await admin.auth.getUser(bearer) : { data: { user: null } };
+      if (!who?.user) return json({ error: "Sign in to the Kindness Hub first." }, 401);
+      const { data: role } = await admin.rpc("hub_role", { _user_id: who.user.id });
+      if (!role) return json({ error: "Only the Kindness Forward team can send this." }, 403);
+      const partnerId = String(body.partner_id ?? "");
+      if (!UUID_RE.test(partnerId)) return json({ error: "Which member?" }, 400);
+      const { data: member } = await admin
+        .from("partners")
+        .select("id, name, org_type, contact_email, invite_token, welcome_sent_at")
+        .eq("id", partnerId)
+        .maybeSingle();
+      if (!member) return json({ error: "That member doesn't exist." }, 404);
+      if (!member.contact_email) return json({ error: "There's no email for this member yet." }, 400);
+      if ((await recentCount(admin, `welcome:${partnerId}`, 60)) >= 3) {
+        return json({ error: "That's three welcome emails this hour. Try again later." }, 429);
+      }
+      await admin.from("partner_login_attempts").insert({ key: `welcome:${partnerId}` });
+      await sendWelcome(admin, member, true);
+      return json({ ok: true, to: member.contact_email });
     }
 
     return json({ error: "Unknown action" }, 400);

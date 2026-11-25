@@ -70,12 +70,15 @@ table.
    Partners → Sync now), the row goes on `/partners`, and because Portal
    Access = Yes, `sync-partners` creates the partner-portal organization
    once. Its invite link is written into **Portal Link** (column O).
-5. **Portal invite email:** `sync-partners` also saves the link on the
-   contact in GHL (custom field `partner_portal_url`) and adds the tag
-   `partner-portal-invite`. A GHL workflow on **Contact Tag Added →
-   partner-portal-invite** sends the email, using `{{contact.partner_portal_url}}`
-   as the link. Each org's link is pushed once. If GHL is down, or the
-   contact doesn't exist yet, it retries on every sync.
+5. **Welcome email (since 25 Nov 2026):** the Partners Hub emails the
+   Contact Email itself, once, as soon as the org exists: one email in
+   English and Spanish with their link and how to sign in by email next time
+   (`supabase/functions/_shared/partnerWelcome.ts`). `sync-partners` still
+   saves the link on the GHL contact (custom field `partner_portal_url`) and
+   now adds the tag `partners-hub-member` for lists. The old tag
+   `partner-portal-invite`, which fired GHL's "Partner Portal" invite email,
+   is no longer added, so nobody gets two emails. The team can resend the
+   welcome from the Kindness Hub (Partners Hub, Members).
 
 6. **Pledge counted:** the pledged acts (GHL field
    `{{contact.partner_group_pledged_acts}}`) land in **Pledge** (column P).
