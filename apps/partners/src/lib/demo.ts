@@ -95,16 +95,16 @@ let profile = {
 let adds: PledgeAdd[] = [];
 
 const OTHERS = [
-  { id: "p-1", name: "Teen Challenge Puerto Rico", org_type: "ngo", country: "Puerto Rico", region: "Bayamón", city: "Bayamón" },
+  { id: "p-1", name: "Casa Esperanza Youth", org_type: "ngo", country: "Puerto Rico", region: "Bayamón", city: "Bayamón" },
   { id: "p-2", name: "Lagos Kindness Club", org_type: "community", country: "Nigeria", region: "Lagos", city: "Lagos" },
   { id: "p-3", name: "Harbor Bank", org_type: "company", country: "United States", region: "Florida", city: "Miami" },
-  { id: "p-4", name: "Daniela Trufin", org_type: "ambassador", country: "Germany", region: "Bavaria", city: "Munich" },
-  { id: "p-5", name: "Colegio San Ignacio", org_type: "school", country: "Puerto Rico", region: "San Juan", city: "San Juan" },
+  { id: "p-4", name: "Lena Weber", org_type: "ambassador", country: "Germany", region: "Bavaria", city: "Munich" },
+  { id: "p-5", name: "Colegio Las Brisas", org_type: "school", country: "Puerto Rico", region: "San Juan", city: "San Juan" },
   { id: "p-6", name: "Cebu Youth Network", org_type: "ngo", country: "Philippines", region: "Cebu", city: "Cebu" },
   { id: "p-7", name: "Brightway Software", org_type: "company", country: "India", region: "Karnataka", city: "Bengaluru" },
   { id: "p-8", name: "Priya Nair", org_type: "ambassador", country: "India", region: "Kerala", city: "Kochi" },
   { id: "p-9", name: "Ljubljana Hearts", org_type: "community", country: "Slovenia", region: "Central", city: "Ljubljana" },
-  { id: "p-10", name: "Municipio de Vega Alta", org_type: "government", country: "Puerto Rico", region: "North", city: "Vega Alta" },
+  { id: "p-10", name: "Pueblo Verde Municipality", org_type: "government", country: "Puerto Rico", region: "North", city: "Vega Alta" },
   { id: "p-11", name: "James Okafor", org_type: "ambassador", country: "United Kingdom", region: "London", city: "London" },
   { id: "p-12", name: "Accra Friends of Kindness", org_type: "community", country: "Ghana", region: "Greater Accra", city: "Accra" },
 ];
@@ -113,7 +113,7 @@ let posts: FeedRow[] = [
   {
     id: "post-1",
     partner_id: "p-1",
-    partner_name: "Teen Challenge Puerto Rico",
+    partner_name: "Casa Esperanza Youth",
     partner_org_type: "ngo",
     partner_country: "Puerto Rico",
     partner_region: "Bayamón",
@@ -137,14 +137,14 @@ let posts: FeedRow[] = [
   {
     id: "post-2",
     partner_id: "p-4",
-    partner_name: "Daniela Trufin",
+    partner_name: "Lena Weber",
     partner_org_type: "ambassador",
     partner_country: "Germany",
     partner_region: "Bavaria",
     partner_city: "Munich",
     partner_logo_path: null,
     partner_entry_logo: null,
-    staff_name: "Daniela Trufin",
+    staff_name: "Lena Weber",
     audience: "community",
     kind: "testimonial",
     body: "I asked my neighbours to write one thank-you note each. By Sunday our building had a wall of them by the mailboxes. Small acts really do travel.",
@@ -209,7 +209,7 @@ let posts: FeedRow[] = [
   {
     id: "post-5",
     partner_id: "p-5",
-    partner_name: "Colegio San Ignacio",
+    partner_name: "Colegio Las Brisas",
     partner_org_type: "school",
     partner_country: "Puerto Rico",
     partner_region: "San Juan",
@@ -236,8 +236,8 @@ const commentsByPost = new Map<string, Comment[]>([
   [
     "post-1",
     [
-      { id: "c1", body: "Love seeing those cards passed from one person to another.", created_at: ago(2), author: "Daniela Trufin", partner_name: "Daniela Trufin", team: false, mine: false },
-      { id: "c2", body: "Thank you for this. We shared it on our Instagram today.", created_at: ago(1), author: "Simone", partner_name: "Kindness Forward", team: true, mine: false },
+      { id: "c1", body: "Love seeing those cards passed from one person to another.", created_at: ago(2), author: "Lena Weber", partner_name: "Lena Weber", team: false, mine: false },
+      { id: "c2", body: "Thank you for this. We shared it on our Instagram today.", created_at: ago(1), author: "Kindness Forward", partner_name: "Kindness Forward", team: true, mine: false },
     ],
   ],
 ]);
@@ -264,8 +264,8 @@ const updates: Update[] = [
       { kind: "moment", text: "Coming up: 21 December, the season's second global moment.", textEs: "Se acerca: 21 de diciembre, el segundo momento global de la temporada." },
     ],
     spotlight_partner_id: "p-1",
-    spotlight_text: "Teen Challenge Puerto Rico met with the Pásalo Pa'lante team this week to bring kindness cards to every one of their four centres.",
-    spotlight_text_es: "Teen Challenge Puerto Rico se reunió con el equipo de Pásalo Pa'lante para llevar tarjetas de bondad a sus cuatro centros.",
+    spotlight_text: "Casa Esperanza Youth met with the Pásalo Pa'lante team this week to bring kindness cards to every one of their four centres.",
+    spotlight_text_es: "Casa Esperanza Youth se reunió con el equipo de Pásalo Pa'lante para llevar tarjetas de bondad a sus cuatro centros.",
     image_path: null,
     published_at: ago(30),
   },
@@ -407,7 +407,7 @@ export const demo = {
   card: (id: string) => {
     const o = OTHERS.find((x) => x.id === id);
     return o
-      ? [{ id: o.id, name: o.name, org_type: o.org_type, country: o.country, region: o.region, city: o.city, logo_path: null, entry_logo_url: null, about: null, website: "https://teenchallengepr.org" }]
+      ? [{ id: o.id, name: o.name, org_type: o.org_type, country: o.country, region: o.region, city: o.city, logo_path: null, entry_logo_url: null, about: null, website: "https://example.org" }]
       : [];
   },
   // the real kit when a copy of the live list is saved in demo-assets/kit-live.json (git-ignored)
@@ -450,7 +450,7 @@ export const demo = {
   submissions: () => submissions,
   recentPledges: () => [
     { created_at: ago(0.05), country: "Germany", kind: "person" as const, org_name: null, acts: 12 },
-    { created_at: ago(0.3), country: "Puerto Rico", kind: "organisation" as const, org_name: "Teen Challenge Puerto Rico", acts: 5000 },
+    { created_at: ago(0.3), country: "Puerto Rico", kind: "organisation" as const, org_name: "Casa Esperanza Youth", acts: 5000 },
     { created_at: ago(0.9), country: "Nigeria", kind: "person" as const, org_name: null, acts: 30 },
     { created_at: ago(1.6), country: "Philippines", kind: "person" as const, org_name: null, acts: 7 },
     { created_at: ago(2.2), country: "United States", kind: "person" as const, org_name: null, acts: 100 },

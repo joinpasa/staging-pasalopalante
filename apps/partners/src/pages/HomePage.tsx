@@ -117,7 +117,10 @@ function Aside() {
   const { data: me } = useMe();
   const { data: kit } = useKit();
   const m = nextMoment();
-  const fresh = (kit ?? []).filter((k) => me && kitAudienceMatches(k.audience, me.kind) && isNew(k.added_at) && (k.thumb_path || k.file_path)).slice(0, 3);
+  // only things with a picture to show (a zip or a PDF without a preview would show as a broken image)
+  const fresh = (kit ?? [])
+    .filter((k) => me && kitAudienceMatches(k.audience, me.kind) && isNew(k.added_at) && (k.thumb_path || (k.mime?.startsWith("image/") && k.file_path)))
+    .slice(0, 3);
   return (
     <>
       <div className="border-[1.5px] border-hair p-4">
