@@ -1,15 +1,17 @@
 import { useState, type FormEvent } from "react";
+import { Link } from "react-router-dom";
 import { KeyRound, Loader2, Mail, MailCheck } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import SchoolSearch from "@/components/SchoolSearch";
 import { useCopy } from "@/lib/i18n";
-import { APPLY_URL, useHubCopy } from "@/lib/hubCopy";
+import { useHubCopy } from "@/lib/hubCopy";
 import { callFunction } from "@/lib/portalClient";
 import { useSession, type Partner } from "@/lib/session";
 
 /**
  * Sign in. The easy way first: type your email and we send a link if you're a member (so nobody
- * has to know whether they "have an account"). The Kindness ID is the second way in.
+ * has to know whether they "have an account"). The Kindness ID is the second way in, and anyone
+ * who forgot theirs is pointed back to their email (27 Nov 2026, from a tester's question).
  */
 export default function LoginPage() {
   const { t } = useCopy();
@@ -95,6 +97,7 @@ export default function LoginPage() {
               {busy ? <Loader2 className="me-2 h-5 w-5 animate-spin" aria-hidden="true" /> : <Mail className="me-2 h-5 w-5" aria-hidden="true" />}
               {busy ? h.sendingLink : h.sendLink}
             </button>
+            <p className="m-0 text-center text-[13.5px] font-semibold text-ink-faint">{h.noIdNeeded}</p>
           </form>
         )
       ) : (
@@ -120,7 +123,17 @@ export default function LoginPage() {
               onChange={(e) => setCode(e.target.value.toUpperCase())}
               className="field font-semibold tracking-[0.12em]"
             />
-            {showHelp && <p className="m-0 bg-tint-sky p-3 text-[13px] leading-normal text-ink-muted">{t.forgotStaffIdHelp}</p>}
+            {showHelp && (
+              <div className="flex flex-col items-start gap-2 bg-tint-sky p-3.5">
+                <b className="text-[14.5px] font-extrabold text-navy">{h.forgotIdTitle}</b>
+                <p className="m-0 text-[13.5px] font-medium leading-normal text-ink2">{h.forgotIdBody}</p>
+                <button type="button" onClick={() => (setMode("email"), setError(null), setShowHelp(false))} className="btn-primary h-10 px-4 text-sm">
+                  <Mail className="me-2 h-4 w-4" aria-hidden="true" />
+                  {h.useEmail}
+                </button>
+                <p className="m-0 text-[12.5px] font-medium leading-normal text-ink-muted">{h.forgotIdOr}</p>
+              </div>
+            )}
           </div>
           {error && (
             <p role="alert" className="m-0 bg-rose-soft px-3.5 py-2.5 text-sm font-semibold text-rose-ink">
@@ -140,13 +153,14 @@ export default function LoginPage() {
           className="flex items-center gap-2 text-[15px] font-bold text-sky-deep hover:text-navy"
         >
           {mode === "email" ? <KeyRound className="h-4 w-4" aria-hidden="true" /> : <Mail className="h-4 w-4" aria-hidden="true" />}
-          {mode === "email" ? h.orKindnessId : h.sendLink}
+          {mode === "email" ? h.orKindnessId : h.useEmail}
         </button>
         <p className="m-0 text-[15px] font-semibold text-ink-muted">
           {h.notMember}{" "}
-          <a href={APPLY_URL} target="_blank" rel="noopener noreferrer" className="font-bold text-orange">
+          {/* the one open link (26 Nov 2026) rather than the website's apply form */}
+          <Link to="/join" className="font-bold text-orange">
             {h.joinUs}
-          </a>
+          </Link>
         </p>
       </div>
     </AuthLayout>

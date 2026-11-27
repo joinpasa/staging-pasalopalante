@@ -12,6 +12,7 @@ const HUB = fs.readFileSync(path.resolve(__dirname, "../../supabase/migrations/2
 const MIGRATION = fs.readFileSync(path.resolve(__dirname, "../../supabase/migrations/20261125120000_partners_hub.sql"), "utf8");
 const WELCOME = fs.readFileSync(path.resolve(__dirname, "../../supabase/migrations/20261125150000_partners_welcome.sql"), "utf8");
 const OPEN_JOIN = fs.readFileSync(path.resolve(__dirname, "../../supabase/migrations/20261126100000_partners_open_join.sql"), "utf8");
+const EVENTS = fs.readFileSync(path.resolve(__dirname, "../../supabase/migrations/20261127100000_partners_events_outreach.sql"), "utf8");
 
 const SCHEMA = `
   CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role BYPASSRLS;
@@ -120,6 +121,7 @@ beforeEach(async () => {
   await db.exec(MIGRATION);
   await db.exec(WELCOME);
   await db.exec(OPEN_JOIN);
+  await db.exec(EVENTS);
   await db.exec(GRANTS);
 });
 
@@ -240,6 +242,23 @@ describe("Partners Hub: updates, kit and the team", () => {
     await as("simone", "UPDATE public.partner_kit_items SET hidden = true WHERE title = 'Hidden'");
     expect((await as("a", "SELECT title FROM public.partner_kit_items")).rows).toEqual([{ title: "Badge" }]);
     await expect(as("a", "INSERT INTO public.partner_kit_items (title, url) VALUES ('Mine', 'https://example.org')")).rejects.toThrow();
+  });
+
+  it("takes outreach letters as a kit section, and nothing it doesn't know", async () => {
+    await teamMember("simone");
+    await as("simone", "INSERT INTO public.partner_kit_items (title, section, audience, url) VALUES ('Invite a school', 'outreach', 'ambassador', 'https://example.org/l.docx')");
+    await expect(as("simone", "INSERT INTO public.partner_kit_items (title, section, url) VALUES ('X', 'letters', 'https://example.org')")).rejects.toThrow();
+  });
+
+  it("shows the team's events to members, hides hidden ones, and lets only the team add them", async () => {
+    await member("a");
+    await teamMember("simone");
+    await as("simone", "INSERT INTO public.partner_events (title, starts_on, place) VALUES ('Kindness walk', '2026-12-12', 'San Juan, Puerto Rico'), ('Draft', '2026-12-13', null)");
+    await as("simone", "UPDATE public.partner_events SET hidden = true WHERE title = 'Draft'");
+    expect((await as("a", "SELECT title FROM public.partner_events")).rows).toEqual([{ title: "Kindness walk" }]);
+    expect((await as("simone", "SELECT count(*)::int AS n FROM public.partner_events")).rows).toEqual([{ n: 2 }]);
+    await expect(as("a", "INSERT INTO public.partner_events (title, starts_on) VALUES ('Mine', '2026-12-14')")).rejects.toThrow();
+    await expect(as("simone", "INSERT INTO public.partner_events (title, starts_on, ends_on) VALUES ('Backwards', '2026-12-14', '2026-12-01')")).rejects.toThrow();
   });
 
   it("gives the team every member with an invite link, and lets it add an ambassador", async () => {

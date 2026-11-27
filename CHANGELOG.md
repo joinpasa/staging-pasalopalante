@@ -8,6 +8,11 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-11-27 — sim1
+
+- **Partners Hub: easier photos and videos, an Events tab, and outreach letters on the way, from a tester's feedback.** A "Photos or videos" box now sits under the menu on a computer, just above Share: one click opens the file picker (or drop files on it), and the photos land in a ready post that goes to every member or only to the Kindness Forward team for our socials. On a phone the + is labelled Share and "Photos or videos" is its first choice, and Home has the same button under the share box. A new Events tab gathers what's coming up: the season's own moments (21 December, 27 January, 31 January) on top, events the team adds in the Kindness Hub (marked "Near you" for members in that country), and the international days that used to be on the Ideas page. Any of them goes into a member's own calendar in one tap, and members can tell us about their own events. Ambassadors' kits have a new Outreach letters shelf, with invitation and welcome letters for education, media, kindness champions and organisations; it says "coming soon" until the team uploads the templates. On the sign-in page, "Forgot it?" now points straight to signing in by email, and "Ask to join" opens the hub's own join page. The first-time tour has cards for the new photos and Events places.
+- **Kindness Hub: an Events tab on the Partners Hub page, and an "Outreach letters" kit section.** The team adds an event with a date (or a run of days), a time, where, a country, a link and Spanish wording, and can hide or remove it.
+
 ## 2026-11-26 — sim1
 
 - **Partners Hub: one link for everyone to join, and easier on phones and computers.** partners.passkindnessforward.com/join is a single link to share anywhere. People choose whether they're an organisation, a company or an ambassador and fill in every detail (name, type, contact, email, country, city, website or social page, what they do, and their pledge). They then get their own Partners Hub link by email, which proves the address is theirs. They show in Community once they've opened it. Sideways rows (photo editor tabs, member stories, badges, Made for you, post photos) now have arrows on a computer, small buttons are bigger to tap on phones, and the team's own Partners Hub account is never listed as a member.

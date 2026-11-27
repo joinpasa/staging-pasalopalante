@@ -25,6 +25,7 @@ const demoLogo = (() => {
 })();
 import type { FeedRow, KitItem, PledgeAdd, TeamPerson, Update, HubStats, Comment, PartnerEntry } from "./hub";
 import type { Submission } from "./submissions";
+import type { PartnerEvent } from "./events";
 
 type DemoKind = "organisation" | "company" | "ambassador";
 
@@ -309,6 +310,13 @@ const submissions: Submission[] = [
   { id: "s3", description: "Reading buddies with the first graders", people_count: 107, act_date: "2026-11-12", status: "approved", review_note: null, media: [], link_url: null, created_at: ago(300), thumbUrl: planting },
 ];
 
+// events the team added in the Kindness Hub (made up)
+const events: PartnerEvent[] = [
+  { id: "ev1", title: "Thank-you card session, online", title_es: "Sesión de tarjetas de agradecimiento, en línea", details: "Bring paper and pens. We write cards together for people who rarely hear thank you.", details_es: "Trae papel y bolígrafos. Escribimos juntos tarjetas para quienes casi nunca escuchan un gracias.", starts_on: "2026-12-09", ends_on: null, time_text: "6 PM Puerto Rico time", place: "Online", country: null, url: "https://example.org/cards", audience: "all" },
+  { id: "ev2", title: "Kindness walk in Old San Juan", title_es: "Caminata de la bondad en el Viejo San Juan", details: "A morning walk with partners, with a short stop to thank the city's cleaning crews.", details_es: "Una caminata con aliados, con una parada para agradecer a las brigadas de limpieza.", starts_on: "2026-12-12", ends_on: null, time_text: "9 AM", place: "San Juan, Puerto Rico", country: "Puerto Rico", url: null, audience: "all" },
+  { id: "ev3", title: "Holiday collection drive", title_es: "Colecta de las fiestas", details: "Coats, food and toys for local shelters. Drop-off points are in the kit.", details_es: "Abrigos, alimentos y juguetes para refugios locales. Los puntos de entrega están en el kit.", starts_on: "2026-12-14", ends_on: "2026-12-19", time_text: null, place: "Ponce, Puerto Rico", country: "Puerto Rico", url: null, audience: "all" },
+];
+
 export const demo = {
   fileUrl: (path: string) => files.get(path) ?? DEMO_FILES[path] ?? path,
   keepFile: (path: string, blob: Blob) => {
@@ -404,6 +412,7 @@ export const demo = {
     if (p) p.comments = list.length;
   },
   updates: () => updates,
+  events: () => events,
   card: (id: string) => {
     const o = OTHERS.find((x) => x.id === id);
     return o

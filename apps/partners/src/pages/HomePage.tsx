@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { CalendarHeart, Heart } from "lucide-react";
+import { CalendarHeart, ChevronRight, Heart, ImagePlus } from "lucide-react";
 import Shell from "@/components/Shell";
 import Avatar from "@/components/Avatar";
 import PostCard from "@/components/PostCard";
@@ -8,6 +8,7 @@ import ThisWeek from "@/components/ThisWeek";
 import Welcome from "@/components/Welcome";
 import Sheet from "@/components/Sheet";
 import Composer from "@/components/Composer";
+import { useShareMedia } from "@/components/ShareMedia";
 import { useHubCopy } from "@/lib/hubCopy";
 import { isNew, kitFileUrl, useFeed, useKit, useMe, useUpdates } from "@/lib/hub";
 import { useSession } from "@/lib/session";
@@ -17,7 +18,17 @@ import { formatDay, momentLabel, nextMoment } from "@/lib/moments";
 
 /** Home is the feed, the way social apps open: this week's note pinned on top, then members' posts. */
 export default function HomePage() {
+  return (
+    <Shell aside={<Aside />}>
+      <Feed />
+    </Shell>
+  );
+}
+
+/** Inside the Shell, so the photo and video button can reach the Shell's file picker. */
+function Feed() {
   const { h, lang, locale } = useHubCopy();
+  const media = useShareMedia();
   const { staff } = useSession();
   const navigate = useNavigate();
   const { data: me } = useMe();
@@ -34,7 +45,7 @@ export default function HomePage() {
   const firstName = staff?.name.split(/\s+/)[0] ?? "";
 
   return (
-    <Shell aside={<Aside />}>
+    <>
       <div className="flex flex-col gap-5">
         {/* who's here, and how far along */}
         <div className="flex items-center gap-3">
@@ -69,12 +80,25 @@ export default function HomePage() {
 
         {latest ? <ThisWeek update={latest} /> : <p className="m-0 bg-tint-sky px-4 py-3 text-sm font-semibold text-ink2">{h.noUpdateYet}</p>}
 
-        {/* "what's on your mind" */}
-        <button type="button" onClick={() => setComposing(true)} className="flex items-center gap-3 border-[1.5px] border-hair px-3 py-3 text-start hover:border-sky">
-          <Avatar name={me?.name ?? ""} url={me?.logoUrl} kind={me?.kind ?? "organisation"} size={36} />
-          <span className="flex-1 text-[15px] font-medium text-ink-faint">{h.shareSomething}</span>
-          <span className="bg-tint-sky px-3 py-1.5 text-sm font-bold text-sky-deep">{h.post}</span>
-        </button>
+        {/* "what's on your mind", with photos and videos one tap away */}
+        <div className="border-[1.5px] border-hair">
+          <button type="button" onClick={() => setComposing(true)} className="flex w-full items-center gap-3 px-3 py-3 text-start hover:bg-tint-sky/40">
+            <Avatar name={me?.name ?? ""} url={me?.logoUrl} kind={me?.kind ?? "organisation"} size={36} />
+            <span className="min-w-0 flex-1 truncate text-[15px] font-medium text-ink-faint">{h.shareSomething}</span>
+            <span className="shrink-0 bg-tint-sky px-3 py-1.5 text-sm font-bold text-sky-deep">{h.post}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => media?.pick()}
+            className="flex w-full items-center gap-2.5 border-t-[1.5px] border-hair px-3 py-2.5 text-start text-[15px] font-extrabold text-navy hover:bg-tint-sky/40"
+            data-tour="media"
+          >
+            <span className="flex h-8 w-8 items-center justify-center bg-sky text-white">
+              <ImagePlus className="h-[18px] w-[18px]" aria-hidden="true" />
+            </span>
+            {h.mediaCta}
+          </button>
+        </div>
 
         {/* filter by kind of member */}
         <div className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
@@ -107,7 +131,7 @@ export default function HomePage() {
       <Sheet open={composing} onClose={() => setComposing(false)} title={h.newPost} wide>
         <Composer onDone={() => setComposing(false)} />
       </Sheet>
-    </Shell>
+    </>
   );
 }
 
@@ -123,13 +147,17 @@ function Aside() {
     .slice(0, 3);
   return (
     <>
-      <div className="border-[1.5px] border-hair p-4">
+      <Link to="/events" className="block border-[1.5px] border-hair p-4 no-underline hover:border-sky">
         <div className="flex items-center gap-2 text-[13px] font-extrabold text-sky-deep">
           <CalendarHeart className="h-4 w-4" aria-hidden="true" />
           {formatDay(m.date, locale)}
         </div>
-        <div className="mt-1 text-lg font-extrabold leading-snug">{momentLabel(m, lang)}</div>
-      </div>
+        <div className="mt-1 text-lg font-extrabold leading-snug text-navy">{momentLabel(m, lang)}</div>
+        <span className="mt-2 flex items-center gap-1 text-[13px] font-bold text-sky-deep">
+          {h.seeAllEvents}
+          <ChevronRight className="h-4 w-4" aria-hidden="true" />
+        </span>
+      </Link>
       {fresh.length > 0 && (
         <div className="border-[1.5px] border-hair p-4">
           <div className="flex items-center justify-between">

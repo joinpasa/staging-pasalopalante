@@ -4,6 +4,7 @@ import { portal, SUPABASE_URL } from "./portalClient";
 import { useSession } from "./session";
 import { kindOf, type Kind } from "./kinds";
 import type { UploadedMedia } from "./upload";
+import type { PartnerEvent } from "./events";
 // Local preview only: compiled out of production builds (import.meta.env.DEV is false there).
 const DEMO = import.meta.env.DEV && import.meta.env.VITE_PARTNERS_DEMO === "1";
 const loadDemo = () => import("./demo").then((m) => m.demo);
@@ -629,7 +630,7 @@ export interface KitItem {
   title_es: string | null;
   description: string | null;
   description_es: string | null;
-  section: "start" | "social" | "profile" | "print" | "email" | "logos" | "video" | "other";
+  section: "start" | "social" | "profile" | "print" | "email" | "logos" | "video" | "other" | "outreach";
   audience: "all" | Kind;
   lang: "en" | "es" | "both";
   file_path: string | null;
@@ -660,6 +661,26 @@ export function useKit() {
         .order("added_at", { ascending: false });
       if (error) throw error;
       return (data ?? []) as KitItem[];
+    },
+  });
+}
+
+// ---------- events the team adds (27 Nov 2026) ----------
+
+export function usePartnerEvents() {
+  const { partner } = useSession();
+  return useQuery({
+    queryKey: ["hub", "events", partner?.id],
+    enabled: !!partner,
+    queryFn: async (): Promise<PartnerEvent[]> => {
+      if (DEMO) return (await loadDemo()).events();
+      const { data, error } = await portal
+        .from("partner_events")
+        .select("id, title, title_es, details, details_es, starts_on, ends_on, time_text, place, country, url, audience")
+        .eq("hidden", false)
+        .order("starts_on");
+      if (error) throw error;
+      return (data ?? []) as PartnerEvent[];
     },
   });
 }

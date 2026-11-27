@@ -21,11 +21,11 @@ import {
 } from "lucide-react";
 import type { Lang } from "./i18n";
 import type { Kind } from "./kinds";
-import { MOMENTS } from "./moments";
 
 /**
- * The Ideas tab (25 Nov 2026): a challenge for the week, ideas to try for each kind of member,
- * and the days worth planning for. Written in the house style: warm, short, no exclamation marks.
+ * The Ideas tab (25 Nov 2026): a challenge for the week and ideas to try for each kind of member.
+ * The days worth planning for moved to the Events tab on 27 Nov 2026 (lib/events.ts).
+ * Written in the house style: warm, short, no exclamation marks.
  */
 
 type Words = { en: [string, string]; es: [string, string] };
@@ -86,84 +86,6 @@ export const IDEAS: Record<Kind, Idea[]> = {
     { icon: GraduationCap, en: ["Teach something", "Help someone learn a skill you have, big or small."], es: ["Enseña algo", "Ayuda a alguien a aprender algo que sabes, grande o pequeño."] },
   ],
 };
-
-/** International days worth planning for, each with one simple idea. Month and day only. */
-const DAYS: { m: number; d: number; en: [string, string]; es: [string, string] }[] = [
-  { m: 1, d: 6, en: ["Three Kings Day", "A gift for a child who might not get one."], es: ["Día de Reyes", "Un regalo para un niño o una niña que quizá no reciba uno."] },
-  { m: 1, d: 24, en: ["International Day of Education", "Thank a teacher, or give school supplies."], es: ["Día Internacional de la Educación", "Agradece a un maestro o regala útiles escolares."] },
-  { m: 2, d: 4, en: ["International Day of Human Fraternity", "Reach out to someone from a different background or faith."], es: ["Día Internacional de la Fraternidad Humana", "Acércate a alguien de otra cultura o fe."] },
-  { m: 2, d: 17, en: ["Random Acts of Kindness Day", "Surprise someone you don't know."], es: ["Día de los Actos de Bondad al Azar", "Sorprende a alguien que no conoces."] },
-  { m: 2, d: 20, en: ["World Day of Social Justice", "Support a group working for fairness where you live."], es: ["Día Mundial de la Justicia Social", "Apoya a un grupo que trabaja por la justicia donde vives."] },
-  { m: 3, d: 8, en: ["International Women's Day", "Celebrate a woman who changed your life."], es: ["Día Internacional de la Mujer", "Celebra a una mujer que cambió tu vida."] },
-  { m: 3, d: 20, en: ["International Day of Happiness", "Share what makes your community smile."], es: ["Día Internacional de la Felicidad", "Comparte lo que hace sonreír a tu comunidad."] },
-  { m: 4, d: 7, en: ["World Health Day", "Thank a health worker."], es: ["Día Mundial de la Salud", "Agradece a un trabajador de la salud."] },
-  { m: 4, d: 22, en: ["Earth Day", "Plant something, or clean up a green space."], es: ["Día de la Tierra", "Siembra algo o limpia un área verde."] },
-  { m: 5, d: 15, en: ["International Day of Families", "Do something kind together as a family."], es: ["Día Internacional de las Familias", "Hagan algo amable juntos en familia."] },
-  { m: 6, d: 5, en: ["World Environment Day", "A clean-up with your team or class."], es: ["Día Mundial del Medio Ambiente", "Una limpieza con tu equipo o tu clase."] },
-  { m: 6, d: 20, en: ["World Refugee Day", "Welcome a family who is new to your area."], es: ["Día Mundial de los Refugiados", "Da la bienvenida a una familia nueva en tu zona."] },
-  { m: 7, d: 18, en: ["Nelson Mandela International Day", "Give 67 minutes of service."], es: ["Día Internacional de Nelson Mandela", "Regala 67 minutos de servicio."] },
-  { m: 7, d: 30, en: ["International Day of Friendship", "Thank an old friend."], es: ["Día Internacional de la Amistad", "Agradece a una amistad de siempre."] },
-  { m: 8, d: 12, en: ["International Youth Day", "Give young people the stage."], es: ["Día Internacional de la Juventud", "Dale el escenario a los jóvenes."] },
-  { m: 8, d: 19, en: ["World Humanitarian Day", "Honour the people who help in a crisis."], es: ["Día Mundial de la Asistencia Humanitaria", "Honra a quienes ayudan en una crisis."] },
-  { m: 9, d: 5, en: ["International Day of Charity", "Give to a local cause."], es: ["Día Internacional de la Beneficencia", "Apoya una causa local."] },
-  { m: 9, d: 21, en: ["International Day of Peace", "Mend a friendship, or bring two people together."], es: ["Día Internacional de la Paz", "Reconcíliate con alguien o une a dos personas."] },
-  { m: 10, d: 1, en: ["International Day of Older Persons", "Spend time with an older neighbour."], es: ["Día Internacional de las Personas de Edad", "Comparte tiempo con un vecino mayor."] },
-  { m: 10, d: 5, en: ["World Teachers' Day", "Thank a teacher by name."], es: ["Día Mundial de los Docentes", "Agradece a un maestro por su nombre."] },
-  { m: 10, d: 10, en: ["World Mental Health Day", "Check in on someone, and on yourself."], es: ["Día Mundial de la Salud Mental", "Pregunta cómo está alguien, y cómo estás tú."] },
-  { m: 10, d: 16, en: ["World Food Day", "A food drive for a local pantry."], es: ["Día Mundial de la Alimentación", "Una colecta de alimentos para un banco de comida local."] },
-  { m: 11, d: 13, en: ["World Kindness Day", "Share your kindness and invite others to pledge."], es: ["Día Mundial de la Bondad", "Comparte tu bondad e invita a otros a comprometerse."] },
-  { m: 11, d: 16, en: ["International Day for Tolerance", "Listen to someone who sees the world differently."], es: ["Día Internacional para la Tolerancia", "Escucha a alguien que ve el mundo de otra manera."] },
-  { m: 11, d: 20, en: ["World Children's Day", "Ask children what kindness means to them."], es: ["Día Mundial de la Infancia", "Pregunta a los niños qué significa la bondad para ellos."] },
-  { m: 12, d: 3, en: ["International Day of Persons with Disabilities", "Make a space or an event easier for everyone to join."], es: ["Día Internacional de las Personas con Discapacidad", "Haz que un espacio o un evento sea más fácil para que todos participen."] },
-  { m: 12, d: 5, en: ["International Volunteer Day", "Thank your volunteers, or volunteer for a day."], es: ["Día Internacional de los Voluntarios", "Agradece a tus voluntarios, o sé voluntario por un día."] },
-  { m: 12, d: 10, en: ["Human Rights Day", "Stand with someone who is treated unfairly."], es: ["Día de los Derechos Humanos", "Apoya a alguien que recibe un trato injusto."] },
-  { m: 12, d: 20, en: ["International Human Solidarity Day", "Share with someone who has less this season."], es: ["Día Internacional de la Solidaridad Humana", "Comparte con alguien que tiene menos en esta temporada."] },
-];
-
-/** GivingTuesday: the Tuesday after the fourth Thursday of November. */
-function givingTuesday(year: number) {
-  const first = new Date(year, 10, 1);
-  const firstThursday = 1 + ((4 - first.getDay() + 7) % 7);
-  return new Date(year, 10, firstThursday + 21 + 5);
-}
-
-const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-
-export interface Upcoming {
-  date: string;
-  days: number;
-  title: string;
-  idea: string | null;
-  season: boolean;
-}
-
-/** The next few days worth planning for: the season's own moments and international days. */
-export function upcomingDays(lang: Lang, count = 5, now = new Date()): Upcoming[] {
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const todayIso = iso(today);
-  const out: Upcoming[] = [];
-  const daysTo = (date: string) => Math.round((new Date(`${date}T12:00:00`).getTime() - new Date(`${todayIso}T12:00:00`).getTime()) / 86_400_000);
-  for (const year of [today.getFullYear(), today.getFullYear() + 1]) {
-    for (const x of DAYS) {
-      const date = iso(new Date(year, x.m - 1, x.d));
-      const [title, idea] = lang === "es" ? x.es : x.en;
-      out.push({ date, days: daysTo(date), title, idea, season: false });
-    }
-    const gt = iso(givingTuesday(year));
-    out.push({
-      date: gt,
-      days: daysTo(gt),
-      title: "GivingTuesday",
-      idea: lang === "es" ? "Un día mundial para dar: tiempo, cosas o palabras amables." : "A global day of giving: time, things or kind words.",
-      season: false,
-    });
-  }
-  for (const m of MOMENTS) out.push({ date: m.date, days: daysTo(m.date), title: lang === "es" ? m.es : m.en, idea: null, season: true });
-  return out
-    .filter((x) => x.days >= 0)
-    .sort((a, b) => a.date.localeCompare(b.date) || Number(b.season) - Number(a.season))
-    .slice(0, count);
-}
 
 export function ideaWords(w: Words, lang: Lang) {
   return lang === "es" ? w.es : w.en;

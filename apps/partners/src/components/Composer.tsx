@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ImagePlus, Loader2, Play, RotateCw, X } from "lucide-react";
 import { useHubCopy, CONSENT_VERSION } from "@/lib/hubCopy";
 import { useCreatePost, useMe } from "@/lib/hub";
@@ -16,12 +16,20 @@ export default function Composer({
   postKind = "post",
   placeholder,
   allowAlsoCommunity = false,
+  initialFiles,
+  autoFocusText = true,
+  mediaFirst = false,
   onDone,
 }: {
   audience?: "community" | "team";
   postKind?: "post" | "testimonial" | "video";
   placeholder?: string;
   allowAlsoCommunity?: boolean;
+  /** Photos or videos picked before the composer opened (the "Add photos or videos" button). */
+  initialFiles?: File[];
+  autoFocusText?: boolean;
+  /** Photos above the words, for the photos and videos button. */
+  mediaFirst?: boolean;
   onDone: () => void;
 }) {
   const { h } = useHubCopy();
@@ -34,6 +42,13 @@ export default function Composer({
   const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const hasMedia = uploads.items.length > 0;
+  // start uploading what was picked before the composer opened, once
+  const seeded = useRef(false);
+  useEffect(() => {
+    if (seeded.current || !initialFiles?.length) return;
+    seeded.current = true;
+    uploads.add(initialFiles);
+  }, [initialFiles, uploads]);
   const empty = !body.trim() && !hasMedia;
 
   async function submit() {
@@ -58,8 +73,43 @@ export default function Composer({
     }
   }
 
+  const mediaGrid = hasMedia && (
+    <div className="grid grid-cols-3 gap-2">
+      {uploads.items.map((it) => (
+        <div key={it.key} className="relative aspect-square overflow-hidden bg-tint-sky">
+          {it.file && !it.isVideo ? (
+            <img src={URL.createObjectURL(it.file)} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <span className="flex h-full w-full items-center justify-center text-sky">
+              <Play className="h-8 w-8" aria-hidden="true" />
+            </span>
+          )}
+          {it.state === "uploading" && (
+            <span className="absolute inset-x-0 bottom-0 h-1.5 bg-white/70">
+              <span className="block h-full bg-orange" style={{ width: `${it.progress}%` }} />
+            </span>
+          )}
+          {it.state === "failed" && (
+            <button type="button" onClick={() => uploads.retry(it.key)} className="absolute inset-0 flex items-center justify-center bg-white/80 text-xs font-bold text-rose-ink">
+              <RotateCw className="me-1 h-4 w-4" aria-hidden="true" /> Retry
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => uploads.remove(it.key)}
+            className="absolute end-1 top-1 flex h-7 w-7 items-center justify-center bg-white/90 text-navy"
+            aria-label={h.delete}
+          >
+            <X className="h-4 w-4" aria-hidden="true" />
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+
   return (
     <div className="flex flex-col gap-4">
+      {mediaFirst && mediaGrid}
       <div className="flex gap-3">
         <Avatar name={me?.name ?? ""} url={me?.logoUrl} kind={me?.kind ?? "organisation"} size={42} />
         <textarea
@@ -67,46 +117,14 @@ export default function Composer({
           value={body}
           onChange={(e) => setBody(e.target.value)}
           placeholder={placeholder ?? h.postPlaceholder}
-          rows={4}
+          rows={mediaFirst ? 2 : 4}
           maxLength={2000}
-          className="min-h-[110px] flex-1 resize-none border-0 p-1 text-[17px] font-medium leading-relaxed text-navy outline-none placeholder:text-ink-faint"
-          autoFocus
+          className={`${mediaFirst ? "min-h-[60px]" : "min-h-[110px]"} flex-1 resize-none border-0 p-1 text-[17px] font-medium leading-relaxed text-navy outline-none placeholder:text-ink-faint`}
+          autoFocus={autoFocusText}
         />
       </div>
 
-      {hasMedia && (
-        <div className="grid grid-cols-3 gap-2">
-          {uploads.items.map((it) => (
-            <div key={it.key} className="relative aspect-square overflow-hidden bg-tint-sky">
-              {it.file && !it.isVideo ? (
-                <img src={URL.createObjectURL(it.file)} alt="" className="h-full w-full object-cover" />
-              ) : (
-                <span className="flex h-full w-full items-center justify-center text-sky">
-                  <Play className="h-8 w-8" aria-hidden="true" />
-                </span>
-              )}
-              {it.state === "uploading" && (
-                <span className="absolute inset-x-0 bottom-0 h-1.5 bg-white/70">
-                  <span className="block h-full bg-orange" style={{ width: `${it.progress}%` }} />
-                </span>
-              )}
-              {it.state === "failed" && (
-                <button type="button" onClick={() => uploads.retry(it.key)} className="absolute inset-0 flex items-center justify-center bg-white/80 text-xs font-bold text-rose-ink">
-                  <RotateCw className="me-1 h-4 w-4" aria-hidden="true" /> Retry
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={() => uploads.remove(it.key)}
-                className="absolute end-1 top-1 flex h-7 w-7 items-center justify-center bg-white/90 text-navy"
-                aria-label={h.delete}
-              >
-                <X className="h-4 w-4" aria-hidden="true" />
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
+      {!mediaFirst && mediaGrid}
 
       <div className="flex items-center justify-between border-y-[1.5px] border-hair py-2">
         <button type="button" onClick={() => fileRef.current?.click()} className="flex items-center gap-2 px-1 py-1.5 text-sm font-bold text-sky-deep hover:text-navy">

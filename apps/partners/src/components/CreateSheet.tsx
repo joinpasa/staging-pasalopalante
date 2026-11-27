@@ -1,17 +1,24 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronRight, Heart, MessageSquareHeart, PenLine } from "lucide-react";
+import { ChevronRight, Heart, ImagePlus, MessageSquareHeart, PenLine } from "lucide-react";
 import { useHubCopy } from "@/lib/hubCopy";
 import Sheet from "./Sheet";
 import Composer from "./Composer";
+import { useShareMedia } from "./ShareMedia";
 
-/** The big +: post to members, log an act, or send us a story. Three choices, nothing else. */
+/**
+ * The big +: photos or videos (first, since that's what people look for), write a post, log an
+ * act, or send us a story. Four choices, nothing else.
+ */
 export default function CreateSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { h } = useHubCopy();
   const navigate = useNavigate();
+  const media = useShareMedia();
   const [composing, setComposing] = useState(false);
 
   const choices = [
+    // the file picker opens inside this click, so the browser allows it
+    ...(media ? [{ icon: ImagePlus, title: h.mediaShort, sub: h.mediaShortSub, tint: "bg-sky text-white", go: () => (media.pick(), onClose()) }] : []),
     { icon: PenLine, title: h.makePost, sub: h.makePostSub, tint: "bg-tint-sky text-sky", go: () => setComposing(true) },
     { icon: Heart, title: h.logAct, sub: h.logActSub, tint: "bg-tint-orange text-orange", go: () => (onClose(), navigate("/log")) },
     { icon: MessageSquareHeart, title: h.sendUs, sub: h.sendUsSub, tint: "bg-tint-pink text-magenta", go: () => (onClose(), navigate("/story")) },

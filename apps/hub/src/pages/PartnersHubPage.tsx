@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
-import { BookmarkPlus, Check, Copy, Download, Eye, EyeOff, ExternalLink, Lock, Megaphone, MessageCircle, Plus, Send, Sparkles, Trash2, Upload, UserPlus } from "lucide-react";
+import { BookmarkPlus, CalendarPlus, Check, Copy, Download, Eye, EyeOff, ExternalLink, Lock, Megaphone, MessageCircle, Plus, Send, Sparkles, Trash2, Upload, UserPlus } from "lucide-react";
 import { toast } from "sonner";
+import { COUNTRIES } from "@shared/data/countries";
 import { cx, Empty, PageHead, Segmented } from "@/components/bits";
 import { HUB_LIVE } from "@/lib/client";
 import {
@@ -9,6 +10,8 @@ import {
   KIND_LABEL,
   kitPublicUrl,
   PARTNERS_HUB_URL,
+  useEventActions,
+  useEventsList,
   useKitActions,
   useKitList,
   useMemberActions,
@@ -20,6 +23,7 @@ import {
   useSaveUpdate,
   useUpdatesList,
   type MemberKind,
+  type PHEvent,
   type PHKitItem,
   type PHMember,
   type PHPost,
@@ -27,7 +31,7 @@ import {
   type PHUpdateItem,
 } from "@/lib/partnersHub";
 
-type Tab = "posts" | "update" | "kit" | "members";
+type Tab = "posts" | "update" | "kit" | "events" | "members";
 
 const copy = async (text: string, done: string) => {
   try {
@@ -53,7 +57,7 @@ function KindChip({ orgType }: { orgType: string | null }) {
 export default function PartnersHubPage() {
   const [tab, setTab] = useState<Tab>(() => {
     const t = new URLSearchParams(window.location.search).get("tab");
-    return t === "update" || t === "kit" || t === "members" ? t : "posts";
+    return t === "update" || t === "kit" || t === "events" || t === "members" ? t : "posts";
   });
 
   return (
@@ -79,6 +83,7 @@ export default function PartnersHubPage() {
                 ["posts", "Shared with us"],
                 ["update", "Weekly update"],
                 ["kit", "Kit"],
+                ["events", "Events"],
                 ["members", "Members"],
               ]}
             />
@@ -86,6 +91,7 @@ export default function PartnersHubPage() {
           {tab === "posts" && <Posts />}
           {tab === "update" && <Updates />}
           {tab === "kit" && <Kit />}
+          {tab === "events" && <Events />}
           {tab === "members" && <Members />}
         </>
       )}
@@ -421,6 +427,8 @@ const SECTIONS = [
   ["logos", "Logos"],
   ["video", "Video"],
   ["other", "More"],
+  // 27 Nov 2026: letter templates for ambassadors (invite and welcome, for each of the four pillars)
+  ["outreach", "Outreach letters"],
 ] as const;
 
 function Kit() {
@@ -575,6 +583,180 @@ function Kit() {
             </div>
           );
         })}
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------- events
+
+const EMPTY_EVENT = { title: "", title_es: "", details: "", details_es: "", starts_on: "", ends_on: "", time_text: "", place: "", country: "", url: "", audience: "all" };
+const AUDIENCE_LABEL: Record<string, string> = { all: "Everyone", organisation: "Organisations", company: "Companies", ambassador: "Ambassadors" };
+const eventDay = (d: string, opts: Intl.DateTimeFormatOptions) => new Date(`${d}T12:00:00`).toLocaleDateString("en-GB", opts);
+
+/**
+ * Events members see on the Events tab of the Partners Hub (27 Nov 2026), under "From the team".
+ * The season's moments and the international days are already there; this is for anything else:
+ * a walk, a webinar, a partner's drive. A country marks it "Near you" for members there.
+ */
+function Events() {
+  const { data: events, isLoading } = useEventsList();
+  const act = useEventActions();
+  const [adding, setAdding] = useState(false);
+  const [f, setF] = useState(EMPTY_EVENT);
+  const [when, setWhen] = useState<"ahead" | "all">("ahead");
+  const today = new Date().toISOString().slice(0, 10);
+  const shown = (events ?? []).filter((e) => when === "all" || (e.ends_on ?? e.starts_on) >= today);
+  const blank = (v: string) => v.trim() || null;
+  const field = (key: keyof typeof EMPTY_EVENT) => ({ value: f[key], onChange: (e: { target: { value: string } }) => setF({ ...f, [key]: e.target.value }) });
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-center gap-3">
+        <button type="button" className="btn-primary" onClick={() => setAdding((a) => !a)}>
+          <CalendarPlus size={15} /> Add an event
+        </button>
+        <Segmented
+          value={when}
+          onChange={setWhen}
+          options={[
+            ["ahead", "Coming up"],
+            ["all", "Past too"],
+          ]}
+        />
+        <span className="text-[13px] text-ink-muted">Members see these under From the team. When a member tells us about their own event, it lands in Shared with us.</span>
+      </div>
+      {adding && (
+        <form
+          className="card grid gap-3 p-4 sm:grid-cols-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            act.add.mutate(
+              {
+                title: f.title.trim(),
+                title_es: blank(f.title_es),
+                details: blank(f.details),
+                details_es: blank(f.details_es),
+                starts_on: f.starts_on,
+                ends_on: blank(f.ends_on),
+                time_text: blank(f.time_text),
+                place: blank(f.place),
+                country: blank(f.country),
+                url: blank(f.url),
+                audience: f.audience as PHEvent["audience"],
+              },
+              {
+                onSuccess: () => {
+                  toast.success("Added. Members see it on their Events tab now.");
+                  setAdding(false);
+                  setF(EMPTY_EVENT);
+                },
+                onError: (err) => toast.error((err as Error).message),
+              },
+            );
+          }}
+        >
+          <label className="flex flex-col gap-1">
+            <span className="label">Title</span>
+            <input id="e-title" className="field" required maxLength={160} {...field("title")} />
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="label">Title in Spanish</span>
+            <input id="e-title-es" className="field" maxLength={160} {...field("title_es")} />
+          </label>
+          <div className="grid grid-cols-2 gap-3">
+            <label className="flex flex-col gap-1">
+              <span className="label">Date</span>
+              <input id="e-start" type="date" className="field" required {...field("starts_on")} />
+            </label>
+            <label className="flex flex-col gap-1">
+              <span className="label">Last day (optional)</span>
+              <input id="e-end" type="date" className="field" min={f.starts_on || undefined} {...field("ends_on")} />
+            </label>
+          </div>
+          <label className="flex flex-col gap-1">
+            <span className="label">Time (optional, as you would say it)</span>
+            <input id="e-time" className="field" maxLength={80} placeholder="6 PM Puerto Rico time" {...field("time_text")} />
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="label">Where</span>
+            <input id="e-place" className="field" maxLength={160} placeholder="Online, or San Juan, Puerto Rico" {...field("place")} />
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="label">Country (marks it near members there)</span>
+            <input id="e-country" className="field" list="e-countries" {...field("country")} />
+            <datalist id="e-countries">
+              {COUNTRIES.map((c) => (
+                <option key={c} value={c} />
+              ))}
+            </datalist>
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="label">One or two lines about it</span>
+            <textarea id="e-details" className="field min-h-[70px]" maxLength={600} {...field("details")} />
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="label">In Spanish</span>
+            <textarea id="e-details-es" className="field min-h-[70px]" maxLength={600} {...field("details_es")} />
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="label">Link for details or sign-up (optional)</span>
+            <input id="e-url" className="field" placeholder="https://" {...field("url")} />
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="label">Who sees it</span>
+            <select id="e-aud" className="field" {...field("audience")}>
+              <option value="all">Everyone</option>
+              <option value="organisation">Organisations</option>
+              <option value="company">Companies</option>
+              <option value="ambassador">Ambassadors</option>
+            </select>
+          </label>
+          <div className="flex items-end sm:col-span-2">
+            <button type="submit" className="btn-primary" disabled={act.add.isPending || !f.title.trim() || !f.starts_on}>
+              {act.add.isPending ? "Adding…" : "Add"}
+            </button>
+          </div>
+        </form>
+      )}
+      {isLoading && <div className="h-28 animate-pulse rounded-xl bg-paper" />}
+      {!isLoading && !shown.length && (
+        <Empty title="No events from the team yet" body="Members already see the season's moments (21 Dec, 27 Jan, 31 Jan) and the international days. Add anything else here." />
+      )}
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {shown.map((e) => (
+          <div key={e.id} className={cx("card flex flex-col gap-1.5 p-3", e.hidden && "opacity-50")}>
+            <span className="text-[12px] font-bold text-sky-deep">
+              {eventDay(e.starts_on, { weekday: "short", day: "numeric", month: "short", year: "numeric" })}
+              {e.ends_on && e.ends_on !== e.starts_on ? ` – ${eventDay(e.ends_on, { day: "numeric", month: "short" })}` : ""}
+              {e.time_text ? ` · ${e.time_text}` : ""}
+            </span>
+            <b className="text-[14px]">{e.title}</b>
+            <span className="text-[12px] text-ink-muted">
+              {[e.place, e.country, AUDIENCE_LABEL[e.audience], e.title_es ? "EN + ES" : "English only"].filter(Boolean).join(" · ")}
+            </span>
+            {e.details && <p className="m-0 line-clamp-2 text-[12.5px] text-ink-muted">{e.details}</p>}
+            <div className="mt-auto flex flex-wrap gap-2 pt-1">
+              {e.url && (
+                <a href={e.url} target="_blank" rel="noopener noreferrer" className="btn-quiet">
+                  <ExternalLink size={13} /> Open
+                </a>
+              )}
+              <button type="button" className="btn-quiet" onClick={() => act.update.mutate({ id: e.id, fields: { hidden: !e.hidden } })}>
+                {e.hidden ? <Eye size={13} /> : <EyeOff size={13} />} {e.hidden ? "Show" : "Hide"}
+              </button>
+              <button
+                type="button"
+                className="btn-quiet"
+                onClick={() => {
+                  if (window.confirm(`Remove "${e.title}" for everyone?`)) act.remove.mutate(e.id);
+                }}
+              >
+                <Trash2 size={13} /> Remove
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

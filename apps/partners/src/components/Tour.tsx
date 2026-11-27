@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, Heart, Lightbulb, Package, Plus, UserRound, Users } from "lucide-react";
+import { ArrowLeft, ArrowRight, CalendarDays, Heart, ImagePlus, Package, Plus, UserRound, Users } from "lucide-react";
 import { kindWords, useHubCopy } from "@/lib/hubCopy";
 import { useMe } from "@/lib/hub";
 import { useSession } from "@/lib/session";
@@ -12,12 +12,14 @@ export function startTour() {
 
 const doneKey = (id: string) => `pkf-hub-tour-done-${id}`;
 
-type Step = { anchor: string | null; icon: typeof Heart; tint: string; en: [string, string]; es: [string, string] };
+/** anchor: the data-tour places to light up, first one showing on screen wins (a computer and a phone differ). */
+type Step = { anchor: string[] | null; icon: typeof Heart; tint: string; en: [string, string]; es: [string, string] };
 
 /**
- * The short tour a member sees the first time they come in (25 Nov 2026): six quick cards, each
+ * The short tour a member sees the first time they come in (25 Nov 2026): seven quick cards, each
  * lighting up the part of the screen it talks about. Shown once per person on this device, and
- * again any time from the Me page.
+ * again any time from the Me page. 27 Nov 2026: photos and videos, and Events, got their own
+ * cards; Ideas is left to the menu so the tour stays short.
  */
 export default function Tour() {
   const { lang } = useHubCopy();
@@ -73,35 +75,42 @@ export default function Tour() {
       es: ["Bienvenidos a tu Partners Hub", `${words.welcomeLine} Te mostramos todo en un momento.`],
     },
     {
-      anchor: "create",
-      icon: Plus,
-      tint: "bg-orange text-white",
-      en: ["Share your kindness", "Tap + to post a moment, log an act toward your pledge, or send us a story for our socials."],
-      es: ["Comparte tu bondad", "Toca + para publicar un momento, registrar un acto de tu compromiso o enviarnos una historia para nuestras redes."],
+      anchor: ["media", "create"],
+      icon: ImagePlus,
+      tint: "bg-sky text-white",
+      en: ["Photos and videos", "Add them here in one click. Post them for every member, or send them only to us for our socials."],
+      es: ["Fotos y videos", "Añádelos aquí con un clic. Publícalos para todos los miembros o envíanoslos solo a nosotros para nuestras redes."],
     },
     {
-      anchor: "kit",
+      anchor: ["create"],
+      icon: Plus,
+      tint: "bg-orange text-white",
+      en: ["Share", "Write a post, log an act toward your pledge, or send us a story in your own words."],
+      es: ["Compartir", "Escribe una publicación, registra un acto de tu compromiso o envíanos una historia en tus palabras."],
+    },
+    {
+      anchor: ["events"],
+      icon: CalendarDays,
+      tint: "bg-gold text-navy",
+      en: ["Events", "The season's big moments, events from our team, and days worth planning for. Add any of them to your calendar."],
+      es: ["Eventos", "Los grandes momentos de la temporada, eventos de nuestro equipo y días que vale la pena planificar. Añádelos a tu calendario."],
+    },
+    {
+      anchor: ["kit"],
       icon: Package,
       tint: "bg-tint-sky text-sky",
       en: ["Your kit", solo ? "Ready posts and frames. Add your photo and they're made for you." : "Ready posts, frames and logos. Add your logo or a photo and they're made for you."],
       es: ["Tu kit", solo ? "Publicaciones y marcos listos. Añade tu foto y se hacen para ti." : "Publicaciones, marcos y logos listos. Añade tu logo o una foto y se hacen para ti."],
     },
     {
-      anchor: "people",
+      anchor: ["people"],
       icon: Users,
       tint: "bg-tint-pink text-magenta",
       en: ["Community", "Everyone passing kindness forward with you, and the map of new pledges coming in."],
       es: ["Comunidad", "Todos los que pasan la bondad pa'lante contigo, y el mapa con los compromisos que van llegando."],
     },
     {
-      anchor: "ideas",
-      icon: Lightbulb,
-      tint: "bg-tint-gold text-[#8a6100]",
-      en: ["Ideas", "A challenge each week, simple ideas to try, and the days worth planning for."],
-      es: ["Ideas", "Un reto cada semana, ideas sencillas y los días que vale la pena planificar."],
-    },
-    {
-      anchor: "me",
+      anchor: ["me"],
       icon: UserRound,
       tint: "bg-tint-sky text-sky-deep",
       en: ["Your profile", "Your pledge, the acts you've logged, your badges and your certificate."],
@@ -112,13 +121,18 @@ export default function Tour() {
   const last = i >= steps.length - 1;
 
   // light up the part of the screen this card is about
+  const anchorKey = step.anchor?.join(",") ?? "";
   useLayoutEffect(() => {
-    if (!open || !step.anchor) return setRect(null);
+    if (!open || !anchorKey) return setRect(null);
     const find = () => {
-      const el = [...document.querySelectorAll<HTMLElement>(`[data-tour="${step.anchor}"]`)].find((e) => {
+      const visible = (e: HTMLElement) => {
         const r = e.getBoundingClientRect();
         return r.width > 0 && r.height > 0;
-      });
+      };
+      const el = anchorKey
+        .split(",")
+        .map((a) => [...document.querySelectorAll<HTMLElement>(`[data-tour="${a}"]`)].find(visible))
+        .find(Boolean);
       setRect(el ? el.getBoundingClientRect() : null);
     };
     find();
@@ -128,7 +142,7 @@ export default function Tour() {
       window.removeEventListener("resize", find);
       window.removeEventListener("scroll", find, true);
     };
-  }, [open, step.anchor]);
+  }, [open, anchorKey]);
 
   useEffect(() => {
     if (!open) return;

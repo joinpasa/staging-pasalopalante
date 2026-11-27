@@ -303,6 +303,59 @@ export function useKitActions() {
   };
 }
 
+// ---------- events (27 Nov 2026) ----------
+
+/** An event members see on the Events tab, next to the season's moments and the international days. */
+export interface PHEvent {
+  id: string;
+  title: string;
+  title_es: string | null;
+  details: string | null;
+  details_es: string | null;
+  starts_on: string;
+  ends_on: string | null;
+  time_text: string | null;
+  place: string | null;
+  country: string | null;
+  url: string | null;
+  audience: "all" | MemberKind;
+  hidden: boolean;
+  created_at: string;
+}
+
+export function useEventsList() {
+  return useQuery({
+    queryKey: ["ph-events"],
+    enabled: HUB_LIVE,
+    queryFn: async () => need(await hubDb.from("partner_events").select("*").order("starts_on")) as PHEvent[],
+  });
+}
+
+export function useEventActions() {
+  const qc = useQueryClient();
+  const done = () => qc.invalidateQueries({ queryKey: ["ph-events"] });
+  return {
+    add: useMutation({
+      mutationFn: async (fields: Partial<PHEvent>) => {
+        need(await hubDb.from("partner_events").insert(fields).select("id"));
+      },
+      onSuccess: done,
+    }),
+    update: useMutation({
+      mutationFn: async ({ id, fields }: { id: string; fields: Partial<PHEvent> }) => {
+        need(await hubDb.from("partner_events").update(fields).eq("id", id).select("id"));
+      },
+      onSuccess: done,
+    }),
+    remove: useMutation({
+      mutationFn: async (id: string) => {
+        need(await hubDb.from("partner_events").delete().eq("id", id).select("id"));
+      },
+      onSuccess: done,
+    }),
+  };
+}
+
 // ---------- members ----------
 
 export interface PHMember {

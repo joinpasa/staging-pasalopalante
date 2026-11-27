@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { Check, ChevronDown, Copy, Download, ExternalLink, FileText, FileArchive, ImagePlus, Move, Package } from "lucide-react";
+import { Building2, Check, ChevronDown, Copy, Download, ExternalLink, FileText, FileArchive, GraduationCap, ImagePlus, Mic, Move, Package, Star } from "lucide-react";
 import Shell from "@/components/Shell";
 import MadeForYou, { LivePicture } from "@/components/MadeForYou";
 import PhotoStudio, { type Adjustments } from "@/components/PhotoStudio";
@@ -15,10 +15,12 @@ import type { Lang } from "@/lib/i18n";
  * and the official logos, each with one line saying what it's for.
  */
 
-type ShelfId = "post" | "profile" | "share" | "print" | "email" | "meet" | "logos";
+type ShelfId = "post" | "outreach" | "profile" | "share" | "print" | "email" | "meet" | "logos";
 
 const SHELVES: { id: ShelfId; sections: KitItem["section"][]; en: [string, string]; es: [string, string]; first: number }[] = [
   { id: "post", sections: ["social"], en: ["Post it", "Ready posts, stories and frames. Download, copy the caption, post."], es: ["Para publicar", "Publicaciones, historias y marcos listos. Descarga, copia el texto y publica."], first: 4 },
+  // 27 Nov 2026, asked for by PSol: letter templates ambassadors adapt and send (see OutreachSoon)
+  { id: "outreach", sections: ["outreach"], en: ["Outreach letters", "Letters to invite people in, and to welcome them once they say yes. Download one, make it yours, send it."], es: ["Cartas para invitar", "Cartas para invitar a otros a sumarse y darles la bienvenida cuando digan que sí. Descarga una, hazla tuya y envíala."], first: 4 },
   { id: "profile", sections: ["profile"], en: ["Update your profiles", "Borders, badges and banners that show you're part of the movement."], es: ["Actualiza tus perfiles", "Bordes, sellos y portadas que muestran que son parte del movimiento."], first: 4 },
   { id: "share", sections: ["start"], en: ["Share Kindness Forward", "A one-pager and a short presentation, for your team or anyone you'd like to bring in."], es: ["Comparte Pásalo Pa'lante", "Un resumen y una presentación corta, para tu equipo o para quien quieras sumar."], first: 4 },
   { id: "print", sections: ["print"], en: ["Print and put up", "Posters and pages to print, with a QR code to the pledge page."], es: ["Para imprimir", "Afiches y páginas para imprimir, con un código QR a la página del compromiso."], first: 4 },
@@ -94,7 +96,11 @@ export default function KitPage() {
   const zip = mine.find((k) => isZip(k) && k.audience !== "all") ?? mine.find(isZip);
   const guide = mine.find((k) => isGuide(k) && k.audience !== "all") ?? mine.find(isGuide);
   const rest = mine.filter((k) => k !== zip && k !== guide && !isZip(k) && !isGuide(k));
-  const shelves = SHELVES.map((s) => ({ ...s, items: rest.filter((k) => s.sections.includes(k.section)) })).filter((s) => s.items.length);
+  // ambassadors see the outreach shelf even before the letters are in, with what's coming
+  const outreachSoon = !isLoading && me?.kind === "ambassador";
+  const shelves = SHELVES.map((s) => ({ ...s, items: rest.filter((k) => s.sections.includes(k.section)) })).filter(
+    (s) => s.items.length || (s.id === "outreach" && outreachSoon),
+  );
   const pictureLang: Lang = show === "es" ? "es" : show === "en" ? "en" : lang;
   // "New" marks what arrived after the kit was first loaded, not everything on day one
   const firstLoad = Math.min(...(items ?? []).map((k) => new Date(k.added_at).getTime()), Date.now());
@@ -149,9 +155,13 @@ export default function KitPage() {
         {isLoading && <div className="h-56 animate-pulse bg-tint-sky/60" />}
         {!isLoading && !mine.length && <p className="m-0 bg-tint-sky px-4 py-6 text-center font-semibold text-ink2">{h.kitEmpty}</p>}
 
-        {shelves.map((s) => (
-          <Shelf key={s.id} id={s.id} title={lang === "es" ? s.es[0] : s.en[0]} blurb={lang === "es" ? s.es[1] : s.en[1]} items={s.items} first={s.first} showLang={show === "both"} fresh={fresh} />
-        ))}
+        {shelves.map((s) =>
+          s.items.length ? (
+            <Shelf key={s.id} id={s.id} title={lang === "es" ? s.es[0] : s.en[0]} blurb={lang === "es" ? s.es[1] : s.en[1]} items={s.items} first={s.first} showLang={show === "both"} fresh={fresh} />
+          ) : (
+            <OutreachSoon key={s.id} title={lang === "es" ? s.es[0] : s.en[0]} blurb={lang === "es" ? s.es[1] : s.en[1]} />
+          ),
+        )}
       </div>
       {me && studio && (
         <PhotoStudio
@@ -202,6 +212,59 @@ function StartBanner({ zip, guide }: { zip?: KitItem; guide?: KitItem }) {
         </div>
       </div>
       <div className="h-2 bg-bar" aria-hidden="true" />
+    </section>
+  );
+}
+
+/**
+ * The four pillars ambassadors reach out to, each with an invitation letter (before someone says
+ * yes) and a welcome letter (after). Shown until the team uploads the templates in the Kindness
+ * Hub (Kit tab, section "Outreach letters"); then the letters show as ordinary kit cards.
+ */
+const PILLARS: { icon: typeof Star; en: [string, string]; es: [string, string] }[] = [
+  { icon: GraduationCap, en: ["Education", "Schools, universities and teachers"], es: ["Educación", "Escuelas, universidades y docentes"] },
+  { icon: Mic, en: ["Media", "Press, radio, TV and podcasts"], es: ["Medios", "Prensa, radio, televisión y pódcasts"] },
+  { icon: Star, en: ["Kindness champions", "Well-known voices: athletes, artists and creators"], es: ["Campeones de la bondad", "Voces conocidas: atletas, artistas y creadores"] },
+  { icon: Building2, en: ["Organisations", "Nonprofits, faith groups, companies and local government"], es: ["Organizaciones", "Organizaciones sin fines de lucro, grupos de fe, empresas y gobiernos locales"] },
+];
+
+function OutreachSoon({ title, blurb }: { title: string; blurb: string }) {
+  const { h, lang } = useHubCopy();
+  return (
+    <section className="flex flex-col gap-4 border-t-[1.5px] border-hair pt-6">
+      <div className="min-w-0">
+        <h2 className="h-section flex flex-wrap items-center gap-2">
+          {title}
+          <span className="chip bg-gold text-navy">{h.comingSoon}</span>
+        </h2>
+        <p className="m-0 mt-0.5 text-[14px] font-medium text-ink-muted">{blurb}</p>
+      </div>
+      <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2 lg:grid-cols-4">
+        {PILLARS.map((p) => {
+          const [name, who] = lang === "es" ? p.es : p.en;
+          return (
+            <li key={p.en[0]} className="flex flex-col gap-3 border-[1.5px] border-hair p-4">
+              <span className="flex items-start gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center bg-tint-sky text-sky">
+                  <p.icon className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <span className="min-w-0">
+                  <b className="block text-[15px] font-extrabold leading-snug text-navy">{name}</b>
+                  <span className="mt-0.5 block text-[13px] font-medium leading-snug text-ink-muted">{who}</span>
+                </span>
+              </span>
+              <span className="mt-auto flex flex-col gap-1.5">
+                {[h.inviteLetter, h.welcomeLetter].map((letter) => (
+                  <span key={letter} className="flex items-center gap-2 border-[1.5px] border-dashed border-hair px-2.5 py-2 text-[13px] font-bold text-ink-faint">
+                    <FileText className="h-4 w-4 shrink-0" aria-hidden="true" />
+                    {letter}
+                  </span>
+                ))}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
     </section>
   );
 }
