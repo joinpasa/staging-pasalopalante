@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { Building2, Check, ChevronDown, Copy, Download, ExternalLink, FileText, FileArchive, GraduationCap, ImagePlus, Mic, Move, Package, Star } from "lucide-react";
+import { BookOpen, Building2, Check, ChevronDown, Copy, Download, ExternalLink, FileText, FileArchive, GraduationCap, ImagePlus, Mic, Move, Package, Star } from "lucide-react";
 import Shell from "@/components/Shell";
 import MadeForYou, { LivePicture } from "@/components/MadeForYou";
 import PhotoStudio, { type Adjustments } from "@/components/PhotoStudio";
@@ -20,7 +20,7 @@ type ShelfId = "post" | "outreach" | "profile" | "share" | "print" | "email" | "
 const SHELVES: { id: ShelfId; sections: KitItem["section"][]; en: [string, string]; es: [string, string]; first: number }[] = [
   { id: "post", sections: ["social"], en: ["Post it", "Ready posts, stories and frames. Download, copy the caption, post."], es: ["Para publicar", "Publicaciones, historias y marcos listos. Descarga, copia el texto y publica."], first: 4 },
   // 27 Nov 2026, asked for by PSol: letter templates ambassadors adapt and send (see OutreachSoon)
-  { id: "outreach", sections: ["outreach"], en: ["Outreach letters", "Letters to invite people in, and to welcome them once they say yes. Download one, make it yours, send it."], es: ["Cartas para invitar", "Cartas para invitar a otros a sumarse y darles la bienvenida cuando digan que sí. Descarga una, hazla tuya y envíala."], first: 4 },
+  { id: "outreach", sections: ["outreach"], en: ["Outreach letters", "Read the guide first. Then download a letter, fill in the names in brackets, make it yours and send it."], es: ["Cartas para invitar", "Lee primero la guía. Luego descarga una carta, completa los nombres entre corchetes, hazla tuya y envíala."], first: 4 },
   { id: "profile", sections: ["profile"], en: ["Update your profiles", "Borders, badges and banners that show you're part of the movement."], es: ["Actualiza tus perfiles", "Bordes, sellos y portadas que muestran que son parte del movimiento."], first: 4 },
   { id: "share", sections: ["start"], en: ["Share Kindness Forward", "A one-pager and a short presentation, for your team or anyone you'd like to bring in."], es: ["Comparte Pásalo Pa'lante", "Un resumen y una presentación corta, para tu equipo o para quien quieras sumar."], first: 4 },
   { id: "print", sections: ["print"], en: ["Print and put up", "Posters and pages to print, with a QR code to the pledge page."], es: ["Para imprimir", "Afiches y páginas para imprimir, con un código QR a la página del compromiso."], first: 4 },
@@ -63,6 +63,7 @@ function typeLabel(k: KitItem) {
   if (k.mime?.includes("pdf")) return "PDF";
   if (k.mime?.startsWith("video/")) return "Video";
   if (k.mime?.startsWith("text/")) return "Text";
+  if (k.mime?.includes("wordprocessingml") || /\.docx$/i.test(k.file_path ?? "")) return "Word";
   if (k.mime?.startsWith("image/")) return k.width ? `${k.width}×${k.height}` : "PNG";
   return k.url && !k.file_path ? "Link" : null;
 }
@@ -98,7 +99,11 @@ export default function KitPage() {
   const rest = mine.filter((k) => k !== zip && k !== guide && !isZip(k) && !isGuide(k));
   // ambassadors see the outreach shelf even before the letters are in, with what's coming
   const outreachSoon = !isLoading && me?.kind === "ambassador";
-  const shelves = SHELVES.map((s) => ({ ...s, items: rest.filter((k) => s.sections.includes(k.section)) })).filter(
+  // the letters are only in English so far, so reading in Spanish still shows them rather than "coming soon"
+  const outreachAll = (items ?? []).filter((k) => k.section === "outreach" && !!me && kitAudienceMatches(k.audience, me.kind));
+  const outreachInLang = outreachAll.filter((k) => show === "both" || k.lang === "both" || k.lang === show);
+  const outreach = outreachInLang.length ? outreachInLang : outreachAll;
+  const shelves = SHELVES.map((s) => ({ ...s, items: s.id === "outreach" ? outreach : rest.filter((k) => s.sections.includes(k.section)) })).filter(
     (s) => s.items.length || (s.id === "outreach" && outreachSoon),
   );
   const pictureLang: Lang = show === "es" ? "es" : show === "en" ? "en" : lang;
@@ -156,7 +161,9 @@ export default function KitPage() {
         {!isLoading && !mine.length && <p className="m-0 bg-tint-sky px-4 py-6 text-center font-semibold text-ink2">{h.kitEmpty}</p>}
 
         {shelves.map((s) =>
-          s.items.length ? (
+          s.id === "outreach" && s.items.length ? (
+            <OutreachShelf key={s.id} title={lang === "es" ? s.es[0] : s.en[0]} blurb={lang === "es" ? s.es[1] : s.en[1]} items={s.items} show={show} fresh={fresh} />
+          ) : s.items.length ? (
             <Shelf key={s.id} id={s.id} title={lang === "es" ? s.es[0] : s.en[0]} blurb={lang === "es" ? s.es[1] : s.en[1]} items={s.items} first={s.first} showLang={show === "both"} fresh={fresh} />
           ) : (
             <OutreachSoon key={s.id} title={lang === "es" ? s.es[0] : s.en[0]} blurb={lang === "es" ? s.es[1] : s.en[1]} />
@@ -266,6 +273,138 @@ function OutreachSoon({ title, blurb }: { title: string; blurb: string }) {
         })}
       </ul>
     </section>
+  );
+}
+
+/**
+ * The outreach letters once they're in: one card per pillar, each listing its guide and letters,
+ * with Download (from the hub) and View in Google Drive (the team's copy). Titles read
+ * "<Pillar>: <letter>" (D:/PKF/partners-hub/kit/seed_outreach.py), which is how they're grouped.
+ */
+const PILLAR_BY_NAME = new Map(PILLARS.map((p) => [p.en[0].toLowerCase(), p]));
+const pillarOf = (k: KitItem) => (k.title.includes(":") ? k.title.slice(0, k.title.indexOf(":")).trim() : "");
+const afterColon = (t: string) => {
+  const s = t.includes(":") ? t.slice(t.indexOf(":") + 1).trim() : t;
+  return s.charAt(0).toUpperCase() + s.slice(1);
+};
+// a guide for the ambassador rather than something to send on
+const isOutreachGuide = (k: KitItem) => /read this first|playbook|internal/i.test(k.title);
+const driveLink = (k: KitItem) => (k.url && /^https:\/\/(drive|docs)\.google\.com\//.test(k.url) ? k.url : null);
+
+function OutreachShelf({
+  title,
+  blurb,
+  items,
+  show,
+  fresh,
+}: {
+  title: string;
+  blurb: string;
+  items: KitItem[];
+  show: "en" | "es" | "both";
+  fresh: (k: KitItem) => boolean;
+}) {
+  const groups = useMemo(() => {
+    const out: { key: string; items: KitItem[] }[] = [];
+    for (const k of items) {
+      const key = pillarOf(k);
+      let g = out.find((x) => x.key === key);
+      if (!g) out.push((g = { key, items: [] }));
+      g.items.push(k);
+    }
+    return out;
+  }, [items]);
+  const { h } = useHubCopy();
+  return (
+    <section className="flex flex-col gap-4 border-t-[1.5px] border-hair pt-6">
+      <div className="min-w-0">
+        <h2 className="h-section flex flex-wrap items-center gap-2">
+          {title} <span className="text-[15px] font-bold text-ink-faint">{items.length}</span>
+          {/* one "New" for the shelf, not one on every letter */}
+          {items.some(fresh) && <span className="chip bg-orange text-white">{h.newBadge}</span>}
+        </h2>
+        <p className="m-0 mt-0.5 text-[14px] font-medium text-ink-muted">{blurb}</p>
+      </div>
+      <ul className="m-0 grid list-none gap-4 p-0 xl:grid-cols-2">
+        {groups.map((g) => (
+          <OutreachGroup key={g.key || "more"} pillar={g.key} items={g.items} show={show} />
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function OutreachGroup({ pillar, items, show }: { pillar: string; items: KitItem[]; show: "en" | "es" | "both" }) {
+  const { lang } = useHubCopy();
+  const p = PILLAR_BY_NAME.get(pillar.toLowerCase());
+  const Icon = p?.icon ?? FileText;
+  const [name, who] = p ? (lang === "es" ? p.es : p.en) : [pillar || (lang === "es" ? "Más cartas" : "More letters"), null];
+  return (
+    <li className="flex flex-col gap-4 border-[1.5px] border-hair p-4 sm:p-5">
+      <span className="flex items-start gap-3">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center bg-tint-sky text-sky">
+          <Icon className="h-5 w-5" aria-hidden="true" />
+        </span>
+        <span className="min-w-0">
+          <h3 className="m-0 text-[16px] font-extrabold leading-snug text-navy">{name}</h3>
+          {who && <span className="mt-0.5 block text-[13px] font-medium leading-snug text-ink-muted">{who}</span>}
+        </span>
+      </span>
+      <ul className="m-0 flex list-none flex-col gap-3 p-0">
+        {items.map((k) => (
+          <OutreachRow key={k.id} item={k} show={show} />
+        ))}
+      </ul>
+    </li>
+  );
+}
+
+function OutreachRow({ item, show }: { item: KitItem; show: "en" | "es" | "both" }) {
+  const { h, lang } = useHubCopy();
+  const label = afterColon((lang === "es" && item.title_es) || item.title);
+  const desc = (lang === "es" && item.description_es) || item.description;
+  const guide = isOutreachGuide(item);
+  const file = kitFileUrl(item.file_path);
+  // saved as "Kindness Forward - Media - invitation letter.docx" rather than the store's own name
+  const ext = item.file_path?.match(/\.(\w+)$/)?.[1]?.toLowerCase();
+  const saveAs = `Kindness Forward - ${item.title.replace(/:\s*/, " - ")}${ext ? `.${ext}` : ""}`;
+  const download = file ? `${file}${file.includes("?") ? "&" : "?"}download=${encodeURIComponent(saveAs)}` : null;
+  const drive = driveLink(item);
+  const otherLang = show !== "both" && item.lang !== "both" && item.lang !== show;
+  const meta = [typeLabel(item), sizeLabel(item.size_bytes)].filter(Boolean).join(" · ");
+  return (
+    <li className="flex flex-col gap-2.5 border-t-[1.5px] border-hair pt-3">
+      <div className="flex items-start gap-2.5">
+        <span className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center ${guide ? "bg-tint-gold text-navy" : "bg-tint-sky text-sky"}`}>
+          {guide ? <BookOpen className="h-4 w-4" aria-hidden="true" /> : <FileText className="h-4 w-4" aria-hidden="true" />}
+        </span>
+        <div className="min-w-0">
+          <h4 className="m-0 flex flex-wrap items-center gap-x-2 gap-y-1 text-[14.5px] font-extrabold leading-snug text-navy">
+            {label}
+            <span className={`chip ${guide ? "bg-gold text-navy" : "bg-tint-sky text-navy"}`}>{guide ? h.forYou : h.toSend}</span>
+            {otherLang && item.lang === "en" && <span className="chip border-[1.5px] border-hair bg-white text-ink2">{h.inEnglish}</span>}
+          </h4>
+          {desc && <p className="m-0 mt-0.5 text-[13px] font-medium leading-snug text-ink-muted">{desc}</p>}
+          {meta && <span className="mt-1 block text-[11.5px] font-bold text-ink-faint">{meta}</span>}
+        </div>
+      </div>
+      {/* side by side on a phone, half each; inline under the text from sm up */}
+      <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:ps-[42px]">
+        {download && (
+          <a href={download} download className="btn-soft h-9 justify-center px-3 text-[13px]">
+            <Download className="h-4 w-4" aria-hidden="true" />
+            {h.download}
+          </a>
+        )}
+        {drive && (
+          <a href={drive} target="_blank" rel="noopener noreferrer" className="btn h-9 justify-center border-[1.5px] border-hair px-3 text-[13px] text-ink2 hover:border-sky" aria-label={h.viewInDrive}>
+            <ExternalLink className="h-4 w-4" aria-hidden="true" />
+            <span className="sm:hidden">Google Drive</span>
+            <span className="hidden sm:inline">{h.viewInDrive}</span>
+          </a>
+        )}
+      </div>
+    </li>
   );
 }
 
@@ -407,6 +546,12 @@ function KitCard({ item, compact, showLang, isFresh }: { item: KitItem; compact:
           <a href={href} target="_blank" rel="noopener noreferrer" download={!external ? "" : undefined} className="btn-soft h-9 px-3 text-[13px]">
             {external ? <ExternalLink className="h-4 w-4" aria-hidden="true" /> : <Download className="h-4 w-4" aria-hidden="true" />}
             {external ? h.open : h.download}
+          </a>
+        )}
+        {item.file_path && driveLink(item) && (
+          <a href={driveLink(item)!} target="_blank" rel="noopener noreferrer" className="btn h-9 border-[1.5px] border-hair px-3 text-[13px] text-ink2 hover:border-sky">
+            <ExternalLink className="h-4 w-4" aria-hidden="true" />
+            {h.viewInDrive}
           </a>
         )}
         {caption && (
