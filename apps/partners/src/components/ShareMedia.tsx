@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { Megaphone, PartyPopper, Send } from "lucide-react";
+import { ImagePlus, Info, Megaphone, PartyPopper, Send } from "lucide-react";
 import { useHubCopy } from "@/lib/hubCopy";
 import { ACCEPT_ATTR, mediaTypeOf } from "@/lib/upload";
 import Sheet from "./Sheet";
@@ -11,10 +11,15 @@ import Composer from "./Composer";
  * pictures and videos go, so any "Add photos or videos" button opens the file picker at once (or
  * takes files dropped on it), and the chosen files land in a ready post. One choice on top: post
  * it for every member, or send it only to Kindness Forward for our socials.
+ *
+ * 28 Nov 2026, the same tester: it's "Share your moments" now, and a click first opens a short
+ * pop-up saying what happens to the pictures (and that we may use them on our socials), with one
+ * big button that opens the picker. Files dropped on a button skip the pop-up; the consent boxes
+ * in the post still say the same.
  */
 
 interface ShareMediaApi {
-  /** Open the file picker. Call it straight from a click so the browser allows it. */
+  /** Open the "Share your moments" pop-up, whose button opens the file picker. */
   pick: () => void;
   /** Share files someone dropped on a button. */
   share: (files: FileList | File[]) => void;
@@ -31,10 +36,14 @@ const isMedia = (f: File) => /^(image|video)\//.test(mediaTypeOf(f));
 export function ShareMediaProvider({ children }: { children: ReactNode }) {
   const input = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<File[] | null>(null);
-  const pick = useCallback(() => input.current?.click(), []);
+  const [intro, setIntro] = useState(false);
+  const pick = useCallback(() => setIntro(true), []);
   const share = useCallback((list: FileList | File[]) => {
     const ok = Array.from(list).filter(isMedia);
-    if (ok.length) setFiles(ok);
+    if (ok.length) {
+      setIntro(false);
+      setFiles(ok);
+    }
   }, []);
   const api = useMemo(() => ({ pick, share }), [pick, share]);
 
@@ -52,8 +61,53 @@ export function ShareMediaProvider({ children }: { children: ReactNode }) {
           e.target.value = "";
         }}
       />
+      {intro && (
+        <MomentsIntro
+          onClose={() => setIntro(false)}
+          // the picker opens inside this click, so the browser allows it
+          onPick={() => input.current?.click()}
+          onDrop={share}
+        />
+      )}
       {files && <ShareMediaSheet files={files} onClose={() => setFiles(null)} />}
     </Ctx.Provider>
+  );
+}
+
+/** What happens to the photos and videos, before the picker opens. */
+function MomentsIntro({ onClose, onPick, onDrop }: { onClose: () => void; onPick: () => void; onDrop: (files: FileList) => void }) {
+  const { h } = useHubCopy();
+  const [dropping, setDropping] = useState(false);
+  return (
+    <Sheet open onClose={onClose} title={h.momentsTitle}>
+      <div className="flex flex-col gap-4">
+        <p className="m-0 text-[15px] font-medium leading-relaxed text-ink2">{h.momentsBody}</p>
+        <p className="m-0 flex items-start gap-2.5 bg-tint-gold px-3 py-2.5 text-[13.5px] font-semibold leading-snug text-navy">
+          <Info className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+          {h.momentsNote}
+        </p>
+        <button
+          type="button"
+          onClick={onPick}
+          onDragOver={(e) => (e.preventDefault(), setDropping(true))}
+          onDragLeave={() => setDropping(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setDropping(false);
+            if (e.dataTransfer.files.length) onDrop(e.dataTransfer.files);
+          }}
+          className={`flex flex-col items-center gap-1.5 border-[1.5px] border-dashed px-4 py-6 text-center transition ${
+            dropping ? "border-orange bg-tint-orange" : "border-sky bg-tint-sky/50 hover:bg-tint-sky"
+          }`}
+        >
+          <span className="flex h-12 w-12 items-center justify-center bg-sky text-white">
+            <ImagePlus className="h-6 w-6" aria-hidden="true" />
+          </span>
+          <span className="text-[16px] font-extrabold text-navy">{h.momentsPick}</span>
+          <span className="text-[13px] font-medium text-ink-muted">{h.momentsPickSub}</span>
+        </button>
+      </div>
+    </Sheet>
   );
 }
 

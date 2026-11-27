@@ -8,6 +8,10 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ---
 
+## 2026-11-28 — sim1
+
+- **Partners Hub: "Share your moments", with a word on how we use the pictures.** From the same tester: the "Photos or videos" box under the menu felt out of place and went straight to the file picker without saying what happens next. It's now a menu item like the others, called "Share your moments" (the phone's + menu uses the same name). A click opens a short pop-up, "Share your moments with the Kindness Forward community", which explains that photos and videos can be posted for every member or sent only to us, and that Kindness Forward may use them on social media, the website and newsletters with credit. One big button then opens the picker, where several files can be chosen at once. Files dropped on it go straight through. The computer menu is a little wider so the name fits on one line.
+
 ## 2026-11-27 — sim1
 
 - **Partners Hub: the outreach letters are in.** PSol's 14 guides and letters (media, education, organisations and kindness champions) now sit on the ambassadors' Kit page, one card per group. Each row says whether it's a guide "For you" or a letter "To send", and has two buttons: Download, which saves the Word file straight from the hub with a clear name, and View in Google Drive, which opens the team's copy. Readers on the Spanish side still see them (marked "In English") instead of "coming soon". Any other kit file that has a Google Drive link now shows the same View in Google Drive button.

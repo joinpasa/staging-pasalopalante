@@ -13,8 +13,9 @@ import Tour from "./Tour";
  * a left menu on a computer, a bottom tab bar with a big + on a phone. Light and square-edged.
  * On a computer every tab is in the menu. On a phone the bar holds Home, Community, +, Ideas and
  * Kit; the map sits inside Community, and News, Events and Me are at the top, the way social apps
- * do it. Under the menu on a computer, the "Photos or videos" drop box opens the file picker straight away
- * and takes files dropped on it (27 Nov 2026: a tester couldn't find where pictures go).
+ * do it. Under the menu on a computer, "Share your moments" opens a short pop-up and then the file
+ * picker, and takes files dropped on it (27-28 Nov 2026: a tester couldn't find where pictures go,
+ * then asked for a clearer name and a word on how we use them).
  */
 type ShellProps = { children: ReactNode; aside?: ReactNode; wide?: boolean };
 
@@ -98,7 +99,7 @@ function Frame({ children, aside, wide = false }: ShellProps) {
 
       <div className="mx-auto flex w-full max-w-[1280px]">
         {/* computer: left menu */}
-        <aside className="sticky top-1 hidden h-[calc(100vh-4px)] w-[250px] shrink-0 flex-col gap-1 overflow-y-auto border-e-[1.5px] border-hair px-4 py-5 [scrollbar-width:thin] lg:flex [&>*]:shrink-0">
+        <aside className="sticky top-1 hidden h-[calc(100vh-4px)] w-[270px] shrink-0 flex-col gap-1 overflow-y-auto border-e-[1.5px] border-hair px-4 py-5 [scrollbar-width:thin] lg:flex [&>*]:shrink-0">
           <Link to="/" className="mb-4 px-3 no-underline">
             <img src="/kf-logo.webp" alt="Kindness Forward" className="h-10 w-auto" />
             <span className="mt-1 block text-[13px] font-extrabold text-sky-deep">{h.hubName}</span>
@@ -118,19 +119,14 @@ function Frame({ children, aside, wide = false }: ShellProps) {
             onDragOver={(e) => (e.preventDefault(), setDropping(true))}
             onDragLeave={() => setDropping(false)}
             onDrop={onDrop}
-            className={`mt-3 flex w-full items-center gap-3 border-[1.5px] border-dashed px-3 py-2.5 text-start transition ${
-              dropping ? "border-orange bg-tint-orange" : "border-sky bg-tint-sky/50 hover:bg-tint-sky"
+            // 28 Nov: a menu item like the others ("Share your moments"); it opens a short pop-up first
+            className={`flex min-h-11 w-full items-center gap-3.5 px-3 py-1.5 text-start text-[16px] font-semibold leading-tight transition ${
+              dropping ? "bg-tint-orange text-navy outline-dashed outline-[1.5px] -outline-offset-[1.5px] outline-orange" : "text-ink2 hover:bg-tint-sky/60"
             }`}
             data-tour="media"
           >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center bg-white text-sky">
-              <ImagePlus className="h-5 w-5" aria-hidden="true" />
-            </span>
-            <span className="min-w-0">
-              {/* short label on one line, and the hint always shown, so it reads as a drop box, not a second Share */}
-              <span className="block text-[15px] font-extrabold leading-snug text-navy">{h.mediaShort}</span>
-              <span className="block text-[12.5px] font-semibold leading-snug text-ink-muted">{h.mediaCtaSub}</span>
-            </span>
+            <ImagePlus className="h-[22px] w-[22px] shrink-0 text-sky" aria-hidden="true" />
+            {dropping ? h.mediaCtaSub : h.mediaShort}
           </button>
           <button type="button" onClick={() => setCreating(true)} className="btn-orange mt-3 h-12 w-full text-base" data-tour="create">
             <Plus className="h-5 w-5" aria-hidden="true" />

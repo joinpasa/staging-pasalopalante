@@ -78,8 +78,8 @@ export default function Tour() {
       anchor: ["media", "create"],
       icon: ImagePlus,
       tint: "bg-sky text-white",
-      en: ["Photos and videos", "Add them here in one click. Post them for every member, or send them only to us for our socials."],
-      es: ["Fotos y videos", "Añádelos aquí con un clic. Publícalos para todos los miembros o envíanoslos solo a nosotros para nuestras redes."],
+      en: ["Share your moments", "Photos and videos, one or many. Post them for every member, or send them only to us for our socials."],
+      es: ["Comparte tus momentos", "Fotos y videos, uno o varios. Publícalos para todos los miembros o envíanoslos solo a nosotros para nuestras redes."],
     },
     {
       anchor: ["create"],
